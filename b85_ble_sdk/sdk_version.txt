@@ -1,0 +1,2 @@
+Telink BLE SDK_VERSION = 
+telink_vulture_ble_sdk_Beta_v1.0.0  
