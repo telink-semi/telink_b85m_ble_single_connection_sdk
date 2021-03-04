@@ -1,31 +1,30 @@
 /********************************************************************************************************
- * @file     hci_const.h 
+ * @file	hci_const.h
  *
- * @brief    for TLSR chips
+ * @brief	This is the header file for BLE SDK
  *
- * @author	 BLE Group
- * @date     Sep. 18, 2015
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
- *           
- *			 The information contained herein is confidential and proprietary property of Telink 
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms 
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai) 
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in. 
- *           This heading MUST NOT be removed from this file.
+ * @par		Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd.
+ *			All rights reserved.
  *
- * 			 Licensees are granted free, non-transferable use of the information in this 
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided. 
- *           
+ *          The information contained herein is confidential property of Telink
+ *          Semiconductor (Shanghai) Co., Ltd. and is available under the terms
+ *          of Commercial License Agreement between Telink Semiconductor (Shanghai)
+ *          Co., Ltd. and the licensee or the terms described here-in. This heading
+ *          MUST NOT be removed from this file.
+ *
+ *          Licensee shall not delete, modify or alter (or permit any third party to delete, modify, or
+ *          alter) any information contained herein in whole or in part except as expressly authorized
+ *          by Telink semiconductor (shanghai) Co., Ltd. Otherwise, licensee shall be solely responsible
+ *          for any claim to the extent arising out of or relating to such deletion(s), modification(s)
+ *          or alteration(s).
+ *
+ *          Licensees are granted free, non-transferable use of the information in this
+ *          file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *
  *******************************************************************************************************/
-/*
- * hci_const.h
- *
- *  Created on: 2016-9-20
- *      Author: Administrator
- */
-
 #ifndef HCI_CONST_H_
 #define HCI_CONST_H_
 
@@ -80,7 +79,27 @@
 #define HCI_SUB_EVT_LE_SCAN_REQUEST_RECEIVED                         0x13   //core_5.0 - LE Scan Request Received Event - [5]7.7.65.19
 #define HCI_SUB_EVT_LE_CHANNEL_SELECTION_ALGORITHM                	 0x14   //core_5.0 - LE Channel Selection Algorithm Event - [5]7.7.65.20
 
-#define HCI_SUB_EVT_LE_CONNECTION_ESTABLISH					         0x20   //telink private
+
+#define HCI_SUB_EVT_LE_CONNECTIONLESS_IQ_REPORT               	     0x15	//core_5.1	7.7.65.21 LE Connectionless IQ Report event
+#define HCI_SUB_EVT_LE_CONNECTION_IQ_REPORT               		 	 0x16	//core_5.1	7.7.65.22 LE Connection IQ Report event
+#define HCI_SUB_EVT_LE_CTE_REQUEST_FAILED                		     0x17	//core_5.1	7.7.65.23 LE CTE Request Failed event
+#define HCI_SUB_EVT_LE_PERIODIC_ADVERTISING_SYNC_TRANSFOR_RECEIVED   0x18	//core_5.1	7.7.65.24 LE Periodic Advertising Sync Transfer Received event
+
+
+#define HCI_SUB_EVT_LE_CIS_ESTABLISHED								 0x19	//core_5.2	7.7.65.25 LE CIS Established event
+#define HCI_SUB_EVT_LE_CIS_REQUESTED								 0x1A	//core_5.2	7.7.65.26 LE CIS Request event
+#define HCI_SUB_EVT_LE_CREATE_BIG_COMPLETE							 0x1B	//core_5.2	7.7.65.27 LE Create BIG Complete event
+#define HCI_SUB_EVT_LE_TERMINATE_BIG_COMPLETE						 0x1C	//core_5.2	7.7.65.28 LE Terminate BIG Complete event
+#define HCI_SUB_EVT_LE_BIG_SYNC_ESTABLILSHED						 0x1D	//core_5.2	7.7.65.29 LE BIG Sync Established event
+#define HCI_SUB_EVT_LE_BIG_SYNC_LOST								 0x1E	//core_5.2	7.7.65.30 LE BIG Sync Lost event
+#define HCI_SUB_EVT_LE_REQUEST_PEER_SCA_COMPLETE					 0x1F	//core_5.2	7.7.65.31 LE Request Peer SCA Complete event
+#define HCI_SUB_EVT_LE_PATH_LOSS_THRESHOLD							 0x20	//core_5.2	7.7.65.32 LE Path Loss Threshold event
+#define HCI_SUB_EVT_LE_TRANSMIT_POWER_REPORTING						 0x21	//core_5.2	7.7.65.33 LE Transmit Power Reporting event
+#define HCI_SUB_EVT_LE_BIGINFO_ADVERTISING_REPORT					 0x22	//core_5.2	7.7.65.34 LE BIGInfo Advertising Report event
+
+
+
+#define HCI_SUB_EVT_LE_CONNECTION_ESTABLISH					         0xFF   //Telink private
 
 
 
@@ -126,8 +145,29 @@
 #define HCI_LE_EVT_MASK_SCAN_REQUEST_RECEIVED                        0x00040000 // core5.0
 #define HCI_LE_EVT_MASK_CHANNEL_SELECTION_ALGORITHM                  0x00080000 // core5.0 - bit19
 
+#define HCI_LE_EVT_MASK_CONNECTIONLESS_IQ_REPORT                     0x00100000 // core5.1 - bit20
+#define HCI_LE_EVT_MASK_CONNECTION_IQ_REPORTD          				 0x00200000 // core5.1 - bit21
+#define HCI_LE_EVT_MASK_CTE_REQUEST_FAILED                           0x00400000 // core5.1 - bit22
+#define HCI_LE_EVT_MASK_PERIODIC_ADVERTISING_SYNC_TRANSFOR_RECEIVED  0x00800000 // core5.1 - bit23
 
-#define HCI_LE_EVT_MASK_CONNECTION_ESTABLISH                         0x80000000  //telink private
+#define HCI_LE_EVT_MASK_CIS_ESTABLISHED								 0x01000000 // core5.2 - bit24
+#define HCI_LE_EVT_MASK_CIS_REQUESTED								 0x02000000 // core5.2 - bit25
+#define HCI_LE_EVT_MASK_CREATE_BIG_COMPLETE							 0x04000000 // core5.2 - bit26
+#define HCI_LE_EVT_MASK_TERMINATE_BIG_COMPLETE						 0x08000000 // core5.2 - bit27
+#define HCI_LE_EVT_MASK_BIG_SYNC_ESTABLILSHED						 0x10000000 // core5.2 - bit28
+#define HCI_LE_EVT_MASK_BIG_SYNC_LOST								 0x20000000 // core5.2 - bit29
+#define HCI_LE_EVT_MASK_REQUEST_PEER_SCA_COMPLETE					 0x40000000 // core5.2 - bit30
+#define HCI_LE_EVT_MASK_PATH_LOSS_THRESHOLD							 0x80000000 // core5.2 - bit31
+
+#define HCI_LE_EVT_MASK_2_TRANSMIT_POWER_REPORTING					 0x00000001 // core5.2 - bit32
+#define HCI_LE_EVT_MASK_2_BIGINFO_ADVERTISING_REPORT				 0x00000002 // core5.2 - bit33
+
+
+
+#define HCI_LE_EVT_MASK_CONNECTION_ESTABLISH                         0x80000000  //TODO
+
+
+
 
 
 #define HCI_LE_EVT_MASK_DEFAULT                                      HCI_LE_EVT_MASK_NONE
@@ -243,7 +283,7 @@
 #define HCI_CMD_LE_TRANSMITTER_TEST                                  0x1E
 #define HCI_CMD_LE_TEST_END                                          0x1F
 //core_4.0 end
-//core_4.2 begin
+//core_4.1 begin
 #define HCI_CMD_LE_REMOTE_CONNECTION_PARAM_REQ_REPLY             	 0x20
 #define HCI_CMD_LE_REMOTE_CONNECTION_PARAM_REQ_NEGATIVE_REPLY    	 0x21
 //core_4.1 end
@@ -297,6 +337,56 @@
 #define HCI_CMD_LE_SET_PRIVACY_MODE             					 0x4E//LE Set Privacy Mode Command - [5] 7.8.77
 //core_5.0 end
 
+//core_5.1 begin
+#define HCI_CMD_LE_RECEIVER_TEST_V3                                  0x4F //7.8.78 LE Receiver Test command [v3]
+#define HCI_CMD_LE_TRANSMITTER_TEST_V3                               0x50 //7.8.79 LE Transmitter Test command [v3]
+#define HCI_CMD_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_PARAMETERS		 0x51 //7.8.80 LE Set Connectionless CTE Transmit Parameters command
+#define HCI_CMD_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_ENABLE			 0x52 //7.8.81 LE Set Connectionless CTE Transmit Enable command
+#define HCI_CMD_LE_SET_CONNECTIONLESS_IQ_SAMPLING_ENABLE			 0x53 //7.8.82 LE Set Connectionless IQ Sampling Enable command
+#define HCI_CMD_LE_SET_CONNECTION_CTE_RECEIVE_PARAMETERS			 0x54 //7.8.83 LE Set Connection CTE Receive Parameters command
+#define HCI_CMD_LE_SET_CONNECTION_CTE_TRANSMIT_PARAMETERS			 0x55 //7.8.84 LE Set Connection CTE Transmit Parameters command
+#define HCI_CMD_LE_CONNECTION_REQUEST_ENABLE					 	 0x56 //7.8.85 LE Connection CTE Request Enable command
+#define HCI_CMD_LE_CONNECTION_RESPONSE_ENABLE					 	 0x57 //7.8.86 LE Connection CTE Response Enable command
+#define HCI_CMD_LE_READ_ANTENNA_INFORMATION						 	 0x58 //7.8.87 LE Read Antenna Information command
+#define HCI_CMD_LE_SET_PERIODIC_ADVERTISING_RECEIVE_ENABLE		     0x59 //7.8.88 LE Set Periodic Advertising Receive Enable command
+#define HCI_CMD_LE_PERIODIC_ADVERTISING_SYNC_TRANSFOR				 0x5A //7.8.89 LE Periodic Advertising Sync Transfer command
+#define HCI_CMD_LE_PERIODIC_ADVERTISING_SET_INFO_TRANSFOR			 0x5B //7.8.90 LE Periodic Advertising Set Info Transfer command
+#define HCI_CMD_LE_SET_PERIODIC_ADV_SYNC_TRANSFOR_PARAMETERS 		 0x5C //7.8.91 LE Set Periodic Advertising Sync Transfer Parameters command
+#define HCI_CMD_LE_SET_DEFAULT_PERIODIC_ADV_SYNC_TRANSFOR_PARAMS 	 0x5D //7.8.92 LE Set Default Periodic Advertising Sync Transfer Parameters command
+#define HCI_CMD_LE_GENERATE_DHKEY_V2								 0x5E //7.8.93 LE Generate DHKey command [v2]
+#define HCI_CMD_LE_MODIFY_SLEEP_CLOCK_ACCURACY						 0x5F //7.8.94 LE Modify Sleep Clock Accuracy command
+//core_5.1 end
+
+//core_5.2 begin
+#define HCI_CMD_LE_READ_BUFFER_SIZE_V2								 0x60 //7.8.2 LE Read Buffer Size command
+#define HCI_CMD_LE_READ_ISO_TX_SYNC									 0x61 //7.8.96 LE Read ISO TX Sync command
+#define HCI_CMD_LE_SET_CIG_PARAMETERS								 0x62 //7.8.97 LE Set CIG Parameters command
+#define HCI_CMD_LE_SET_CIG_PARAMETERS_TEST							 0x63 //7.8.98 LE Set CIG Parameters Test command
+#define HCI_CMD_LE_CREATE_CIS										 0x64 //7.8.99 LE Create CIS command
+#define HCI_CMD_LE_REMOVE_CIG 										 0x65 //7.8.100 LE Remove CIG command
+#define HCI_CMD_LE_ACCEPT_CIS_REQUEST								 0x66 //7.8.101 LE Accept CIS Request command
+#define HCI_CMD_LE_REJECT_CIS_REQUEST								 0x67 //7.8.102 LE Reject CIS Request command
+#define HCI_CMD_LE_CREATE_BIG										 0x68 //7.8.103 LE Create BIG command
+#define HCI_CMD_LE_CREATE_BIG_TEST									 0x69 //7.8.104 LE Create BIG Test command
+#define HCI_CMD_LE_TERMINATE_BIG									 0x6A //7.8.105 LE Terminate BIG command
+#define HCI_CMD_LE_BIG_CREATE_SYNC									 0x6B //7.8.106 LE BIG Create Sync command
+#define HCI_CMD_LE_BIG_TERMINATE_SYNC								 0x6C //7.8.107 LE BIG Terminate Sync command
+#define HCI_CMD_LE_REQUEST_PEER_SCA									 0x6D //7.8.108 LE Request Peer SCA command
+#define HCI_CMD_LE_SETUP_ISO_DATA_PATH								 0x6E //7.8.109 LE Setup ISO Data Path command
+#define HCI_CMD_LE_REMOVE_ISO_DARA_PATH								 0x6F //7.8.110 LE Remove ISO Data Path command
+#define HCI_CMD_LE_ISO_TRTANSMIT_TEST								 0x70 //7.8.111 LE ISO Transmit Test command
+#define HCI_CMD_LE_ISO_RECEIVE_TEST									 0x71 //7.8.112 LE ISO Receive Test command
+#define HCI_CMD_LE_ISO_READ_TEST_COUNTERS							 0x72 //7.8.113 LE ISO Read Test Counters command
+#define HCI_CMD_LE_ISO_TEST_END										 0x73 //7.8.114 LE ISO Test End command
+#define HCI_CMD_LE_SET_HOST_FEATURE									 0x74 //7.8.115 LE Set Host Feature Command
+#define HCI_CMD_LE_READ_ISO_LINK_QUALITY							 0x75 //7.8.116 LE Read ISO Link Quality command
+#define HCI_CMD_LE_ENHANCED_READ_TRANSMIT_POWER_LEVEL				 0x76 //7.8.117 LE Enhanced Read Transmit Power Level command
+#define HCI_CMD_LE_READ_REMOTE_TRANSMIT_POWER_LEVEL	     			 0x77 //7.8.118 LE Read Remote Transmit Power Level command
+#define HCI_CMD_LE_SET_PATH_LOSS_REPORTING_PARAMETERS				 0x78 //7.8.119 LE Set Path Loss Reporting Parameters command
+#define HCI_CMD_LE_SET_PATH_LOSS_REPORTING_ENABLE				     0x79 //7.8.120 LE Set Path Loss Reporting Enable command
+#define HCI_CMD_LE_SET_TRANSMIT_POWER_REPORTING_ENABLE				 0x7A //7.8.121 LE Set Transmit Power Reporting Enable command
+//core_5.2 end
+
 
 #define HCI_CMD_LINK_POLICY_OPCODE_OGF								 0x08 //0x02<<2 = 0x08
 #define HCI_CMD_TEST_OPCODE_OGF										 0x18 //0x06<<2 = 0x18
@@ -306,8 +396,8 @@
 #define HCI_CMD_VENDOR_OPCODE_OGF									 0xFC  //0x3f <<2 = 0xFC
 //-- OCF --
 #define HCI_TELINK_READ_REG											 0x01
-#define HCI_TELINK_WRTIE_REG										 0x02
+#define HCI_TELINK_WRITE_REG										 0x02
 #define HCI_TELINK_SET_TX_PWR										 0x03
-
+#define HCI_TELINK_REBOOT_MCU										 0x04
 #define HCI_TELINK_SET_RXTX_DATA_LEN								 0x40
 #endif /* HCI_CONST_H_ */

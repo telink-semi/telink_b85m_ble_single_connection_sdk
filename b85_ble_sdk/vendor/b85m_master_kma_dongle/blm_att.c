@@ -1,25 +1,48 @@
 /********************************************************************************************************
- * @file  	 blm_att.c
+ * @file	blm_att.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 18, 2018
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
@@ -50,6 +73,12 @@ u8 read_by_type_req_uuidLen;
 
 u16 	current_read_req_handle;
 
+/**
+ * @brief       host layer set current readByTypeRequest UUID
+ * @param[in]	uuid
+ * @param[in]	uuid_len - uuid byte number
+ * @return      none
+ */
 void host_att_set_current_readByTypeReq_uuid(u8 *uuid, u8 uuid_len)
 {
 	read_by_type_req_uuidLen = uuid_len;
@@ -66,6 +95,12 @@ u8	*p_att_response = 0;
 
 volatile u32	host_att_req_busy = 0;
 
+/**
+ * @brief       host layer client handle
+ * @param[in]	connHandle - connect handle
+ * @param[in]	p - Pointer point to event parameter.
+ * @return      none
+ */
 int host_att_client_handler (u16 connHandle, u8 *p)
 {
 	att_readByTypeRsp_t *p_rsp = (att_readByTypeRsp_t *) p;
@@ -81,6 +116,11 @@ int host_att_client_handler (u16 connHandle, u8 *p)
 	return 0;
 }
 
+/**
+ * @brief       host layer clear service discovery
+ * @param[in]	none
+ * @return      none
+ */
 void host_att_service_disccovery_clear(void)
 {
 	p_att_response = 0;
@@ -89,6 +129,11 @@ void host_att_service_disccovery_clear(void)
 typedef int (*host_att_idle_func_t) (void);
 host_att_idle_func_t host_att_idle_func = 0;
 
+/**
+ * @brief       host layer clear service discovery
+ * @param[in]	p - Pointer point to main idle loop function.
+ * @return      none
+ */
 int host_att_register_idle_func (void *p)
 {
 	if (host_att_idle_func)
@@ -98,12 +143,23 @@ int host_att_register_idle_func (void *p)
 	return 0;
 }
 
+/**
+ * @brief       host layer response
+ * @param[in]	none
+ * @return      none
+ */
 int host_att_response ()
 {
 	return host_att_req_busy == 0;
 }
 
-
+/**
+ * @brief       host layer wait service
+ * @param[in]	handle - connect handle
+ * @param[in]	p - pointer of data event
+ * @param[in]	timeout
+ * @return      0
+ */
 int host_att_service_wait_event (u16 handle, u8 *p, u32 timeout)
 {
 	host_att_req_busy = handle | (p[6] << 16);
@@ -128,6 +184,14 @@ int host_att_service_wait_event (u16 handle, u8 *p, u32 timeout)
 	return 1;
 }
 
+/**
+ * @brief       this function serves to find handle of uuid16
+ * @param[in]	p - pointer of data attribute
+ * @param[in]	uuid
+ * @param[in]	ref - HID Report
+ * @return      0 - fail to find handle of uuid16
+ *              1 - the handle of uuid16 that find
+ */
 u16 blm_att_findHandleOfUuid16 (att_db_uuid16_t *p, u16 uuid, u16 ref)
 {
 	for (int i=0; i<p->num; i++)
@@ -140,6 +204,13 @@ u16 blm_att_findHandleOfUuid16 (att_db_uuid16_t *p, u16 uuid, u16 ref)
 	return 0;
 }
 
+/**
+ * @brief       this function serves to find handle of uuid128
+ * @param[in]	p - pointer of data attribute
+ * @param[in]	uuid - pointer of uuid
+ * @return      0 - fail to find handle of uuid128
+ *              1 - the handle of uuid128 that find
+ */
 u16 blm_att_findHandleOfUuid128 (att_db_uuid128_t *p, const u8 * uuid)
 {
 	for (int i=0; i<p->num; i++)
@@ -152,6 +223,15 @@ u16 blm_att_findHandleOfUuid128 (att_db_uuid128_t *p, const u8 * uuid)
 	return 0;
 }
 
+/**
+ * @brief       host layer discovery service
+ * @param[in]	handle - connect handle
+ * @param[in]	p16 - pointer of data attribute
+ * @param[in]	n16 - attribute uuid16 num
+ * @param[in]	p128 - pointer of data attribute
+ * @param[in]   n128 - attribute uuid128 num
+ * @return      ble status
+ */
 ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16, att_db_uuid128_t *p128, int n128)
 {
 	att_db_uuid16_t *ps16 = p16;
@@ -299,6 +379,12 @@ rf_packet_mouse_t	pkt_mouse = {
 
 extern void usbmouse_add_frame (rf_packet_mouse_t *packet_mouse);
 
+/**
+ * @brief       call this function when attribute handle:HID_HANDLE_MOUSE_REPORT
+ * @param[in]	conn - connect handle
+ * @param[in]	p - pointer of l2cap data packet
+ * @return      none
+ */
 void	att_mouse (u16 conn, u8 *p)
 {
 	memcpy (pkt_mouse.data, p, 4);
@@ -314,6 +400,12 @@ extern void usbkb_report_consumer_key(u16 consumer_key);
 
 extern void report_media_key_to_KeySimTool(u16);
 
+/**
+ * @brief       call this function when report consumer key
+ * @param[in]	conn - connect handle
+ * @param[in]	p - pointer of l2cap data packet
+ * @return      none
+ */
 void	att_keyboard_media (u16 conn, u8 *p)
 {
 	u16 media_key = p[0] | p[1]<<8;
@@ -326,6 +418,13 @@ int Adbg_att_kb_cnt = 0;
 kb_data_t		kb_dat_report = {1, 0, {0,0,0,0,0,0} };
 int keyboard_not_release = 0;
 extern int 	dongle_unpair_enable;
+
+/**
+ * @brief       call this function when report keyborad
+ * @param[in]	conn - connect handle
+ * @param[in]	p - pointer of l2cap data packet
+ * @return      none
+ */
 void	att_keyboard (u16 conn, u8 *p)
 {
 	Adbg_att_kb_cnt ++;
@@ -358,7 +457,11 @@ void	att_keyboard (u16 conn, u8 *p)
 
 
 
-
+/**
+ * @brief       call this function when keyboard release
+ * @param[in]	none
+ * @return      none
+ */
 void att_keyboard_release(void)
 {
 	kb_dat_report.cnt = 0;  //key release
@@ -370,7 +473,11 @@ void att_keyboard_release(void)
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-
+/**
+ * @brief       this function serves to clear host attribute data
+ * @param[in]	none
+ * @return      none
+ */
 void host_att_data_clear(void)
 {
 	if(keyboard_not_release){
@@ -380,12 +487,21 @@ void host_att_data_clear(void)
 }
 
 
-
+/**
+ * @brief       this function serves to set current ReadRequest attribute handle
+ * @param[in]	handle - connect handle
+ * @return      none
+ */
 void app_setCurrentReadReq_attHandle(u16 handle)
 {
 	current_read_req_handle = handle;
 }
 
+/**
+ * @brief       this function serves to get current ReadRequest attribute handle
+ * @param[in]	none
+ * @return      current ReadRequest attribute handle
+ */
 u16 app_getCurrentReadReq_attHandle(void)
 {
 	return current_read_req_handle;

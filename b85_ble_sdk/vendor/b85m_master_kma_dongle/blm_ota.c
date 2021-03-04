@@ -1,25 +1,48 @@
 /********************************************************************************************************
- * @file	 blm_ota.c
+ * @file	blm_ota.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 18, 2018
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
@@ -78,7 +101,11 @@ u32 ota_result_tick;
 int host_ota_start = 0;
 int host_ota_update_pending;
 
-
+/**
+ * @brief		this function serves to use led status to show the ota result
+ * @param[in]	success - led status indicate
+ * @return      none
+ */
 void ota_set_result(int success)
 {
 #if (UI_LED_ENABLE)
@@ -115,7 +142,12 @@ void ota_set_result(int success)
 u8 adr_index_max_l;
 u8 adr_index_max_h;
 
-
+/**
+ * @brief		this function serves to use button to trigger the ota start
+ * @param[in]	button0_press_flag
+ * @param[in]	button1_press_flag
+ * @return      none
+ */
 void host_button_trigger_ota_start(int button0_press_flag, int button1_press_flag)
 {
 	if(blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){
@@ -130,7 +162,14 @@ void host_button_trigger_ota_start(int button0_press_flag, int button1_press_fla
 
 
 
-
+/**
+ * @brief		this function serves to update connection parameter
+ *              connection_interval = latency *interval + interval
+ * @param[in]	interval - interval * 1.25ms
+ * @param[in]	latency
+ * @param[in]	timeout
+ * @return      none
+ */
 void host_ota_update_conn_complete( u16 interval, u16 latency, u16 timeout )
 {
 	if(host_ota_update_pending == 2 && interval == 8 && latency == 0 && timeout == 200){
@@ -145,7 +184,11 @@ void host_ota_update_conn_complete( u16 interval, u16 latency, u16 timeout )
 
 
 
-
+/**
+ * @brief		this function serves to find ota slave attribute handle
+ * @param[in]	p - pointer to point the l2cap data packet
+ * @return      none
+ */
 void host_find_slave_ota_attHandle(u8 *p)
 {
 	if(host_ota_start == 3 && read_by_type_req_uuidLen == 16 && !memcmp(read_by_type_req_uuid, my_OtaUUID, 16) )
@@ -162,6 +205,11 @@ void host_find_slave_ota_attHandle(u8 *p)
 u32 otaStart_cmd_tick;
 u32 ota_lastData_tick;
 
+/**
+ * @brief		ota proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 void proc_ota (void)
 {
 

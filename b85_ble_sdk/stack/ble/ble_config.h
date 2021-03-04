@@ -4,43 +4,25 @@
  * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	2020.06
+ * @date	06,2020
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par		Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd.
+ *			All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          The information contained herein is confidential property of Telink
+ *          Semiconductor (Shanghai) Co., Ltd. and is available under the terms
+ *          of Commercial License Agreement between Telink Semiconductor (Shanghai)
+ *          Co., Ltd. and the licensee or the terms described here-in. This heading
+ *          MUST NOT be removed from this file.
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *          Licensee shall not delete, modify or alter (or permit any third party to delete, modify, or
+ *          alter) any information contained herein in whole or in part except as expressly authorized
+ *          by Telink semiconductor (shanghai) Co., Ltd. Otherwise, licensee shall be solely responsible
+ *          for any claim to the extent arising out of or relating to such deletion(s), modification(s)
+ *          or alteration(s).
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Licensees are granted free, non-transferable use of the information in this
+ *          file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
  *
  *******************************************************************************************************/
 #pragma once
@@ -58,16 +40,13 @@
 #endif
 
 
-
-
-
-#if(MCU_CORE_TYPE == MCU_CORE_825x)
+#if (MCU_CORE_TYPE == MCU_CORE_825x)
 	#define	FIX_HW_CRC24_EN									1
 	#define HW_ECDH_EN                                      0
-#elif(MCU_CORE_TYPE == MCU_CORE_827x)
+#elif (MCU_CORE_TYPE == MCU_CORE_827x)
 	#define	FIX_HW_CRC24_EN									0
 	#define HW_ECDH_EN                                      1
-#elif(MCU_CORE_TYPE == MCU_CORE_9518)
+#elif (MCU_CORE_TYPE == MCU_CORE_9518)
 	#define	FIX_HW_CRC24_EN									0
 	#define HW_ECDH_EN                                      1
 	#define BLT_CONN_MASTER_EN								0
@@ -77,9 +56,6 @@
 #else
 	#error "unsupported mcu type !"
 #endif
-
-
-
 
 
 
@@ -102,6 +78,16 @@
 
 
 
+#ifndef			BIS_IN_BIG_NUM_MAX
+#define			BIS_IN_BIG_NUM_MAX								4
+#endif
+
+
+#ifndef			LL_CIS_IN_CIG_NUM_MAX
+#define 		LL_CIS_IN_CIG_NUM_MAX              				4
+#endif
+
+///////////////////  Feature ////////////////////////////
 
 
 #ifndef SECURE_CONNECTION_ENABLE
@@ -129,6 +115,8 @@
 
 
 
+
+
 //conn param update/map update
 #ifndef	BLS_PROC_MASTER_UPDATE_REQ_IN_IRQ_ENABLE
 #define BLS_PROC_MASTER_UPDATE_REQ_IN_IRQ_ENABLE			1
@@ -151,10 +139,6 @@
 #ifndef HOST_CONTROLLER_DATA_FLOW_IMPROVE_EN
 #define	HOST_CONTROLLER_DATA_FLOW_IMPROVE_EN				1
 #endif
-
-
-
-
 
 
 
@@ -306,5 +290,24 @@
 
 #ifndef	DBG_CHN7_LOW
 #define DBG_CHN7_LOW
+#endif
+
+
+
+#ifndef	BLE_IRQ_DBG_EN
+#define BLE_IRQ_DBG_EN					0
+#endif
+
+#ifndef	BLE_ADV_DBG_EN
+#define BLE_ADV_DBG_EN					0
+#endif
+
+#ifndef	TX_FIFO_DBG_EN
+#define TX_FIFO_DBG_EN					0
+#endif
+
+
+#ifndef		DEBUG_PAIRING_ENCRYPTION
+#define 	DEBUG_PAIRING_ENCRYPTION		0
 #endif
 

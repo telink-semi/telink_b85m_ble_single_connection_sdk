@@ -1,179 +1,89 @@
 /********************************************************************************************************
- * @file     ll_whitelist.h 
+ * @file	ll_whitelist.h
  *
- * @brief    for TLSR chips
+ * @brief	This is the header file for BLE SDK
  *
- * @author	 BLE Group
- * @date     Sep. 18, 2015
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
- *           
- *			 The information contained herein is confidential and proprietary property of Telink 
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms 
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai) 
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in. 
- *           This heading MUST NOT be removed from this file.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- * 			 Licensees are granted free, non-transferable use of the information in this 
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided. 
- *           
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
+ *
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  *******************************************************************************************************/
-/*
- * ll_whitelist.h
- *
- *  Created on: 2016-9-22
- *      Author: Administrator
- */
-
 #ifndef LL_WHITELIST_H_
 #define LL_WHITELIST_H_
 
-#include <stack/ble/ble_common.h>
+#include "stack/ble/ble_common.h"
 
 
-
-
-
-#define  	MAX_WHITE_LIST_SIZE    				4
-
-#define 	MAX_WHITE_IRK_LIST_SIZE          	2   //save ramcode
-
-
-
-#define 	IRK_REVERT_TO_SAVE_AES_TMIE_ENABLE		1
-
-
-#define		MAC_MATCH8(md,ms)	(md[0]==ms[0] && md[1]==ms[1] && md[2]==ms[2] && md[3]==ms[3] && md[4]==ms[4] && md[5]==ms[5])
-#define		MAC_MATCH16(md,ms)	(md[0]==ms[0] && md[1]==ms[1] && md[2]==ms[2])
-#define		MAC_MATCH32(md,ms)	(md[0]==ms[0] && md[1]==ms[1])
-
-
-//adv filter policy
-#define 	ALLOW_SCAN_WL								BIT(0)
-#define 	ALLOW_CONN_WL								BIT(1)
-
-
-typedef enum {
-	ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_ANY        =		0x00,  // Process scan and connection requests from all devices
-	ADV_FP_ALLOW_SCAN_WL_ALLOW_CONN_ANY         =		0x01,  // Process connection requests from all devices and only scan requests from devices that are in the White List.
-	ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL         =		0x02,  // Process scan requests from all devices and only connection requests from devices that are in the White List..
-	ADV_FP_ALLOW_SCAN_WL_ALLOW_CONN_WL          =		0x03,  // Process scan and connection requests only from devices in the White List.
-
-	ADV_FP_NONE									=		ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_ANY, //adv filter policy set to zero, not use whitelist
-} adv_fp_type_t;  //adv_filterPolicy_type_t
-
-
-typedef enum {
-	SCAN_FP_ALLOW_ADV_ANY						=		0x00,  //except direct adv address not match
-	SCAN_FP_ALLOW_ADV_WL        				=		0x01,  //except direct adv address not match
-	SCAN_FP_ALLOW_UNDIRECT_ADV      			=		0x02,  //and direct adv address match initiator's resolvable private MAC
-	SCAN_FP_ALLOW_ADV_WL_DIRECT_ADV_MACTH		=		0x03,  //and direct adv address match initiator's resolvable private MAC
-
-} scan_fp_type_t;   //scan_filterPolicy_type_t
-
-
-
-typedef enum {
-	INITIATE_FP_ADV_SPECIFY        				=		0x00,  //connect ADV specified by host
-	INITIATE_FP_ADV_WL         					=		0x01,  //connect ADV in whiteList
-
-} init_fp_type_t;   //init_filterPolicy_type_t
-
-
-
-
-
-typedef u8 irk_key_t[16];
-
-typedef struct {
-	u8 type;
-	u8 address[BLE_ADDR_LEN];
-	u8 reserved;
-} wl_addr_t;
-
-typedef struct {
-	wl_addr_t  wl_addr_tbl[MAX_WHITE_LIST_SIZE];
-	u8 	wl_addr_tbl_index;
-	u8 	wl_irk_tbl_index;
-} ll_whiteListTbl_t;
-
-
-
-
-
-
-
-
-/**************************************** User Interface  **********************************************/
-
-
-/*********************************************************************
- * @fn      ll_whiteList_reset
- *
- * @brief   API to reset the white list table.
- *
- * @param   None
- *
- * @return  LL Status
+/**
+ * @brief      reset whitelist
+ * @param[in]  none
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t ll_whiteList_reset(void);
 
-/*********************************************************************
- * @fn      ll_whiteList_add
- *
- * @brief   API to add new entry to white list
- *
- * @param   None
- *
- * @return  LL Status
+
+/**
+ * @brief      add a device form whitelist
+ * @param[in]  type - device mac address type
+ * @param[in]  addr - device mac address
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t ll_whiteList_add(u8 type, u8 *addr);
 
-/*********************************************************************
- * @fn      ll_whiteList_delete
- *
- * @brief   API to delete entry from white list
- *
- * @param   type - The specified type
- *          addr - The specified address to be delete
- *
- * @return  LL Status
+
+/**
+ * @brief      delete a device from whitelist
+ * @param[in]  type - device mac address type
+ * @param[in]  addr - device mac address
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t ll_whiteList_delete(u8 type, u8 *addr);
 
-/*********************************************************************
- * @fn      ll_whiteList_getSize
- *
- * @brief   API to get total number of white list entry size
- *
- * @param   returnSize - The returned entry size
- *
- * @return  LL Status
+
+
+
+/**
+ * @brief      get whitelist size
+ * @param[out] pointer to size
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t ll_whiteList_getSize(u8 *returnPublicAddrListSize) ;
 
-
-
-
-
-
-
-
-
-
-
-
-/********************************* Stack Interface, user can not use!!! ********************************/
-
-u8 * ll_searchAddrInWhiteListTbl(u8 type, u8 *addr);
-
-u8 * ll_searchAddrInResolvingListTbl(u8 *addr);  //addr must be RPA
-
-bool smp_quickResolvPrivateAddr(u8 *key, u8 *addr);
-
-
-extern ll_whiteListTbl_t	ll_whiteList_tbl;
 
 
 

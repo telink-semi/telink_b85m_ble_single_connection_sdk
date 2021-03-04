@@ -1,25 +1,48 @@
 /********************************************************************************************************
- * @file     blm_pair.c
+ * @file	blm_pair.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 18, 2018
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
@@ -85,7 +108,11 @@ int		user_bond_slave_flash_cfg_idx;  //new mac address stored flash idx
 
 user_salveMac_t user_tbl_slaveMac;  //slave mac bond table
 
-
+/**
+ * @brief		this function serves to remove the oldest adr in slave mac table
+ * @param[in]	index
+ * @return      none
+ */
 void user_tbl_slave_mac_delete_by_index(int index)  //remove the oldest adr in slave mac table
 {
 	//erase the oldest with ERASE_MARK
@@ -100,7 +127,12 @@ void user_tbl_slave_mac_delete_by_index(int index)  //remove the oldest adr in s
 	user_tbl_slaveMac.curNum --;
 }
 
-
+/**
+ * @brief		this function serves to add new mac address to table
+ * @param[in]	adr_type
+ * @param[in]	adr - pointer to point the address data
+ * @return      none
+ */
 int user_tbl_slave_mac_add(u8 adr_type, u8 *adr)  //add new mac address to table
 {
 	u8 add_new = 0;
@@ -131,11 +163,15 @@ int user_tbl_slave_mac_add(u8 adr_type, u8 *adr)  //add new mac address to table
 	return 0;
 }
 
-/* search mac address in the bond slave mac table:
-   when slave paired with dongle, add this addr to table
-   re_poweron slave, dongle will search if this AdvA in slave adv pkt is in this table
-   if in, it will connect slave directly
-   this function must in ramcode
+/**
+ * @brief		this function serves to search mac address in the bond slave mac table:
+ *              when slave paired with dongle, add this addr to table
+ * 				re_poweron slave, dongle will search if this AdvA in slave adv pkt is in this table
+ * 				if in, it will connect slave directly
+ * 				this function must in ramcode
+ * @param[in]	adr_type
+ * @param[in]	adr - pointer to point the address data
+ * @return      none
  */
 int user_tbl_slave_mac_search(u8 adr_type, u8 * adr)
 {
@@ -150,7 +186,13 @@ int user_tbl_slave_mac_search(u8 adr_type, u8 * adr)
 	return 0;
 }
 
-//when rc trigger unpair, use this function to delete the slave mac
+/**
+ * @brief		this function serves to remove adr from slave mac table by adr
+ * 				when rc trigger unpair, use this function to delete the slave mac
+ * @param[in]	adr_type
+ * @param[in]	adr - pointer to point the address data
+ * @return      none
+ */
 int user_tbl_slave_mac_delete_by_adr(u8 adr_type, u8 *adr)  //remove adr from slave mac table by adr
 {
 	for(int i=0;i<user_tbl_slaveMac.curNum;i++){
@@ -176,7 +218,11 @@ int user_tbl_slave_mac_delete_by_adr(u8 adr_type, u8 *adr)  //remove adr from sl
 
 
 
-
+/**
+ * @brief		this function serves to delete all the  adr in slave mac table
+ * @param[in]	none
+ * @return      none
+ */
 void user_tbl_slave_mac_delete_all(void)  //delete all the  adr in slave mac table
 {
 	u8 delete_mark = ADR_ERASE_MARK;
@@ -190,10 +236,12 @@ void user_tbl_slave_mac_delete_all(void)  //delete all the  adr in slave mac tab
 }
 
 
-
-/* unpair cmd proc
-   when press unpair button on dongle or send unpair cmd from slave
-   dongle will call this function to process current unpair cmd
+/**
+ * @brief		this function serves to unpair cmd proc
+ * 				when press unpair button on dongle or send unpair cmd from slave
+ * 				dongle will call this function to process current unpair cmd
+ * @param[in]	none
+ * @return      none
  */
 void user_tbl_salve_mac_unpair_proc(void)
 {
@@ -204,8 +252,14 @@ void user_tbl_salve_mac_unpair_proc(void)
 
 u8 adbg_flash_clean;
 #define DBG_FLASH_CLEAN   0
-//when flash stored too many addr, it may exceed a sector max(4096), so we must clean this sector
-// and rewrite the valid addr at the beginning of the sector(0x11000)
+
+/**
+ * @brief		this function serves to erase flash which stored bond slave address
+ * 				when flash stored too many addr, it may exceed a sector max(4096), so we must clean this sector
+ * 				and rewrite the valid addr at the beginning of the sector(0x11000)
+ * @param[in]	none
+ * @return      none
+ */
 void	user_bond_slave_flash_clean (void)
 {
 #if	DBG_FLASH_CLEAN
@@ -234,6 +288,11 @@ void	user_bond_slave_flash_clean (void)
 	}
 }
 
+/**
+ * @brief		this function serves to init the master host paring
+ * @param[in]	none
+ * @return      none
+ */
 void	user_master_host_pairing_flash_init(void)
 {
 	u8 *pf = (u8 *)FLASH_ADR_PARING;
@@ -262,6 +321,11 @@ void	user_master_host_pairing_flash_init(void)
 	user_bond_slave_flash_clean ();
 }
 
+/**
+ * @brief		this function serves to init the master host paring management
+ * @param[in]	none
+ * @return      none
+ */
 void user_master_host_pairing_management_init(void)
 {
 	user_master_host_pairing_flash_init();
@@ -287,7 +351,11 @@ int	dongle_pairing_enable = 0;
 int dongle_unpair_enable = 0;
 
 
-
+/**
+ * @brief		host pair or upair proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_
 void host_pair_unpair_proc(void)
 {

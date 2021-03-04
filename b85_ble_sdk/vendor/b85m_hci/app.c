@@ -1,23 +1,47 @@
 /********************************************************************************************************
- * @file     app.c 
+ * @file	app.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 18, 2015
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
- *           
- *			 The information contained herein is confidential and proprietary property of Telink 
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms 
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai) 
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in. 
- *           This heading MUST NOT be removed from this file.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- * 			 Licensees are granted free, non-transferable use of the information in this 
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided. 
- *           
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
+ *
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
@@ -121,6 +145,11 @@ u32 module_wakeup_module_tick;
 #define UART_TX_BUSY			( (hci_tx_fifo.rptr != hci_tx_fifo.wptr) || uart_tx_is_busy() )
 #define UART_RX_BUSY			(hci_rx_fifo.rptr != hci_rx_fifo.wptr)
 
+/**
+ * @brief		obtain uart working status
+ * @param[in]	none
+ * @return      0 for idle  else for busy
+ */
 int app_module_busy ()
 {
 	mcu_uart_working = gpio_read(GPIO_WAKEUP_MODULE);  //mcu use GPIO_WAKEUP_MODULE to indicate the UART data transmission or receiving state
@@ -129,6 +158,11 @@ int app_module_busy ()
 	return module_task_busy;
 }
 
+/**
+ * @brief		exit suspend mode
+ * @param[in]	none
+ * @return      none
+ */
 void app_suspend_exit ()
 {
 	GPIO_WAKEUP_MODULE_HIGH;  //module enter working state
@@ -136,6 +170,12 @@ void app_suspend_exit ()
 	tick_wakeup = clock_time () | 1;
 }
 
+/**
+ * @brief		enter suspend mode
+ * @param[in]	none
+ * @return      0 - forbidden enter suspend mode
+ *              1 - allow enter suspend mode
+ */
 int app_suspend_enter ()
 {
 	if (app_module_busy ())
@@ -146,6 +186,11 @@ int app_suspend_enter ()
 	return 1;
 }
 
+/**
+ * @brief      power management code for application
+ * @param[in]  none
+ * @return     none
+ */
 void app_power_management ()
 {
 #if (BLE_MODULE_PM_ENABLE)
@@ -171,6 +216,12 @@ void app_power_management ()
 }
 
 /////////////////////////////////////blc_register_hci_handler for spp////////////////////////////
+
+/**
+ * @brief		this function is used to process rx uart data.
+ * @param[in]	none
+ * @return      0 is ok
+ */
 int rx_from_uart_cb (void)//UART data send to Master,we will handler the data as CMD or DATA
 {
 	if(my_fifo_get(&hci_rx_fifo) == 0)
@@ -191,6 +242,12 @@ int rx_from_uart_cb (void)//UART data send to Master,we will handler the data as
 }
 
 uart_data_t T_txdata_buf;
+
+/**
+ * @brief		this function is used to process tx uart data.
+ * @param[in]	none
+ * @return      0 is ok
+ */
 int tx_to_uart_cb (void)
 {
 	u8 *p = my_fifo_get (&hci_tx_fifo);

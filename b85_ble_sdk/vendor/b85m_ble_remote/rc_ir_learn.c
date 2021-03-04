@@ -1,26 +1,48 @@
 /********************************************************************************************************
- * @file	 rc_ir_learn.c
+ * @file	rc_ir_learn.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 18, 2018
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
-
 #include "tl_common.h"
 #include "drivers.h"
 
@@ -36,8 +58,8 @@ ir_send_dma_data_t ir_send_dma_data;
 extern ir_send_ctrl_t ir_send_ctrl;
 
 /************************************************************************
-* 【Function】ir_learn_init(void)				  			 				*
-* 【Description】 ir learn init algorithm ,set related GPIO function and	*
+* Functionir_learn_init(void)				  			 				*
+* Description ir learn init algorithm ,set related GPIO function and	*
 * 			    irq related. 											*
 ************************************************************************/
 void ir_learn_init(void)
@@ -55,7 +77,7 @@ void ir_learn_init(void)
 	gpio_set_func(GPIO_IR_CONTROL, AS_GPIO);
 	gpio_set_input_en(GPIO_IR_CONTROL, 0);
 	gpio_set_output_en(GPIO_IR_CONTROL, 1);
-	gpio_set_data_strength(GPIO_IR_CONTROL, 1);//驱动使能仅在GPIO配置为输出时才有效
+	gpio_set_data_strength(GPIO_IR_CONTROL, 1);//使芙GPIO为时效
 	gpio_write(GPIO_IR_CONTROL, 0);//IRcontrol low ,enable IR learn func.
 
 	gpio_set_func(GPIO_IR_LEARN_IN, AS_GPIO);
@@ -69,10 +91,10 @@ void ir_learn_init(void)
 }
 
 /***********************************************************************
-* 【Function】ir_record(u32 tm) 				  			 			   *
-* 【Description】IR learn algorithm ,need to put in ram code when 	   *
+* Functionir_record(u32 tm) 				  			 			   *
+* DescriptionIR learn algorithm ,need to put in ram code when 	   *
 *               learning high frequency carrier wave.  				   *
-* 【Parameter】tm:clock time now ,to count interval between 2 interrupt  *
+* Parametertm:clock time now ,to count interval between 2 interrupt  *
 ***********************************************************************/
 _attribute_ram_code_
 static inline void ir_record(u32 tm)
@@ -175,8 +197,8 @@ static inline void ir_record(u32 tm)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_irq_handler(void)			  			 		   *
-* 【Description】IR learn process in irq. 				  			   *
+* Functionir_learn_irq_handler(void)			  			 		   *
+* DescriptionIR learn process in irq. 				  			   *
 ***********************************************************************/
 _attribute_ram_code_
 void ir_learn_irq_handler(void)
@@ -190,8 +212,8 @@ void ir_learn_irq_handler(void)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_send_init(void)				  			 	   *
-* 【Description】 IR learn send init,set pwn and irq related.			   *
+* Functionir_learn_send_init(void)				  			 	   *
+* Description IR learn send init,set pwn and irq related.			   *
 ***********************************************************************/
 void ir_learn_send_init(void)
 {
@@ -216,8 +238,8 @@ void ir_learn_send_init(void)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_start(void)					  			 	   *
-* 【Description】 Begin IR learn process.			   					   *
+* Functionir_learn_start(void)					  			 	   *
+* Description Begin IR learn process.			   					   *
 ***********************************************************************/
 void ir_learn_start(void)
 {
@@ -229,8 +251,8 @@ void ir_learn_start(void)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_start(void)					  			 	   *
-* 【Description】 Stop IR learn process.			   					   *
+* Functionir_learn_start(void)					  			 	   *
+* Description Stop IR learn process.			   					   *
 ***********************************************************************/
 void ir_learn_stop(void)
 {
@@ -239,8 +261,8 @@ void ir_learn_stop(void)
 }
 
 /***********************************************************************
-* 【Function】get_ir_learn_state(void)				  			 	   *
-* 【Description】 Get ir learn state in UI layer.						   *
+* Functionget_ir_learn_state(void)				  			 	   *
+* Description Get ir learn state in UI layer.						   *
 *  				0 	 : ir learn success								   *
 * 				1 	 : ir learn is doing or disable					   *
 * 				else : ir learn fail ,return fail reason,			   *
@@ -257,8 +279,8 @@ unsigned char get_ir_learn_state(void)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_copy_result(ir_learn_send_t* send_buffer)				  			 	   *
-* 【Description】 Copy necessary parameter to send_buffer to 			   					   *
+* Functionir_learn_copy_result(ir_learn_send_t* send_buffer)				  			 	   *
+* Description Copy necessary parameter to send_buffer to 			   					   *
 ***********************************************************************/
 void ir_learn_copy_result(ir_learn_send_t* send_buffer)
 {
@@ -272,8 +294,8 @@ void ir_learn_copy_result(ir_learn_send_t* send_buffer)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_detect(void)					  			 	   *
-* 【Description】IR learn deal process,better to use it every loop	   *
+* Functionir_learn_detect(void)					  			 	   *
+* DescriptionIR learn deal process,better to use it every loop	   *
 ***********************************************************************/
 void ir_learn_detect(void)
 {
@@ -302,8 +324,8 @@ void ir_learn_detect(void)
 }
 
 /***********************************************************************
-* 【Function】ir_learn_send(void)					  			 	  	   *
-* 【Description】Send IR code that be learned. 		   			       *
+* Functionir_learn_send(void)					  			 	  	   *
+* DescriptionSend IR code that be learned. 		   			       *
 * *********************************************************************/
 _attribute_ram_code_
 void ir_learn_send(ir_learn_send_t* send_buffer)

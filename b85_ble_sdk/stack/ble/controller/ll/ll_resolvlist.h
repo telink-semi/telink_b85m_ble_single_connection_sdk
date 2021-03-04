@@ -1,32 +1,35 @@
 /********************************************************************************************************
- * @file     ll_resolvlist.h
+ * @file	ll_resolvlist.h
  *
- * @brief    for TLSR chips
+ * @brief	This is the header file for BLE SDK
  *
- * @author	 BLE Group
- * @date     July. 11, 2020
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par		Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd.
+ *			All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          The information contained herein is confidential property of Telink
+ *          Semiconductor (Shanghai) Co., Ltd. and is available under the terms
+ *          of Commercial License Agreement between Telink Semiconductor (Shanghai)
+ *          Co., Ltd. and the licensee or the terms described here-in. This heading
+ *          MUST NOT be removed from this file.
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *          Licensee shall not delete, modify or alter (or permit any third party to delete, modify, or
+ *          alter) any information contained herein in whole or in part except as expressly authorized
+ *          by Telink semiconductor (shanghai) Co., Ltd. Otherwise, licensee shall be solely responsible
+ *          for any claim to the extent arising out of or relating to such deletion(s), modification(s)
+ *          or alteration(s).
+ *
+ *          Licensees are granted free, non-transferable use of the information in this
+ *          file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
  *
  *******************************************************************************************************/
-
-
 #ifndef LL_RESOLVLIST_H_
 #define LL_RESOLVLIST_H_
 
 
 #include <stack/ble/ble_common.h>
-
 
 
 
@@ -36,6 +39,8 @@
 #define 			PRIVACY_NETWORK_MODE             	(0)
 #define 			PRIVACY_DEVICE_MODE              	(1)
 
+#define				MAX_WHITE_LIST_SIZE					4
+#define 			MAX_WHITE_IRK_LIST_SIZE          	2
 
 
 typedef struct {
@@ -117,25 +122,6 @@ extern	ll_ResolvingListTbl_t	ll_resolvingList_tbl;
 
 
 
-/******************************* Stack Interface Begin, user can not use!!! ********************************************/
-bool 				blt_ll_resolvIrkIsNonzero(const u8 *irk);
-void				blt_ll_resolvGetPrand(u8* prand);
-void 				blt_ll_resolvCalcAh(const u8 irk[16], u8 r[3], u8 out[3]);
-bool    			blt_ll_resolvChgIsAllowed(void);
-void				blt_ll_resolvGenRpa(ll_resolv_list_t *rl, u8 local);
-void				blt_ll_resolvRpaTmrCb(void);
-int 				blt_ll_resolvRpaTmoLoopEvt (void);
-int 				blt_ll_resolvIsAddrOnRl(const u8 *addr, u8 addrType);
-ll_resolv_list_t* 	blt_ll_resolvFindRlEntry(const u8* addr, u8 addrType);
-
-u8 * 				ll_searchAddr_in_WhiteList_and_ResolvingList(u8 type, u8 *addr);
-
-/******************************* Stack Interface End *******************************************************************/
-
-
-
-
-
 
 /******************************* User Interface  Begin *****************************************************************/
 ble_sts_t  		ll_resolvingList_add(u8 peerIdAddrType, u8 *peerIdAddr, u8 *peer_irk, u8 *local_irk);
@@ -148,7 +134,7 @@ ble_sts_t  		ll_resolvingList_setAddrResolutionEnable (u8 resolutionEn);
 ble_sts_t  		ll_resolvingList_setResolvablePrivateAddrTimer (u16 timeout_s);   //not available now
 ble_sts_t  		ll_resolvingList_setPrivcyMode(u8 peerIdAddrType, u8* peerIdAddr, u8 privMode);
 
-unsigned short 	blc_ll_resolvGetRpaTmo(void);
+u16				blc_ll_resolvGetRpaTmo(void);
 int				blc_ll_resolvPeerRpaResolvedAny(const u8* rpa);
 void			blc_ll_resolvGetRpaByRlEntry(ll_resolv_list_t* rl, u8* addr, u8 local);
 void			blc_ll_resolvSetPeerRpaByIdx(u8 idx, u8 *rpa);

@@ -1,25 +1,48 @@
 /********************************************************************************************************
- * @file     usbmouse_i.h 
+ * @file	usbmouse_i.h
  *
- * @brief    for TLSR chips
+ * @brief	This is the header file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 30, 2010
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
- *           
- *			 The information contained herein is confidential and proprietary property of Telink 
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms 
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai) 
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in. 
- *           This heading MUST NOT be removed from this file.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- * 			 Licensees are granted free, non-transferable use of the information in this 
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided. 
- *           
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
+ *
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  *******************************************************************************************************/
-
 #pragma once
 
 #include <application/app/usbmouse.h>
@@ -38,96 +61,96 @@
 /*
  0x85, 0x01, //Report ID (1) keyboard
  0x85, 0x02, //report ID 02 mouse
- ÊÇ·ñĞèÒªÅäÖÃÕâ¸ö , 1,2¶¨ÒåÊÇ·ñÕıÈ·
+ Ç·Òª , 1,2Ç·È·
  */
 static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 #if 0
-	//Ã¿ĞĞ¿ªÊ¼µÄµÚÒ»×Ö½ÚÎª¸ÃÌõÄ¿µÄÇ°×º£¬Ç°×ºµÄ¸ñÊ½Îª£º
-	//D7~D4£ºbTag¡£D3~D2£ºbType£»D1~D0£ºbSize¡£ÒÔÏÂ·Ö±ğ¶ÔÃ¿¸öÌõÄ¿×¢ÊÍ¡£
+	//Ã¿Ğ¿Ê¼ÄµÒ»Ö½ÎªÄ¿Ç°×ºÇ°×ºÄ¸Ê½Îª
+	//D7~D4bTagD3~D2bTypeD1~D0bSizeÂ·Ö±Ã¿Ä¿×¢Í¡
 
-	//ÕâÊÇÒ»¸öÈ«¾Ö£¨bTypeÎª1£©ÌõÄ¿£¬Ñ¡ÔñÓÃÍ¾Ò³ÎªÆÕÍ¨×ÀÃæGeneric Desktop Page(0x01)
-	//ºóÃæ¸úÒ»×Ö½ÚÊı¾İ£¨bSizeÎª1£©£¬ºóÃæµÄ×Ö½ÚÊı¾Í²»×¢ÊÍÁË£¬
-	//×Ô¼º¸ù¾İbSizeÀ´ÅĞ¶Ï¡£
+	//Ò»È«Ö£bTypeÎª1Ä¿Ñ¡Í¾Ò³ÎªÍ¨Generic Desktop Page(0x01)
+	//Ò»Ö½İ£bSizeÎª1Ö½Í²×¢Ë£
+	//Ô¼bSizeĞ¶Ï¡
 	HID_RPT_USAGE_PAGE(8, 0x01), /* Generic Desktop */
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿£¨bTypeÎª2£©ÌõÄ¿£¬ËµÃ÷½ÓÏÂÀ´µÄÓ¦ÓÃ¼¯ºÏÓÃÍ¾ÓÃÓÚÊó±ê
+	//Ò»Ö²bTypeÎª2Ä¿ËµÓ¦Ã¼Í¾
     HID_RPT_USAGE(8, 0x02)		, /* Mouse */
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¨bTypeÎª0£©ÌõÄ¿£¬¿ª¼¯ºÏ£¬ºóÃæ¸úµÄÊı¾İ0x01±íÊ¾
-	//¸Ã¼¯ºÏÊÇÒ»¸öÓ¦ÓÃ¼¯ºÏ¡£ËüµÄĞÔÖÊÔÚÇ°ÃæÓÉÓÃÍ¾Ò³ºÍÓÃÍ¾¶¨ÒåÎª
-	//ÆÕÍ¨×ÀÃæÓÃµÄÊó±ê¡£
+	//Ò»Ä¿bTypeÎª0Ä¿Ï£0x01Ê¾
+	//Ã¼Ò»Ó¦Ã¼Ï¡Ç°Í¾Ò³Í¾Îª
+	//Í¨Ãµê¡£
     HID_RPT_COLLECTION(8, 0x01)		, /* Application */
 
     HID_RPT_REPORT_ID(8, USB_HID_MOUSE)		, /*Report ID*/
 
     HID_RPT_USAGE_PAGE(8, 0x09)		, /* Button */
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾µÄ×îĞ¡ÖµÎª1¡£Êµ¼ÊÉÏÊÇÊó±ê×ó¼ü¡£
+	//Ò»Ö²Ä¿ËµÍ¾Ğ¡ÖµÎª1Êµ
 	// 1 is mouse left button,2 is mouse right button,3 is central buuton
     HID_RPT_USAGE_MINIMUM(8, 0x01)		,
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾µÄ×î´óÖµ
+	//Ò»Ö²Ä¿ËµÍ¾Öµ
     HID_RPT_USAGE_MAXIMUM(8, 0x05),
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷·µ»ØµÄÊı¾İµÄÂß¼­Öµ£¨¾ÍÊÇÎÒÃÇ·µ»ØµÄÊı¾İÓòµÄÖµÀ²£©
-	//×îĞ¡Îª0¡£ÒòÎªÎÒÃÇÕâÀïÓÃBitÀ´±íÊ¾Ò»¸öÊı¾İÓò£¬Òò´Ë×îĞ¡Îª0£¬×î´óÎª1¡£
+	//Ò»È«Ä¿ËµØµİµß¼ÖµÇ·ØµÖµ
+	//Ğ¡Îª0ÎªBitÊ¾Ò»Ğ¡Îª0Îª1
     HID_RPT_LOGICAL_MINIMUM(8, 0x00)		,
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Âß¼­Öµ×î´óÎª1¡£
+	//Ò»È«Ä¿Ëµß¼ÖµÎª1
     HID_RPT_LOGICAL_MAXIMUM(8, 0x01),
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Ã¿¸öÊı¾İÓòµÄ³¤¶ÈÎª1¸öbit¡£
+	//Ò»È«Ä¿ËµÃ¿Ä³Îª1bit
 	HID_RPT_REPORT_SIZE(8, 0x01),
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷total button ÊıÁ¿Îª5¸ö¡£
+	//Ò»È«Ä¿Ëµtotal button Îª5
     HID_RPT_REPORT_COUNT(8, 0x05), /* debug note: 3->5*/
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¬ËµÃ÷ÓĞ3¸ö³¤¶ÈÎª1bitµÄÊı¾İÓò£¨ÊıÁ¿ºÍ³¤¶È
-	//ÓÉÇ°ÃæµÄÁ½¸öÈ«¾ÖÌõÄ¿Ëù¶¨Òå£©ÓÃÀ´×öÎªÊäÈë£¬
-	//ÊôĞÔÎª£ºData,Var,Abs¡£Data±íÊ¾ÕâĞ©Êı¾İ¿ÉÒÔ±ä¶¯£¬Var±íÊ¾
-	//ÕâĞ©Êı¾İÓòÊÇ¶ÀÁ¢µÄ£¬Ã¿¸öÓò±íÊ¾Ò»¸öÒâË¼¡£Abs±íÊ¾¾ø¶ÔÖµ¡£
-	//ÕâÑù¶¨ÒåµÄ½á¹û¾ÍÊÇ£¬µÚÒ»¸öÊı¾İÓòbit0±íÊ¾°´¼ü1£¨×ó¼ü£©ÊÇ·ñ°´ÏÂ£¬
-	//µÚ¶ş¸öÊı¾İÓòbit1±íÊ¾°´¼ü2£¨ÓÒ¼ü£©ÊÇ·ñ°´ÏÂ£¬µÚÈı¸öÊı¾İÓòbit2±íÊ¾
-	//°´¼ü3£¨ÖĞ¼ü£©ÊÇ·ñ°´ÏÂ¡£
+	//Ò»Ä¿Ëµ3Îª1bitÍ³
+	//Ç°È«Ä¿å£©Îªë£¬
+	//ÎªData,Var,AbsDataÊ¾Ğ©İ¿Ô±ä¶¯VarÊ¾
+	//Ğ©Ç¶Ä£Ã¿Ê¾Ò»Ë¼AbsÊ¾Öµ
+	//Ä½Ç£Ò»bit0Ê¾1Ç·Â£
+	//Ú¶bit1Ê¾2Ò¼Ç·Â£bit2Ê¾
+	//3Ğ¼Ç·Â¡
     HID_RPT_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Ã¿¸öÊı¾İÓòµÄ³¤¶ÈÎª
+	//Ò»È«Ä¿ËµÃ¿Ä³Îª
 	HID_RPT_REPORT_SIZE(8, 0x03), /* debug note: 5->3*/
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Êı¾İÓòÊıÁ¿Îª1¸ö
+	//Ò»È«Ä¿ËµÎª1
     HID_RPT_REPORT_COUNT(8, 0x01),
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¬ÊäÈëÓÃ£¬ÓÉÇ°ÃæÁ½¸öÈ«¾ÖÌõÄ¿¿ÉÖª£¬³¤¶ÈÎª3bit£¬
-	//ÊıÁ¿Îª1¸ö¡£ËüµÄÊôĞÔÎª³£Á¿£¨¼´·µ»ØµÄÊı¾İÒ»Ö±ÊÇ0£©¡£
-	//Õâ¸öÖ»ÊÇÎªÁË´ÕÆëÒ»¸ö×Ö½Ú£¨Ç°ÃæÓÃÁË3¸öbit£©¶øÌî³äµÄÒ»Ğ©Êı¾İ
-	//¶øÒÑ£¬ËùÒÔËüÊÇÃ»ÓĞÊµ¼ÊÓÃÍ¾µÄ¡£
+	//Ò»Ä¿Ã£Ç°È«Ä¿ÖªÎª3bit
+	//Îª1ÎªØµÒ»Ö±0
+	//Ö»ÎªË´Ò»Ö½Ú£Ç°3bitÒ»Ğ©
+	//Ñ£Ã»ÊµÍ¾Ä¡
     HID_RPT_INPUT(8, HID_IOF_CONSTANT),
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿¡£ËµÃ÷ÓÃÍ¾ÎªÖ¸Õë¼¯ºÏ
+	//Ò»Ö²Ä¿ËµÍ¾ÎªÖ¸ë¼¯
     HID_RPT_USAGE(8, 0x01), /* Pointer */
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¬¿ª¼¯ºÏ£¬ºóÃæ¸úµÄÊı¾İ0x00±íÊ¾¸Ã¼¯ºÏÊÇÒ»¸ö
-	//ÎïÀí¼¯ºÏ£¬ÓÃÍ¾ÓÉÇ°ÃæµÄ¾Ö²¿ÌõÄ¿¶¨ÒåÎªÖ¸Õë¼¯ºÏ¡£
+	//Ò»Ä¿Ï£0x00Ê¾Ã¼Ò»
+	//Ï£Í¾Ç°Ä¾Ö²Ä¿ÎªÖ¸ë¼¯Ï¡
     HID_RPT_COLLECTION(8, 0x00), /* Physical */
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬Ñ¡ÔñÓÃÍ¾Ò³ÎªÆÕÍ¨×ÀÃæGeneric Desktop Page(0x01)
+	//Ò»È«Ä¿Ñ¡Í¾Ò³ÎªÍ¨Generic Desktop Page(0x01)
     HID_RPT_USAGE_PAGE(8, 0x01),  /* Generic Desktop */
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾ÎªXÖá
+	//Ò»Ö²Ä¿ËµÍ¾ÎªX
     HID_RPT_USAGE(8, 0x30), /* Usage X */
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾ÎªYÖá
+	//Ò»Ö²Ä¿ËµÍ¾ÎªY
     HID_RPT_USAGE(8, 0x31), /* Usage Y */
 
-	//ÏÂÃæÁ½¸öÎªÈ«¾ÖÌõÄ¿£¬ËµÃ÷·µ»ØµÄÂß¼­×îĞ¡ºÍ×î´óÖµ¡£
-	//ÒòÎªÊó±êÖ¸ÕëÒÆ¶¯Ê±£¬Í¨³£ÊÇÓÃÏà¶ÔÖµÀ´±íÊ¾µÄ£¬
-	//Ïà¶ÔÖµµÄÒâË¼¾ÍÊÇ£¬µ±Ö¸ÕëÒÆ¶¯Ê±£¬Ö»·¢ËÍÒÆ¶¯Á¿¡£
-	//ÍùÓÒÒÆ¶¯Ê±£¬XÖµÎªÕı£»ÍùÏÂÒÆ¶¯Ê±£¬YÖµÎªÕı¡£
-	//¶ÔÓÚ¹öÂÖ£¬µ±¹öÂÖÍùÉÏ¹öÊ±£¬ÖµÎªÕı¡£
+	//ÎªÈ«Ä¿ËµØµß¼Ğ¡Öµ
+	//ÎªÖ¸Æ¶Ê±Í¨ÖµÊ¾Ä£
+	//ÖµË¼Ç£Ö¸Æ¶Ê±Ö»Æ¶
+	//Æ¶Ê±XÖµÎªÆ¶Ê±YÖµÎª
+	//Ú¹Ö£Ï¹Ê±ÖµÎª
     HID_RPT_LOGICAL_MINIMUM(8, 0x81), //     LOGICAL_MINIMUM (-127)
     HID_RPT_LOGICAL_MAXIMUM(8, 0x7f), //     LOGICAL_MAXIMUM (127)
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Êı¾İÓòµÄ³¤¶È¡£Èç¹ûÊ¹ÓÃ 16£¬¾Í¿ÉÒÔ±íÊ¾¾ø¶Ô×ø±ê
+	//Ò»È«Ä¿ËµÄ³È¡Ê¹ 16Í¿Ô±Ê¾
     HID_RPT_REPORT_SIZE(8, 0x08),
     HID_RPT_REPORT_COUNT(8, 0x02),
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿¡£ËüËµÃ÷ÕâÈı¸ö8bitµÄÊı¾İÓòÊÇÊäÈëÓÃµÄ£¬
-	//ÊôĞÔÎª£ºData,Var,Rel¡£DataËµÃ÷Êı¾İÊÇ¿ÉÒÔ±äµÄ£¬VarËµÃ÷
-	//ÕâĞ©Êı¾İÓòÊÇ¶ÀÁ¢µÄ£¬¼´µÚÒ»¸ö8bit±íÊ¾XÖá£¬µÚ¶ş¸ö8bit±íÊ¾
-	//YÖá£¬µÚÈı¸ö8bit±íÊ¾¹öÂÖ¡£Rel±íÊ¾ÕâĞ©ÖµÊÇÏà¶ÔÖµ¡£
+	//Ò»Ä¿Ëµ8bitÃµÄ£
+	//ÎªData,Var,RelDataËµÇ¿Ô±Ä£VarËµ
+	//Ğ©Ç¶Ä£Ò»8bitÊ¾Xá£¬Ú¶8bitÊ¾
+	//Yá£¬8bitÊ¾Ö¡RelÊ¾Ğ©ÖµÖµ
     HID_RPT_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_RELATIVE),
 
     HID_RPT_USAGE(8, 0x38),  /* Usage Wheel */
@@ -172,102 +195,102 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 
 #else
 
-	//ÕâÊÇÒ»¸öÈ«¾Ö£¨bTypeÎª1£©ÌõÄ¿£¬Ñ¡ÔñÓÃÍ¾Ò³ÎªÆÕÍ¨×ÀÃæGeneric Desktop Page(0x01)
-	//ºóÃæ¸úÒ»×Ö½ÚÊı¾İ£¨bSizeÎª1£©£¬ºóÃæµÄ×Ö½ÚÊı¾Í²»×¢ÊÍÁË£¬
-	//×Ô¼º¸ù¾İbSizeÀ´ÅĞ¶Ï¡£
+	//Ò»È«Ö£bTypeÎª1Ä¿Ñ¡Í¾Ò³ÎªÍ¨Generic Desktop Page(0x01)
+	//Ò»Ö½İ£bSizeÎª1Ö½Í²×¢Ë£
+	//Ô¼bSizeĞ¶Ï¡
 	0x05, 0x01, // USAGE_PAGE (Generic Desktop)
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿£¨bTypeÎª2£©ÌõÄ¿£¬ËµÃ÷½ÓÏÂÀ´µÄÓ¦ÓÃ¼¯ºÏÓÃÍ¾ÓÃÓÚÊó±ê
+	//Ò»Ö²bTypeÎª2Ä¿ËµÓ¦Ã¼Í¾
 	0x09, 0x02, // USAGE (Mouse)
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¨bTypeÎª0£©ÌõÄ¿£¬¿ª¼¯ºÏ£¬ºóÃæ¸úµÄÊı¾İ0x01±íÊ¾
-	//¸Ã¼¯ºÏÊÇÒ»¸öÓ¦ÓÃ¼¯ºÏ¡£ËüµÄĞÔÖÊÔÚÇ°ÃæÓÉÓÃÍ¾Ò³ºÍÓÃÍ¾¶¨ÒåÎª
-	//ÆÕÍ¨×ÀÃæÓÃµÄÊó±ê¡£
+	//Ò»Ä¿bTypeÎª0Ä¿Ï£0x01Ê¾
+	//Ã¼Ò»Ó¦Ã¼Ï¡Ç°Í¾Ò³Í¾Îª
+	//Í¨Ãµê¡£
 	0xa1, 0x01, // COLLECTION (Application)
 
 	0x85, USB_HID_MOUSE, //report ID 01
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿¡£ËµÃ÷ÓÃÍ¾ÎªÖ¸Õë¼¯ºÏ
+	//Ò»Ö²Ä¿ËµÍ¾ÎªÖ¸ë¼¯
 	0x09, 0x01, //   USAGE (Pointer)
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¬¿ª¼¯ºÏ£¬ºóÃæ¸úµÄÊı¾İ0x00±íÊ¾¸Ã¼¯ºÏÊÇÒ»¸ö
-	//ÎïÀí¼¯ºÏ£¬ÓÃÍ¾ÓÉÇ°ÃæµÄ¾Ö²¿ÌõÄ¿¶¨ÒåÎªÖ¸Õë¼¯ºÏ¡£
+	//Ò»Ä¿Ï£0x00Ê¾Ã¼Ò»
+	//Ï£Í¾Ç°Ä¾Ö²Ä¿ÎªÖ¸ë¼¯Ï¡
 	0xa1, 0x00, //   COLLECTION (Physical)
 
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬Ñ¡ÔñÓÃÍ¾Ò³Îª°´¼ü£¨Button Page(0x09)£©
+	//Ò»È«Ä¿Ñ¡Í¾Ò³ÎªButton Page(0x09)
 	0x05, 0x09, //     USAGE_PAGE (Button)
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾µÄ×îĞ¡ÖµÎª1¡£Êµ¼ÊÉÏÊÇÊó±ê×ó¼ü¡£
+	//Ò»Ö²Ä¿ËµÍ¾Ğ¡ÖµÎª1Êµ
 	// 1 is mouse left button,2 is mouse right button,3 is central buuton
 	0x19, 0x01, //     USAGE_MINIMUM (Button 1)
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾µÄ×î´óÖµÎª3¡£Êµ¼ÊÉÏÊÇÊó±êÖĞ¼ü¡£
+	//Ò»Ö²Ä¿ËµÍ¾ÖµÎª3ÊµĞ¼
 	0x29, 0x05, //     USAGE_MAXIMUM (Button 5)
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷·µ»ØµÄÊı¾İµÄÂß¼­Öµ£¨¾ÍÊÇÎÒÃÇ·µ»ØµÄÊı¾İÓòµÄÖµÀ²£©
-	//×îĞ¡Îª0¡£ÒòÎªÎÒÃÇÕâÀïÓÃBitÀ´±íÊ¾Ò»¸öÊı¾İÓò£¬Òò´Ë×îĞ¡Îª0£¬×î´óÎª1¡£
+	//Ò»È«Ä¿ËµØµİµß¼ÖµÇ·ØµÖµ
+	//Ğ¡Îª0ÎªBitÊ¾Ò»Ğ¡Îª0Îª1
 	0x15, 0x00, //     LOGICAL_MINIMUM (0)
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Âß¼­Öµ×î´óÎª1¡£
+	//Ò»È«Ä¿Ëµß¼ÖµÎª1
 	0x25, 0x01, //     LOGICAL_MAXIMUM (1)
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷total button ÊıÁ¿Îª5¸ö¡£
+	//Ò»È«Ä¿Ëµtotal button Îª5
 	0x95, 0x05, //     REPORT_COUNT (3)
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Ã¿¸öÊı¾İÓòµÄ³¤¶ÈÎª1¸öbit¡£
+	//Ò»È«Ä¿ËµÃ¿Ä³Îª1bit
 	0x75, 0x01, //     REPORT_SIZE (1)
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¬ËµÃ÷ÓĞ5¸ö³¤¶ÈÎª1bitµÄÊı¾İÓò£¨ÊıÁ¿ºÍ³¤¶È
-	//ÓÉÇ°ÃæµÄÁ½¸öÈ«¾ÖÌõÄ¿Ëù¶¨Òå£©ÓÃÀ´×öÎªÊäÈë£¬
-	//ÊôĞÔÎª£ºData,Var,Abs¡£Data±íÊ¾ÕâĞ©Êı¾İ¿ÉÒÔ±ä¶¯£¬Var±íÊ¾
-	//ÕâĞ©Êı¾İÓòÊÇ¶ÀÁ¢µÄ£¬Ã¿¸öÓò±íÊ¾Ò»¸öÒâË¼¡£Abs±íÊ¾¾ø¶ÔÖµ¡£
-	//ÕâÑù¶¨ÒåµÄ½á¹û¾ÍÊÇ£¬µÚÒ»¸öÊı¾İÓòbit0±íÊ¾°´¼ü1£¨×ó¼ü£©ÊÇ·ñ°´ÏÂ£¬
-	//µÚ¶ş¸öÊı¾İÓòbit1±íÊ¾°´¼ü2£¨ÓÒ¼ü£©ÊÇ·ñ°´ÏÂ£¬µÚÈı¸öÊı¾İÓòbit2±íÊ¾
-	//°´¼ü3£¨ÖĞ¼ü£©ÊÇ·ñ°´ÏÂ¡£
+	//Ò»Ä¿Ëµ5Îª1bitÍ³
+	//Ç°È«Ä¿å£©Îªë£¬
+	//ÎªData,Var,AbsDataÊ¾Ğ©İ¿Ô±ä¶¯VarÊ¾
+	//Ğ©Ç¶Ä£Ã¿Ê¾Ò»Ë¼AbsÊ¾Öµ
+	//Ä½Ç£Ò»bit0Ê¾1Ç·Â£
+	//Ú¶bit1Ê¾2Ò¼Ç·Â£bit2Ê¾
+	//3Ğ¼Ç·Â¡
 	0x81, 0x02, //     INPUT (Data,Var,Abs)
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Êı¾İÓòÊıÁ¿Îª1¸ö
+	//Ò»È«Ä¿ËµÎª1
 	0x95, 0x01, //     REPORT_COUNT (1)
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Ã¿¸öÊı¾İÓòµÄ³¤¶ÈÎª3bit¡£
+	//Ò»È«Ä¿ËµÃ¿Ä³Îª3bit
 	0x75, 0x03, //     REPORT_SIZE (3)
 
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿£¬ÊäÈëÓÃ£¬ÓÉÇ°ÃæÁ½¸öÈ«¾ÖÌõÄ¿¿ÉÖª£¬³¤¶ÈÎª3bit£¬
-	//ÊıÁ¿Îª1¸ö¡£ËüµÄÊôĞÔÎª³£Á¿£¨¼´·µ»ØµÄÊı¾İÒ»Ö±ÊÇ0£©¡£
-	//Õâ¸öÖ»ÊÇÎªÁË´ÕÆëÒ»¸ö×Ö½Ú£¨Ç°ÃæÓÃÁË3¸öbit£©¶øÌî³äµÄÒ»Ğ©Êı¾İ
-	//¶øÒÑ£¬ËùÒÔËüÊÇÃ»ÓĞÊµ¼ÊÓÃÍ¾µÄ¡£
+	//Ò»Ä¿Ã£Ç°È«Ä¿ÖªÎª3bit
+	//Îª1ÎªØµÒ»Ö±0
+	//Ö»ÎªË´Ò»Ö½Ú£Ç°3bitÒ»Ğ©
+	//Ñ£Ã»ÊµÍ¾Ä¡
 	0x81, 0x01, //     INPUT (Cnst,Var,Abs)
 
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬Ñ¡ÔñÓÃÍ¾Ò³ÎªÆÕÍ¨×ÀÃæGeneric Desktop Page(0x01)
+	//Ò»È«Ä¿Ñ¡Í¾Ò³ÎªÍ¨Generic Desktop Page(0x01)
 	0x05, 0x01, //     USAGE_PAGE (Generic Desktop)
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾ÎªXÖá
+	//Ò»Ö²Ä¿ËµÍ¾ÎªX
 	0x09, 0x30, //     USAGE (X)
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾ÎªYÖá
+	//Ò»Ö²Ä¿ËµÍ¾ÎªY
 	0x09, 0x31, //     USAGE (Y)
-	//ÏÂÃæÁ½¸öÎªÈ«¾ÖÌõÄ¿£¬ËµÃ÷·µ»ØµÄÂß¼­×îĞ¡ºÍ×î´óÖµ¡£
-	//ÒòÎªÊó±êÖ¸ÕëÒÆ¶¯Ê±£¬Í¨³£ÊÇÓÃÏà¶ÔÖµÀ´±íÊ¾µÄ£¬
-	//Ïà¶ÔÖµµÄÒâË¼¾ÍÊÇ£¬µ±Ö¸ÕëÒÆ¶¯Ê±£¬Ö»·¢ËÍÒÆ¶¯Á¿¡£
-	//ÍùÓÒÒÆ¶¯Ê±£¬XÖµÎªÕı£»ÍùÏÂÒÆ¶¯Ê±£¬YÖµÎªÕı¡£
-	//¶ÔÓÚ¹öÂÖ£¬µ±¹öÂÖÍùÉÏ¹öÊ±£¬ÖµÎªÕı¡£
+	//ÎªÈ«Ä¿ËµØµß¼Ğ¡Öµ
+	//ÎªÖ¸Æ¶Ê±Í¨ÖµÊ¾Ä£
+	//ÖµË¼Ç£Ö¸Æ¶Ê±Ö»Æ¶
+	//Æ¶Ê±XÖµÎªÆ¶Ê±YÖµÎª
+	//Ú¹Ö£Ï¹Ê±ÖµÎª
 	0x15, 0x81, //     LOGICAL_MINIMUM (-127)
 	0x25, 0x7f, //     LOGICAL_MAXIMUM (127)
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Êı¾İÓòµÄ³¤¶ÈÎª8bit¡£
+	//Ò»È«Ä¿ËµÄ³Îª8bit
 	0x75, 0x08, //     REPORT_SIZE (16)
 
-	//ÕâÊÇÒ»¸öÈ«¾ÖÌõÄ¿£¬ËµÃ÷Êı¾İÓòµÄ¸öÊıÎª2¸ö¡£
+	//Ò»È«Ä¿ËµÄ¸Îª2
 	0x95, 0x02, //     REPORT_COUNT (2)
 
-	//ÕâÊÇÒ»¸öÖ÷ÌõÄ¿¡£ËüËµÃ÷ÕâÈı¸ö8bitµÄÊı¾İÓòÊÇÊäÈëÓÃµÄ£¬
-	//ÊôĞÔÎª£ºData,Var,Rel¡£DataËµÃ÷Êı¾İÊÇ¿ÉÒÔ±äµÄ£¬VarËµÃ÷
-	//ÕâĞ©Êı¾İÓòÊÇ¶ÀÁ¢µÄ£¬¼´µÚÒ»¸ö8bit±íÊ¾XÖá£¬µÚ¶ş¸ö8bit±íÊ¾
-	//YÖá£¬µÚÈı¸ö8bit±íÊ¾¹öÂÖ¡£Rel±íÊ¾ÕâĞ©ÖµÊÇÏà¶ÔÖµ¡£
+	//Ò»Ä¿Ëµ8bitÃµÄ£
+	//ÎªData,Var,RelDataËµÇ¿Ô±Ä£VarËµ
+	//Ğ©Ç¶Ä£Ò»8bitÊ¾Xá£¬Ú¶8bitÊ¾
+	//Yá£¬8bitÊ¾Ö¡RelÊ¾Ğ©ÖµÖµ
 	0x81, 0x06, //     INPUT (Data,Var,Rel)
 
-	//ÕâÊÇÒ»¸ö¾Ö²¿ÌõÄ¿£¬ËµÃ÷ÓÃÍ¾Îª¹öÂÖ
+	//Ò»Ö²Ä¿ËµÍ¾Îª
 	0x09, 0x38, //     USAGE (Wheel)
 	0x15, 0x81, //LOGICAL_MINIMUM (-127)
 	0x25, 0x7f, //LOGICAL_MAXIMUM (127)
@@ -276,8 +299,8 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 	0x81, 0x06, //INPUT (Data,Var,Rel)
 
 
-	//ÏÂÃæÕâÁ½¸öÖ÷ÌõÄ¿ÓÃÀ´¹Ø±ÕÇ°ÃæµÄ¼¯ºÏÓÃ¡£
-	//ÎÒÃÇ¿ªÁËÁ½¸ö¼¯ºÏ£¬ËùÒÔÒª¹ØÁ½´Î¡£bSizeÎª0£¬ËùÒÔºóÃæÃ»Êı¾İ¡£
+	//Ä¿Ø±Ç°Ä¼Ã¡
+	//Ç¿Ï£ÒªÎ¡bSizeÎª0ÔºÃ»İ¡
 	0xc0, //   END_COLLECTION
 	0xc0, // END_COLLECTION
 

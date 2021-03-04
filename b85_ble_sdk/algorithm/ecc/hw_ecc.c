@@ -1,10 +1,10 @@
 /********************************************************************************************************
  * @file	hw_ecc.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
- * @date	2020.06
+ * @date	06,2020
  *
  * @par		Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd.
  *			All rights reserved.

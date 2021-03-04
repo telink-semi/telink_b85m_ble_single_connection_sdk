@@ -4,7 +4,7 @@
  * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	2020.06
+ * @date	06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
@@ -47,109 +47,77 @@
 #define LL_SCAN_H_
 
 
-#include "ll_whitelist.h"
 
 
 
-#define			BLS_FLAG_SCAN_ENABLE					BIT(0)
-
-
-#define			BLS_FLAG_SCAN_IN_ADV_MODE				BIT(5)
-#define			BLS_FLAG_SCAN_IN_SLAVE_MODE				BIT(6)
-
-
-
-//scan_enable_t
-typedef enum {
-	BLC_SCAN_DISABLE = 0x00,
-	BLC_SCAN_ENABLE  = 0x01,
-} scan_en_t;
-
-
-//duplicate_filter_enable_t
-typedef enum {
-	DUP_FILTER_DISABLE = 0x00,
-	DUP_FILTER_ENABLE  = 0x01,
-} dupFilter_en_t;
-
-
-typedef enum {
-	SCAN_TYPE_PASSIVE = 0x00,
-	SCAN_TYPE_ACTIVE  = 0x01,
-} scan_type_t;
-
-
-
-// Advertise report event type
-typedef enum {
-	ADV_REPORT_EVENT_TYPE_ADV_IND = 0x00,
-	ADV_REPORT_EVENT_TYPE_DIRECT_IND = 0x01,
-	ADV_REPORT_EVENT_TYPE_SCAN_IND = 0x02,
-	ADV_REPORT_EVENT_TYPE_NONCONN_IND = 0x03,
-	ADV_REPORT_EVENT_TYPE_SCAN_RSP = 0x04,
-} advReportEventType_t;
-
-
-
-typedef struct {
-	u8		scan_en;
-	u8		scan_type;
-	u8		scan_filterPolicy;
-	u8		filter_dup;
-
-	u8		scanDevice_num;
-	u8		scanRspDevice_num;
-	u8		scan_extension_mask;
-	u8 		rsvd;
-//	s8		T_SCAN_REQ_INTVL;
-
-
-
-	//u32		scan_interval;
-}st_ll_scan_t;
-
-
-
-extern 			rf_packet_scan_req_t	pkt_scan_req;
-
-
-typedef int (*ll_procScanPkt_callback_t)(u8 *, u8 *, u32);
-typedef int (*ll_procScanDat_callback_t)(u8 *);
-
-extern ll_procScanDat_callback_t  blc_ll_procScanDatCb;
-extern ll_procScanPkt_callback_t  blc_ll_procScanPktCb;
-
-
-
-
-
-/******************************* User Interface  ************************************/
+/**
+ * @brief      for user to initialize scanning module
+ * @param	   none
+ * @return     none
+ */
+#if (MCU_CORE_TYPE == MCU_CORE_9518)
+void 		blc_ll_initScanning_module(void);
+#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 void 		blc_ll_initScanning_module(u8 *public_adr);
+#endif
 
 
+/**
+ * @brief      This function is used to set the scan parameters
+ * @param[in]  scan_type - passive Scanning or active scanning.
+ * @param[in]  scan_interval - time interval from when the Controller started its last LE scan until it begins the subsequent LE scan
+ * @param[in]  scan_window - The duration of the LE scan.
+ * @param[in]  ownAddrType - Own_Address_Type
+ * @param[in]  scanFilterPolicy
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
 ble_sts_t 	blc_ll_setScanParameter (scan_type_t scan_type, u16 scan_interval, u16 scan_window, own_addr_type_t  ownAddrType, scan_fp_type_t scanFilter_policy);
+
+
+/**
+ * @brief	   enable or disable legacy scanning.
+ * @param[in]  scan_enable
+ * @param[in]  filter_duplicate - controls whether the Link Layer should filter out
+ * 								  duplicate advertising reports (Filtering_Enabled) to the Host,
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
 ble_sts_t 	blc_ll_setScanEnable (scan_en_t scan_enable, dupFilter_en_t filter_duplicate);
 
 
-
+/**
+ * @brief      This function is used to add scan state in advertise state of slave role.
+ * @param[in]  none.
+ * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
+ */
 ble_sts_t    blc_ll_addScanningInAdvState(void);
+
+
+/**
+ * @brief      This function is used to remove scan state in advertise state of slave role.
+ * @param[in]  none.
+ * @return      Status - 0x00: BLE success; 0x01-0xFF: fail
+ */
 ble_sts_t    blc_ll_removeScanningFromAdvState(void);
+
+
+/**
+ * @brief      This function is used to add scan state in connect state of slave role.
+ * @param[in]  none.
+ * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
+ */
 ble_sts_t    blc_ll_addScanningInConnSlaveRole(void);
+
+
+/**
+ * @brief      This function is used to remove scan state in connect state of slave role.
+ * @param[in]  none.
+ * @return      Status - 0x00: BLE success; 0x01-0xFF: fail
+ */
 ble_sts_t    blc_ll_removeScanningFromConnSLaveRole(void);
 
 
 
-/************************* Stack Interface, user can not use!!! ***************************/
-int			blc_ll_filterAdvDevice (u8 type, u8 * mac);
-int 		blc_ll_addScanRspDevice(u8 type, u8 *mac);
-bool 		blc_ll_isScanRspReceived(u8 type, u8 *mac);
-void 		blc_ll_clearScanRspDevice(void);
 
-
-int  		blc_ll_procScanPkt(u8 *raw_pkt, u8 *new_pkt, u32 tick_now);
-int  		blc_ll_procScanData(u8 *raw_pkt);
-
-void 		blc_ll_switchScanChannel (int, int);
 
 
 #endif /* LL_SCAN_H_ */

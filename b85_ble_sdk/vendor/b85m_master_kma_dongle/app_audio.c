@@ -1,22 +1,46 @@
 /********************************************************************************************************
- * @file     app_audio.c
+ * @file	app_audio.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 BLE Group
- * @date     2020-5-13
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
@@ -37,7 +61,11 @@ u32		tick_iso_in;
 int		mode_iso_in;
 
 
-
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 	u32 t = clock_time ();
@@ -57,6 +85,12 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		call this function to process when attHandle equal to AUDIO_HANDLE_MIC
+ * @param[in]	conn - connect handle
+ * @param[in]	p - Pointer point to l2cap data packet.
+ * @return      none
+ */
 void	att_mic (u16 conn, u8 *p)
 {
 	att_mic_rcvd = 1;
@@ -64,6 +98,11 @@ void	att_mic (u16 conn, u8 *p)
 	abuf_mic_add ((u32 *)buff_mic_adpcm);
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if (att_mic_rcvd)
@@ -89,7 +128,11 @@ int		mode_iso_in;
 
 volatile u8 google_audio_start;
 
-
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 	u32 t = clock_time ();
@@ -109,6 +152,12 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		call this function to process when attHandle equal to AUDIO_HANDLE_MIC
+ * @param[in]	conn - connect handle
+ * @param[in]	p - Pointer point to l2cap data packet
+ * @return      none
+ */
 void	att_mic (u16 conn, u8 *p)
 {
 	att_mic_rcvd = 1;
@@ -116,6 +165,12 @@ void	att_mic (u16 conn, u8 *p)
 	abuf_mic_add ((u32 *)buff_mic_adpcm);
 }
 
+/**
+ * @brief		copy packet data to defined buffer to process
+ * @param[in]	data - Pointer point to l2cap data packet
+ * @param[in]	length - the data length
+ * @return      none
+ */
 void app_audio_data(u8 * data, u16 length)
 {
 	static u8 audio_buffer_serial;
@@ -143,6 +198,11 @@ void app_audio_data(u8 * data, u16 length)
 
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if (att_mic_rcvd)
@@ -171,6 +231,11 @@ u8 usb_mic_wptr= 0;
 u8 usb_mic_rptr= 0;
 u8 audio_id = 0;
 
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 
@@ -182,6 +247,13 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		usb_report_hid_mic
+ * @param[in]	data - Pointer point to l2cap data packet
+ * @param[in]	report_id - the data packet of report id
+ * @return      0 - usb is busy and forbidden report hid mic
+ *              1 - usb allow to report hid mic
+ */
 unsigned char usb_report_hid_mic(u8* data, u8 report_id)
 {
 	if(usbhw_is_ep_busy(USB_EDP_AUDIO_IN))
@@ -198,6 +270,11 @@ unsigned char usb_report_hid_mic(u8* data, u8 report_id)
 	return 1;
 }
 
+/**
+ * @brief		reset mic_packet,reset audio id and writer pointer and read pointer
+ * @param[in]	none
+ * @return      none
+ */
 void mic_packet_reset(void)
 {
 	audio_id = 0;
@@ -205,6 +282,11 @@ void mic_packet_reset(void)
 	usb_mic_rptr = 0;
 }
 
+/**
+ * @brief		push_mic_packet
+ * @param[in]	p - Pointer point to l2cap data packet
+ * @return      none
+ */
 void push_mic_packet(unsigned char *p)
 {
 	memcpy(mic_dat_buff[usb_mic_wptr], p, MIC_DATA_LEN);
@@ -212,6 +294,11 @@ void push_mic_packet(unsigned char *p)
 	usb_mic_wptr =  (usb_mic_wptr+1)&(MIC_BUFF_NUM-1);
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if(usb_mic_wptr != usb_mic_rptr)
@@ -239,6 +326,12 @@ int		mode_iso_in;
 
 
 extern u8 tmp_mic_data[];
+
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 	u32 t = clock_time ();
@@ -258,12 +351,23 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		call this function to process when attHandle equal to AUDIO_HANDLE_MIC
+ * @param[in]	conn - connect handle
+ * @param[in]	p - Pointer point to l2cap data packet.
+ * @return      none
+ */
 void	att_mic (u16 conn, u8 *p)
 {
 	memcpy (tmp_mic_data, p, MIC_ADPCM_FRAME_SIZE);
 	abuf_mic_add ((u32 *)tmp_mic_data);
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if (att_mic_rcvd)
@@ -290,6 +394,11 @@ u8 usb_mic_wptr= 0;
 u8 usb_mic_rptr= 0;
 u8 audio_id = 0;
 
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 
@@ -301,6 +410,13 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		usb_report_hid_mic
+ * @param[in]	data - Pointer point to l2cap data packet
+ * @param[in]	report_id - the data packet of report id
+ * @return      0 - usb is busy and forbidden report hid mic
+ *              1 - usb allow to report hid mic
+ */
 unsigned char usb_report_hid_mic(u8* data, u8 report_id)
 {
 	if(usbhw_is_ep_busy(USB_EDP_AUDIO_IN))
@@ -317,6 +433,11 @@ unsigned char usb_report_hid_mic(u8* data, u8 report_id)
 	return 1;
 }
 
+/**
+ * @brief		reset mic_packet,reset audio id and writer pointer and read pointer
+ * @param[in]	none
+ * @return      none
+ */
 void mic_packet_reset(void)
 {
 	audio_id = 0;
@@ -324,6 +445,11 @@ void mic_packet_reset(void)
 	usb_mic_rptr = 0;
 }
 
+/**
+ * @brief		push_mic_packet
+ * @param[in]	p - Pointer point to l2cap data packet
+ * @return      none
+ */
 void push_mic_packet(unsigned char *p)
 {
 	memcpy(mic_dat_buff[usb_mic_wptr], p, MIC_DATA_LEN);
@@ -331,6 +457,11 @@ void push_mic_packet(unsigned char *p)
 	usb_mic_wptr =  (usb_mic_wptr+1)&(MIC_BUFF_NUM-1);
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if(usb_mic_wptr != usb_mic_rptr)
@@ -358,6 +489,12 @@ int		mode_iso_in;
 
 
 extern u8 tmp_mic_data[];
+
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 	u32 t = clock_time ();
@@ -377,6 +514,12 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		call this function to process when attHandle equal to AUDIO_HANDLE_MIC
+ * @param[in]	conn - connect handle
+ * @param[in]	p - Pointer point to l2cap data packet.
+ * @return      none
+ */
 void	att_mic (u16 conn, u8 *p)
 {
 	att_mic_rcvd = 1;
@@ -384,6 +527,11 @@ void	att_mic (u16 conn, u8 *p)
 	abuf_mic_add ((u32 *)tmp_mic_data);
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if (att_mic_rcvd)
@@ -408,6 +556,12 @@ int		mode_iso_in;
 
 
 extern u8 tmp_mic_data[];
+
+/**
+ * @brief		usb_endpoints_irq_handler
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 {
 	u32 t = clock_time ();
@@ -427,6 +581,12 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
 
 }
 
+/**
+ * @brief		call this function to process when attHandle equal to AUDIO_HANDLE_MIC
+ * @param[in]	conn - connect handle
+ * @param[in]	p - Pointer point to l2cap data packet.
+ * @return      none
+ */
 void	att_mic (u16 conn, u8 *p)
 {
 	att_mic_rcvd = 1;
@@ -434,6 +594,11 @@ void	att_mic (u16 conn, u8 *p)
 	abuf_mic_add ((u32 *)tmp_mic_data);
 }
 
+/**
+ * @brief		audio proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void proc_audio (void)
 {
 	if (att_mic_rcvd)

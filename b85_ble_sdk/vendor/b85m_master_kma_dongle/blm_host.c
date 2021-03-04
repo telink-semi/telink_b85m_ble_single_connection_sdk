@@ -1,25 +1,48 @@
 /********************************************************************************************************
- * @file     blm_host.c
+ * @file	blm_host.c
  *
- * @brief    for TLSR chips
+ * @brief	This is the source file for B85
  *
- * @author	 public@telink-semi.com;
- * @date     Sep. 18, 2018
+ * @author	BLE GROUP
+ * @date	06,2020
  *
- * @par      Copyright (c) Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *          All rights reserved.
  *
- *			 The information contained herein is confidential and proprietary property of Telink
- * 		     Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *			 of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *			 Co., Ltd. and the licensee in separate contract or the terms described here-in.
- *           This heading MUST NOT be removed from this file.
+ *          Redistribution and use in source and binary forms, with or without
+ *          modification, are permitted provided that the following conditions are met:
  *
- * 			 Licensees are granted free, non-transferable use of the information in this
- *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *              1. Redistributions of source code must retain the above copyright
+ *              notice, this list of conditions and the following disclaimer.
+ *
+ *              2. Unless for usage inside a TELINK integrated circuit, redistributions
+ *              in binary form must reproduce the above copyright notice, this list of
+ *              conditions and the following disclaimer in the documentation and/or other
+ *              materials provided with the distribution.
+ *
+ *              3. Neither the name of TELINK, nor the names of its contributors may be
+ *              used to endorse or promote products derived from this software without
+ *              specific prior written permission.
+ *
+ *              4. This software, with or without modification, must only be used with a
+ *              TELINK integrated circuit. All other usages are subject to written permission
+ *              from TELINK and different commercial license may apply.
+ *
+ *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
+ *              relating to such deletion(s), modification(s) or alteration(s).
+ *
+ *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
+ *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
@@ -100,6 +123,11 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 	u8 google_voice_model = 0;
 #endif
 
+	/**
+	 * @brief      callback function of service discovery
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void app_service_discovery ()
 	{
 
@@ -202,6 +230,11 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 
 
 #if (BLE_HOST_SMP_ENABLE)
+/**
+ * @brief      callback function of smp finish
+ * @param[in]  none
+ * @return     0
+ */
 int app_host_smp_finish (void)  //smp finish callback
 {
 	#if (BLE_HOST_SIMPLE_SDP_ENABLE)  //smp finish, start sdp
@@ -244,10 +277,12 @@ int app_host_smp_finish (void)  //smp finish callback
 
 
 
-
-
-
-
+/**
+ * @brief      call this function when  HCI Controller Event :HCI_SUB_EVT_LE_ADVERTISING_REPORT
+ *     		   after controller is set to scan state, it will report all the adv packet it received by this event
+ * @param[in]  p - data pointer of event
+ * @return     0
+ */
 int blm_le_adv_report_event_handle(u8 *p)
 {
 	event_adv_report_t *pa = (event_adv_report_t *)p;
@@ -331,9 +366,14 @@ int blm_le_adv_report_event_handle(u8 *p)
 }
 
 
-
-
-
+/**
+ * @brief		this connection event is defined by telink, not a standard ble controller event
+ * 				after master controller send connection request packet to slave, when slave received this packet
+ * 				and enter to connection state, send a ack packet within 6 connection event, master will send
+ *              connection establish event to host(HCI_SUB_EVT_LE_CONNECTION_ESTABLISH)
+ * @param[in]	p - data pointer of event
+ * @return      none
+ */
 int blm_le_connection_establish_event_handle(u8 *p)
 {
 
@@ -389,7 +429,11 @@ int blm_le_connection_establish_event_handle(u8 *p)
 
 
 
-
+/**
+ * @brief		this function serves to connect terminate
+ * @param[in]	p - data pointer of event
+ * @return      none
+ */
 int 	blm_disconnect_event_handle(u8 *p)
 {
 	event_disconnection_t	*pd = (event_disconnection_t *)p;
@@ -459,7 +503,11 @@ int 	blm_disconnect_event_handle(u8 *p)
 }
 
 
-
+/**
+ * @brief      call this function when  HCI Controller Event :HCI_SUB_EVT_LE_CONNECTION_UPDATE_COMPLETE
+ * @param[in]  p - data pointer of event
+ * @return     0
+ */
 int blm_le_conn_update_event_proc(u8 *p)
 {
 //	event_connection_update_t *pCon = (event_connection_update_t *)p;
@@ -476,6 +524,11 @@ int blm_le_conn_update_event_proc(u8 *p)
 	return 0;
 }
 
+/**
+ * @brief      call this function when  HCI Controller Event :HCI_SUB_EVT_LE_PHY_UPDATE_COMPLETE
+ * @param[in]  p - data pointer of event
+ * @return     0
+ */
 int blm_le_phy_update_complete_event_proc(u8 *p)
 {
 	hci_le_phyUpdateCompleteEvt_t *pPhyUpt = (hci_le_phyUpdateCompleteEvt_t *)p;
@@ -490,6 +543,13 @@ int blm_le_phy_update_complete_event_proc(u8 *p)
 //////////////////////////////////////////////////////////
 // event call back
 //////////////////////////////////////////////////////////
+/**
+ * @brief      callback function of HCI Controller Event
+ * @param[in]  h - HCI Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     0
+ */
 int controller_event_callback (u32 h, u8 *p, int n)
 {
 
@@ -575,7 +635,11 @@ int controller_event_callback (u32 h, u8 *p, int n)
 
 
 
-
+/**
+ * @brief      update connection parameter in mainloop
+ * @param[in]  none
+ * @return     none
+ */
 _attribute_ram_code_
 void host_update_conn_proc(void)
 {
@@ -604,6 +668,13 @@ void host_update_conn_proc(void)
 
 
 volatile int app_l2cap_handle_cnt = 0;
+
+/**
+ * @brief      callback function of L2CAP layer handle packet data
+ * @param[in]  conn_handle - connect handle
+ * @param[in]  raw_pkt - Pointer point to l2cap data packet
+ * @return     0
+ */
 int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 {
 	app_l2cap_handle_cnt ++;  //debug
@@ -832,7 +903,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 				push_mic_packet(pAtt->dat);
 			}
 #elif (TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_HID)
-			else if(attHandle == AUDIO_FIRST_REPORT || attHandle == (AUDIO_FIRST_REPORT + 4) || attHandle == (AUDIO_FIRST_REPORT + 8))//HID·½°¸£¬dongle½âÂë
+			else if(attHandle == AUDIO_FIRST_REPORT || attHandle == (AUDIO_FIRST_REPORT + 4) || attHandle == (AUDIO_FIRST_REPORT + 8))//HIDdongle
 			{
 				att_mic_rcvd = 1;
 
