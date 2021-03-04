@@ -1,10 +1,10 @@
 /********************************************************************************************************
  * @file	flash_mid13325e.c
  *
- * @brief	This is the source file for B85
+ * @brief	This is the source file for b85m
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2020
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
@@ -45,12 +45,12 @@
  *******************************************************************************************************/
 #include "flash_type.h"
 
-#if	(FLASH_LOCK_EN)
+#if FLASH_LOCK_EN
 /**
  * @brief 		This function reads the status of flash.
  * @return 		the value of status.
  */
-_attribute_ram_code_ unsigned char flash_read_status_mid13325e(void)
+unsigned char flash_read_status_mid13325e(void)
 {
 	return flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
 }
@@ -61,7 +61,7 @@ _attribute_ram_code_ unsigned char flash_read_status_mid13325e(void)
  * @param[in]  	bit		- the range of bits to be modified when writing status.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_status_mid13325e(unsigned char data, mid13325e_write_status_bit_e bit)
+void flash_write_status_mid13325e(unsigned char data, mid13325e_write_status_bit_e bit)
 {
 	unsigned char status = flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
 	data |= (status & ~(bit));
@@ -73,7 +73,7 @@ _attribute_ram_code_ void flash_write_status_mid13325e(unsigned char data, mid13
  * @param[in]   data	- refer to the protection area definition in the .h file.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_lock_mid13325e(mid13325e_lock_block_e data)
+void flash_lock_mid13325e(mid13325e_lock_block_e data)
 {
 	flash_write_status_mid13325e(data, FLASH_WRITE_STATUS_BP_MID13325E);
 }
@@ -82,7 +82,7 @@ _attribute_ram_code_ void flash_lock_mid13325e(mid13325e_lock_block_e data)
  * @brief 		This function serves to flash release protection.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_unlock_mid13325e(void)
+void flash_unlock_mid13325e(void)
 {
 	flash_write_status_mid13325e(FLASH_LOCK_NONE_MID13325E, FLASH_WRITE_STATUS_BP_MID13325E);
 }

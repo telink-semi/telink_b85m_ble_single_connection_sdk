@@ -1,10 +1,10 @@
 /********************************************************************************************************
  * @file	flash_mid136085.c
  *
- * @brief	This is the source file for B85
+ * @brief	This is the source file for b85m
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2020
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
@@ -45,12 +45,12 @@
  *******************************************************************************************************/
 #include "flash_type.h"
 
-#if	(FLASH_LOCK_EN)
+#if FLASH_LOCK_EN
 /**
  * @brief 		This function reads the status of flash.
  * @return 		the value of status.
  */
-_attribute_ram_code_ unsigned short flash_read_status_mid136085(void)
+unsigned short flash_read_status_mid136085(void)
 {
 	unsigned char status_low = flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
 	unsigned char status_high = flash_read_status(FLASH_READ_STATUS_CMD_HIGHBYTE);
@@ -63,7 +63,7 @@ _attribute_ram_code_ unsigned short flash_read_status_mid136085(void)
  * @param[in]  	bit		- the range of bits to be modified when writing status.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_status_mid136085(unsigned short data, mid136085_write_status_bit_e bit)
+void flash_write_status_mid136085(unsigned short data, mid136085_write_status_bit_e bit)
 {
 	unsigned short status = flash_read_status_mid136085();
 	data |= (status & ~(bit));
@@ -75,7 +75,7 @@ _attribute_ram_code_ void flash_write_status_mid136085(unsigned short data, mid1
  * @param[in]   data	- refer to the protection area definition in the .h file.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_lock_mid136085(mid136085_lock_block_e data)
+void flash_lock_mid136085(mid136085_lock_block_e data)
 {
 	flash_write_status_mid136085(data, FLASH_WRITE_STATUS_BP_MID136085);
 }
@@ -84,7 +84,7 @@ _attribute_ram_code_ void flash_lock_mid136085(mid136085_lock_block_e data)
  * @brief 		This function serves to flash release protection.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_unlock_mid136085(void)
+void flash_unlock_mid136085(void)
 {
 	flash_write_status_mid136085(FLASH_LOCK_NONE_MID136085, FLASH_WRITE_STATUS_BP_MID136085);
 }
@@ -99,7 +99,7 @@ _attribute_ram_code_ void flash_unlock_mid136085(void)
  * @param[out]  buf		- the starting address of the content to be read.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_read_otp_mid136085(unsigned long addr, unsigned long len, unsigned char* buf)
+void flash_read_otp_mid136085(unsigned long addr, unsigned long len, unsigned char* buf)
 {
 	flash_read_otp(addr, len, buf);
 }
@@ -114,7 +114,7 @@ _attribute_ram_code_ void flash_read_otp_mid136085(unsigned long addr, unsigned 
  * @param[in]   buf		- the starting address of the content to be written.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_otp_mid136085(unsigned long addr, unsigned long len, unsigned char *buf)
+void flash_write_otp_mid136085(unsigned long addr, unsigned long len, unsigned char *buf)
 {
 	flash_write_otp(addr, len, buf);
 }
@@ -129,7 +129,7 @@ _attribute_ram_code_ void flash_write_otp_mid136085(unsigned long addr, unsigned
  * @return 		none.
  * @note		Even you choose the middle area of the Security Registers,it will erase the whole area.
  */
-_attribute_ram_code_ void flash_erase_otp_mid136085(mid136085_otp_block_e addr)
+void flash_erase_otp_mid136085(mid136085_otp_block_e addr)
 {
 	flash_erase_otp(addr);
 }
@@ -141,7 +141,7 @@ _attribute_ram_code_ void flash_erase_otp_mid136085(mid136085_otp_block_e addr)
  * @note		once they are set to 1, the Security Registers will become read-only permanently,
  * 				you can't write or erase the area anymore.
  */
-_attribute_ram_code_ void flash_lock_otp_mid136085(mid136085_lock_otp_e data)
+void flash_lock_otp_mid136085(mid136085_lock_otp_e data)
 {
 	flash_write_status_mid136085(data, FLASH_WRITE_STATUS_OTP_MID136085);
 }

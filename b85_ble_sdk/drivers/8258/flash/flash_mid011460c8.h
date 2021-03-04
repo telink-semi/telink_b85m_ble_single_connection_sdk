@@ -1,10 +1,10 @@
 /********************************************************************************************************
  * @file	flash_mid011460c8.h
  *
- * @brief	This is the header file for B85
+ * @brief	This is the header file for b85m
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2020
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
@@ -123,7 +123,7 @@ typedef enum{
  * @brief 		This function reads the status of flash.
  * @return 		the value of status.
  */
-_attribute_ram_code_ unsigned short flash_read_status_mid011460c8(void);
+unsigned short flash_read_status_mid011460c8(void);
 
 /**
  * @brief 		This function write the status of flash.
@@ -131,20 +131,20 @@ _attribute_ram_code_ unsigned short flash_read_status_mid011460c8(void);
  * @param[in]  	bit		- the range of bits to be modified when writing status.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_status_mid011460c8(unsigned short data, mid011460c8_write_status_bit_e bit);
+void flash_write_status_mid011460c8(unsigned short data, mid011460c8_write_status_bit_e bit);
 
 /**
  * @brief 		This function serves to set the protection area of the flash.
  * @param[in]   data	- refer to the protection area definition in the .h file.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_lock_mid011460c8(mid011460c8_lock_block_e data);
+void flash_lock_mid011460c8(mid011460c8_lock_block_e data);
 
 /**
  * @brief 		This function serves to flash release protection.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_unlock_mid011460c8(void);
+void flash_unlock_mid011460c8(void);
 
 /**
  * @brief 		This function serves to read data from the Security Registers of the flash.
@@ -156,7 +156,7 @@ _attribute_ram_code_ void flash_unlock_mid011460c8(void);
  * @param[out]  buf		- the starting address of the content to be read.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_read_otp_mid011460c8(unsigned long addr, unsigned long len, unsigned char* buf);
+void flash_read_otp_mid011460c8(unsigned long addr, unsigned long len, unsigned char* buf);
 
 /**
  * @brief 		This function serves to write data to the Security Registers of the flash you choose.
@@ -168,7 +168,7 @@ _attribute_ram_code_ void flash_read_otp_mid011460c8(unsigned long addr, unsigne
  * @param[in]   buf		- the starting address of the content to be written.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_otp_mid011460c8(unsigned long addr, unsigned long len, unsigned char *buf);
+void flash_write_otp_mid011460c8(unsigned long addr, unsigned long len, unsigned char *buf);
 
 /**
  * @brief 		This function serves to erase the data of the Security Registers that you choose.
@@ -180,7 +180,7 @@ _attribute_ram_code_ void flash_write_otp_mid011460c8(unsigned long addr, unsign
  * @return 		none.
  * @note		Even you choose the middle area of the Security Registers,it will erase the whole area.
  */
-_attribute_ram_code_ void flash_erase_otp_mid011460c8(mid011460c8_otp_block_e addr);
+void flash_erase_otp_mid011460c8(mid011460c8_otp_block_e addr);
 
 /**
  * @brief 		This function serves to provide the write protect control to the Security Registers.
@@ -189,7 +189,7 @@ _attribute_ram_code_ void flash_erase_otp_mid011460c8(mid011460c8_otp_block_e ad
  * @note		once they are set to 1, the Security Registers will become read-only permanently,
  * 				you can't write or erase the area anymore.
  */
-_attribute_ram_code_ void flash_lock_otp_mid011460c8(mid011460c8_lock_otp_e data);
+void flash_lock_otp_mid011460c8(mid011460c8_lock_otp_e data);
 
 
 #endif

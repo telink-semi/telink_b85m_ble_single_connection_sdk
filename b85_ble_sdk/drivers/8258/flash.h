@@ -49,7 +49,10 @@
 
 
 #define PAGE_SIZE			   256
+#define PAGE_SIZE_OTP		   256
 #define FLASH_LOCK_EN          0
+
+
 /**
  * @brief     flash command definition
  */
@@ -105,7 +108,6 @@ typedef enum{
 	FLASH_XTX_READ_UID_CMD	= 0x5A,
 }flash_uid_cmddef_e;
 
-
 typedef enum {
 	FLASH_SIZE_64K 	= 0x10,
 	FLASH_SIZE_128K = 0x11,
@@ -126,7 +128,7 @@ typedef enum {
  * @param[in]   addr	- the start address of the sector needs to erase.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_erase_sector(unsigned long addr);
+void flash_erase_sector(unsigned long addr);
 
 /**
  * @brief 		This function reads the content from a page to the buf.
@@ -135,7 +137,7 @@ _attribute_ram_code_ void flash_erase_sector(unsigned long addr);
  * @param[out]  buf		- the start address of the buffer.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf);
+void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf);
 
 /**
  * @brief 		This function writes the buffer's content to the flash.
@@ -145,7 +147,13 @@ _attribute_ram_code_ void flash_read_page(unsigned long addr, unsigned long len,
  * @return 		none.
  * @note        the funciton support cross-page writing,which means the len of buf can bigger than 256.
  */
-void flash_write_page(unsigned long addr, unsigned long len, unsigned char *buf);
+void flash_write_page(unsigned long addr, unsigned long len, const unsigned char *buf);
+
+/**
+ * @brief	  	This function serves to read MID of flash(MAC id).
+ * @return    	MID of the flash(3 bytes).
+ */
+unsigned int flash_read_raw_mid(void);
 
 /**
  * @brief	  	This function serves to read MID of flash(MAC id). Before reading UID of flash,
@@ -153,14 +161,8 @@ void flash_write_page(unsigned long addr, unsigned long len, unsigned char *buf)
  * 				the idcmd and read UID of flash
  * @return    	MID of the flash.
  */
-_attribute_ram_code_ unsigned int flash_read_mid(void);
-
-
-
-/* according to your appliaction */
+unsigned int flash_read_mid(void);
 #if 0
-
-
 /**
  * @brief	  	This function serves to read UID of flash.Before reading UID of flash, you must read MID of flash.
  * 				and then you can look up the related table to select the idcmd and read UID of flash.
@@ -169,7 +171,7 @@ _attribute_ram_code_ unsigned int flash_read_mid(void);
  * @param[in] 	uidtype	- the number of uid bytes.
  * @return    	none.
  */
-_attribute_ram_code_ void flash_read_uid(unsigned char idcmd,unsigned char *buf, flash_uid_typedef_e uidtype);
+void flash_read_uid(unsigned char idcmd,unsigned char *buf, flash_uid_typedef_e uidtype);
 
 /*******************************************************************************************************************
  *												Primary interface
@@ -181,11 +183,8 @@ _attribute_ram_code_ void flash_read_uid(unsigned char idcmd,unsigned char *buf,
  * @param[out]	flash_uid	- Flash Unique ID
  * @return		0: flash no uid or not a known flash model 	 1:the flash model is known and the uid is read.
  */
-_attribute_ram_code_ int flash_read_mid_uid_with_check( unsigned int *flash_mid ,unsigned char *flash_uid);
-
-
+int flash_read_mid_uid_with_check( unsigned int *flash_mid ,unsigned char *flash_uid);
 #endif
-
 
 void flash_set_capacity(Flash_CapacityDef flash_cap);
 

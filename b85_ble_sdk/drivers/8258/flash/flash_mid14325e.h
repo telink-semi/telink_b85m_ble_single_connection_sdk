@@ -1,10 +1,10 @@
 /********************************************************************************************************
  * @file	flash_mid14325e.h
  *
- * @brief	This is the header file for B85
+ * @brief	This is the header file for b85m
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2020
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
@@ -79,7 +79,7 @@ typedef enum{
  * @brief 		This function reads the status of flash.
  * @return 		the value of status.
  */
-_attribute_ram_code_ unsigned char flash_read_status_mid14325e(void);
+unsigned char flash_read_status_mid14325e(void);
 
 /**
  * @brief 		This function write the status of flash.
@@ -87,20 +87,20 @@ _attribute_ram_code_ unsigned char flash_read_status_mid14325e(void);
  * @param[in]  	bit		- the range of bits to be modified when writing status.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_status_mid14325e(unsigned char data, mid14325e_write_status_bit_e bit);
+void flash_write_status_mid14325e(unsigned char data, mid14325e_write_status_bit_e bit);
 
 /**
  * @brief 		This function serves to set the protection area of the flash.
  * @param[in]   data	- refer to the protection area definition in the .h file.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_lock_mid14325e(mid14325e_lock_block_e data);
+void flash_lock_mid14325e(mid14325e_lock_block_e data);
 
 /**
  * @brief 		This function serves to flash release protection.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_unlock_mid14325e(void);
+void flash_unlock_mid14325e(void);
 
 
 #endif

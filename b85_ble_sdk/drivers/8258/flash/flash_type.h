@@ -1,10 +1,10 @@
 /********************************************************************************************************
  * @file	flash_type.h
  *
- * @brief	This is the header file for B85
+ * @brief	This is the header file for b85m
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2020
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
@@ -57,14 +57,13 @@
 #include "flash_mid136085.h"	// P25Q40L
 #include "flash_mid1360EB.h"	// TH25D40UA / TH25D40LA
 
-
-#if	(FLASH_LOCK_EN)
+#if FLASH_LOCK_EN
 /**
  * @brief		This function reads the status of flash.
  * @param[in] 	cmd	- the cmd of read status.
  * @return 		the value of status.
  */
-_attribute_ram_code_ unsigned char flash_read_status(unsigned char cmd);
+unsigned char flash_read_status(unsigned char cmd);
 
 /**
  * @brief 		This function write the status of flash.
@@ -72,7 +71,7 @@ _attribute_ram_code_ unsigned char flash_read_status(unsigned char cmd);
  * @param[in]  	data	- the value of status.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_status(flash_status_typedef_e type , unsigned short data);
+void flash_write_status(flash_status_typedef_e type , unsigned short data);
 
 /**
  * @brief 		This function serves to read data from the Security Registers of the flash.
@@ -81,7 +80,7 @@ _attribute_ram_code_ void flash_write_status(flash_status_typedef_e type , unsig
  * @param[out]  buf		- the starting address of the content to be read.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_read_otp(unsigned long addr, unsigned long len, unsigned char* buf);
+void flash_read_otp(unsigned long addr, unsigned long len, unsigned char* buf);
 
 /**
  * @brief 		This function serves to write data to the Security Registers of the flash you choose.
@@ -90,7 +89,7 @@ _attribute_ram_code_ void flash_read_otp(unsigned long addr, unsigned long len, 
  * @param[in]   buf		- the starting address of the content to be written.
  * @return 		none.
  */
-_attribute_ram_code_ void flash_write_otp(unsigned long addr, unsigned long len, unsigned char *buf);
+void flash_write_otp(unsigned long addr, unsigned long len, unsigned char *buf);
 
 /**
  * @brief 		This function serves to erase the data of the Security Registers that you choose.
@@ -98,9 +97,8 @@ _attribute_ram_code_ void flash_write_otp(unsigned long addr, unsigned long len,
  * @return 		none.
  * @Attention	Even you choose the middle area of the Security Registers,it will erase the whole area.
  */
-_attribute_ram_code_ void flash_erase_otp(unsigned long addr);
+void flash_erase_otp(unsigned long addr);
 
 #endif
-
 #endif
 
