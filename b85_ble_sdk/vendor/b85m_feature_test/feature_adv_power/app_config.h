@@ -137,56 +137,6 @@ enum{
 		#define PA4_OUTPUT_ENABLE					1
 		#define PB0_OUTPUT_ENABLE					1
 	#endif
-
-	#define DBG_CHN0_LOW		gpio_write(GPIO_CHN0, 0)
-	#define DBG_CHN0_HIGH		gpio_write(GPIO_CHN0, 1)
-	#define DBG_CHN0_TOGGLE		gpio_toggle(GPIO_CHN0)
-	#define DBG_CHN1_LOW		gpio_write(GPIO_CHN1, 0)
-	#define DBG_CHN1_HIGH		gpio_write(GPIO_CHN1, 1)
-	#define DBG_CHN1_TOGGLE		gpio_toggle(GPIO_CHN1)
-	#define DBG_CHN2_LOW		gpio_write(GPIO_CHN2, 0)
-	#define DBG_CHN2_HIGH		gpio_write(GPIO_CHN2, 1)
-	#define DBG_CHN2_TOGGLE		gpio_toggle(GPIO_CHN2)
-	#define DBG_CHN3_LOW		gpio_write(GPIO_CHN3, 0)
-	#define DBG_CHN3_HIGH		gpio_write(GPIO_CHN3, 1)
-	#define DBG_CHN3_TOGGLE		gpio_toggle(GPIO_CHN3)
-	#define DBG_CHN4_LOW		gpio_write(GPIO_CHN4, 0)
-	#define DBG_CHN4_HIGH		gpio_write(GPIO_CHN4, 1)
-	#define DBG_CHN4_TOGGLE		gpio_toggle(GPIO_CHN4)
-	#define DBG_CHN5_LOW		gpio_write(GPIO_CHN5, 0)
-	#define DBG_CHN5_HIGH		gpio_write(GPIO_CHN5, 1)
-	#define DBG_CHN5_TOGGLE		gpio_toggle(GPIO_CHN5)
-	#define DBG_CHN6_LOW		gpio_write(GPIO_CHN6, 0)
-	#define DBG_CHN6_HIGH		gpio_write(GPIO_CHN6, 1)
-	#define DBG_CHN6_TOGGLE		gpio_toggle(GPIO_CHN6)
-	#define DBG_CHN7_LOW		gpio_write(GPIO_CHN7, 0)
-	#define DBG_CHN7_HIGH		gpio_write(GPIO_CHN7, 1)
-	#define DBG_CHN7_TOGGLE		gpio_toggle(GPIO_CHN7)
-#else
-	#define DBG_CHN0_LOW
-	#define DBG_CHN0_HIGH
-	#define DBG_CHN0_TOGGLE
-	#define DBG_CHN1_LOW
-	#define DBG_CHN1_HIGH
-	#define DBG_CHN1_TOGGLE
-	#define DBG_CHN2_LOW
-	#define DBG_CHN2_HIGH
-	#define DBG_CHN2_TOGGLE
-	#define DBG_CHN3_LOW
-	#define DBG_CHN3_HIGH
-	#define DBG_CHN3_TOGGLE
-	#define DBG_CHN4_LOW
-	#define DBG_CHN4_HIGH
-	#define DBG_CHN4_TOGGLE
-	#define DBG_CHN5_LOW
-	#define DBG_CHN5_HIGH
-	#define DBG_CHN5_TOGGLE
-	#define DBG_CHN6_LOW
-	#define DBG_CHN6_HIGH
-	#define DBG_CHN6_TOGGLE
-	#define DBG_CHN7_LOW
-	#define DBG_CHN7_HIGH
-	#define DBG_CHN7_TOGGLE
 #endif  //end of DEBUG_GPIO_ENABLE
 
 

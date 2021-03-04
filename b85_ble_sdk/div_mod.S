@@ -3,8 +3,8 @@
  *
  * @brief	This is the assembly file for B85
  *
- * @author	author@telink-semi.com;
- * @date	2020.06
+ * @author	BLE GROUP
+ * @date	06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *          All rights reserved.
