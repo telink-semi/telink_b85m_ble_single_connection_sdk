@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	blt_soft_timer.c
  *
- * @brief	This is the source file for B85
+ * @brief	This is the source file for BLE SDK
  *
  * @author	BLE GROUP
  * @date	06,2020

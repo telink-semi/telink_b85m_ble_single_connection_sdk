@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	blt_soft_timer.h
  *
- * @brief	This is the header file for B85
+ * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
  * @date	06,2020
