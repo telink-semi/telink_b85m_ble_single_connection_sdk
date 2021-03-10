@@ -664,15 +664,6 @@ void user_init_normal(void)
 						  GAP_EVT_MASK_SMP_TK_NUMERIC_COMPARE		|  \
 						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE );
 
-	/////////// keyboard gpio wakeup init ////////
-	u32 pin[] = KB_DRIVE_PINS;
-	for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
-	{
-		cpu_set_gpio_wakeup (pin[i], Level_High, 1);  //drive pin pad high wakeup deepsleep
-	}
-
-	bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &ble_remote_set_sleep_wakeup);
 
 #elif ( SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_SDMI  )
 
@@ -727,15 +718,6 @@ void user_init_normal(void)
 						  GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY		|  \
 						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE );
 
-	/////////// keyboard gpio wakeup init ////////
-	u32 pin[] = KB_DRIVE_PINS;
-	for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
-	{
-		cpu_set_gpio_wakeup (pin[i], Level_High, 1);  //drive pin pad high wakeup deepsleep
-	}
-
-	bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &ble_remote_set_sleep_wakeup);
 
 #endif
 

@@ -145,7 +145,7 @@
 
 
 //----------------------- GPIO for UI --------------------------------
-#if (UI_BUTTON_ENABLE)
+#if (UI_BUTTON_ENABLE)//kite(C1T139A3)/vulture(C1T201A3) dongle board has the same button gpio
 	//---------------  Button ----------------------------------
 	#define	SW1_GPIO				GPIO_PD5
 	#define	SW2_GPIO				GPIO_PD6
@@ -159,7 +159,7 @@
 
 
 
-#if (UI_LED_ENABLE)
+#if (UI_LED_ENABLE)//kite(C1T139A3)/vulture(C1T201A3) dongle board has the same led gpio
 	#define	GPIO_LED_RED			GPIO_PA3
 	#define	GPIO_LED_WHITE			GPIO_PB1
 	#define	GPIO_LED_GREEN			GPIO_PA2

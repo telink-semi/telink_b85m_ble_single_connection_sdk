@@ -65,69 +65,89 @@
 #define BLE_SECURITY_ENABLE 			   	1
 
 
+#define BOARD_825X_EVK_C1T139A30			1     //TLSR8258DK48
+#define BOARD_827X_EVK_C1T197A30			2	  //TLSR8278DK48
+
 /////////////////// DEEP SAVE FLG //////////////////////////////////
 #define USED_DEEP_ANA_REG                   DEEP_ANA_REG0 //u8,can save 8 bit info when deep
 #define	LOW_BATT_FLG					    BIT(0)
 
-
-
-#if (BATT_CHECK_ENABLE)
-
-#if 0//(__PROJECT_8278_MODULE__)
-	//use VBAT(8278) , then adc measure this VBAT voltage
-	#define ADC_INPUT_PCHN					VBAT    //corresponding  ADC_InputPchTypeDef in adc.h
-#elif (MCU_CORE_TYPE == MCU_CORE_825x)
-	//telink device: you must choose one gpio with adc function to output high level(voltage will equal to vbat), then use adc to measure high level voltage
-	//use PB7(8258) output high level, then adc measure this high level voltage
-	#define GPIO_VBAT_DETECT				GPIO_PB7
-	#define PB7_FUNC						AS_GPIO
-	#define PB7_INPUT_ENABLE				0
-	#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
+#if (__PROJECT_8258_MODULE__)
+	/* can only choose BOARD_825X_EVK_C1T139A30 or BOARD_825X_DONGLE_C1T139A3,
+	 * default use EVK, user can select Dongle */
+	#define BOARD_SELECT							BOARD_825X_EVK_C1T139A30
+#elif (__PROJECT_8278_MODULE__)
+	/* can only choose BOARD_827X_EVK_C1T197A30 or BOARD_827X_DONGLE_C1T201A3,
+	 * default use EVK, user can select Dongle */
+	#define BOARD_SELECT							BOARD_827X_EVK_C1T197A30
 #endif
+
+/**
+ *  @brief  Battery_check Configuration
+ */
+#if (BATT_CHECK_ENABLE)
+	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+		#if 0//(__PROJECT_8278_BLE_REMOTE__)
+			//use VBAT(8278) , then adc measure this VBAT voltage
+			#define ADC_INPUT_PCHN					VBAT    //corresponding  ADC_InputPchTypeDef in adc.h
+		#else
+			//telink device: you must choose one gpio with adc function to output high level(voltage will equal to vbat), then use adc to measure high level voltage
+			//use PB7(8258) output high level, then adc measure this high level voltage
+			#define GPIO_VBAT_DETECT				GPIO_PB7
+			#define PB7_FUNC						AS_GPIO
+			#define PB7_INPUT_ENABLE				0
+			#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
+		#endif
+	#endif
 #endif
 
 //////////////////// LED CONFIG (EVK board) ///////////////////////////
 #if (BLT_APP_LED_ENABLE)
-	#define LED_ON_LEVAL 					1 			//gpio output high voltage to turn on led
-	#define	GPIO_LED						GPIO_PD5    //red
-	#define PD5_FUNC						AS_GPIO
+	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+		#define LED_ON_LEVAL 					1 			//gpio output high voltage to turn on led
+		#define	GPIO_LED						GPIO_PD5    //red
+		#define PD5_FUNC						AS_GPIO
+	#endif
 #endif
 
 
 
+#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
+	//////////////////////////// MODULE PM GPIO	(EVK board) /////////////////////////////////
+	#define GPIO_WAKEUP_MODULE					GPIO_PA2   //mcu wakeup module
+	#define	PA2_FUNC							AS_GPIO
+	#define PA2_INPUT_ENABLE					1
+	#define	PA2_OUTPUT_ENABLE					0
+	#define	PA2_DATA_OUT						0
+	#define GPIO_WAKEUP_MODULE_HIGH				gpio_setup_up_down_resistor(GPIO_WAKEUP_MODULE, PM_PIN_PULLUP_10K);
+	#define GPIO_WAKEUP_MODULE_LOW				gpio_setup_up_down_resistor(GPIO_WAKEUP_MODULE, PM_PIN_PULLDOWN_100K);
 
+	#define GPIO_WAKEUP_MCU						GPIO_PD0   //module wakeup mcu
+	#define	PD0_FUNC							AS_GPIO
+	#define PD0_INPUT_ENABLE					1
+	#define	PD0_OUTPUT_ENABLE					1
+	#define	PD0_DATA_OUT						0
+	#define GPIO_WAKEUP_MCU_HIGH				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 1);}while(0)
+	#define GPIO_WAKEUP_MCU_LOW					do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
+	#define GPIO_WAKEUP_MCU_FLOAT				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 0); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
+#elif(BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+	//////////////////////////// MODULE PM GPIO	(EVK board) /////////////////////////////////
+	#define GPIO_WAKEUP_MODULE					GPIO_PA2   //mcu wakeup module
+	#define	PA2_FUNC							AS_GPIO
+	#define PA2_INPUT_ENABLE					1
+	#define	PA2_OUTPUT_ENABLE					0
+	#define	PA2_DATA_OUT						0
+	#define GPIO_WAKEUP_MODULE_HIGH				gpio_setup_up_down_resistor(GPIO_WAKEUP_MODULE, PM_PIN_PULLUP_10K);
+	#define GPIO_WAKEUP_MODULE_LOW				gpio_setup_up_down_resistor(GPIO_WAKEUP_MODULE, PM_PIN_PULLDOWN_100K);
 
-//////////////////////////// MODULE PM GPIO	(EVK board) /////////////////////////////////
-#define GPIO_WAKEUP_MODULE					GPIO_PA2   //mcu wakeup module
-#define	PA2_FUNC							AS_GPIO
-#define PA2_INPUT_ENABLE					1
-#define	PA2_OUTPUT_ENABLE					0
-#define	PA2_DATA_OUT						0
-#define GPIO_WAKEUP_MODULE_HIGH				gpio_setup_up_down_resistor(GPIO_WAKEUP_MODULE, PM_PIN_PULLUP_10K);
-#define GPIO_WAKEUP_MODULE_LOW				gpio_setup_up_down_resistor(GPIO_WAKEUP_MODULE, PM_PIN_PULLDOWN_100K);
-
-
-
-#if (__PROJECT_8278_MODULE__)
-#define GPIO_WAKEUP_MCU						GPIO_PA3   //module wakeup mcu
-#define	PA3_FUNC							AS_GPIO
-#define PA3_INPUT_ENABLE					1
-#define	PA3_OUTPUT_ENABLE					1
-#define	PA3_DATA_OUT						0
-#define GPIO_WAKEUP_MCU_HIGH				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 1);}while(0)
-#define GPIO_WAKEUP_MCU_LOW					do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
-#define GPIO_WAKEUP_MCU_FLOAT				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 0); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
-
-#else
-#define GPIO_WAKEUP_MCU						GPIO_PD0   //module wakeup mcu
-#define	PD0_FUNC							AS_GPIO
-#define PD0_INPUT_ENABLE					1
-#define	PD0_OUTPUT_ENABLE					1
-#define	PD0_DATA_OUT						0
-#define GPIO_WAKEUP_MCU_HIGH				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 1);}while(0)
-#define GPIO_WAKEUP_MCU_LOW					do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
-#define GPIO_WAKEUP_MCU_FLOAT				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 0); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
-
+	#define GPIO_WAKEUP_MCU						GPIO_PA3   //module wakeup mcu
+	#define	PA3_FUNC							AS_GPIO
+	#define PA3_INPUT_ENABLE					1
+	#define	PA3_OUTPUT_ENABLE					1
+	#define	PA3_DATA_OUT						0
+	#define GPIO_WAKEUP_MCU_HIGH				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 1);}while(0)
+	#define GPIO_WAKEUP_MCU_LOW					do{gpio_set_output_en(GPIO_WAKEUP_MCU, 1); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
+	#define GPIO_WAKEUP_MCU_FLOAT				do{gpio_set_output_en(GPIO_WAKEUP_MCU, 0); gpio_write(GPIO_WAKEUP_MCU, 0);}while(0)
 
 #endif
 
@@ -197,18 +217,17 @@ typedef struct{
 
 
 #define DEBUG_GPIO_ENABLE						0
+	#if(DEBUG_GPIO_ENABLE)
+		#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+			//define debug GPIO here according to your hardware
+			#define GPIO_CHN0							GPIO_PB4
+			#define GPIO_CHN1							GPIO_PB5
+			#define GPIO_CHN2							GPIO_PB6
 
-#if(DEBUG_GPIO_ENABLE)
-	//define debug GPIO here according to your hardware
-
-	#define GPIO_CHN0							GPIO_PB4
-	#define GPIO_CHN1							GPIO_PB5
-	#define GPIO_CHN2							GPIO_PB6
-
-
-	#define PB4_OUTPUT_ENABLE					1
-	#define PB5_OUTPUT_ENABLE					1
-	#define PB6_OUTPUT_ENABLE					1
+			#define PB4_OUTPUT_ENABLE					1
+			#define PB5_OUTPUT_ENABLE					1
+			#define PB6_OUTPUT_ENABLE					1
+	#endif
 #endif  //end of DEBUG_GPIO_ENABLE
 
 

@@ -348,6 +348,7 @@ void app_power_management ()
 	if (!app_module_busy() && !tick_wakeup)
 	{
 		#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
 			bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		#else
 			bls_pm_setSuspendMask(SUSPEND_ADV | SUSPEND_CONN);
@@ -517,6 +518,7 @@ void user_init_normal(void)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
 
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+		blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 		blc_pm_setDeepsleepRetentionEarlyWakeupTiming(250);
