@@ -147,7 +147,7 @@ void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf);
  * @return 		none.
  * @note        the funciton support cross-page writing,which means the len of buf can bigger than 256.
  */
-void flash_write_page(unsigned long addr, unsigned long len, const unsigned char *buf);
+void flash_write_page(unsigned long addr, unsigned long len, unsigned char *buf);
 
 /**
  * @brief	  	This function serves to read MID of flash(MAC id).

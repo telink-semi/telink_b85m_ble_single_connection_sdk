@@ -73,12 +73,10 @@
 #define	LOW_BATT_FLG					    BIT(0)
 
 #if (__PROJECT_8258_MODULE__)
-	/* can only choose BOARD_825X_EVK_C1T139A30 or BOARD_825X_DONGLE_C1T139A3,
-	 * default use EVK, user can select Dongle */
+	/* can only choose BOARD_825X_EVK_C1T139A30*/
 	#define BOARD_SELECT							BOARD_825X_EVK_C1T139A30
 #elif (__PROJECT_8278_MODULE__)
-	/* can only choose BOARD_827X_EVK_C1T197A30 or BOARD_827X_DONGLE_C1T201A3,
-	 * default use EVK, user can select Dongle */
+	/* can only choose BOARD_827X_EVK_C1T197A30*/
 	#define BOARD_SELECT							BOARD_827X_EVK_C1T197A30
 #endif
 

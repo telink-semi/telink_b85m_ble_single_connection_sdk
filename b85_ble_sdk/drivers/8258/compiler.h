@@ -55,6 +55,9 @@
 #define _attribute_no_inline_   		__attribute__((noinline))
 #define _inline_ 						inline
 
+#define _attribute_ram_code_sec_      		__attribute__((section(".ram_code")))
+#define _attribute_ram_code_sec_noinline_	__attribute__((section(".ram_code"))) __attribute__((noinline))
+
 #ifndef	BLC_PM_DEEP_RETENTION_MODE_EN
 #define	BLC_PM_DEEP_RETENTION_MODE_EN		1
 #endif

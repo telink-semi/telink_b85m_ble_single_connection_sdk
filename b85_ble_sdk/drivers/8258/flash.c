@@ -60,7 +60,7 @@ _attribute_data_retention_   _attribute_aligned_(4)	Flash_CapacityDef	flash_capa
  * @brief		This function to determine whether the flash is busy..
  * @return		1:Indicates that the flash is busy. 0:Indicates that the flash is free
  */
-_attribute_ram_code_ static inline int flash_is_busy(){
+_attribute_ram_code_sec_ static inline int flash_is_busy(){
 	return mspi_read() & 0x01;		//the busy bit, pls check flash spec
 }
 
@@ -69,7 +69,7 @@ _attribute_ram_code_ static inline int flash_is_busy(){
  * @param[in]	cmd	- set command.
  * @return		none.
  */
-_attribute_ram_code_noinline_ static void flash_send_cmd(unsigned char cmd){
+_attribute_ram_code_sec_noinline_ static void flash_send_cmd(unsigned char cmd){
 	mspi_high();
 	sleep_us(1);
 	mspi_low();
@@ -82,7 +82,7 @@ _attribute_ram_code_noinline_ static void flash_send_cmd(unsigned char cmd){
  * @param[in]	addr	- the flash address.
  * @return		none.
  */
-_attribute_ram_code_noinline_ static void flash_send_addr(unsigned int addr){
+_attribute_ram_code_sec_noinline_ static void flash_send_addr(unsigned int addr){
 	mspi_write((unsigned char)(addr>>16));
 	mspi_wait();
 	mspi_write((unsigned char)(addr>>8));
@@ -95,7 +95,7 @@ _attribute_ram_code_noinline_ static void flash_send_addr(unsigned int addr){
  * @brief     This function serves to wait flash done.(make this a asynchorous version).
  * @return    none.
  */
-_attribute_ram_code_noinline_ static void flash_wait_done(void)
+_attribute_ram_code_sec_noinline_ static void flash_wait_done(void)
 {
 	sleep_us(100);
 	flash_send_cmd(FLASH_READ_STATUS_CMD_LOWBYTE);
@@ -113,18 +113,18 @@ _attribute_ram_code_noinline_ static void flash_wait_done(void)
  * @brief 		This function is used to read data from flash or read the status of flash.
  * @param[in]   cmd			- the read command.
  * @param[in]   addr		- starting address.
- * @param[in]   addren		- whether need to send an address.
+ * @param[in]   addr_en		- whether need to send an address.
  * @param[in]   dummy_cnt	- the length(in byte) of dummy.
  * @param[out]  data		- the start address of the data buffer.
- * @param[in]   datalen		- the length(in byte) of content needs to read out.
+ * @param[in]   data_len	- the length(in byte) of content needs to read out.
  * @return 		none.
  */
-_attribute_ram_code_noinline_ void flash_mspi_read_ram(unsigned char cmd, unsigned long addr, unsigned char addren, unsigned char dummy_cnt, unsigned char *data, unsigned long datalen)
+_attribute_ram_code_sec_noinline_ void flash_mspi_read_ram(unsigned char cmd, unsigned long addr, unsigned char addr_en, unsigned char dummy_cnt, unsigned char *data, unsigned long data_len)
 {
 	unsigned char r = irq_disable();
 
 	flash_send_cmd(cmd);
-	if(addren)
+	if(addr_en)
 	{
 		flash_send_addr(addr);
 	}
@@ -137,7 +137,7 @@ _attribute_ram_code_noinline_ void flash_mspi_read_ram(unsigned char cmd, unsign
 	mspi_wait();
 	mspi_ctrl_write(0x0a);		/* auto mode */
 	mspi_wait();
-	for(int i = 0; i < datalen; ++i)
+	for(int i = 0; i < data_len; ++i)
 	{
 		*data++ = mspi_get();
 		mspi_wait();
@@ -151,22 +151,23 @@ _attribute_ram_code_noinline_ void flash_mspi_read_ram(unsigned char cmd, unsign
  * @brief 		This function is used to write data or status to flash.
  * @param[in]   cmd			- the write command.
  * @param[in]   addr		- starting address.
- * @param[in]   addren		- whether need to send an address.
+ * @param[in]   addr_en		- whether need to send an address.
  * @param[out]  data		- the start address of the data buffer.
- * @param[in]   datalen		- the length(in byte) of content needs to read out.
+ * @param[in]   data_len	- the length(in byte) of content needs to read out.
  * @return 		none.
  */
-_attribute_ram_code_noinline_ void flash_mspi_write_ram(unsigned char cmd, unsigned long addr, unsigned char addren, const unsigned char *data, unsigned long datalen)
+_attribute_ram_code_sec_noinline_ void flash_mspi_write_ram(unsigned char cmd, unsigned long addr, unsigned char addr_en, unsigned char *data, unsigned long data_len)
 {
 	unsigned char r = irq_disable();
 
+	// important:  buf must not reside at flash, such as constant string.  If that case, pls copy to memory first before write
 	flash_send_cmd(FLASH_WRITE_ENABLE_CMD);
 	flash_send_cmd(cmd);
-	if(addren)
+	if(addr_en)
 	{
 		flash_send_addr(addr);
 	}
-	for(int i = 0; i < datalen; ++i)
+	for(int i = 0; i < data_len; ++i)
 	{
 		mspi_write(data[i]);
 		mspi_wait();
@@ -207,7 +208,7 @@ void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf)
  * @return 		none.
  * @note        the funciton support cross-page writing,which means the len of buf can bigger than 256.
  */
-void flash_write_page(unsigned long addr, unsigned long len, const unsigned char *buf)
+void flash_write_page(unsigned long addr, unsigned long len, unsigned char *buf)
 {
 	unsigned int ns = PAGE_SIZE - (addr&(PAGE_SIZE - 1));
 	int nw = 0;
@@ -250,9 +251,6 @@ void flash_write_status(flash_status_typedef_e type , unsigned short data)
 		flash_mspi_write_ram(FLASH_WRITE_STATUS_CMD_LOWBYTE, 0, 0, buf, 1);
 	}else if(type == FLASH_TYPE_16BIT_STATUS_ONE_CMD){
 		flash_mspi_write_ram(FLASH_WRITE_STATUS_CMD_LOWBYTE, 0, 0, buf, 2);
-	}else if(type == FLASH_TYPE_16BIT_STATUS_TWO_CMD){
-		flash_mspi_write_ram(FLASH_WRITE_STATUS_CMD_LOWBYTE, 0, 0, buf, 1);
-		flash_mspi_write_ram(FLASH_WRITE_STATUS_CMD_HIGHBYTE, 0, 0, &buf[1], 1);
 	}
 }
 
@@ -344,6 +342,8 @@ unsigned int flash_read_raw_mid(void)
 	flash_mspi_read_ram(FLASH_GET_JEDEC_ID, 0, 0, 0, (unsigned char*)(&flash_mid), 3);
 	return flash_mid;
 }
+
+
 
 /**
  * @brief	  	This function serves to read UID of flash.Before reading UID of flash, you must read MID of flash.
