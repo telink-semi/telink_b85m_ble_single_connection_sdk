@@ -169,8 +169,7 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 
 				#if (SMP_TEST_MODE == SMP_TEST_SC_NUMERIC_COMPARISON)
 					//NOTICE:smp NC confirm (vol-)"YES" or (vol+)"NO"
-					if(!(blc_smpMng.tk_status & TK_ST_NUMERIC_CHECK_YES) && !(blc_smpMng.tk_status & TK_ST_NUMERIC_CHECK_NO)){
-						if(blc_smpMng.tk_status & TK_ST_NUMERIC_COMPARE){
+					if(blc_smp_isWaitingToCfmNumericComparison()){
 							if(consumer_key == MKEY_VOL_DN){
 								blc_smp_setNumericComparisonResult(1);// YES
 								printf("confirmed YES\n");
@@ -184,7 +183,6 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 								led_onoff(LED_ON_LEVAL);
 							}
 						}
-					}
 				#endif
 			}
 			else
@@ -197,8 +195,7 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 				#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
 					 SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI || SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI)
 
-					if(!(blc_smpMng.tk_status & TK_ST_UPDATE)){
-						if (blc_smpMng.tk_status & TK_ST_REQUEST){
+					 if(blc_smp_isWaitingToSetPasskeyEntry()){
 							if( key_value <= VK_0 && key_value >= VK_1 && digital_key_cnt < 6){//key: 0~9
 								int i;
 								for(i = 0; i<10; i++){
@@ -224,7 +221,6 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 								}
 							}
 						}
-					}
 				#endif
 			}
 		}
