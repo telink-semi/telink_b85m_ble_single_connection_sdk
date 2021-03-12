@@ -207,6 +207,9 @@
 								<option id="com.telink.tc32eclipse.linker.option.libpath.639416709" name="Libraries Path (-L)" superClass="com.telink.tc32eclipse.linker.option.libpath" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/proj_lib}&quot;"/>
 								</option>
+								<option id="com.telink.tc32eclipse.linker.option.libs.434141861" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="lt_825x"/>
+								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1289719180" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
