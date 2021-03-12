@@ -342,7 +342,7 @@ unsigned int flash_read_raw_mid(void)
 	flash_mspi_read_ram(FLASH_GET_JEDEC_ID, 0, 0, 0, (unsigned char*)(&flash_mid), 3);
 	return flash_mid;
 }
-
+#endif
 
 
 /**
@@ -423,7 +423,7 @@ int flash_read_mid_uid_with_check(unsigned int *flash_mid ,unsigned char *flash_
 	}
 }
 
-#endif
+
 
 void flash_set_capacity(Flash_CapacityDef flash_cap)
 {

@@ -162,7 +162,6 @@ unsigned int flash_read_raw_mid(void);
  * @return    	MID of the flash.
  */
 unsigned int flash_read_mid(void);
-#if 0
 /**
  * @brief	  	This function serves to read UID of flash.Before reading UID of flash, you must read MID of flash.
  * 				and then you can look up the related table to select the idcmd and read UID of flash.
@@ -184,7 +183,6 @@ void flash_read_uid(unsigned char idcmd,unsigned char *buf, flash_uid_typedef_e 
  * @return		0: flash no uid or not a known flash model 	 1:the flash model is known and the uid is read.
  */
 int flash_read_mid_uid_with_check( unsigned int *flash_mid ,unsigned char *flash_uid);
-#endif
 
 void flash_set_capacity(Flash_CapacityDef flash_cap);
 
