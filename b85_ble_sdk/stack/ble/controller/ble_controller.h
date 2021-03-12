@@ -76,7 +76,6 @@
 
 
 #include "phy/phy.h"
-#include "phy/phy_stack.h"
 #include "phy/phy_test.h"
 
 
@@ -86,12 +85,8 @@
 
 /*********************************************************/
 //Remove when file merge to SDK //
-#include "stack/ble/ble_stack.h"
 #include "stack/ble/ble_config.h"
 #include "stack/ble/trace.h"
 
-#include "stack/ble/controller/ll/ll_stack.h"
-#include "stack/ble/controller/ll/ll_conn/conn_stack.h"
-/*********************************************************/
 
 #endif /* BLE_H_ */

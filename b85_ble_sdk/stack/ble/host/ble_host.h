@@ -52,7 +52,6 @@
 #include "stack/ble/host/l2cap/l2cap.h"
 
 
-#include "stack/ble/host/attr/attr_stack.h"
 #include "stack/ble/host/attr/att.h"
 #include "stack/ble/host/attr/gatt.h"
 
@@ -72,16 +71,10 @@
 
 /*********************************************************/
 //Remove when file merge to SDK //
-#include "stack/ble/ble_stack.h"
 #include "stack/ble/ble_config.h"
 //#include "stack/ble/debug.h"
 #include "stack/ble/trace.h"
 
-#include "stack/ble/host/host_stack.h"
-#include "stack/ble/host/l2cap/l2cap_stack.h"
-#include "stack/ble/host/attr/attr_stack.h"
-#include "stack/ble/host/smp/smp_stack.h"
-#include "stack/ble/host/gap/gap_stack.h"
 //#include "stack/ble/host/gap/gap_stack.h"
 /*********************************************************/
 

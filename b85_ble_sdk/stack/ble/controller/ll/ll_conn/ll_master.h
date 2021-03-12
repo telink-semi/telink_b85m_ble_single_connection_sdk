@@ -43,7 +43,8 @@ ble_sts_t	blm_ll_setHostChannel (u16 handle, u8 * map);
 
 
 rf_packet_l2cap_t *		blm_l2cap_packet_pack (u16 conn, u8 * raw_pkt);
+#if 0
 st_ll_conn_master_t *	blm_ll_getConnection (u16 h);
-
+#endif
 
 #endif /* LL_MASTER_H_ */

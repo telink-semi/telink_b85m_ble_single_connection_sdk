@@ -49,7 +49,6 @@
 
 #include "tl_common.h"
 #include "stack/ble/ble_common.h"
-#include "stack/ble/controller/ll/ll_stack.h"
 
 /**
  * @brief	BLE link layer state
@@ -280,10 +279,9 @@ void		bls_app_registerEventCallback (u8 e, blt_event_callback_t p);
 bool 		blc_ll_isBrxBusy (void);
 
 
-static inline void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code)
-{
-	bltParam.custom_access_code = accss_code;
-}
+
+void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code);
+
 
 #if (MCU_CORE_TYPE == MCU_CORE_9518)
 /**
@@ -297,13 +295,6 @@ ble_sts_t	blc_controller_check_appBufferInitialization(void);
 #endif
 
 
-static inline void blt_ll_set_ble_access_code_adv(void)
-{
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-	write_reg32 (0x80140808, bltParam.custom_access_code ? bltParam.custom_access_code : 0xd6be898e);
-#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	write_reg32 (0x800408, bltParam.custom_access_code ? bltParam.custom_access_code : 0xd6be898e);
-#endif
-}
+
 
 #endif /* LL__H_ */

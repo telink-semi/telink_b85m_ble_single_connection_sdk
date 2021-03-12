@@ -57,7 +57,11 @@ typedef struct {  //82
 
 }smp_m_param_save_t;
 
-
+typedef struct {
+	u8 bond_mark;
+	u8 adr_type;
+	u8 address[6];
+} mac_adr_t;
 
 
 //  6 byte slave_MAC   8 byte rand  2 byte ediv

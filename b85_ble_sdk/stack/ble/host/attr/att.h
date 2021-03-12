@@ -174,42 +174,6 @@ void  		blc_att_setPrepareWriteBuffer(u8 *p, u16 len);
 //Attention: this API hide in stack, user no need use !!!
 ble_sts_t	 blc_att_requestMtuSizeExchange (u16 connHandle, u16 mtu_size);
 
-/**
- * @brief	This function is used to set effective ATT MTU size
- * @param	connHandle - connect handle
- * @param	effective_mtu - bltAtt.effective_MTU
- * @return	none.
- */
-static inline void  blt_att_setEffectiveMtuSize(u16 connHandle, u8 effective_mtu)
-{
-	bltAtt.effective_MTU = effective_mtu;
-}
-/**
- * @brief	This function is used to reset effective ATT MTU size
- * @param	connHandle - connect handle
- * @return	none.
- */
-static inline void  blt_att_resetEffectiveMtuSize(u16 connHandle)
-{
-	bltAtt.effective_MTU = ATT_MTU_SIZE;
-}
-
-/**
- * @brief	This function is used to reset RX MTU size
- * @param	mtu_size - ATT MTU size
- * @return	0: success
- * 			other: fail
- */
-static inline void blt_att_resetRxMtuSize(u16 connHandle)
-{
-	bltAtt.init_MTU = ATT_MTU_SIZE;
-}
-
-static inline u16  blc_att_getEffectiveMtuSize(u16 connHandle)
-{
-	return bltAtt.effective_MTU;
-}
-
 #if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 /**
  * @brief      set device name

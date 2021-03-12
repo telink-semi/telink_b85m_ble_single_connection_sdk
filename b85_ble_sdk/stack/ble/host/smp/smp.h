@@ -47,7 +47,6 @@
 #define BLE_SMP_H_
 
 #include "stack/ble/ble_common.h"
-#include "smp_stack.h"
 
 
 
