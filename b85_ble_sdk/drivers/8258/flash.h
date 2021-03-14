@@ -184,6 +184,7 @@ void flash_read_uid(unsigned char idcmd,unsigned char *buf, flash_uid_typedef_e 
  */
 int flash_read_mid_uid_with_check( unsigned int *flash_mid ,unsigned char *flash_uid);
 
+
 void flash_set_capacity(Flash_CapacityDef flash_cap);
 
 Flash_CapacityDef flash_get_capacity(void);

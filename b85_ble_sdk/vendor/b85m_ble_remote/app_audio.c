@@ -1025,9 +1025,16 @@ void ui_enable_mic (int en)
 					audio_dmic_init(AUDIO_16K);
 
 				#else  //Amic config
-					gpio_set_output_en(GPIO_AMIC_SP, 0);
-					gpio_set_output_en(GPIO_AMIC_SN, 0);
-					audio_amic_init(AUDIO_16K);
+					#if (MCU_CORE_TYPE == MCU_CORE_827x)
+						//Amic config
+						audio_set_mute_pga(0);  ////enable audio need follow this step: 1 enable bias; 2 disable mute_pga;
+						gpio_set_output_en(GPIO_AMIC_SP, 0);
+						audio_amic_init(AUDIO_16K);							  //3 init; 4 delay about 17ms; 5 enable mute_pga.
+					#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+						gpio_set_output_en(GPIO_AMIC_SP, 0);
+						gpio_set_output_en(GPIO_AMIC_SN, 0);
+						audio_amic_init(AUDIO_16K);
+					#endif
 				#endif
 
 				#if (IIR_FILTER_ENABLE)

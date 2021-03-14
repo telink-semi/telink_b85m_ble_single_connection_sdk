@@ -155,7 +155,7 @@ static int serial_id = 0;
 
 unsigned short adpcm_serial_num = 0;
 
-_attribute_ram_code_ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start)
+void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start)
 {
 	int i, j;
 	unsigned short code=0;
@@ -233,7 +233,7 @@ int predict_idx = 0;
 /////////////////////////////////////////////////////////////////////////////////
 //	256-samples split into 2
 /////////////////////////////////////////////////////////////////////////////////
-_attribute_ram_code_ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start)
+void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start)
 {
 	int i, j;
 	unsigned short code=0;

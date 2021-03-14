@@ -658,7 +658,7 @@ void host_update_conn_proc(void)
 
 #if (TL_AUDIO_MODE & TL_AUDIO_MASK_HID_SERVICE_CHANNEL)
 	u8 audio_start = 0x01;
-	u8 audio_stop  = 0x00;
+	u8 adpcm_hid_audio_stop  = 0x00;
 	u8 audio_config  = 0x02;
 	extern u8 mic_cnt;
 	extern u8 att_mic_rcvd;
@@ -758,7 +758,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 					}
 					else if(rcu_cmd == MIC_CLOSE_FROM_RCU){ //close mic
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_stop, 1);
+						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);
 						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
 							//fail
 //							while(1);
@@ -787,7 +787,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 						abuf_init ();
 					}
 					else if(tem_data == 0x24){
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_stop, 1);   //close mic
+						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);   //close mic
 						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
 							//fail
 							while(1);
@@ -815,7 +815,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 					}
 					else if(rcu_cmd == MIC_CLOSE_FROM_RCU){ //close mic
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_stop, 1);
+						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);
 						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
 							//fail
 //							while(1);
@@ -843,7 +843,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 						}
 					}
 					else if(tem_data == 0x34){
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_stop, 1);   //close mic
+						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);   //close mic
 						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
 							//fail
 							while(1);
@@ -865,7 +865,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 						}
 					}
 					else if(tem_data == 0x34){
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_stop, 1);   //close mic
+						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);   //close mic
 						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
 							//fail
 							while(1);
