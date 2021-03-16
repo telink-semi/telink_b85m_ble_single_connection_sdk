@@ -147,7 +147,8 @@ void app_rf_emi_test_start(void)
 
 void emicarrieronly(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
-	rf_emi_single_tone(pwr,rf_chn);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_single_tone(power,rf_chn);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode ));
@@ -156,7 +157,8 @@ void emicarrieronly(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_ch
 
 void emi_con_prbs9(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
-	rf_emi_tx_continue_setup(rf_mode,pwr,rf_chn,0);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_tx_continue_setup(rf_mode,power,rf_chn,0);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode ))
@@ -195,7 +197,8 @@ void emirx(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 void emitxprbs9(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
 	unsigned int tx_num=0;
-	rf_emi_tx_burst_setup(rf_mode,pwr,rf_chn,0);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_tx_burst_setup(rf_mode,power,rf_chn,0);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode  && ((read_reg8(0x40005)) == tx_cnt ) ))
@@ -215,8 +218,8 @@ void emitxprbs9(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 void emitx55(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
 	unsigned int tx_num=0;
-//	rf_emi_tx_burst_setup_ramp(rf_mode,pwr,rf_chn,2);
-	rf_emi_tx_burst_setup(rf_mode,pwr,rf_chn,2);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_tx_burst_setup(rf_mode,power,rf_chn,2);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode && ((read_reg8(0x40005)) == tx_cnt ) ))
@@ -236,7 +239,8 @@ void emitx55(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 void emitx0f(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
 	unsigned int tx_num=0;
-	rf_emi_tx_burst_setup(rf_mode,pwr,rf_chn,1);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_tx_burst_setup(rf_mode,power,rf_chn,1);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode && ((read_reg8(0x40005)) == tx_cnt ) ))
@@ -254,7 +258,8 @@ void emitx0f(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 
 void emi_con_tx55(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
-	rf_emi_tx_continue_setup(rf_mode,pwr,rf_chn,2);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_tx_continue_setup(rf_mode,power,rf_chn,2);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode ))
@@ -266,7 +271,8 @@ void emi_con_tx55(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 
 void emi_con_tx0f(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 {
-	rf_emi_tx_continue_setup(rf_mode,pwr,rf_chn,1);
+	RF_PowerTypeDef power = rf_power_Level_list[pwr];
+	rf_emi_tx_continue_setup(rf_mode,power,rf_chn,1);
 	while( ((read_reg8(0x40006)) == run ) &&  ((read_reg8(0x40007)) == cmd_now )\
 			&& ((read_reg8(0x40008)) == power_level ) &&  ((read_reg8(0x40009)) == chn )\
 			&& ((read_reg8(0x4000a)) == mode ))
