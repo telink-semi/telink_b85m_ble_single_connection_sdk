@@ -104,7 +104,12 @@ void app_uart_test_init(void)
 #elif(UART_MODE==UART_NDMA)
 	uart_dma_enable(0, 0);
 
-	irq_disable_type(FLD_IRQ_DMA_EN);
+	#if(MCU_CORE_TYPE == MCU_CORE_827x)
+		irq_disable_type(FLD_IRQ_DMA_EN);
+	#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+		irq_clr_mask(FLD_IRQ_DMA_EN);
+	#endif
+
 	dma_chn_irq_enable(FLD_DMA_CHN_UART_RX | FLD_DMA_CHN_UART_TX, 0);
 
 	uart_irq_enable(1,0);   //uart RX irq enable

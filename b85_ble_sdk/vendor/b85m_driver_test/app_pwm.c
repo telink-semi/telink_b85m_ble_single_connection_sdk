@@ -23,7 +23,6 @@
 #include "drivers.h"
 
 
-
 //normal mode
 #define  TEST_PWM_NORMAL_MODE_1				1
 #define  TEST_PWM_NORMAL_MODE_2				2
@@ -37,10 +36,11 @@
 
 
 
-
-#define  TEST_PWM_SELECT					TEST_PWM0_DMA_FIFO_MODE
-
-
+#if(MCU_CORE_TYPE == MCU_CORE_827x)
+	#define  TEST_PWM_SELECT					TEST_PWM0_DMA_FIFO_MODE
+#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+	#define  TEST_PWM_SELECT					TEST_PWM_NORMAL_MODE_1
+#endif
 
 
 

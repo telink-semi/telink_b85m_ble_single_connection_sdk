@@ -26,6 +26,9 @@
 void spi_slave_test_init(void)
 {
 	spi_slave_init((unsigned char)(CLOCK_SYS_CLOCK_HZ/(2*500000)-1),SPI_MODE0);           //slave mode init
-
-    spi_slave_gpio_set(SPI_GPIO_SCL_A4,SPI_GPIO_CS_D6,SPI_GPIO_SDO_A2,SPI_GPIO_SDI_A3);      //slave mode £ºA2A3A4D6 spi pin set
+#if(MCU_CORE_TYPE == MCU_CORE_827x)
+    spi_slave_gpio_set(SPI_GPIO_SCL_A4,SPI_GPIO_CS_D6,SPI_GPIO_SDO_A2,SPI_GPIO_SDI_A3);      //slave mode ï¼šA2A3A4D6 spi pin set
+#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+    spi_slave_gpio_set(SPI_GPIO_GROUP_A2A3A4D6);      //slave mode Â£Âºspi pin set
+#endif
 }

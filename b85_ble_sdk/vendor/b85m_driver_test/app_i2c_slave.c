@@ -98,9 +98,11 @@ int i2c_irq_flag = IRQ_IIC_CLEAR;
 
 void i2c_slave_test_init(void)
 {
-
+#if(MCU_CORE_TYPE == MCU_CORE_827x)
 	i2c_gpio_set(I2C_GPIO_SDA_C0,I2C_GPIO_SCL_C1);  	//SDA/CK : C0/C1
-
+#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+	i2c_gpio_set(I2C_GPIO_GROUP_C0C1);  	//SDA/CK : C0/C1
+#endif
 
 #if(I2C_SLAVE_MODE == SLAVE_DMA_MODE)
 	//slave device id 0x5C(write) 0x5D(read)

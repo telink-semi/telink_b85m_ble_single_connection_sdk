@@ -59,22 +59,31 @@ void adc_gpio_ain_init(void)
 	gpio_set_output_en(GPIO_PB4, 0);
 	gpio_write(GPIO_PB4, 0);
 
-	adc_set_ain_channel_differential_mode(B4P, GND);
+	#if(MCU_CORE_TYPE == MCU_CORE_827x)
+		adc_set_ain_channel_differential_mode(B4P, GND);
 
+		//set misc channel resolution 14 bit
+		//notice that: in differential_mode MSB is sign bit, rest are data,  here BIT(13) is sign bit
+		adc_set_resolution(RES14);  //set resolution
 
-	//set misc channel resolution 14 bit
-	//notice that: in differential_mode MSB is sign bit, rest are data,  here BIT(13) is sign bit
-	adc_set_resolution(RES14);  //set resolution
+		//set misc channel vref 1.2V
+		adc_set_ref_voltage(ADC_VREF_1P2V);  					//set channel Vref
 
+		//set misc t_sample 6 cycle of adc clock:  6 * 1/4M
+		adc_set_tsample_cycle(SAMPLING_CYCLES_6);  	//Number of ADC clock cycles in sampling phase
+	#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+		adc_set_ain_channel_differential_mode(ADC_MISC_CHN, B4P, GND);
 
-	//set misc channel vref 1.2V
-	adc_set_ref_voltage(ADC_VREF_1P2V);  					//set channel Vref
+		//set misc channel resolution 14 bit
+		//notice that: in differential_mode MSB is sign bit, rest are data,  here BIT(13) is sign bit
+		adc_set_resolution(ADC_MISC_CHN, RES14);  //set resolution
 
+		//set misc channel vref 1.2V
+		adc_set_ref_voltage(ADC_MISC_CHN, ADC_VREF_1P2V);  					//set channel Vref
 
-
-	//set misc t_sample 6 cycle of adc clock:  6 * 1/4M
-	adc_set_tsample_cycle(SAMPLING_CYCLES_6);  	//Number of ADC clock cycles in sampling phase
-
+		//set misc t_sample 6 cycle of adc clock:  6 * 1/4M
+		adc_set_tsample_cycle(ADC_MISC_CHN, SAMPLING_CYCLES_6);  	//Number of ADC clock cycles in sampling phase
+	#endif
 	//set Analog input pre-scaling 1/8
 	adc_set_ain_pre_scaler(ADC_PRESCALER_1F8);
 }
@@ -104,23 +113,33 @@ void adc_vbat_detect_init(void)
 	gpio_set_input_en(GPIO_PB0, 0);
 	gpio_set_output_en(GPIO_PB0, 1);
 	gpio_write(GPIO_PB0, 1);
+	#if(MCU_CORE_TYPE == MCU_CORE_827x)
+		//set misc channel use differential_mode(telink advice: only differential mode is available)
+		adc_set_ain_channel_differential_mode(B0P, GND);
 
-	//set misc channel use differential_mode(telink advice: only differential mode is available)
-	adc_set_ain_channel_differential_mode(B0P, GND);
+		//set misc channel resolution 14 bit
+		//notice that: in differential_mode MSB is sign bit, rest are data,  here BIT(13) is sign bit
+		adc_set_resolution(RES14);   //set resolution
 
-	//set misc channel resolution 14 bit
-	//notice that: in differential_mode MSB is sign bit, rest are data,  here BIT(13) is sign bit
-	adc_set_resolution(RES14);   //set resolution
+		//set misc channel vref 1.2V
+		adc_set_ref_voltage(ADC_VREF_1P2V);  					//set channel Vref
 
+		//set misc t_sample 6 cycle of adc clock:  6 * 1/4M
+		adc_set_tsample_cycle(SAMPLING_CYCLES_6);  	//Number of ADC clock cycles in sampling phase
+	#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+		//set misc channel use differential_mode(telink advice: only differential mode is available)
+		adc_set_ain_channel_differential_mode(ADC_MISC_CHN, B0P, GND);
 
+		//set misc channel resolution 14 bit
+		//notice that: in differential_mode MSB is sign bit, rest are data,  here BIT(13) is sign bit
+		adc_set_resolution(ADC_MISC_CHN, RES14);   //set resolution
 
-	//set misc channel vref 1.2V
-	adc_set_ref_voltage(ADC_VREF_1P2V);  					//set channel Vref
+		//set misc channel vref 1.2V
+		adc_set_ref_voltage(ADC_MISC_CHN, ADC_VREF_1P2V);  					//set channel Vref
 
-
-
-	//set misc t_sample 6 cycle of adc clock:  6 * 1/4M
-	adc_set_tsample_cycle(SAMPLING_CYCLES_6);  	//Number of ADC clock cycles in sampling phase
+		//set misc t_sample 6 cycle of adc clock:  6 * 1/4M
+		adc_set_tsample_cycle(ADC_MISC_CHN, SAMPLING_CYCLES_6);  	//Number of ADC clock cycles in sampling phase
+	#endif
 
 	//set Analog input pre-scaling 1/8
 	adc_set_ain_pre_scaler(ADC_PRESCALER_1F8);

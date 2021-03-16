@@ -54,7 +54,11 @@ void spi_master_test_init(void)
 {
 	//spi clock 500K, only master need set i2c clock
 	spi_master_init((unsigned char)(CLOCK_SYS_CLOCK_HZ/(2*500000)-1),SPI_MODE0);          //div_clock. spi_clk = sys_clk/((div_clk+1)*2),mode select
-    spi_master_gpio_set(SPI_GPIO_SCL_A4,SPI_GPIO_CS_D6,SPI_GPIO_SDO_A2,SPI_GPIO_SDI_A3);    //master mode £ºspi pin set
+#if(MCU_CORE_TYPE == MCU_CORE_827x)
+	spi_master_gpio_set(SPI_GPIO_SCL_A4,SPI_GPIO_CS_D6,SPI_GPIO_SDO_A2,SPI_GPIO_SDI_A3);    //master mode ï¼šspi pin set
+#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+	spi_master_gpio_set(SPI_GPIO_GROUP_A2A3A4D6);    //master mode Â£Âºspi pin set
+#endif
 }
 
 void spi_master_mainloop(void)

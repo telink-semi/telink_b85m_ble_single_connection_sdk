@@ -63,7 +63,7 @@ extern "C" {
 
 
 
-#define DRIVER_TEST_MODE								TEST_GPIO_IRQ
+#define DRIVER_TEST_MODE								TEST_UART
 
 
 

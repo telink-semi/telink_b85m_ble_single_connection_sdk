@@ -86,9 +86,11 @@ void i2c_master_test_init(void)
 {
 
 	//I2C pin set
+#if(MCU_CORE_TYPE == MCU_CORE_827x)
 	i2c_gpio_set(I2C_GPIO_SDA_C0,I2C_GPIO_SCL_C1);  	//SDA/CK : C0/C1
-
-
+#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+	i2c_gpio_set(I2C_GPIO_GROUP_C0C1);  	//SDA/CK : C0/C1
+#endif
 
 	//slave device id 0x5C(write) 0x5D(read)
 	//i2c clock 200K, only master need set i2c clock

@@ -72,7 +72,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -149,7 +149,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -207,7 +207,7 @@
 								<option id="com.telink.tc32eclipse.linker.option.libpath.639416709" name="Libraries Path (-L)" superClass="com.telink.tc32eclipse.linker.option.libpath" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/proj_lib}&quot;"/>
 								</option>
-								<option id="com.telink.tc32eclipse.linker.option.libs.434141861" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
+								<option id="com.telink.tc32eclipse.linker.option.libs.434141861" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1289719180" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
@@ -227,7 +227,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -305,7 +305,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -382,7 +382,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -459,7 +459,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -536,7 +536,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -613,7 +613,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -690,7 +690,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -701,7 +701,7 @@
 			<storageModule moduleId="scannerConfiguration"/>
 		</cconfiguration>
 		<cconfiguration id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030" moduleId="org.eclipse.cdt.core.settings" name="825x_internal_test">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030" moduleId="org.eclipse.cdt.core.settings" name="825x_driver_test">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -712,7 +712,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="com.telink.tc32eclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=com.telink.tc32eclipse.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030" name="825x_internal_test" parent="com.telink.tc32eclipse.configuration.app.debug" postannouncebuildStep="" postbuildStep="&quot;${workspace_loc:/${ProjName}}/tl_check_fw.sh&quot;   ${ConfigName}   ${ProjName}" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactName="${ProjName}" buildArtefactType="com.telink.tc32eclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=com.telink.tc32eclipse.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030" name="825x_driver_test" parent="com.telink.tc32eclipse.configuration.app.debug" postannouncebuildStep="" postbuildStep="&quot;${workspace_loc:/${ProjName}}/tl_check_fw.sh&quot;   ${ConfigName}   ${ProjName}" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030." name="/" resourcePath="">
 						<toolChain errorParsers="" id="com.telink.tc32eclipse.toolchain.TC32Win.app.debug.2038664393" name="TC32-GCC Toolchain" superClass="com.telink.tc32eclipse.toolchain.TC32Win.app.debug">
 							<option id="com.telink.tc32eclipse.toolchain.options.toolchain.objcopy.flash.app.debug.197326000" name="Generate binary file for Flash memory" superClass="com.telink.tc32eclipse.toolchain.options.toolchain.objcopy.flash.app.debug"/>
@@ -733,7 +733,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.728448638" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__PROJECT_8258_INTERNAL_TEST__=1"/>
+									<listOptionValue builtIn="false" value="__PROJECT_8258_DRIVER_TEST__=1"/>
 									<listOptionValue builtIn="false" value="CHIP_TYPE=CHIP_TYPE_825x"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.std.1420868033" name="Language Standard" superClass="com.telink.tc32eclipse.compiler.option.std" value="com.telink.tc32eclipse.compiler.option.std.gnu99" valueType="enumerated"/>
@@ -843,7 +843,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -920,7 +920,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -931,7 +931,7 @@
 			<storageModule moduleId="scannerConfiguration"/>
 		</cconfiguration>
 		<cconfiguration id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030.600696647">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030.600696647" moduleId="org.eclipse.cdt.core.settings" name="827x_internal_test">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030.600696647" moduleId="org.eclipse.cdt.core.settings" name="827x_driver_test">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -942,7 +942,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="com.telink.tc32eclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=com.telink.tc32eclipse.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030.600696647" name="827x_internal_test" parent="com.telink.tc32eclipse.configuration.app.debug" postannouncebuildStep="" postbuildStep="&quot;${workspace_loc:/${ProjName}}/tl_check_fw.sh&quot;   ${ConfigName}   ${ProjName}" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactName="${ProjName}" buildArtefactType="com.telink.tc32eclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=com.telink.tc32eclipse.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030.600696647" name="827x_driver_test" parent="com.telink.tc32eclipse.configuration.app.debug" postannouncebuildStep="" postbuildStep="&quot;${workspace_loc:/${ProjName}}/tl_check_fw.sh&quot;   ${ConfigName}   ${ProjName}" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="com.telink.tc32eclipse.configuration.app.debug.1970299845.351063629.799040038.1424736676.22574852.888375030.600696647." name="/" resourcePath="">
 						<toolChain errorParsers="" id="com.telink.tc32eclipse.toolchain.TC32Win.app.debug.1655781883" name="TC32-GCC Toolchain" superClass="com.telink.tc32eclipse.toolchain.TC32Win.app.debug">
 							<option id="com.telink.tc32eclipse.toolchain.options.toolchain.objcopy.flash.app.debug.1003101535" name="Generate binary file for Flash memory" superClass="com.telink.tc32eclipse.toolchain.options.toolchain.objcopy.flash.app.debug"/>
@@ -962,7 +962,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.125954846" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__PROJECT_8278_INTERNAL_TEST__=1"/>
+									<listOptionValue builtIn="false" value="__PROJECT_8278_DRIVER_TEST__=1"/>
 									<listOptionValue builtIn="false" value="CHIP_TYPE=CHIP_TYPE_827x"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.std.1285033114" name="Language Standard" superClass="com.telink.tc32eclipse.compiler.option.std" value="com.telink.tc32eclipse.compiler.option.std.gnu99" valueType="enumerated"/>
@@ -986,7 +986,7 @@
 							</tool>
 							<tool id="com.telink.tc32eclipse.tool.archiver.TC32Win.base.1227772504" name="TC32 Archiver" superClass="com.telink.tc32eclipse.tool.archiver.TC32Win.base"/>
 							<tool command="tc32-elf-objdump" commandLinePattern="${COMMAND} ${FLAGS} ${INPUTS} &gt;${OUTPUT}" errorParsers="" id="com.telink.tc32eclipse.tool.objdump.TC32Win.app.debug.35640482" name="TC32 Create Extended Listing" superClass="com.telink.tc32eclipse.tool.objdump.TC32Win.app.debug">
-								<option id="com.telink.tc32eclipse.objdump.option.output.1627306502" name="Output Filename" superClass="com.telink.tc32eclipse.objdump.option.output" value="827x_internal_test.lst" valueType="string"/>
+								<option id="com.telink.tc32eclipse.objdump.option.output.1627306502" name="Output Filename" superClass="com.telink.tc32eclipse.objdump.option.output" value="827x_driver_test.lst" valueType="string"/>
 							</tool>
 							<tool command="tc32-elf-objcopy" commandLinePattern="${COMMAND} ${FLAGS} ${INPUTS} ${OUTPUT}" errorParsers="" id="com.telink.tc32eclipse.tool.objcopy.flash.TC32Win.app.debug.1494891057" name="TC32 Create Flash image" superClass="com.telink.tc32eclipse.tool.objcopy.flash.TC32Win.app.debug">
 								<option id="com.telink.tc32eclipse.objcopy.flash.option.output.417173194" name="Output Filename" superClass="com.telink.tc32eclipse.objcopy.flash.option.output" value="" valueType="string"/>
@@ -1074,7 +1074,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -1150,7 +1150,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -1227,7 +1227,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vendor/b85m_driver_test|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
