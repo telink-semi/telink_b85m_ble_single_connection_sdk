@@ -60,11 +60,11 @@
 MYFIFO_INIT(hci_rx_fifo, HCI_RXFIFO_SIZE, HCI_RXFIFO_NUM);
 MYFIFO_INIT(hci_tx_fifo, HCI_TXFIFO_SIZE, HCI_TXFIFO_NUM);
 
-#define RX_FIFO_SIZE	64
-#define RX_FIFO_NUM		8
+#define RX_FIFO_SIZE	288
+#define RX_FIFO_NUM		4
 
-#define TX_FIFO_SIZE	40
-#define TX_FIFO_NUM		8
+#define TX_FIFO_SIZE	264
+#define TX_FIFO_NUM		4
 
 
 

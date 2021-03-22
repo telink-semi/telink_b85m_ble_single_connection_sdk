@@ -60,11 +60,8 @@ _attribute_data_retention_	u32 flash_sector_calibration = CFG_ADR_CALIBRATION_51
 void blc_readFlashSize_autoConfigCustomFlashSector(void)
 {
 	u8 temp_buf[4];
-#if(MCU_CORE_TYPE == MCU_CORE_825x)
 	*(u32*)temp_buf = flash_read_mid();
-#elif(MCU_CORE_TYPE == MCU_CORE_827x)
-	flash_read_mid(temp_buf);
-#endif
+
 	u8	flash_cap = temp_buf[2];
 	unsigned char adc_vref_calib_value_rd[4] = {0};
 

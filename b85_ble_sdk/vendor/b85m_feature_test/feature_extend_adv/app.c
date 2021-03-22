@@ -568,7 +568,6 @@ void user_init_normal(void)
 	///////////////////// Power Management initialization///////////////////
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
 
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)

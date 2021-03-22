@@ -1,7 +1,7 @@
 /********************************************************************************************************
- * @file	flash_mid001460c8.c
+ * @file	flash_type.h
  *
- * @brief	This is the source file for b85m
+ * @brief	This is the header file for b85m
  *
  * @author	Driver Group
  * @date	2020
@@ -43,47 +43,51 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-#include "flash_type.h"
+#ifndef __FLASH_COMPATIBLE_H__
+#define __FLASH_COMPATIBLE_H__
+
+#include "flash.h"
+#include "flash_mid1160C8.h"	// GD25LD10C
+#include "flash_mid1360C8.h"	// GD25LD40C
+#include "flash_mid1460C8.h"	// GD25LD80C
+#include "flash_mid11325E.h"	// ZB25WD10A
+#include "flash_mid13325E.h"	// ZB25WD40B
+#include "flash_mid14325E.h"	// ZB25WD80B
 
 #if FLASH_LOCK_EN
 /**
- * @brief 		This function reads the status of flash.
+ * @brief		This function reads the status of flash.
+ * @param[in] 	cmd	- the cmd of read status.
  * @return 		the value of status.
+ * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-unsigned char flash_read_status_mid001460c8(void)
-{
-	return flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
-}
+unsigned char flash_read_status(unsigned char cmd);
 
 /**
  * @brief 		This function write the status of flash.
+ * @param[in]  	type	- the type of status.8 bit or 16 bit.
  * @param[in]  	data	- the value of status.
- * @param[in]  	bit		- the range of bits to be modified when writing status.
  * @return 		none.
+ * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_write_status_mid001460c8(unsigned char data, mid001460c8_write_status_bit_e bit)
-{
-	unsigned char status = flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
-	data |= (status & ~(bit));
-	flash_write_status(FLASH_TYPE_8BIT_STATUS, data);
-}
+void flash_write_status(flash_status_typedef_e type , unsigned short data);
 
-/**
- * @brief 		This function serves to set the protection area of the flash.
- * @param[in]   data	- refer to the protection area definition in the .h file.
- * @return 		none.
- */
-void flash_lock_mid001460c8(mid001460c8_lock_block_e data)
-{
-	flash_write_status_mid001460c8(data, FLASH_WRITE_STATUS_BP_MID001460C8);
-}
-
-/**
- * @brief 		This function serves to flash release protection.
- * @return 		none.
- */
-void flash_unlock_mid001460c8(void)
-{
-	flash_write_status_mid001460c8(FLASH_LOCK_NONE_MID001460C8, FLASH_WRITE_STATUS_BP_MID001460C8);
-}
 #endif
+#endif
+
