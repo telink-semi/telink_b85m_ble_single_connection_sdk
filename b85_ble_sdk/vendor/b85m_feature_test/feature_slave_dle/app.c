@@ -64,7 +64,7 @@
 	#define TX_FIFO_NUM		8
 
 	#define MTU_SIZE_SETTING   			 247
-	#define DLE_TX_SUPPORTED_DATA_LEN    MAX_OCTETS_DATA_LEN_EXTENSION //264-12 = 252 > Tx max:251
+	#define DLE_TX_SUPPORTED_DATA_LEN    251//MAX_OCTETS_DATA_LEN_EXTENSION //264-12 = 252 > Tx max:251
 #else
 	#define RX_FIFO_SIZE	224 //rx-24   max:200+24 = 224  16 align-> 224
 	#define RX_FIFO_NUM		8
