@@ -93,6 +93,7 @@ typedef int (*blc_main_loop_phyTest_callback_t)(void);
 #define			BLT_EV_FLAG_CONN_PARA_UPDATE					13
 #define			BLT_EV_FLAG_SUSPEND_ENTER						14
 #define			BLT_EV_FLAG_SUSPEND_EXIT						15
+#define			BLT_EV_FLAG_VERSION_IND_REV						16
 
 
 

@@ -402,7 +402,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 	switch(event)
 	{
-		case GAP_EVT_SMP_PARING_BEAGIN:
+		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
 			printf("Pairing begin\n");
 
@@ -413,7 +413,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		}
 		break;
 
-		case GAP_EVT_SMP_PARING_SUCCESS:
+		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
 			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
 			printf("Pairing success:bond flg %s\n", p->bonding ?"true":"false");
@@ -427,7 +427,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		}
 		break;
 
-		case GAP_EVT_SMP_PARING_FAIL:
+		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
 			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
 			printf("Pairing failed:rsn:0x%x\n", p->reason);

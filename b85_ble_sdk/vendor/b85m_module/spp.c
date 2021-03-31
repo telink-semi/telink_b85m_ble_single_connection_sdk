@@ -178,13 +178,13 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 	switch(event)
 	{
-		case GAP_EVT_SMP_PARING_BEAGIN:
+		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
 
 		}
 		break;
 
-		case GAP_EVT_SMP_PARING_SUCCESS:
+		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
 			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
 
@@ -197,7 +197,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		}
 		break;
 
-		case GAP_EVT_SMP_PARING_FAIL:
+		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
 			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
 		}

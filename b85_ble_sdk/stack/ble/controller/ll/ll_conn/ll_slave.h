@@ -97,7 +97,13 @@ u16			bls_ll_getConnectionLatency(void);
  */
 u16			bls_ll_getConnectionTimeout(void);
 
-
+/**
+ * @brief     for user to send LL_VERSION_IND.
+ * @param     connHandle: BLS_CONN_HANDLE indicate slave role;
+ * @return    status, 0x00 : succeed
+ * 					  other: failed
+ */
+ble_sts_t	bls_ll_readRemoteVersion(u16 connHandle);
 
 /**
  * @brief      used to set telink defined event mask for BLE module only.

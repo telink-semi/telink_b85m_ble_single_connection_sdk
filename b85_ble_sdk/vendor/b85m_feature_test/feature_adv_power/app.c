@@ -269,7 +269,7 @@ void user_init_normal(void)
 
 	#if 1 	//ADV data length: 16 byte
 		u8 tbl_advData[] = {
-			 14, 0x09, 't', 'e', 's', 't', 'a', 'd', 'v', '8', '9', 'A', 'B', 'C', 'D', 'E',
+			 15, 0x09, 't', 'e', 's', 't', 'a', 'd', 'v', '8', '9', 'A', 'B', 'C', 'D', 'E',
 			};
 	#else  	//ADV data length: max 31 byte
 		u8 tbl_advData[] = {
