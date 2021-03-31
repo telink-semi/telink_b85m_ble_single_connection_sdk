@@ -1,0 +1,33 @@
+stages:
+  - build
+  - clean_build
+
+build:
+  stage: build
+  tags:
+    - LINUX
+    - TC32
+  before_script:
+  script:
+    - which tc32-elf-gcc
+    - chmod +x b85_ble_sdk/*.sh
+    - date
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import ./b85_ble_sdk/  -cleanBuild $ECLIPSE_PROJECT/$ECLIPSE_BUILD_TARGET
+    - date
+
+  artifacts:
+    paths:
+    - "ble_sdk_multimode/825x_ble_remote/*.bin"
+    - "ble_sdk_multimode/825x_ble_remote/*.lst"
+    - "ble_sdk_multimode/825x_ble_remote/*.elf"
+
+clean_build:
+  stage: clean_build
+  tags:
+    - LINUX
+    - TC32
+  script:
+    - ls -a
+    - rm -r * .git*
+    - ls -a
+  when: always
