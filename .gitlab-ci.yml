@@ -17,9 +17,9 @@ build:
 
   artifacts:
     paths:
-    - "ble_sdk_multimode/825x_ble_remote/*.bin"
-    - "ble_sdk_multimode/825x_ble_remote/*.lst"
-    - "ble_sdk_multimode/825x_ble_remote/*.elf"
+    - "b85_ble_sdk/825x_ble_remote/*.bin"
+    - "b85_ble_sdk/825x_ble_remote/*.lst"
+    - "b85_ble_sdk/825x_ble_remote/*.elf"
 
 clean_build:
   stage: clean_build
