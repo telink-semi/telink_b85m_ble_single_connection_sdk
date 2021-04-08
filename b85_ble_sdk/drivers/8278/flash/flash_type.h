@@ -47,12 +47,12 @@
 #define __FLASH_COMPATIBLE_H__
 
 #include "flash.h"
-#include "flash_mid1160C8.h"	// GD25LD10C
-#include "flash_mid1360C8.h"	// GD25LD40C
-#include "flash_mid1460C8.h"	// GD25LD80C
-#include "flash_mid11325E.h"	// ZB25WD10A
-#include "flash_mid13325E.h"	// ZB25WD40B
-#include "flash_mid14325E.h"	// ZB25WD80B
+#include "flash_mid1160c8.h"	// GD25LD10C
+#include "flash_mid1360c8.h"	// GD25LD40C
+#include "flash_mid1460c8.h"	// GD25LD80C
+#include "flash_mid11325e.h"	// ZB25WD10A
+#include "flash_mid13325e.h"	// ZB25WD40B
+#include "flash_mid14325e.h"	// ZB25WD80B
 
 #if FLASH_LOCK_EN
 /**
