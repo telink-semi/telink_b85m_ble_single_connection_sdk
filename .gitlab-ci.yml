@@ -1,7 +1,7 @@
 stages:
   - build
   - clean_build
-
+  - scc
 build:
   stage: build
   tags:
@@ -31,3 +31,16 @@ clean_build:
     - rm -r * .git*
     - ls -a
   when: always
+  
+  scc:
+  stage: scc 
+  script:
+    - echo "Enter scc stage"
+    - scc | tee scc.txt
+    - bash /usr/bin/scc_calc.sh
+    - echo "The End SCC result:"
+    - cat scc.txt
+  artifacts:
+    paths:
+    - scc.txt
+
