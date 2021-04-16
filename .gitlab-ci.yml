@@ -1,5 +1,6 @@
 stages:
   - genLicense
+  - checkLicense
   - build
   - clean_build
   
@@ -20,6 +21,25 @@ genLicense:
     - "mismatch_license_file_gen.txt"
   when: manual
   
+checkLicense:
+  variables:
+    CODE_COMPILE_ARCH: 'TC32'
+    COV_PF_CATALOG: 'BLE'
+  stage: checkLicense
+  allow_failure: yes
+  before_script:
+  script:
+    - date
+    - check_license
+    #- generat_license_list # For no license files
+    - date
+  artifacts:
+    when: always
+    paths:
+    - "mismatch_license.txt"
+    - "no_license*.txt"
+    - "unknow_type_file.txt"
+
 build:
   stage: build
   tags:
