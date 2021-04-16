@@ -3,7 +3,9 @@ stages:
   - checkLicense
   - build
   - clean_build
-  
+  - plainPW_check
+  - misspellChecking 
+
 genLicense:
   variables:
     CODE_COMPILE_ARCH: 'TC32'
@@ -70,4 +72,28 @@ clean_build:
     - ls -a
   when: always
   
+plainPW_check:
+  stage: plainPW_check 
+  script:
+    - echo "Enter Plain Password checking stage"
+    - check_plain_weak_password | tee result.txt
+    - ls -l result.txt
+    - echo "Error List:"
+    - cat result.txt
+  artifacts:
+    paths:
+    - result.txt
+  when: manual
+
+misspellChecking:
+  stage: misspellChecking
+  tags:
+    - LINUX
+  script:
+    - echo "--------------- Begin ------------------------"
+    - misspell-check
+    - echo "---------------- End -----------------------"
+  artifacts:
+    paths:
+    - misspell_result.txt 
 
