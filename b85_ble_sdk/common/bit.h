@@ -86,7 +86,7 @@
 #define BIT_FLIP(x, n)   		((x) ^= BIT(n))
 #define BIT_SET_HIGH(x) 		((x) |=  BIT((sizeof((x))*8-1)))				// set the highest bit
 #define BIT_CLR_HIGH(x) 		((x) &= ~ BIT((sizeof((x))*8-1)))				// clr the highest bit
-#define BIT_IS_SET_HIGH(x) 		((x) & BIT((sizeof((x))*8-1)))				// check the higest bit
+#define BIT_IS_SET_HIGH(x) 		((x) & BIT((sizeof((x))*8-1)))				// check the highest bit
 
 #define BIT_MASK_LEN(len)       (BIT(len)-1)
 #define BIT_MASK(start, len)    (BIT_MASK_LEN(len) << (start) )
@@ -169,7 +169,7 @@
 #define SET_FLD_V(...) 					VARARG(SET_FLD_V, __VA_ARGS__)
 
 
-// һ겻һʾֱӸֵ
+// 一瓴灰皇局庇钢�
 #define SET_FLD_FULL_V3(x, m, v)											((x) = MASK_VAL2(m,v))
 #define SET_FLD_FULL_V5(x, m1, v1, m2, v2)  								((x) = MASK_VAL4(m1,v1,m2,v2))
 #define SET_FLD_FULL_V7(x, m1, v1, m2, v2, m3, v3)  						((x) = MASK_VAL6(m1,v1,m2,v2,m3,v3))

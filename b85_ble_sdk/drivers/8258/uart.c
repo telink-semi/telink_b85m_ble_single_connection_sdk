@@ -57,7 +57,7 @@ static unsigned char IsPrime(unsigned int n)
 {
 	unsigned int i = 5;
 	if(n <= 3){
-		return 1; //althought n is prime, but the bwpc must be larger than 2.
+		return 1; //although n is prime, but the bwpc must be larger than 2.
 	}
 	else if((n %2 == 0) || (n % 3 == 0)){
 		return 0;

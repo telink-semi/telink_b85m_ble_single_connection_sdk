@@ -753,7 +753,7 @@ enum{
 
 
 /*******************************      timer registers: 0x620      ******************************/
-#define WATCHDOG_TIMEOUT_COEFF	18		//  check register definiton, 0x622
+#define WATCHDOG_TIMEOUT_COEFF	18		//  check register definition, 0x622
 #define reg_tmr_ctrl			REG_ADDR32(0x620)
 #define reg_tmr_ctrl16			REG_ADDR16(0x620)
 #define reg_tmr_ctrl8			REG_ADDR8(0x620)

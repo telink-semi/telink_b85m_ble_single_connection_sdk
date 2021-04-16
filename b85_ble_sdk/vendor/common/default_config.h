@@ -53,7 +53,7 @@ extern "C" {
 
 #include "config.h"
 
-//////////// product  Infomation  //////////////////////////////
+//////////// product  Information  //////////////////////////////
 #ifndef ID_VENDOR
 #define ID_VENDOR			0x248a			// for report 
 #endif

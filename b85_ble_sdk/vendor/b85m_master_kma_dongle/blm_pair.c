@@ -63,7 +63,7 @@ man_pair_t blm_manPair;
 /* define pair slave max num,
    if exceed this max num, two methods to process new slave pairing
    method 1: overwrite the oldest one(telink use this method)
-   method 2: not allow paring unness unpair happend  */
+   method 2: not allow paring unness unpair happened  */
 #define	USER_PAIR_SLAVE_MAX_NUM       1  //telink use max 1
 
 

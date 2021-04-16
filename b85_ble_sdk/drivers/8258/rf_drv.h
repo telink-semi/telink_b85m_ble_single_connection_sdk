@@ -905,7 +905,7 @@ extern void rf_rffe_set_pin(RF_PATxPinDef tx_pin, RF_LNARxPinDef rx_pin);
 
 /**
  * @brief      This function process the received packet in 1mbps shockburst mode only for hanshow for the
- *             compatiblity with third-party chips. The process includes data-whitening
+ *             compatibility with third-party chips. The process includes data-whitening
                transformation and crc check.
  * @param[in]  rx_buf - the rf rx buffer containing the received packet(dma length+payload+3 byte crc)
  * @param[in]  len - the expected rx length of shockburst mode, containing payload and 3byte crc
@@ -915,7 +915,7 @@ extern void rf_rffe_set_pin(RF_PATxPinDef tx_pin, RF_LNARxPinDef rx_pin);
 unsigned char rx_packet_process_1mbps(unsigned char *rx_buf, unsigned int len);
 /**
  * @brief      This function process the tx packet in 1mbps shockburst mode only for hanshow for the
- *             compatiblity with third-party chips. The process includes data-whitening
+ *             compatibility with third-party chips. The process includes data-whitening
                transformation and crc padding.
  * @param[in]  tx_buf - the rf tx buffer containing the tx packet(dma length+payload+3 byte crc)
  * @param[in]  len - the expected tx length of shockburst mode, containing payload and 3byte crc
