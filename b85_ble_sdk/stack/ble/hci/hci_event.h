@@ -200,7 +200,7 @@ typedef struct {
 typedef enum {
 	LL_ROLE_MASTER 	= 0,
 	LL_ROLE_SLAVE 	= 1,
-} acl_conection_role_t;
+} acl_connection_role_t;
 
 /**
  *  @brief  Event Parameters for "7.7.65.2 LE Advertising Report event"

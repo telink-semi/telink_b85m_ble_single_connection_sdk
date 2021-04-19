@@ -245,7 +245,7 @@
 #define 		IR_OPER_KEY		0x2e
 #define 		IR_INFO			0x2f
 #define			IR_REWIND		0x32
-#define 		IR_FAST_FOWARD	0x34
+#define 		IR_FAST_FORWARD	0x34
 #define 		IR_PLAY_PAUSE	0x35
 #define			IR_GUIDE		0x41
 #define 		IR_UP			0x45
