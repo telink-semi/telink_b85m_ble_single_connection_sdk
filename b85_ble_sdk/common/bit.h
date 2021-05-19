@@ -169,7 +169,7 @@
 #define SET_FLD_V(...) 					VARARG(SET_FLD_V, __VA_ARGS__)
 
 
-// 一瓴灰皇局庇钢�
+
 #define SET_FLD_FULL_V3(x, m, v)											((x) = MASK_VAL2(m,v))
 #define SET_FLD_FULL_V5(x, m1, v1, m2, v2)  								((x) = MASK_VAL4(m1,v1,m2,v2))
 #define SET_FLD_FULL_V7(x, m1, v1, m2, v2, m3, v3)  						((x) = MASK_VAL6(m1,v1,m2,v2,m3,v3))

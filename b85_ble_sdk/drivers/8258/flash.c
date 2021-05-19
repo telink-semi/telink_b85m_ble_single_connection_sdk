@@ -51,10 +51,13 @@
 #include "watchdog.h"
 
 
+_attribute_data_retention_    unsigned char zbit_flash_flag = 0;
 _attribute_data_retention_   _attribute_aligned_(4)	Flash_CapacityDef	flash_capacity;
 /*******************************************************************************************************************
  *												Primary interface
  ******************************************************************************************************************/
+
+
 
 /**
  * @brief		This function to determine whether the flash is busy..
@@ -439,7 +442,6 @@ unsigned int flash_read_mid(void)
  * 				and then you can look up the related table to select the idcmd and read UID of flash.
  * @param[in] 	idcmd	- different flash vendor have different read-uid command. E.g: GD/PUYA:0x4B; XTX: 0x5A.
  * @param[in] 	buf		- store UID of flash.
- * @param[in] 	uidtype	- the number of uid bytes.
  * @return    	none.
  * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
  *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
@@ -451,15 +453,15 @@ unsigned int flash_read_mid(void)
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_read_uid(unsigned char idcmd, unsigned char *buf, flash_uid_typedef_e uidtype)
+void flash_read_uid(unsigned char idcmd, unsigned char *buf)
 {
 	if(idcmd == FLASH_READ_UID_CMD_GD_PUYA_ZB_UT)	//< GD/PUYA/ZB/UT
 	{
-		flash_mspi_read_ram(idcmd, 0x00, 1, 1, buf, uidtype);
+		flash_mspi_read_ram(idcmd, 0x00, 1, 1, buf, 16);
 	}
 	else if (idcmd == FLASH_XTX_READ_UID_CMD)		//< XTX
 	{
-		flash_mspi_read_ram(idcmd, 0x80, 1, 1, buf, uidtype);
+		flash_mspi_read_ram(idcmd, 0x80, 1, 1, buf, 16);
 	}
 }
 
@@ -469,8 +471,8 @@ void flash_read_uid(unsigned char idcmd, unsigned char *buf, flash_uid_typedef_e
 
 /**
  * @brief		This function serves to read flash mid and uid,and check the correctness of mid and uid.
- * @param[out]	flash_mid	- Flash Manufacturer ID
- * @param[out]	flash_uid	- Flash Unique ID
+ * @param[out]	flash_mid	- Flash Manufacturer ID.
+ * @param[out]	flash_uid	- Flash Unique ID.
  * @return		0: flash no uid or not a known flash model 	 1:the flash model is known and the uid is read.
  * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
  *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
@@ -482,11 +484,10 @@ void flash_read_uid(unsigned char idcmd, unsigned char *buf, flash_uid_typedef_e
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-int flash_read_mid_uid_with_check(unsigned int *flash_mid ,unsigned char *flash_uid)
+int flash_read_mid_uid_with_check(unsigned int *flash_mid, unsigned char *flash_uid)
 {
 	unsigned char no_uid[16]={0x51,0x01,0x51,0x01,0x51,0x01,0x51,0x01,0x51,0x01,0x51,0x01,0x51,0x01,0x51,0x01};
 	int i,f_cnt=0;
-	unsigned char uid_8byte = 0;
 	*flash_mid  = flash_read_mid();
 
 	/*
@@ -503,25 +504,21 @@ int flash_read_mid_uid_with_check(unsigned int *flash_mid ,unsigned char *flash_
 	   P25Q40L		0x4b	0x136085	PUYA
 	   TH25D40LA	0x4b	0x1360EB	UT
 	   TH25D40UA	0x4b	0x1360EB	UT
+
+	   The uid of the early ZB25WD40B (mid is 0x13325E) is 8 bytes. If you read 16 bytes of uid,
+	   the next 8 bytes will be read as 0xff. Later, the uid of ZB25WD40B has been switched to 16 bytes.
 	 */
-	if((*flash_mid == 0x1460C8)||(*flash_mid == 0x011460C8)||(*flash_mid == 0x1060C8)||(*flash_mid == 0x134051)||(*flash_mid == 0x136085)||(*flash_mid == 0x1360C8)||(*flash_mid == 0x1360EB)||(*flash_mid == 0x14325E)){
-		flash_read_uid(FLASH_READ_UID_CMD_GD_PUYA_ZB_UT,(unsigned char *)flash_uid, FLASH_TYPE_16BYTE_UID);
-	}else if(*flash_mid==0x13325E){
-		flash_read_uid(FLASH_READ_UID_CMD_GD_PUYA_ZB_UT,(unsigned char *)flash_uid, FLASH_TYPE_8BYTE_UID);
-		uid_8byte = 1;
+	if((*flash_mid == 0x1460C8)||(*flash_mid == 0x011460C8)||(*flash_mid == 0x1060C8)||(*flash_mid == 0x134051)||(*flash_mid == 0x136085)||(*flash_mid == 0x1360C8)||(*flash_mid == 0x1360EB)||(*flash_mid == 0x13325E)||(*flash_mid == 0x14325E)){
+		flash_read_uid(FLASH_READ_UID_CMD_GD_PUYA_ZB_UT, (unsigned char *)flash_uid);
 	}else{
 		return 0;
 	}
 
-	if(0 == uid_8byte){
-		for(i=0;i<16;i++){
-			if(flash_uid[i] == no_uid[i]){
-				f_cnt++;
-			}
+	for(i=0;i<16;i++){
+		if(flash_uid[i] == no_uid[i]){
+			f_cnt++;
 		}
-	}else{
-		memset(flash_uid+8,0,8);	//Clear the last eight bytes of a 16 byte array when the length of uid is 8.
-	 }
+	}
 
 	if(f_cnt == 16){	//no uid flash
 		return 0;
@@ -530,7 +527,42 @@ int flash_read_mid_uid_with_check(unsigned int *flash_mid ,unsigned char *flash_
 	}
 }
 
+/**
+ * @brief		This function serves to find whether it is zb flash.
+ * @param[in]	none.
+ * @return		1 - is zb flash;   0 - is not zb flash.
+ */
+unsigned char flash_is_zb(void)
+{
+	unsigned int flash_mid  = flash_read_mid();
+	if((flash_mid == 0x13325E)||(flash_mid == 0x14325E))
+	{
+		return 1;
+	}
+	return 0;
+}
 
+/**
+ * @brief		This function serves to calibration the flash voltage(VDD_F),if the flash has the calib_value,we will use it,either will
+ * 				trim vdd_f to 1.95V(2b'111 the max) if the flash is zb.
+ * @param[in]	vol - the voltage which you want to set.
+ * @return		none.
+ */
+void flash_vdd_f_calib(void)
+{
+	unsigned char calib_value = flash_get_vdd_f_calib_value();
+	if((0xff == calib_value) || (0 != (calib_value & 0xf8)))
+	{
+		if(flash_is_zb())
+		{
+			analog_write(0x0c, (analog_read(0x0c) | FLASH_VOLTAGE_1V95));
+		}
+	}
+	else
+	{
+		analog_write(0x0c, ((analog_read(0x0c) & 0xf8)  | calib_value));
+	}
+}
 
 void flash_set_capacity(Flash_CapacityDef flash_cap)
 {

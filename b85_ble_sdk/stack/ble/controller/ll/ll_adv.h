@@ -84,7 +84,7 @@ ble_sts_t 	bls_ll_setScanRspData(u8 *data, u8 len);
 /**
  * @brief      This function is used to set the advertising parameters.
  * @param[in]  intervalMin - Minimum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)
- * @param[in]  intervalMin - Maximum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)
+ * @param[in]  intervalMax - Maximum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)
  * @param[in]  advType - Advertising_Type
  * @param[in]  ownAddrType - Own_Address_Type
  * @param[in]  peerAddrType - Peer_Address_Type

@@ -210,8 +210,13 @@
 #endif
 //core_5.2 feature end
 
+#ifndef ZBIT_FLASH_WRITE_TIME_LONG_WORKAROUND_EN
+#define ZBIT_FLASH_WRITE_TIME_LONG_WORKAROUND_EN					1
+#endif
 
-
+#ifndef ZBIT_FLASH_BRX4B_WRITE__EN
+#define ZBIT_FLASH_BRX4B_WRITE__EN									0
+#endif
 
 ///////////////////////////////////////dbg channels///////////////////////////////////////////
 #ifndef	DBG_CHN0_TOGGLE

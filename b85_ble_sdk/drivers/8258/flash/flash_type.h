@@ -56,6 +56,7 @@
 #include "flash_mid134051.h"	// MD25D40D
 #include "flash_mid136085.h"	// P25Q40L
 #include "flash_mid1360eb.h"	// TH25D40UA / TH25D40LA
+
 #if FLASH_LOCK_EN
 /**
  * @brief		This function reads the status of flash.
