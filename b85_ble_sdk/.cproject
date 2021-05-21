@@ -54,6 +54,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.603281141" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1255367234" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -131,6 +132,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1210791863" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.318733766" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -209,6 +211,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.434141861" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1289719180" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -287,6 +290,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1766304388" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.709604492" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -364,6 +368,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.290279602" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1614219760" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -441,6 +446,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.203430994" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.2047782658" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -519,6 +525,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1141873795" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1431242691" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -596,6 +603,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1692948980" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1028070903" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -673,6 +681,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1696963796" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.595249023" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -750,6 +759,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.2123018440" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1198830862" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -827,6 +837,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1871091920" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.656669273" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -905,6 +916,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1399960291" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.824856784" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -982,6 +994,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.526394826" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.535602837" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -1061,6 +1074,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.762870385" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.755748786" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -1138,6 +1152,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.315393971" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.879671007" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -1216,6 +1231,7 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.1193001430" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_827x"/>
+									<listOptionValue builtIn="false" value="lt_general_stack"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1955109551" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
