@@ -218,6 +218,11 @@
 #define ZBIT_FLASH_BRX4B_WRITE__EN									0
 #endif
 
+
+#ifndef RPA_OPTIMIZE_RAM
+#define RPA_OPTIMIZE_RAM											1
+#endif
+
 ///////////////////////////////////////dbg channels///////////////////////////////////////////
 #ifndef	DBG_CHN0_TOGGLE
 #define DBG_CHN0_TOGGLE

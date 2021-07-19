@@ -172,19 +172,32 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 			memcpy(serviceDiscovery_address, cur_conn_device.mac_addr, 6);
 
 #if(TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)
+		#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
+ 			u8 dat[32]={0};
+ 			u8 caps_data[6]={0};
+ 			caps_data[0] = 0x0A; //get caps
+ 			caps_data[1] = 0x00;
+ 			caps_data[2] = 0x01; // version 0x0100;
+ 			caps_data[3] = 0x00;
+ 			caps_data[4] = 0x03; // legacy 0x0003;
+			caps_data[5] = GOOGLE_VOICE_MODE;
+ 			att_req_write_cmd(dat, conn_char_handler[8], caps_data, 6);/*AUDIO_GOOGLE_TX_DP_H*/
+			blm_push_fifo(BLM_CONN_HANDLE, dat);
+
+			u8 rx_ccc[2] = {0x00, 0x01};		//Write Rx CCC value for PTV use case
+			att_req_write_cmd(dat, conn_char_handler[9]+1, rx_ccc, 2);
+			blm_push_fifo(BLM_CONN_HANDLE, dat);
+		#else
 			u8 dat[32]={0};
-			u8 caps_data[6]={0};
+			u8 caps_data[5]={0};
 			caps_data[0] = 0x0A; //get caps
-			caps_data[1] = 0x01;
-			caps_data[2] = 0x00; // version 0x0100;
+			caps_data[1] = 0x00;
+			caps_data[2] = 0x04; // version 0x0004;
 			caps_data[3] = 0x00;
 			caps_data[4] = 0x03; // legacy 0x0003;
-			caps_data[5] = GOOGLE_VOICE_MODE; // model : htt 0x03; ptt:0x01
-
-			att_req_write_cmd(dat, conn_char_handler[8], caps_data, 6);/*AUDIO_GOOGLE_TX_DP_H*/
-
-			if(blm_push_fifo(BLM_CONN_HANDLE, dat)){
-			}
+			att_req_write_cmd(dat, conn_char_handler[8], caps_data, 5);/*AUDIO_GOOGLE_TX_DP_H*/
+			blm_push_fifo(BLM_CONN_HANDLE, dat);
+		#endif
 #endif
 		}
 
@@ -251,6 +264,7 @@ int app_host_smp_finish (void)  //smp finish callback
 			{
 				app_host_smp_sdp_pending = 0;  //no need sdp
 #if(TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)
+			#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
 				u8 dat[32]={0};
 				u8 caps_data[6]={0};
 				caps_data[0] = 0x0A; //get caps
@@ -258,12 +272,24 @@ int app_host_smp_finish (void)  //smp finish callback
 				caps_data[2] = 0x00; // version 0x0100;
 				caps_data[3] = 0x00;
 				caps_data[4] = 0x03; // legacy 0x0003;
-				caps_data[5] = GOOGLE_VOICE_MODE; // model : htt 0x03; ptt:0x01
-
+				caps_data[5] = GOOGLE_VOICE_MODE;
 				att_req_write_cmd(dat, conn_char_handler[8], caps_data, 6);/*AUDIO_GOOGLE_TX_DP_H*/
+				blm_push_fifo(BLM_CONN_HANDLE, dat);
 
-				if(blm_push_fifo(BLM_CONN_HANDLE, dat)){
-				}
+				u8 rx_ccc[2] = {0x00, 0x01};		//Write Rx CCC value for PTV use case
+				att_req_write_cmd(dat, conn_char_handler[9]+1, rx_ccc, 2);
+				blm_push_fifo(BLM_CONN_HANDLE, dat);
+			#else
+				u8 dat[32]={0};
+				u8 caps_data[5]={0};
+				caps_data[0] = 0x0A; //get caps
+				caps_data[1] = 0x00;
+				caps_data[2] = 0x04; // version 0x0004;
+				caps_data[3] = 0x00;
+				caps_data[4] = 0x03; // legacy 0x0003;
+				att_req_write_cmd(dat, conn_char_handler[8], caps_data, 5);/*AUDIO_GOOGLE_TX_DP_H*/
+				blm_push_fifo(BLM_CONN_HANDLE, dat);
+			#endif
 #endif
 			}
 		}

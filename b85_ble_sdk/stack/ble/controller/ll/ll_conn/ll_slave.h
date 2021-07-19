@@ -115,6 +115,7 @@ ble_sts_t 	bls_hci_mod_setEventMask_cmd(u32 evtMask);
 
 
 #if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
+	unsigned char set_disBrxRequest_thresold(unsigned char thres);
 	int			bls_ll_requestConnBrxEventDisable(void);
 	void		bls_ll_disableConnBrxEvent(void);
 	void		bls_ll_restoreConnBrxEvent(void);

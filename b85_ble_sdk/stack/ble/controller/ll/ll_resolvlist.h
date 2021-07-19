@@ -142,7 +142,6 @@ void			blc_ll_resolvSetLocalRpaByIdx(u8 idx, u8 *rpa);
 bool			blc_ll_resolvGetRpaByAddr(u8* peerIdAddr, u8 peerIdAddrType, u8* rpa, u8 local);
 bool			blc_ll_resolvIsAddrResolved(const u8* irk, const u8* rpa);
 bool			blc_ll_resolvIsAddrRlEnabled(void);
-void			blc_ll_resolvListReset(void);
 void			blc_ll_resolvListInit(void);
 /******************************* User Interface  End  ******************************************************************/
 

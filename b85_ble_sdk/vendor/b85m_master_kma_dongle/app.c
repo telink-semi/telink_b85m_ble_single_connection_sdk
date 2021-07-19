@@ -58,7 +58,11 @@
 #include "app_audio.h"
 
 
+#if (TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE) && (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
+MYFIFO_INIT(blt_rxfifo, 256, 8);
+#else
 MYFIFO_INIT(blt_rxfifo, 64, 8);
+#endif
 MYFIFO_INIT(blt_txfifo, 40, 8);
 
 

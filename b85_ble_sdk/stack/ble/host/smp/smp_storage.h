@@ -55,7 +55,7 @@
  *  feature value of the opposite end to determine whether the opposite end supports the address resolution function, and write
  *  the result to smp_bonding_flg. Currently, we leave it to the user to obtain this feature.
  */
-#define 	IS_PEER_ADDR_RES_SUPPORT(peerAddrResSuppFlg)	(!(peerAddrResSuppFlg &1))
+#define 	IS_PEER_ADDR_RES_SUPPORT(peerAddrResSuppFlg)	(!(peerAddrResSuppFlg & BIT(7)))
 
 #endif
 
@@ -82,7 +82,7 @@ typedef struct {  //82
 
 	u8 		own_ltk[16];      //own_ltk[16]
 	u8		peer_irk[16];
-	u8		peer_csrk[16];
+	u8		local_irk[16];
 
 }smp_param_save_t;
 
@@ -143,7 +143,7 @@ void		bls_smp_setIndexUpdateMethod(index_updateMethod_t method);
 void		bls_smp_eraseAllParingInformation(void);
 
 #if (LL_FEATURE_ENABLE_LL_PRIVACY)
-void		blc_smp_setPeerAddrResSupportFlg(u32 flash_addr, u8 support);
+int		blc_smp_setPeerAddrResSupportFlg(u32 flash_addr, u8 support);
 #endif
 
 

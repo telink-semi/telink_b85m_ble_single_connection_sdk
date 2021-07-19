@@ -382,14 +382,23 @@ void adpcm_to_pcm (signed short *ps, signed short *pd, int len)
 #elif (TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)		//Dongle,GATT GOOGLE
 
 #define ADPCM_ANDROID_ID    0x00
+#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
+int predict  = 0;
+int predict_idx = 0;
+#endif
 
 _attribute_ram_code_ void adpcm_to_pcm (signed short *ps, signed short *pd, int len)
 {
 	int i;
 
-	int predict = (s16)((ps[1]&0xff00) | (ps[2]&0x00ff));
-	int predict_idx = (s8)((ps[2]&0xff00)>>8);
-	unsigned char *pcode = (unsigned char *) (ps + 3);
+	#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
+		unsigned char *pcode = (unsigned char *) ps;
+	#else
+		int predict = (s16)((ps[1]&0xff00) | (ps[2]&0x00ff));
+		int predict_idx = (s8)((ps[2]&0xff00)>>8);
+		unsigned char *pcode = (unsigned char *) (ps + 3);
+	#endif
+
 	unsigned char code;
 	code = *pcode ++;
 	code = ((code>>4)&0x0f)|((code<<4)&0xf0);
