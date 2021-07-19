@@ -87,7 +87,6 @@ _attribute_data_retention_	my_fifo_t	blt_txfifo = {
 
 
 
-
 _attribute_data_retention_	int device_in_connection_state;
 
 

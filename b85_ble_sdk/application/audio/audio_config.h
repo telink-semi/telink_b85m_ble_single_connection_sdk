@@ -90,8 +90,13 @@
 		#define	MIC_ADPCM_FRAME_SIZE		128
 		#define	MIC_SHORT_DEC_SIZE			248
 	#elif (TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)
-		#define	MIC_ADPCM_FRAME_SIZE		136 		//128+6+2
-		#define	MIC_SHORT_DEC_SIZE			256
+		#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
+			#define	MIC_ADPCM_FRAME_SIZE		120			//120B all audio data without header
+			#define	MIC_SHORT_DEC_SIZE			240			//1 Decode buffer size
+		#else
+			#define	MIC_ADPCM_FRAME_SIZE		136 		//128+6+2
+			#define	MIC_SHORT_DEC_SIZE			256
+		#endif
 	#elif (TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_HID_DONGLE_TO_STB)
 		#define	MIC_ADPCM_FRAME_SIZE		120
 		#define	MIC_SHORT_DEC_SIZE			240

@@ -226,6 +226,7 @@ void kb_rmv_ghost_key(u32 * pressed_matrix){
 	foreach_arr(i, drive_pins){
 		for(int j = (i+1); j < ARRAY_SIZE(drive_pins); ++j){
 			u32 mix = (pressed_matrix[i] & pressed_matrix[j]);
+			// >=2 غ,  Ǿ ghost key
 			//four or three key at "#" is pressed at the same time, should remove ghost key
 			if( mix && (!BIT_IS_POW2(mix) || (pressed_matrix[i] ^ pressed_matrix[j])) ){
 				// remove ghost keys

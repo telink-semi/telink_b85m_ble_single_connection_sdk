@@ -85,6 +85,7 @@
 
 #define	TEST_OTA_BIG_PDU								70
 
+#define TEST_LL_PRIVACY                                 80
 
 //some simple function test
 #define TEST_USER_BLT_SOFT_TIMER						100
@@ -98,7 +99,7 @@
 
 
 
-#define FEATURE_TEST_MODE								TEST_FEATURE_BACKUP
+#define FEATURE_TEST_MODE								TEST_LL_PRIVACY
 
 
 

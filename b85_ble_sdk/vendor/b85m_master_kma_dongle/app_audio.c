@@ -174,28 +174,45 @@ void	att_mic (u16 conn, u8 *p)
 void app_audio_data(u8 * data, u16 length)
 {
 	static u8 audio_buffer_serial;
-
-	if(!google_audio_start)
-	{
-		return ;
-	}
-	if(audio_buffer_serial < 6 && length == 20)
-	{
-		memcpy(buff_mic_adpcm+audio_buffer_serial*20,data,length);
-		audio_buffer_serial++;
-	}
-	else if(audio_buffer_serial==6 && length ==14)
-	{
-		memcpy(buff_mic_adpcm+audio_buffer_serial*20,data,length);
-		abuf_mic_add ((u32 *)buff_mic_adpcm);
-		audio_buffer_serial = 0;
-		att_mic_rcvd = 1;
-	}
-	else
-	{
-		audio_buffer_serial = 0;
-	}
-
+	#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
+		if(length == 20)
+		{
+			memcpy(buff_mic_adpcm+audio_buffer_serial*20,data,length);
+			audio_buffer_serial++;
+			if (audio_buffer_serial == 6) {
+				abuf_mic_add ((u32 *)buff_mic_adpcm);
+				audio_buffer_serial = 0;
+				att_mic_rcvd = 1;
+			}
+		}
+		else if(length == 120)
+		{
+			memcpy(buff_mic_adpcm,data,length);
+			abuf_mic_add ((u32 *)buff_mic_adpcm);
+			att_mic_rcvd = 1;
+		}
+	#else
+		if(!google_audio_start)
+		{
+			return ;
+		}
+		if(audio_buffer_serial < 6 && length == 20)
+		{
+			memcpy(buff_mic_adpcm+audio_buffer_serial*20,data,length);
+			audio_buffer_serial++;
+		}
+		else if(audio_buffer_serial==6 && length ==14)
+		{
+			memcpy(buff_mic_adpcm+audio_buffer_serial*20,data,length);
+			abuf_mic_add ((u32 *)buff_mic_adpcm);
+			audio_buffer_serial = 0;
+			att_mic_rcvd = 1;
+		}
+		else
+		{
+			audio_buffer_serial = 0;
+		}
+	#endif
 }
 
 /**

@@ -88,5 +88,6 @@
 #include "stack/ble/ble_config.h"
 #include "stack/ble/trace.h"
 
+/*********************************************************/
 
 #endif /* BLE_H_ */
