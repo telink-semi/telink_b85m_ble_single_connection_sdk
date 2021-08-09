@@ -47,7 +47,7 @@
 #define __MID136085_H__
 
 /*
- * @brief	MID = 0x136085 Flash include P25Q40L and P25D40L.
+ * @brief	MID = 0x136085 Flash include P25D40L.
  */
 
 

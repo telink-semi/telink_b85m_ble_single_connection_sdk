@@ -53,6 +53,7 @@
 #include "common/static_assert.h"
 #include "common/assert.h"
 
+#include "application/print/u_printf.h"
 
 #include "vendor/common/user_config.h"
 #include "config.h"

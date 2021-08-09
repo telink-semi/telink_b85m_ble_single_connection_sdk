@@ -81,4 +81,4 @@
 
 #include "drivers/8278/rf_pa.h"
 
-
+#include "drivers/8278/flash/flash_type.h"

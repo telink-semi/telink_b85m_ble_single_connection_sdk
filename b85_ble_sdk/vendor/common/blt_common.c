@@ -59,10 +59,9 @@ _attribute_data_retention_	u32 flash_sector_calibration = CFG_ADR_CALIBRATION_51
 
 void blc_readFlashSize_autoConfigCustomFlashSector(void)
 {
-	u8 temp_buf[4];
-	*(u32*)temp_buf = flash_read_mid();
 
-	u8	flash_cap = temp_buf[2];
+
+	u8	flash_cap = ((get_flash_mid&0x00ff0000)>>16);
 	unsigned char adc_vref_calib_value_rd[4] = {0};
 
 	if(flash_cap == FLASH_SIZE_512K){
@@ -92,6 +91,7 @@ void blc_readFlashSize_autoConfigCustomFlashSector(void)
 		//else use the value init in efuse
 	}
 
+	extern void flash_set_capacity(Flash_CapacityDef flash_cap);
 	flash_set_capacity(flash_cap);
 }
 

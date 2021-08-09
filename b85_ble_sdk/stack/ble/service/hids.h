@@ -76,6 +76,9 @@
 #define HID_REPORT_ID_AUDIO_THIRD_INPUT                 12//247
 
 
+#define HID_REPORT_ID_OTA_INPUT							0x20
+#define HID_REPORT_ID_OTA_OUTPUT						0x21
+
 
 /**
  *  @brief  HID Report type

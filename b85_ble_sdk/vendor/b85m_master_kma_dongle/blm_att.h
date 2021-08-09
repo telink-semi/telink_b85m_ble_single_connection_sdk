@@ -54,5 +54,7 @@ void	att_keyboard_media (u16 conn, u8 *p);
 void 	att_mouse(u16 conn, u8 *p);
 
 void host_att_data_clear(void);
+u16 blm_att_findHandleOfUuid16 (att_db_uuid16_t *p, u16 uuid, u16 ref);
+u16 blm_att_findHandleOfUuid128 (att_db_uuid128_t *p, const u8 * uuid);
 
 #endif /* BLM_ATT_H_ */

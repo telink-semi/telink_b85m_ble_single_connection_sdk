@@ -342,6 +342,28 @@ void uart_ndma_send_byte(unsigned char uartData)
 }
 
 /**
+ * @brief     uart send data function, this  function tell the DMA to get data from the RAM and start the DMA transmission
+ * @param[in] Addr - pointer to the buffer containing data need to send
+ * @return    none
+ * @note      If you want to use uart DMA mode to send data, it is recommended to use this function.
+ *            This function just triggers the sending action, you can use interrupt or polling with the FLD_UART_TX_DONE flag to judge whether the sending is complete.
+ *            After the current packet has been sent, this FLD_UART_TX_DONE will be set to 1, and FLD_UART_TX_DONE interrupt can be generated.
+ *			  If you use interrupt mode, you need to call uart_clr_tx_done() in the interrupt processing function, uart_clr_tx_done() will set FLD_UART_TX_DONE to 0.
+ *            DMA can only send 2047-bytes one time at most.
+ */
+void uart_send_dma(unsigned char* Addr)
+{
+	/*when the state of tx is not busy, tx_done status (0x9e bit[0])=1(default),
+	 * if tx_done irq is enable,first we must clear tx_done status to 0 - "uart_clr_tx_done()",otherwise it always be stuck in the interrupt,
+	 * when tx is truly complete , tx_done status is set to 1,then entry tx_done irq.
+	 */
+	uart_clr_tx_done();
+    reg_dma1_addr = (unsigned short)((unsigned int)Addr); //packet data, start address is sendBuff+1
+    reg_dma1_size = 0xff;
+    reg_dma_tx_rdy0	 |= FLD_DMA_CHN_UART_TX;
+}
+
+/**
  * @brief     uart send data function, this  function tell the DMA to get data from the RAM and start
  *            the DMA transmission
  * @param[in] Addr - pointer to the buffer containing data need to send
@@ -453,8 +475,7 @@ void uart_set_rts(unsigned char Enable, UART_RTSModeTypeDef Mode, unsigned char 
     if (Enable)
     {
     	gpio_set_func(pin,AS_UART);//enable rts pin
-    	gpio_set_input_en(pin, 1);//enable input
-    	gpio_set_output_en(pin, 1);//enable output
+
         reg_uart_ctrl2 |= FLD_UART_CTRL2_RTS_EN; //enable RTS function
     }
     else
@@ -509,8 +530,10 @@ void uart_set_cts(unsigned char Enable, unsigned char Select,UART_CtsPinDef pin)
 {
     if (Enable)
     {
-    	gpio_set_func(pin,AS_UART);//enable cts pin
+    	//When the pad is configured with mux input and a pull-up resistor is required, gpio_input_en needs to be placed before gpio_function_dis,
+    	//otherwise first set gpio_input_disable and then call the mux function interface,the mux pad will may misread the short low-level timing.confirmed by minghai.20210709.
     	gpio_set_input_en(pin, 1);//enable input
+    	gpio_set_func(pin,AS_UART);//enable cts pin
     	reg_uart_ctrl1|= FLD_UART_CTRL1_CTS_EN; //enable CTS function
     }
     else
@@ -539,6 +562,10 @@ void uart_set_cts(unsigned char Enable, unsigned char Select,UART_CtsPinDef pin)
 */
 void uart_gpio_set(UART_TxPinDef tx_pin,UART_RxPinDef rx_pin)
 {
+	//When the pad is configured with mux input and a pull-up resistor is required, gpio_input_en needs to be placed before gpio_function_dis,
+	//otherwise first set gpio_input_disable and then call the mux function interface,the mux pad will may misread the short low-level timing.confirmed by minghai.20210709.
+	gpio_set_input_en(tx_pin, 1);
+	gpio_set_input_en(rx_pin, 1);
 	//note: pullup setting must before uart gpio config, cause it will lead to ERR data to uart RX buffer(confirmed by sihui&sunpeng)
 	//PM_PIN_PULLUP_1M   PM_PIN_PULLUP_10K
 	gpio_setup_up_down_resistor(tx_pin, PM_PIN_PULLUP_10K);  //must, for stability and prevent from current leakage
@@ -548,9 +575,6 @@ void uart_gpio_set(UART_TxPinDef tx_pin,UART_RxPinDef rx_pin)
 	gpio_set_func(tx_pin,AS_UART); // set tx pin
 	gpio_set_func(rx_pin,AS_UART); // set rx pin
 
-
-	gpio_set_input_en(tx_pin, 1);  //experiment shows that tx_pin should open input en(confirmed by qiuwei)
-	gpio_set_input_en(rx_pin, 1);  //
 
 }
 /**

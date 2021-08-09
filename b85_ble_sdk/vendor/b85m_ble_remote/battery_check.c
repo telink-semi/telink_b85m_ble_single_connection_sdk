@@ -399,7 +399,7 @@ _attribute_ram_code_ int app_battery_power_check(u16 threshold_deep_vol_mv, u16 
 		}
 		else  //1.8v<bat_vol<2.0v  enter deep sleep
 		{
-			analog_write(USED_DEEP_ANA_REG,  analog_used_deep_reg | LOW_BATT_FLG & (~LOW_BATT_SUSPEND_FLG));  //mark
+			analog_write(USED_DEEP_ANA_REG,  ((analog_used_deep_reg) | ((LOW_BATT_FLG) & (~LOW_BATT_SUSPEND_FLG))));  //mark
 			cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepsleep
 		}
 	}
@@ -465,6 +465,7 @@ _attribute_ram_code_ int app_battery_power_check(u16 threshold_deep_vol_mv, u16 
 	}
 #endif
 
+	return 0;
 }
 #else
 _attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)

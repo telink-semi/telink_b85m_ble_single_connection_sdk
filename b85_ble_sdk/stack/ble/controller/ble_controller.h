@@ -83,11 +83,6 @@
 #include "algorithm/aes_ccm/aes_ccm.h"
 
 
-/*********************************************************/
-//Remove when file merge to SDK //
-#include "stack/ble/ble_config.h"
-#include "stack/ble/trace.h"
 
-/*********************************************************/
 
 #endif /* BLE_H_ */

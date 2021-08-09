@@ -74,6 +74,8 @@
 	#include "feature_phy_conn/app_config.h"
 #elif (FEATURE_TEST_MODE == TEST_OTA_BIG_PDU)
 	#include "feature_ota_big_pdu/app_config.h"
+#elif (FEATURE_TEST_MODE == TEST_OTA_HID)
+	#include "feature_ota_hid/app_config.h"
 #elif (FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_TIMER || FEATURE_TEST_MODE == TEST_WHITELIST || FEATURE_TEST_MODE == TEST_CSA2)
 	#include "feature_misc/app_config.h"
 #elif (FEATURE_TEST_MODE == TEST_FEATURE_BACKUP)

@@ -201,10 +201,10 @@ static const unsigned char kb_map_fn[ARRAY_SIZE(scan_pins)][ARRAY_SIZE(drive_pin
 #endif
 
 kb_k_mp_t *	kb_p_map[4] = {
-		kb_map_normal,
-		kb_map_num,
-		kb_map_fn,
-		kb_map_fn,
+		(kb_k_mp_t *)kb_map_normal,
+		(kb_k_mp_t *)kb_map_num,
+		(kb_k_mp_t *)kb_map_fn,
+		(kb_k_mp_t *)kb_map_fn,
 };
 
 

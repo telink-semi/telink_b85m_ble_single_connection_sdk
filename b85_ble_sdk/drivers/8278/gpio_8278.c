@@ -113,7 +113,7 @@ static void gpio_analog_resistance_init(void)
  * do not use pull-up or pull-down resistance on the board in the process of practical
  * application because it may have the risk of electric leakage .
  */
-_attribute_ram_code_ void gpio_init(int anaRes_init_en)
+_attribute_ram_code_sec_noinline_ void gpio_init(int anaRes_init_en)
 {
 
 	reg_gpio_pa_setting1 =

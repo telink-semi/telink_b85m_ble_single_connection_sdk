@@ -47,18 +47,22 @@
 #define OTA_H_
 
 
-
+/**
+ * @brief 	Legacy OTA command
+ */
 #define CMD_OTA_VERSION						0xFF00	//client -> server
 #define CMD_OTA_START						0xFF01	//client -> server
 #define CMD_OTA_END							0xFF02	//client -> server
 
+/**
+ * @brief 	Extended OTA command
+ */
 #define CMD_OTA_START_EXT					0xFF03	//client -> server
 #define CMD_OTA_FW_VERSION_REQ				0xFF04	//client -> server
 #define CMD_OTA_FW_VERSION_RSP				0xFF05	//server -> client
 #define CMD_OTA_RESULT						0xFF06	//server -> client
-
-
-
+#define CMD_OTA_SCHEDULE_PDU_NUM			0xFF08	//server -> client
+#define CMD_OTA_SCHEDULE_FW_SIZE			0xFF09	//server -> client
 
 
 /**
@@ -98,6 +102,7 @@ enum{
 	OTA_DATA_PACKET_TIMEOUT,	   			//time interval between two consequent packet exceed a value(user can adjust this value)
  	OTA_TIMEOUT,							//OTA flow total timeout
  	OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE,	//OTA fail due to current connection terminate(maybe connection timeout or local/peer device terminate connection)
+ 	OTA_LOGIC_ERR,							//software logic error, please contact FAE of TeLink
 };
 
 
@@ -110,15 +115,6 @@ typedef struct {
 	u16  	ota_cmd;
 } ota_start_t;
 
-/**
- *  @brief data structure of OTA command "CMD_OTA_START_EXT"
- */
-typedef struct {
-	u16  	ota_cmd;
-	u8		pdu_length;			//must be: 16*n(n is in range of 1 ~ 15); pdu_length: 16,32,48,...240
-	u8		version_compare;	//0: no version compare; 1: only higher version can replace lower version
-} ota_startExt_t;
-
 
 /**
  *  @brief data structure of OTA command "CMD_OTA_END"
@@ -128,6 +124,17 @@ typedef struct {
 	u16		adr_index_max;
 	u16		adr_index_max_xor;
 } ota_end_t;
+
+
+/**
+ *  @brief data structure of OTA command "CMD_OTA_START_EXT"
+ */
+typedef struct {
+	u16  	ota_cmd;
+	u8		pdu_length;			//must be: 16*n(n is in range of 1 ~ 15); pdu_length: 16,32,48,...240
+	u8		version_compare;	//0: no version compare; 1: only higher version can replace lower version
+	u8		rsvd[16];			//reserved for future use
+} ota_startExt_t;
 
 
 /**
@@ -158,6 +165,22 @@ typedef struct {
 	u16		version_num;
 	u8		version_accept;      //1: accept firmware update; 0: reject firmware update(version compare enable, and compare result: fail)
 } ota_versionRsp_t;
+
+
+/**
+ *  @brief data structure of OTA command "CMD_OTA_SCHEDULE_PDU_NUM"
+ */
+typedef struct {
+	u16  	success_pdu_cnt;	// successful OTA PDU number
+} ota_sche_pdu_num_t;
+
+/**
+ *  @brief data structure of OTA command "CMD_OTA_SCHEDULE_FW_SIZE"
+ */
+typedef struct {
+	u32		success_fw_size;	// successful OTA firmware size (unit: Byte)
+} ota_sche_fw_size_t;
+
 
 
 

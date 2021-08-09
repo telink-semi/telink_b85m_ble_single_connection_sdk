@@ -51,8 +51,6 @@
 #define PAGE_SIZE_OTP	256
 #define FLASH_LOCK_EN	0
 
-extern unsigned char zbit_flash_flag;
-
 /**
  * @brief     flash command definition
  */
@@ -60,10 +58,13 @@ enum{
 	//common cmd
 	FLASH_WRITE_CMD						=	0x02,
 	FLASH_READ_CMD						=	0x03,
+	FLASH_WRITE_SECURITY_REGISTERS_CMD	=	0x42,
+	FLASH_READ_SECURITY_REGISTERS_CMD	=	0x48,
 
 	FLASH_SECT_ERASE_CMD				=	0x20,
+	FLASH_ERASE_SECURITY_REGISTERS_CMD	=	0x44,
 
-	FLASH_READ_UID_CMD_GD_PUYA_ZB_UT	=	0x4B,	//Flash Type = GD/PUYA/ZB/UT
+	FLASH_READ_UID_CMD_GD_PUYA_ZB_TH	=	0x4B,	//Flash Type = GD/PUYA/ZB/UT
 	FLASH_READ_UID_CMD_XTX				=	0x5A,	//Flash Type = XTX
 
 	FLASH_GET_JEDEC_ID					=	0x9F,
@@ -98,6 +99,23 @@ typedef enum{
 }flash_uid_cmddef_e;
 
 /**
+ * @brief     flash vendor and technology definition
+ */
+typedef enum{
+	FLASH_ETOX_ZB  		= 0x0100325E,	// 325E		bit[24]:ETOX: Byte Program Time != Page Programming Time
+	FLASH_ETOX_GD   	= 0x010060C8,	// 60C8/4051
+	FLASH_SONOS_PUYA  	= 0x02006085,	// 6085		bit[25]:SONOS:Byte Program Time == Page Programming Time
+	FLASH_SONOS_TH  	= 0x020060EB,	// 60EB
+	FLASH_SST_TH  		= 0x040060CD,	// 60CD		bit[26]:SST:  Byte Program Time != Page Programming Time
+}flash_vendor_e;
+
+
+typedef enum{
+	FLASH_ETOX_ARCH  	= 0x01000000,
+	FLASH_SONOS_ARCH  	= 0x02000000,
+}flash_architecture_e;
+
+/**
  * @brief	flash capacity definition
  *			Call flash_read_mid function to get the size of flash capacity.
  *			Example is as follows:
@@ -129,10 +147,27 @@ typedef enum {
     FLASH_VOLTAGE_1V6      = 0x00,
 } Flash_VoltageDef;
 
+typedef void (*flash_hander_t)(unsigned long, unsigned long, unsigned char*);
+extern flash_hander_t flash_read_page;
+extern flash_hander_t flash_write_page;
+
 /*******************************************************************************************************************
  *												Primary interface
  ******************************************************************************************************************/
 
+extern unsigned int flash_type,get_flash_mid;
+
+/**
+ * @brief 		This function serve to change the read function and write function.
+ * @param[in]   read	- the read function.
+ * @param[in]   write	- the write function.
+ * @none
+ */
+static inline void flash_change_rw_func(flash_hander_t read, flash_hander_t write)
+{
+	flash_read_page = read;
+	flash_write_page = write;
+}
 /**
  * @brief 		This function serves to erase a sector.
  * @param[in]   addr	- the start address of the sector needs to erase.
@@ -165,7 +200,7 @@ void flash_erase_sector(unsigned long addr);
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf);
+void flash_read_data(unsigned long addr, unsigned long len, unsigned char *buf);
 
 /**
  * @brief 		This function writes the buffer's content to the flash.
@@ -185,7 +220,7 @@ void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf);
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_write_page(unsigned long addr, unsigned long len, unsigned char *buf);
+void flash_page_program(unsigned long addr, unsigned long len, unsigned char *buf);
 
 /**
  * @brief	  	This function serves to read MID of flash(MAC id). Before reading UID of flash,

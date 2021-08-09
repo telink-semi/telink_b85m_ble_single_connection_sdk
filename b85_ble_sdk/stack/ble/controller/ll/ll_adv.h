@@ -145,12 +145,12 @@ ble_sts_t   bls_ll_setAdvType(u8 advType);
 ble_sts_t 	blt_set_adv_addrtype(u8* cmdPara);
 #endif
 
-#if(BLT_ADV_IN_CONN_SLAVE_EN)
+
 ble_sts_t   blc_ll_addAdvertisingInConnSlaveRole(void);
 ble_sts_t   blc_ll_removeAdvertisingFromConnSLaveRole(void);
 ble_sts_t 	blc_ll_setAdvParamInConnSlaveRole( u8 		  *adv_data,  u8              advData_len, u8 *scanRsp_data,  u8 scanRspData_len,
 											   adv_type_t  advType,   own_addr_type_t ownAddrType, u8 adv_channelMap, adv_fp_type_t advFilterPolicy);
-#endif
+
 
 
 #endif /* LL_ADV_H_ */

@@ -148,6 +148,26 @@ bool 	  blc_phy_isPhyTestEnable(void);
 	 * @return     always 0
 	 */
 	int 	 phy_test_2_wire_tx_to_uart (void);
+
+	/**
+	 * @brief      This function is used to start a test where the DUT receives test reference
+	 *				packets at a fixed interval. The tester generates the test reference packets.
+	 * @param[in]     rx_chn  	specify the RF channel to be used by the receiver
+	 * @param[in]	  phy_mode 	specify the RF PHT to be used by the receiver
+	 * @param[in]	  modulation_index  specifies whether or not the Controller should assume the receiver has a stable modulation index
+	 * @return     ble_sts_t
+	 */
+	ble_sts_t blc_phy_setEnhancedReceiverTest (u8 rx_chn,u8 phy_mode,u8 modulation_index);
+
+	/**
+	 * @brief       This function is used to start a test where the DUT generates test reference packets at a fixed interval
+	 * @param[in]     tx_chn  	specify the RF channel to be used by the transmitter
+	 * @param[in]	  length 	Length in bytes of payload data in each packet
+	 * @param[in]	  pkt_type  specify contents of the payload of the test reference packets
+	 * @param[in]	  phy_mode  specify the RF PHT to be used by the transmitter
+	 * @return       ble_sts_t
+	 */
+	ble_sts_t blc_phy_setEnhancedTransmitterTest (u8 tx_chn, u8 length, u8 pkt_type,u8 phy_mode);
 #endif
 
 

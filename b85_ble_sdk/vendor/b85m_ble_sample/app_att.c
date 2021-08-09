@@ -235,8 +235,8 @@ static u16 extServiceUUID;
 
 
 /////////////////////////////////////////////////////////
-static const  u8 my_OtaUUID[16]					    = TELINK_SPP_DATA_OTA;
-static const  u8 my_OtaServiceUUID[16]				= TELINK_OTA_UUID_SERVICE;
+static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
+static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 static u8 my_OtaData 						        = 0x00;
 static u8 otaDataCCC[2] 							= {0,0};
 

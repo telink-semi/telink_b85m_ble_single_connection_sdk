@@ -292,15 +292,15 @@ static u16 extServiceUUID;
 
 
 /////////////////////////////////////////////////////////
-static const  u8 my_OtaUUID[16]					    = TELINK_SPP_DATA_OTA;
-static const  u8 my_OtaServiceUUID[16]				= TELINK_OTA_UUID_SERVICE;
+static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
+static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 static u8 my_OtaData 						        = 0x00;
 static u8 otaDataCCC[2] 							= {0,0};
 static const u8  my_OtaName[] = {'O', 'T', 'A'};
 #if(TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_TLEINK)
-	static const u8 my_AudioUUID[16]   	= TELINK_AUDIO_UUID_SERVICE;
-	static const u8 my_MicUUID[16]			= TELINK_MIC_DATA;
-	static const u8 my_SpeakerUUID[16]		= TELINK_SPEAKER_DATA;
+	static const u8 my_AudioUUID[16]   	= WRAPPING_BRACESTELINK_AUDIO_UUID_SERVICE);
+	static const u8 my_MicUUID[16]			= WRAPPING_BRACESTELINK_MIC_DATA);
+	static const u8 my_SpeakerUUID[16]		= WRAPPING_BRACESTELINK_SPEAKER_DATA);
 	static u8 micDataCCC[2];
 	static u8 my_MicData 		= 0x80;
 	static u8 my_SpeakerData 	= 0x81;
@@ -315,10 +315,10 @@ static const u8  my_OtaName[] = {'O', 'T', 'A'};
 	u16 gAudioGoogleCTLCCC = 0;
 	u16 gAudioGoogleRXCCC = 0;
 
-	static const u8 sAudioGoogleTXUUID[16] 		= AUDIO_GOOGL_TX_CHAR_UUID;
-	static const u8 sAudioGoogleServiceUUID[16] = AUDIO_GOOGLE_SERVICE_UUID;
-	static const u8 sAudioGoogleRXUUID[16] 		= AUDIO_GOOGL_RX_CHAR_UUID;
-	static const u8 sAudioGoogleCTLUUID[16] 	= AUDIO_GOOGL_CTL_CHAR_UUID;
+	static const u8 sAudioGoogleTXUUID[16] 		= WRAPPING_BRACES(AUDIO_GOOGL_TX_CHAR_UUID);
+	static const u8 sAudioGoogleServiceUUID[16] = WRAPPING_BRACES(AUDIO_GOOGLE_SERVICE_UUID);
+	static const u8 sAudioGoogleRXUUID[16] 		= WRAPPING_BRACES(AUDIO_GOOGL_RX_CHAR_UUID);
+	static const u8 sAudioGoogleCTLUUID[16] 	= WRAPPING_BRACES(AUDIO_GOOGL_CTL_CHAR_UUID);
 #endif
 
 // Include attribute (Battery service)

@@ -49,7 +49,7 @@
 
 #ifndef     uart_H
 #define     uart_H
-
+#define uart_rtx_pin_tx_trig() uart_clr_tx_done()
 
 /**
  *  @brief  Define mul bits
@@ -114,6 +114,16 @@ typedef enum{
 }UART_RxPinDef;
 
 /**
+ *  @brief  Define UART RTX pin: C2 D0 D3 D7
+ */
+typedef enum{
+	UART_RTX_PC2 = GPIO_PC2,
+	UART_RTX_PD0 = GPIO_PD0,
+	UART_RTX_PD3 = GPIO_PD3,
+	UART_RTX_PD7 = GPIO_PD7,
+}UART_RTxPinDef;
+
+/**
  *  @brief  Define UART CTS pin : A3 B2 C4 D1
  */
 
@@ -159,6 +169,24 @@ static inline void uart_reset(void)
 	reg_rst0 &= (~FLD_RST0_UART);
 }
 
+/**
+ * @brief     This function serves to clear tx down.
+ * @param[in] none
+ * @return    none
+ */
+static inline void uart_clr_tx_done(void)
+{
+	reg_uart_state = BIT(7);
+}
+
+/**
+ * @brief      	This function is used to enable the rtx function of .
+ * @return     	none.
+ */
+static inline void uart_rtx_en()
+{
+	reg_uart_rx_timeout1 |=FLD_UART_P7816_EN;
+}
 
 /**
  * @brief      	This function initializes the UART module.
@@ -256,6 +284,18 @@ extern void uart_ndma_irq_triglevel(unsigned char rx_level, unsigned char tx_lev
  */
 
 extern unsigned char uart_ndmairq_get(void);
+
+/**
+ * @brief     uart send data function, this  function tell the DMA to get data from the RAM and start the DMA transmission
+ * @param[in] Addr - pointer to the buffer containing data need to send
+ * @return    none
+ * @note      If you want to use uart DMA mode to send data, it is recommended to use this function.
+ *            This function just triggers the sending action, you can use interrupt or polling with the FLD_UART_TX_DONE flag to judge whether the sending is complete.
+ *            After the current packet has been sent, this FLD_UART_TX_DONE will be set to 1, and FLD_UART_TX_DONE interrupt can be generated.
+ *			  If you use interrupt mode, you need to call uart_clr_tx_done() in the interrupt processing function, uart_clr_tx_done() will set FLD_UART_TX_DONE to 0.
+ *            DMA can only send 2047-bytes one time at most.
+ */
+extern void uart_send_dma(unsigned char* Addr);
 
 /**
  * @brief     uart send data function, this  function tell the DMA to get data from the RAM and start

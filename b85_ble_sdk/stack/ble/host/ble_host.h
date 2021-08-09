@@ -69,12 +69,6 @@
 #include "stack/ble/host/gap/gap_event.h"
 
 
-/*********************************************************/
-//Remove when file merge to SDK //
-#include "stack/ble/ble_config.h"
-#include "stack/ble/trace.h"
-
-/*********************************************************/
 
 
 #endif /* STACK_BLE_HOST_BLE_HOST_H_ */

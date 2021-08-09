@@ -1134,6 +1134,13 @@ void adc_set_ain_pre_scaler(ADC_PreScalingTypeDef v_scl);
 void adc_init(void );
 
 /**
+ * @brief This function is used to calib ADC 1.2V vref for GPIO.
+ * @param[in] data - GPIO sampling calibration value.
+ * @return none
+ */
+void adc_set_gpio_calib_vref(unsigned short data);
+
+/**
  * @brief This function is used for IO port configuration of ADC IO port voltage sampling.
  * @param[in]  pin - GPIO_PinTypeDef
  * @return none

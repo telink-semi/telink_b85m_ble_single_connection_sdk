@@ -74,6 +74,7 @@
 #include <stdarg.h>
 
 #include "drivers.h"
+#include "putchar.h"
 
 static void printchar(char **str, int c) {
 	if (str) {

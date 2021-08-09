@@ -177,6 +177,30 @@ ble_sts_t blc_ota_setOtaProcessTimeout(int timeout_second);
 ble_sts_t blc_ota_setOtaDataPacketTimeout(int timeout_second);
 
 
+/**
+ * @brief      This function is used to set resolution of OTA schedule indication by PDU number
+ * @param[in]  pdu_num -
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t blc_ota_setOtaScheduleIndication_by_pduNum(int pdu_num);
+
+
+/**
+ * @brief      This function is used to set resolution of OTA schedule indication by firmware size
+ * @param[in]  fw_size -
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t blc_ota_setOtaScheduleIndication_by_FiimwareSize(int fw_size);
+
+
+/**
+ * @brief      This function is used to calculate OTA notify data ATT handle by OTA write data ATT handle
+ * @param[in]  attHandle_offset - offset value from OTA write handle to OTA notify handle.
+ * 			   If not set, default value is 0 which means OTA write and notify in a same ATT handle.
+ * @return     none
+ */
+void	  blc_ota_setAttHandleOffset(s8 attHandle_offset);
+
 
 #if (MCU_CORE_TYPE == MCU_CORE_9518)
 	extern int otaWrite(u16 connHandle, void * p);

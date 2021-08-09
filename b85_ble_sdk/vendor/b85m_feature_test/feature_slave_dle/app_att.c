@@ -238,16 +238,16 @@ _attribute_data_retention_	static u16 extServiceUUID;
 
 
 //////////////////////// OTA //////////////////////////////////
-static const  u8 my_OtaUUID[16]					    = TELINK_SPP_DATA_OTA;
-static const  u8 my_OtaServiceUUID[16]				= TELINK_OTA_UUID_SERVICE;
+static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
+static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 _attribute_data_retention_	static 		  u8 my_OtaData 						= 0x00;
 _attribute_data_retention_	static 		  u8 otaDataCCC[2] 						= {0,0};
 static const  u8 my_OtaName[] 						= {'O', 'T', 'A'};
 
 ////////////////////// SPP ////////////////////////////////////
-static const u8 TelinkSppServiceUUID[16]	      	    = TELINK_SPP_UUID_SERVICE;
-static const u8 TelinkSppDataServer2ClientUUID[16]      = TELINK_SPP_DATA_SERVER2CLIENT;
-static const u8 TelinkSppDataClient2ServerUUID[16]      = TELINK_SPP_DATA_CLIENT2SERVER;
+static const u8 TelinkSppServiceUUID[16]	      	    =WRAPPING_BRACES( TELINK_SPP_UUID_SERVICE);
+static const u8 TelinkSppDataServer2ClientUUID[16]      = WRAPPING_BRACES(TELINK_SPP_DATA_SERVER2CLIENT);
+static const u8 TelinkSppDataClient2ServerUUID[16]      = WRAPPING_BRACES(TELINK_SPP_DATA_CLIENT2SERVER);
 
 // Spp data from Server to Client characteristic variables
 static u8 SppDataServer2ClientDataCCC[2]  				= {0};

@@ -49,8 +49,31 @@
 #include "timer.h"
 #include "string.h"
 #include "watchdog.h"
+/*
+ *	If add flash type, need pay attention to the read uid command and the bit number of status register
+	Flash Type	uid CMD			MID		Company		Sector Erase Time(MAX)
+	GD25LD10C	0x4b(AN)	0x1160C8	GD			500ms
+	GD25LD40C	0x4b		0x1360C8	GD			500ms
+	GD25LD80C	0x4b(AN)	0x1460C8	GD			500ms
+	P25D40L		0x4b		0x136085	PUYA		20ms
+	TH25D40LA	0x4b		0x1360EB	TH			12ms
+	ZB25WD10A	0x4b		0x11325E	ZB			500ms
+	ZB25WD40B	0x4b		0x13325E	ZB			500ms
+	ZB25WD80B	0x4b		0x14325E	ZB			500ms
+	ZB25WD20A	0x4b		0x12325E	ZB			500ms	The actual capacity is 256K, but the nominal value is 128KB.
+											The software cannot do capacity adaptation and requires special customer special processing.
 
-_attribute_data_retention_    unsigned char zbit_flash_flag = 0;
+	The uid of the early ZB25WD40B (mid is 0x13325E) is 8 bytes. If you read 16 bytes of uid,
+	the next 8 bytes will be read as 0xff. Later, the uid of ZB25WD40B has been switched to 16 bytes.
+ */
+unsigned int flash_support_mid[] = {0x1160C8, 0x1360C8, 0x1460C8, 0x11325E, 0x12325E, 0x13325E, 0x14325E, 0x136085, 0x1360EB};
+const unsigned int FLASH_CNT = sizeof(flash_support_mid)/sizeof(*flash_support_mid);
+
+flash_hander_t flash_read_page = flash_read_data;
+flash_hander_t flash_write_page = flash_page_program;
+
+_attribute_data_retention_	  unsigned int  flash_type = 0;
+_attribute_data_retention_	  unsigned int  get_flash_mid = FLASH_ETOX_GD;
 _attribute_data_retention_   _attribute_aligned_(4)	Flash_CapacityDef	flash_capacity;
 
 /**
@@ -179,7 +202,10 @@ _attribute_ram_code_sec_noinline_ void flash_mspi_write_ram(unsigned char cmd, u
  * @brief 		This function serves to erase a sector.
  * @param[in]   addr	- the start address of the sector needs to erase.
  * @return 		none.
- * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ * @note        Attention: The block erase takes a long time, please pay attention to feeding the dog in advance.
+ * 				The maximum block erase time is listed at the beginning of this document and is available for viewing.
+ *
+ * 				Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
  *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
  *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
  *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
@@ -191,6 +217,8 @@ _attribute_ram_code_sec_noinline_ void flash_mspi_write_ram(unsigned char cmd, u
  */
 void flash_erase_sector(unsigned long addr)
 {
+	wd_clear(); // add by BLE Team
+
 	flash_mspi_write_ram(FLASH_SECT_ERASE_CMD, addr, 1, NULL, 0);
 }
 
@@ -210,7 +238,7 @@ void flash_erase_sector(unsigned long addr)
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf)
+void flash_read_data(unsigned long addr, unsigned long len, unsigned char *buf)
 {
 	flash_mspi_read_ram(FLASH_READ_CMD, addr, 1, 0, buf, len);
 }
@@ -233,7 +261,7 @@ void flash_read_page(unsigned long addr, unsigned long len, unsigned char *buf)
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_write_page(unsigned long addr, unsigned long len, unsigned char *buf)
+void flash_page_program(unsigned long addr, unsigned long len, unsigned char *buf)
 {
 	unsigned int ns = PAGE_SIZE - (addr&(PAGE_SIZE - 1));
 	int nw = 0;
@@ -337,7 +365,7 @@ unsigned int flash_read_mid(void)
  */
 void flash_read_uid(unsigned char idcmd, unsigned char *buf)
 {
-	if(idcmd == FLASH_READ_UID_CMD_GD_PUYA_ZB_UT)	//< GD/PUYA/ZB/UT
+	if(idcmd == FLASH_READ_UID_CMD_GD_PUYA_ZB_TH)	//< GD/PUYA/ZB/UT
 	{
 		flash_mspi_read_ram(idcmd, 0x00, 1, 1, buf, 16);
 	}
@@ -372,24 +400,14 @@ int flash_read_mid_uid_with_check(unsigned int *flash_mid, unsigned char *flash_
 	int i,f_cnt=0;
 	*flash_mid  = flash_read_mid();
 
-	/*
-	 * If add flash type, need pay attention to the read uid cmd and the bir number of status register
-	   Flash Type	CMD			MID		Company
-	   GD25LD10C	0x4b(AN)0x1160C8	GD
-	   GD25LD40C	0x4b	0x1360C8	GD
-	   GD25LD80C	0x4b(AN)0x1460C8	GD
-	   ZB25WD10A	0x4b	0x11325E	ZB
-	   ZB25WD40B	0x4b	0x13325E	ZB
-	   ZB25WD80B	0x4b	0x14325E	ZB
-	   ZB25WD20A	0x4b	0x12325E	ZB	The actual capacity is 256K, but the nominal value is 128KB.
-											The software cannot do capacity adaptation and requires special customer special processing.
 
-	   The uid of the early ZB25WD40B (mid is 0x13325E) is 8 bytes. If you read 16 bytes of uid,
-	   the next 8 bytes will be read as 0xff. Later, the uid of ZB25WD40B has been switched to 16 bytes.
-	 */
-	if((*flash_mid == 0x1160C8)||(*flash_mid == 0x1360C8)||(*flash_mid == 0x1460C8)||(*flash_mid == 0x11325E)||(*flash_mid == 0x12325E)||(*flash_mid == 0x13325E)||(*flash_mid == 0x14325E)){
-		flash_read_uid(FLASH_READ_UID_CMD_GD_PUYA_ZB_UT, (unsigned char *)flash_uid);
-	}else{
+	for(i=0; i<FLASH_CNT; i++){
+		if(flash_support_mid[i] == *flash_mid){
+			flash_read_uid(FLASH_READ_UID_CMD_GD_PUYA_ZB_TH, (unsigned char *)flash_uid);
+			break;
+		}
+	}
+	if(i == FLASH_CNT){
 		return 0;
 	}
 
@@ -454,4 +472,30 @@ void flash_set_capacity(Flash_CapacityDef flash_cap)
 Flash_CapacityDef flash_get_capacity(void)
 {
 	return flash_capacity;
+}
+
+/**
+ * @brief		This function serves to get flash vendor.
+ * @param[in]	none.
+ * @return		0 - err, other - flash vendor.
+ */
+unsigned int flash_get_vendor(unsigned int flash_mid)
+{
+	switch(flash_mid&0x0000ffff)
+	{
+	case 0x0000325E:
+		return FLASH_ETOX_ZB;
+	case 0x000060C8:
+		return FLASH_ETOX_GD;
+	case 0x00004051:
+		return FLASH_ETOX_GD;
+	case 0x00006085:
+		return FLASH_SONOS_PUYA;
+	case 0x000060EB:
+		return FLASH_SONOS_TH;
+	case 0x000060CD:
+		return FLASH_SONOS_TH;
+	default:
+		return 0;
+	}
 }

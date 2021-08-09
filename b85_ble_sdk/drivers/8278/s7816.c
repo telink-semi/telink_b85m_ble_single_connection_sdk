@@ -47,6 +47,7 @@
 #include "uart.h"
 #include "irq.h"
 #include "dma.h"
+#include "timer.h"
 
 /**
  * @brief      	This function is used to initiate 7816 module of MCU

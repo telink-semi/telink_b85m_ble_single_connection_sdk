@@ -47,7 +47,7 @@
 #include "uart.h"
 #include "irq.h"
 #include "dma.h"
-
+#include "timer.h"
 /**
  * @brief      	This function is used to initiate 7816 module of MCU
  * @param[in]  	Div	-set the divider of clock of 7816 module:

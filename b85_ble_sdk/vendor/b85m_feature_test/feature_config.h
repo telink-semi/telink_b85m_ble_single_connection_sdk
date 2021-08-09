@@ -87,11 +87,12 @@
 
 #define TEST_LL_PRIVACY                                 80
 
+#define	TEST_OTA_HID									90
+
 //some simple function test
 #define TEST_USER_BLT_SOFT_TIMER						100
 #define TEST_WHITELIST									110
 #define	TEST_CSA2										120
-
 
 
 #define TEST_FEATURE_BACKUP								200
@@ -99,7 +100,7 @@
 
 
 
-#define FEATURE_TEST_MODE								TEST_LL_PRIVACY
+#define FEATURE_TEST_MODE								TEST_POWER_ADV
 
 
 

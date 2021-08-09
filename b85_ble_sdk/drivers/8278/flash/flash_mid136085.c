@@ -1,5 +1,5 @@
 /********************************************************************************************************
- * @file	flash_mid1460c8.c
+ * @file	flash_mid136085.c
  *
  * @brief	This is the source file for b85m
  *
@@ -59,9 +59,11 @@
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-unsigned char flash_read_status_mid1460c8(void)
+unsigned short flash_read_status_mid136085(void)
 {
-	return flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
+	unsigned char status_low = flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
+	unsigned char status_high = flash_read_status(FLASH_READ_STATUS_CMD_HIGHBYTE);
+	return (status_low | (status_high << 8));
 }
 
 /**
@@ -79,11 +81,11 @@ unsigned char flash_read_status_mid1460c8(void)
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_write_status_mid1460c8(unsigned char data, mid1460c8_write_status_bit_e bit)
+void flash_write_status_mid136085(unsigned short data, mid136085_write_status_bit_e bit)
 {
-	unsigned char status = flash_read_status(FLASH_READ_STATUS_CMD_LOWBYTE);
+	unsigned short status = flash_read_status_mid136085();
 	data |= (status & ~(bit));
-	flash_write_status(FLASH_TYPE_8BIT_STATUS, data);
+	flash_write_status(FLASH_TYPE_16BIT_STATUS_ONE_CMD, data);
 }
 
 /**
@@ -100,9 +102,9 @@ void flash_write_status_mid1460c8(unsigned char data, mid1460c8_write_status_bit
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_lock_mid1460c8(mid1460c8_lock_block_e data)
+void flash_lock_mid136085(mid136085_lock_block_e data)
 {
-	flash_write_status_mid1460c8(data, FLASH_WRITE_STATUS_BP_MID1460C8);
+	flash_write_status_mid136085(data, FLASH_WRITE_STATUS_BP_MID136085);
 }
 
 /**
@@ -118,8 +120,102 @@ void flash_lock_mid1460c8(mid1460c8_lock_block_e data)
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-void flash_unlock_mid1460c8(void)
+void flash_unlock_mid136085(void)
 {
-	flash_write_status_mid1460c8(FLASH_LOCK_NONE_MID1460C8, FLASH_WRITE_STATUS_BP_MID1460C8);
+	flash_write_status_mid136085(FLASH_LOCK_NONE_MID136085, FLASH_WRITE_STATUS_BP_MID136085);
+}
+
+/**
+ * @brief 		This function serves to read data from the Security Registers of the flash.
+ * @param[in]   addr	- the start address of the Security Registers.
+ *						the address of the  Security Registers #1 0x001000-0x0011ff
+ *						the address of the  Security Registers #2 0x002000-0x0021ff
+ *						the address of the  Security Registers #3 0x003000-0x0031ff
+ * @param[in]   len		- the length of the content to be read.
+ * @param[out]  buf		- the starting address of the content to be read.
+ * @return 		none.
+ * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
+ */
+void flash_read_otp_mid136085(unsigned long addr, unsigned long len, unsigned char* buf)
+{
+	flash_read_otp(addr, len, buf);
+}
+
+/**
+ * @brief 		This function serves to write data to the Security Registers of the flash you choose.
+ * @param[in]   addr	- the start address of the Security Registers.
+ *						the address of the  Security Registers #1 0x001000-0x0011ff
+ *						the address of the  Security Registers #2 0x002000-0x0021ff
+ *						the address of the  Security Registers #3 0x003000-0x0031ff
+ * @param[in]   len		- the length of content to be written.
+ * @param[in]   buf		- the starting address of the content to be written.
+ * @return 		none.
+ * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
+ */
+void flash_write_otp_mid136085(unsigned long addr, unsigned long len, unsigned char *buf)
+{
+	flash_write_otp(addr, len, buf);
+}
+
+/**
+ * @brief 		This function serves to erase the data of the Security Registers that you choose.
+ * 				You can erase 512-byte one time.
+ * @param[in]   addr	- the address that you want to erase.
+ *						the address of the  Security Registers #1 0x001000-0x0011ff
+ *						the address of the  Security Registers #2 0x002000-0x0021ff
+ *						the address of the  Security Registers #3 0x003000-0x0031ff
+ * @return 		none.
+ * @note		Even you choose the middle area of the Security Registers,it will erase the whole area.
+ *              Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
+ */
+void flash_erase_otp_mid136085(mid136085_otp_block_e addr)
+{
+	flash_erase_otp(addr);
+}
+
+/**
+ * @brief 		This function serves to provide the write protect control to the Security Registers.
+ * @param[in]   data	- the lock area of the Security Registers.
+ * @return 		none.
+ * @note		once they are set to 1, the Security Registers will become read-only permanently,
+ * 				you can't write or erase the area anymore.
+ *
+ *              Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
+ */
+void flash_lock_otp_mid136085(mid136085_lock_otp_e data)
+{
+	flash_write_status_mid136085(data, FLASH_WRITE_STATUS_OTP_MID136085);
 }
 #endif

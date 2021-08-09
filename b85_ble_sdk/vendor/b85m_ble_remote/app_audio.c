@@ -320,7 +320,7 @@ void ui_enable_mic (int en)
 
 			///////////////////// AUDIO initialization///////////////////
 			//buffer_mic set must before audio_init !!!
-			audio_config_mic_buf ( buffer_mic, TL_MIC_BUFFER_SIZE);
+			audio_config_mic_buf ( (u16*)buffer_mic, TL_MIC_BUFFER_SIZE);
 			buffer_mic_pkt_rptr = buffer_mic_pkt_wptr = 0;
 			#if (BLE_DMIC_ENABLE)  //Dmic config
 				gpio_set_func(GPIO_DMIC_DI, AS_DMIC);

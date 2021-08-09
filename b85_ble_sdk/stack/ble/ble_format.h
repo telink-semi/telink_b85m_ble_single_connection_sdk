@@ -569,8 +569,6 @@ typedef struct{
 	u16 result;
 }rf_packet_l2cap_connParaUpRsp_t;
 
-
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
 typedef struct{
 	u8	type;
 	u8  rf_len;
@@ -583,21 +581,6 @@ typedef struct{
 	u8	dat[20];
 
 }rf_packet_att_data_t;
-#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-typedef struct{
-	u8	type;				//RFU(3)_MD(1)_SN(1)_NESN(1)-LLID(2)
-	u8  rf_len;				//LEN(5)_RFU(3)
-	u16	l2cap;
-	u16	chanid;
-
-	u8	att;
-	u8	hl;					// assigned by master
-	u8	hh;					//
-
-	u8	dat[20];
-
-}rf_packet_att_data_t;
-#endif
 
 typedef struct{
 	u8	type;

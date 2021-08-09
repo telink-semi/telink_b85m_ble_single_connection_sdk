@@ -557,7 +557,7 @@ int blm_le_conn_update_event_proc(u8 *p)
  */
 int blm_le_phy_update_complete_event_proc(u8 *p)
 {
-	hci_le_phyUpdateCompleteEvt_t *pPhyUpt = (hci_le_phyUpdateCompleteEvt_t *)p;
+//	hci_le_phyUpdateCompleteEvt_t *pPhyUpt = (hci_le_phyUpdateCompleteEvt_t *)p;
 
 
 

@@ -137,7 +137,7 @@ static inline void blc_app_loadCustomizedParameters(void)
 
 	if((0xffff == calib_value) || (0 != (calib_value & 0xf8f8)))
 	{
-		if(zbit_flash_flag)
+		if(flash_type == FLASH_ETOX_ZB)
 		{
 			analog_write(0x09, ((analog_read(0x09) & 0x8f) | (FLASH_VOLTAGE_1V95 << 4)));    		//ldo mode flash ldo trim 1.95V
 			analog_write(0x0c, ((analog_read(0x0c) & 0xf8) | FLASH_VOLTAGE_1V9));					//dcdc mode flash ldo trim 1.90V
@@ -153,7 +153,7 @@ static inline void blc_app_loadCustomizedParameters(void)
 
 	if((0xff == calib_value))
 	{
-		if(zbit_flash_flag)
+		if(flash_type == FLASH_ETOX_ZB)
 		{
 			analog_write(0x0c, ((analog_read(0x0c) & 0xf8)  | FLASH_VOLTAGE_1V95));//1.95
 		}

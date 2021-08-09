@@ -368,6 +368,10 @@ static inline void pwm_set_dma_address(void * pdat)
 	reg_dma_pwm_addr = (unsigned short)((unsigned int)pdat);
 	reg_dma7_addrHi = 0x04;
 	reg_dma_pwm_mode  &= ~FLD_DMA_WR_MEM;
+	//In the PWM ir_dma_fifo model, the DMA length default is 320 bytes (160 group configuration), when the pwm_dma send byte length is greater than 320 bytes, can appear abnormal,
+    //abnormal phenomenon: when after sending the first 160 group configuration waveform, waveform will send 160th group configuration, and not interrupt,
+	//has modify the pwm_dma length of hardware support maximum 512 bytes.
+	reg_dma7_size = 0xff;
 }
 
 /**

@@ -68,7 +68,7 @@
 #define PM_EMPTYRUN_TIME_US			2
 
 
-#define PM_LONG_SLEEP_WAKEUP_EN			    0 //if user need to make MCU sleep for a long time that is more than 268s, this macro need to be enabled and use "pm_long_sleep_wakeup" function
+#define PM_LONG_SLEEP_WAKEUP_EN			    0 //if user need to make MCU sleep for a long time that is more than 234, this macro need to be enabled and use "pm_long_sleep_wakeup" function
 
 /**
  * @brief analog register below can store information when MCU in deepsleep mode
@@ -322,7 +322,7 @@ extern  pm_tim_recover_handler_t pm_tim_recover;
  * @brief      This function serves to set the working mode of MCU based on 32k crystal,e.g. suspend mode, deepsleep mode, deepsleep with SRAM retention mode and shutdown mode.
  * @param[in]  sleep_mode - sleep mode type select.
  * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 5 minutes.
+ * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 234 seconds.
  * @return     indicate whether the cpu is wake up successful.
  */
 int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
@@ -331,7 +331,7 @@ int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeD
  * @brief      This function serves to set the working mode of MCU based on 32k crystal,e.g. suspend mode, deepsleep mode, deepsleep with SRAM retention mode and shutdown mode.
  * @param[in]  sleep_mode - sleep mode type select.
  * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 5 minutes.
+ * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 234 seconds.
  * @return     indicate whether the cpu is wake up successful.
  */
 int  cpu_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);

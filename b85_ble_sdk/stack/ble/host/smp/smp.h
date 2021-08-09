@@ -51,6 +51,7 @@
 
 
 
+
 /** @addtogroup SMP first pairing or connecting back definition
  * @{
  */

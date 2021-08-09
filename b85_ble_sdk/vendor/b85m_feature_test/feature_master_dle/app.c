@@ -58,11 +58,6 @@
 
 
 
-#define RX_FIFO_SIZE	64
-#define RX_FIFO_NUM		8
-
-#define TX_FIFO_SIZE	40
-#define TX_FIFO_NUM		8
 
 //need define att handle same with slave(Here: we use 8258 feature_test/slave_dle demo as slave device)
 #define			SPP_HANDLE_DATA_S2C			0x11

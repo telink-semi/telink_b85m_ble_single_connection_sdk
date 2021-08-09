@@ -52,7 +52,7 @@
 _attribute_data_retention_
 adc_vref_ctr_t adc_vref_cfg = {
 	.adc_vref 		= 1175, //default ADC ref voltage (unit:mV)
-	.adc_calib_en	= 1, 	//default disable
+	.adc_calib_en	= 1, 	//default enable
 };
 
 volatile unsigned short	adc_code;
@@ -293,6 +293,17 @@ void adc_init(void){
 	dfifo_disable_dfifo2();//disable misc channel data dfifo
 
 }
+
+/**
+ * @brief This function is used to calib ADC 1.2V vref for GPIO.
+ * @param[in] data - GPIO sampling calibration value.
+ * @return none
+ */
+void adc_set_gpio_calib_vref(unsigned short data)
+{
+	adc_vref_cfg.adc_vref = data;
+}
+
 /**
  * @brief This function is used for ADC configuration of ADC IO voltage sampling.
  * @param[in]   pin - GPIO_PinTypeDef

@@ -43,8 +43,8 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-#ifndef __FLASH_COMPATIBLE_H__
-#define __FLASH_COMPATIBLE_H__
+#ifndef __FLASH_TYPE_H__
+#define __FLASH_TYPE_H__
 
 #include "flash.h"
 #include "flash_mid13325e.h"	// ZB25WD40B
@@ -54,7 +54,7 @@
 #include "flash_mid1460c8.h"	// GD25LD80C
 #include "flash_mid011460c8.h"	// GD25LE80C / GD25LQ80C
 #include "flash_mid134051.h"	// MD25D40D
-#include "flash_mid136085.h"	// P25Q40L
+#include "flash_mid136085.h"	// P25Q40L / P25D40L
 #include "flash_mid1360eb.h"	// TH25D40UA / TH25D40LA
 
 #if FLASH_LOCK_EN

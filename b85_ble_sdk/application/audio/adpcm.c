@@ -151,7 +151,7 @@ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start
 
 #define ADPCM_ANDROID_ID    0x00
 
-static int serial_id = 0;
+//static int serial_id = 0;
 
 unsigned short adpcm_serial_num = 0;
 

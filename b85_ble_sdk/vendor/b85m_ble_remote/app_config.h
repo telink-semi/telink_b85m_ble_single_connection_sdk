@@ -301,12 +301,12 @@
 #else   //key map
 
 	#define		KB_MAP_NORMAL	{\
-					VK_B,		CR_POWER,		VK_NONE,		VK_C,				CR_HOME,	 \
-					VOICE,		VK_NONE,		VK_NONE,		CR_VOL_UP,			CR_VOL_DN,	 \
-					VK_2,		VK_RIGHT,		CR_VOL_DN,		VK_3,				VK_1,	 \
-					VK_5,		VK_ENTER,		CR_VOL_UP,		VK_6,				VK_4,	 \
-					VK_8,		VK_DOWN,		VK_UP ,			VK_9,				VK_7,	 \
-					VK_0,		CR_BACK,		VK_LEFT,		VOICE,				CR_MENU,	 }
+					{VK_B,		CR_POWER,		VK_NONE,		VK_C,				CR_HOME},	 \
+					{VOICE,		VK_NONE,		VK_NONE,		CR_VOL_UP,			CR_VOL_DN},	 \
+					{VK_2,		VK_RIGHT,		CR_VOL_DN,		VK_3,				VK_1},	 \
+					{VK_5,		VK_ENTER,		CR_VOL_UP,		VK_6,				VK_4},	 \
+					{VK_8,		VK_DOWN,		VK_UP ,			VK_9,				VK_7},	 \
+					{VK_0,		CR_BACK,		VK_LEFT,		VOICE,				CR_MENU},	 }
 
 #endif  //end of REMOTE_IR_ENABLE
 
