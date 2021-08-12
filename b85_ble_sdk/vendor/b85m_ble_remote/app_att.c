@@ -298,9 +298,9 @@ static u8 my_OtaData 						        = 0x00;
 static u8 otaDataCCC[2] 							= {0,0};
 static const u8  my_OtaName[] = {'O', 'T', 'A'};
 #if(TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_TLEINK)
-	static const u8 my_AudioUUID[16]   	= WRAPPING_BRACESTELINK_AUDIO_UUID_SERVICE);
-	static const u8 my_MicUUID[16]			= WRAPPING_BRACESTELINK_MIC_DATA);
-	static const u8 my_SpeakerUUID[16]		= WRAPPING_BRACESTELINK_SPEAKER_DATA);
+	static const u8 my_AudioUUID[16]   	= WRAPPING_BRACES(TELINK_AUDIO_UUID_SERVICE);
+	static const u8 my_MicUUID[16]			= WRAPPING_BRACES(TELINK_MIC_DATA);
+	static const u8 my_SpeakerUUID[16]		= WRAPPING_BRACES(TELINK_SPEAKER_DATA);
 	static u8 micDataCCC[2];
 	static u8 my_MicData 		= 0x80;
 	static u8 my_SpeakerData 	= 0x81;

@@ -45,7 +45,7 @@
  *******************************************************************************************************/
 #include "flash_type.h"
 
-#if FLASH_LOCK_EN
+
 /**
  * @brief 		This function reads the status of flash.
  * @return 		the value of status.
@@ -218,4 +218,4 @@ void flash_lock_otp_mid136085(mid136085_lock_otp_e data)
 {
 	flash_write_status_mid136085(data, FLASH_WRITE_STATUS_OTP_MID136085);
 }
-#endif
+

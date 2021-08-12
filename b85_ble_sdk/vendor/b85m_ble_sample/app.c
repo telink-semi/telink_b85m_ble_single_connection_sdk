@@ -278,7 +278,6 @@ void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
 
 
 
-
 /**
  * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_TERMINATE"
  * @param[in]  e - LinkLayer Event type
@@ -520,6 +519,7 @@ void user_init_normal(void)
 
 	bls_ll_setAdvEnable(1);  //adv enable
 
+	blc_ota_initOtaServer_module();
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
 	user_set_rf_power(0, 0, 0);
@@ -530,6 +530,7 @@ void user_init_normal(void)
 	//ble event call back
 	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
 	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
+
 
 
 
