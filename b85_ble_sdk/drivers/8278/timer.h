@@ -82,6 +82,9 @@ enum{
 	SYSTEM_TIMER_TICK_1250US 	= 20000,  //1250*16
 };
 
+
+
+//attention: do not delete enumerations below, because maybe some customers used them at previous released SDK !!!
 enum{
 	CLOCK_16M_SYS_TIMER_CLK_1S  =  16*1000*1000,
 	CLOCK_16M_SYS_TIMER_CLK_1MS = 16*1000,

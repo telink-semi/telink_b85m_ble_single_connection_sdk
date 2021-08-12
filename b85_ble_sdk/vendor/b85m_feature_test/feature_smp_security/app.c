@@ -164,7 +164,7 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 			if(key_value >= 0xf0 ){
 				key_type = CONSUMER_KEY;
 				u16 consumer_key = vk_consumer_map[key_value & 0x0f];
-				bls_att_pushNotifyData (HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
 				printf("CK:0x%x pressed\n", consumer_key);
 
 				#if (SMP_TEST_MODE == SMP_TEST_SC_NUMERIC_COMPARISON)
@@ -189,7 +189,7 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 			{
 				key_type = KEYBOARD_KEY;
 				key_buf[2] = key_value;
-				bls_att_pushNotifyData (HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8);
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8);
 				printf("KK:0x%x pressed\n", key_value);
 
 				#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
@@ -230,13 +230,13 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 			if(key_type == CONSUMER_KEY)
 			{
 				u16 consumer_key = 0;
-				bls_att_pushNotifyData (HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
 				printf("CK:released\n");
 			}
 			else if(key_type == KEYBOARD_KEY)
 			{
 				key_buf[2] = 0;
-				bls_att_pushNotifyData (HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8); //release
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8);
 				printf("KK:released\n");
 			}
 

@@ -389,11 +389,16 @@ void user_init_normal(void)
 				So these initialization must be done after  battery check
 	*****************************************************************************************/
 	#if (BATT_CHECK_ENABLE)  //battery check must do before OTA relative operation
+		u8 battery_check_returnVaule = 0;
 		if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
-			app_battery_power_check(VBAT_ALRAM_THRES_MV + 200);  //2.2 V
+			do{
+				battery_check_returnVaule = app_battery_power_check(VBAT_ALRAM_THRES_MV + 200);  //2.2 V
+			}while(battery_check_returnVaule);
 		}
 		else{
-			app_battery_power_check(VBAT_ALRAM_THRES_MV);  //2.0 V
+			do{
+				battery_check_returnVaule = app_battery_power_check(VBAT_ALRAM_THRES_MV);  //2.0 V
+			}while(battery_check_returnVaule);
 		}
 	#endif
 
@@ -477,7 +482,7 @@ void user_init_normal(void)
 	////////////////// SPP initialization ///////////////////////////////////
 	//note: dma addr must be set first before any other uart initialization!
 	u8 *uart_rx_addr = (spp_rx_fifo_b + (spp_rx_fifo.wptr & (spp_rx_fifo.num-1)) * spp_rx_fifo.size);
-	uart_recbuff_init( (unsigned short *)uart_rx_addr, spp_rx_fifo.size);
+	uart_recbuff_init( (unsigned char *)uart_rx_addr, spp_rx_fifo.size);
 
 	uart_gpio_set(UART_TX_PB1, UART_RX_PB0);
 
@@ -571,7 +576,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 	//note: dma addr must be set first before any other uart initialization!
 
 	u8 *uart_rx_addr = (spp_rx_fifo_b + (spp_rx_fifo.wptr & (spp_rx_fifo.num-1)) * spp_rx_fifo.size);
-	uart_recbuff_init( (unsigned short *)uart_rx_addr, spp_rx_fifo.size);
+	uart_recbuff_init( (unsigned char *)uart_rx_addr, spp_rx_fifo.size);
 
 
 	uart_gpio_set(UART_TX_PB1, UART_RX_PB0);

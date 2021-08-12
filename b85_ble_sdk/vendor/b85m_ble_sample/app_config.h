@@ -52,7 +52,6 @@
 #define TEST_CONN_CURRENT_ENABLE            			0 //test connection current, disable UI to have a pure power
 #define BLE_REMOTE_SECURITY_ENABLE      				1
 
-
 /////////////////////// Sample Test Board Select Configuration ///////////////////////////////
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
 #define BOARD_825X_DONGLE_C1T139A3						2     //
@@ -73,7 +72,7 @@
 
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
-#define DEBUG_GPIO_ENABLE								0
+#define DEBUG_GPIO_ENABLE								1
 
 
 

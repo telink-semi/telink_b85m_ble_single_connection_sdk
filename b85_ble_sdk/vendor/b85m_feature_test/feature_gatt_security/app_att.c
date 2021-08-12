@@ -67,8 +67,9 @@ typedef struct
  * @param[in]  p - rf_packet_att_write_t
  * @return     0
  */
-int module_onReceiveData(rf_packet_att_write_t *p)
+int module_onReceiveData(void *para)
 {
+	rf_packet_att_write_t *p = (rf_packet_att_write_t*)para;
 	u8 len = p->l2capLen - 3;
 	if(len > 0)
 	{

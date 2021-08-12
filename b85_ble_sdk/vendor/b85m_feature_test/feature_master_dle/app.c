@@ -65,23 +65,23 @@
 
 
 #if (1) // support RF RX/TX MAX data Length: 251byte
-#define RX_FIFO_SIZE						288  //rx-24   max:251+24 = 275  16 align-> 288
-#define RX_FIFO_NUM							8
+	#define RX_FIFO_SIZE						288  //rx-24   max:251+24 = 275  16 align-> 288
+	#define RX_FIFO_NUM							8
 
-#define TX_FIFO_SIZE						264  //tx-12   max:251+12 = 263  4 align-> 264
-#define TX_FIFO_NUM							8
+	#define TX_FIFO_SIZE						264  //tx-12   max:251+12 = 263  4 align-> 264
+	#define TX_FIFO_NUM							8
 
-#define MTU_SIZE_SETTING   			 		247
-#define DLE_TX_SUPPORTED_DATA_LEN    		251//MAX_OCTETS_DATA_LEN_EXTENSION //264-12 = 252 > Tx max:251
+	#define MTU_SIZE_SETTING   			 		247
+	#define DLE_TX_SUPPORTED_DATA_LEN    		251//MAX_OCTETS_DATA_LEN_EXTENSION //264-12 = 252 > Tx max:251
 #else
-#define RX_FIFO_SIZE						224 //rx-24   max:200+24 = 224  16 align-> 224
-#define RX_FIFO_NUM							8
+	#define RX_FIFO_SIZE						224 //rx-24   max:200+24 = 224  16 align-> 224
+	#define RX_FIFO_NUM							8
 
-#define TX_FIFO_SIZE						212 //tx-12   max:200+12 = 212  4 align-> 212
-#define TX_FIFO_NUM							16
+	#define TX_FIFO_SIZE						212 //tx-12   max:200+12 = 212  4 align-> 212
+	#define TX_FIFO_NUM							16
 
-#define MTU_SIZE_SETTING   			 		196
-#define DLE_TX_SUPPORTED_DATA_LEN    		(BLM_TX_FIFO_SIZE-12)
+	#define MTU_SIZE_SETTING   			 		196
+	#define DLE_TX_SUPPORTED_DATA_LEN    		(BLM_TX_FIFO_SIZE-12)
 #endif
 
 

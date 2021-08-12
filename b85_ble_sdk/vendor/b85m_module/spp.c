@@ -163,6 +163,8 @@ int controller_event_handler(u32 h, u8 *para, int n)
 			break;
 		}
 	}
+
+	return 0;
 }
 
 /**
@@ -199,7 +201,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
+//			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
 		}
 		break;
 
@@ -218,8 +220,8 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_TK_DISPALY:
 		{
-			char pc[7];
-			u32 pinCode = *(u32*)para;
+//			char pc[7];
+//			u32 pinCode = *(u32*)para;
 		}
 		break;
 
@@ -237,8 +239,8 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_TK_NUMERIC_COMPARE:
 		{
-			char pc[7];
-			u32 pinCode = *(u32*)para;
+//			char pc[7];
+//			u32 pinCode = *(u32*)para;
 		}
 		break;
 

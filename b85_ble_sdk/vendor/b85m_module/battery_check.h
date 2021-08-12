@@ -61,7 +61,7 @@
 void battery_set_detect_enable (int en);
 int  battery_get_detect_enable (void);
 
-void app_battery_power_check(u16 alram_vol_mv);
+int app_battery_power_check(u16 alram_vol_mv);
 
 
 #endif /* APP_BATTDET_H_ */

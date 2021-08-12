@@ -100,7 +100,7 @@
 
 
 
-#define FEATURE_TEST_MODE								TEST_POWER_ADV
+#define FEATURE_TEST_MODE								TEST_OTA_BIG_PDU
 
 
 

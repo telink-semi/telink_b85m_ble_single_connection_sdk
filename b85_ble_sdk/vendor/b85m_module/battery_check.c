@@ -254,7 +254,7 @@ _attribute_ram_code_ void adc_vbat_detect_init(void)
  * @param[in]	alram_vol_mv - input battery calue
  * @return      0 fail 1 success
  */
-_attribute_ram_code_ void app_battery_power_check(u16 alram_vol_mv)
+_attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)
 {
 	u16 temp;
 	int i,j;
@@ -377,9 +377,13 @@ _attribute_ram_code_ void app_battery_power_check(u16 alram_vol_mv)
 
 		cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepsleep
 //		cpu_sleep_wakeup(DEEPSLEEP_MODE, 0, 0);  //deepsleep
+
+		return 1;
 	}
 	else{ // batt level > alarm level
 		analog_write(USED_DEEP_ANA_REG,  analog_read(USED_DEEP_ANA_REG)&(~LOW_BATT_FLG));  //clr
+
+		return 0;
 	}
 }
 

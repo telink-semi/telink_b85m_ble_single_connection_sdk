@@ -319,8 +319,6 @@ int blm_le_adv_report_event_handle(u8 *p)
 		return 1;
 	}
 
-
-
 	/****************** Button press or Adv pair packet triggers pair ***********************/
 	int master_auto_connect = 0;
 	int user_manual_paring = 0;

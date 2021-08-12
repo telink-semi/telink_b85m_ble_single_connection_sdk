@@ -214,8 +214,8 @@ int controller_event_callback (u32 h, u8 *p, int n)
 				DBG_CHN6_TOGGLE;
 				//after controller is set to scan state, it will report all the adv packet it received by this event
 
-				event_adv_report_t *pa = (event_adv_report_t *)p;
-				s8 rssi = (s8)pa->data[pa->len];//rssi has already plus 110.
+//				event_adv_report_t *pa = (event_adv_report_t *)p;
+//				s8 rssi = (s8)pa->data[pa->len];//rssi has already plus 110.
 				//printf("LE advertising report (rssi:%ddb, len:%d):\n", rssi, pa->len+11);
 
 				#if (DBG_ADV_REPORT_ON_RAM)

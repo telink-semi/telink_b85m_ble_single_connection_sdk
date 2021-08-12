@@ -59,7 +59,7 @@
 
 
 /*RX MAX data Length: 247 Bytes, 247 = 240(biggest OTA PDU) + 7(l2capLen:2, CID:2, opcode:1, attHandle:2 for ATT Write Command ) */
-#define RX_FIFO_SIZE	272  //rx-24   max:247+24 = 271  16 align-> 272
+#define RX_FIFO_SIZE	288  //rx-24   max:247+24 = 271  16 align-> 272
 #define RX_FIFO_NUM		8
 
 #define TX_FIFO_SIZE	40
@@ -235,6 +235,8 @@ void	task_connect (u8 e, u8 *p, int n)
 {
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 
+	blc_ll_exchangeDataLength(LL_LENGTH_REQ,256);
+
 	device_in_connection_state = 1;//
 
 	//MTU size reset to default 23 bytes every new connection, it can be only updated by MTU size exchange procedure
@@ -286,6 +288,8 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 void	task_dle_exchange (u8 e, u8 *p, int n)
 {
 	dle_started_flg = 1;
+
+	blc_att_requestMtuSizeExchange(BLS_CONN_HANDLE,DLE_TX_SUPPORTED_DATA_LEN);
 }
 
 
@@ -378,7 +382,8 @@ void blt_pm_proc(void)
 {
 #if(FEATURE_PM_ENABLE)
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
-		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
+		bls_pm_setSuspendMask (SUSPEND_ADV  | SUSPEND_CONN );
+//		bls_pm_setSuspendMask (SUSPEND_DISABLE);
 	#else
 		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
 	#endif
