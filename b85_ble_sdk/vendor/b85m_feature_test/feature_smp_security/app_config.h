@@ -139,12 +139,12 @@
 	 */
 
 	#define			KB_MAP_NORMAL	{\
-						VK_B,		CR_POWER,		VK_NONE,		VK_C,				CR_HOME,	 \
-						VK_NONE,	VK_NONE,		VK_NONE,		CR_VOL_UP,			CR_VOL_DN,	 \
-						VK_2,		VK_RIGHT,		CR_VOL_DN,		VK_3,				VK_1,	 \
-						VK_5,		VK_ENTER,		CR_VOL_UP,		VK_6,				VK_4,	 \
-						VK_8,		VK_DOWN,		VK_UP ,			VK_9,				VK_7,	 \
-						VK_0,		CR_BACK,		VK_LEFT,		CR_VOL_MUTE,		CR_MENU,	 }
+						{VK_B,		CR_POWER,		VK_NONE,		VK_C,				CR_HOME},	 \
+						{VK_NONE,	VK_NONE,		VK_NONE,		CR_VOL_UP,			CR_VOL_DN},	 \
+						{VK_2,		VK_RIGHT,		CR_VOL_DN,		VK_3,				VK_1},	 \
+						{VK_5,		VK_ENTER,		CR_VOL_UP,		VK_6,				VK_4},	 \
+						{VK_8,		VK_DOWN,		VK_UP ,			VK_9,				VK_7},	 \
+						{VK_0,		CR_BACK,		VK_LEFT,		CR_VOL_MUTE,		CR_MENU},	 }
 
 	#define  		KB_DRIVE_PINS  {GPIO_PD5, GPIO_PD2, GPIO_PD4, GPIO_PD6, GPIO_PD7}
 	#define  		KB_SCAN_PINS   {GPIO_PC5, GPIO_PA0, GPIO_PB2, GPIO_PA4, GPIO_PA3, GPIO_PD3}

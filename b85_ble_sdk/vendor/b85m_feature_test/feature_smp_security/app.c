@@ -129,9 +129,12 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 		gpio_write(GPIO_LED, onoff);
 	}
 
+#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
+	 SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI || SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI)
 	static u8 vk_dig_map[10] = {
 		VK_0, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9,
 	};
+#endif
 
 	static u16 vk_consumer_map[16] = {
 		MKEY_VOL_UP, MKEY_VOL_DN, MKEY_MUTE, MKEY_CHN_UP, MKEY_CHN_DN, MKEY_POWER,
