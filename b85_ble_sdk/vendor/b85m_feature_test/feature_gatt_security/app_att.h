@@ -43,8 +43,8 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-#ifndef DEFAULT_ATT_H_
-#define DEFAULT_ATT_H_
+#ifndef APP_ATT_H_
+#define APP_ATT_H_
 
 #include "app_config.h"
 
