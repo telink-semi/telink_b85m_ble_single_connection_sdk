@@ -49,7 +49,6 @@
 
 
 
-#if (LL_FEATURE_ENABLE_LL_PRIVACY)
 /*
  *  Address resolution is not supported by default. After pairing and binding, we need to obtain the central Address Resolution
  *  feature value of the opposite end to determine whether the opposite end supports the address resolution function, and write
@@ -57,7 +56,7 @@
  */
 #define 	IS_PEER_ADDR_RES_SUPPORT(peerAddrResSuppFlg)	(!(peerAddrResSuppFlg & BIT(7)))
 
-#endif
+
 
 
 

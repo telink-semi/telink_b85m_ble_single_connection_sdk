@@ -313,22 +313,6 @@ typedef struct {
 	u8         DHKey[32];
 } hci_le_generateDHKeyCompleteEvt_t;
 
-#if (LL_FEATURE_ENABLE_LL_PRIVACY)
-typedef struct {
-	u8         subEventCode;
-	u8         status;
-	u16        connHandle;
-	u8         role;
-	u8         peerAddrType;
-	u8         peerAddr[BLE_ADDR_LEN];
-	u8		   localRpa[BLE_ADDR_LEN];
-	u8		   peerRpa[BLE_ADDR_LEN];
-	u16        connInterval;
-	u16        connLatency;
-	u16        supervisionTimeout;
-	u8         masterClkAccuracy;
-} hci_le_enhancedConnectionCompleteEvt_t;
-#endif
 
 /**
  *  @brief  Event Parameters for "7.7.65.10 LE Enhanced Connection Complete event"
