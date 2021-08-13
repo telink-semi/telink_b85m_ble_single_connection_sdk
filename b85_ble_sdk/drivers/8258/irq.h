@@ -187,3 +187,11 @@ static inline void rf_irq_clr_src(unsigned short msk)
     reg_rf_irq_status = msk;
 }
 
+/**
+ * @brief      This function servers to clear IRQ mask.
+ * @param[in]  msk - variable of msk.
+ * @return     none.
+ */
+static inline void irq_clr_mask(unsigned long msk){
+	BM_CLR(reg_irq_mask, msk);
+}

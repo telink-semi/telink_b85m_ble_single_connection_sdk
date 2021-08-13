@@ -109,7 +109,7 @@ void app_uart_test_init(void)
 	#if(MCU_CORE_TYPE == MCU_CORE_827x)
 		irq_disable_type(FLD_IRQ_DMA_EN);
 	#elif(MCU_CORE_TYPE == MCU_CORE_825x)
-		reg_irq_mask &= ~FLD_IRQ_DMA_EN;
+		irq_clr_mask(FLD_IRQ_DMA_EN);
 	#endif
 
 	dma_chn_irq_enable(FLD_DMA_CHN_UART_RX | FLD_DMA_CHN_UART_TX, 0);
@@ -136,9 +136,9 @@ void app_uart_test_start(void)
 
 #if	(UART_MODE==UART_DMA)
 
-		uart_dma_send( (unsigned short*)&rec_buff);
+		uart_dma_send( (unsigned char*)&rec_buff);
 		WaitMs(300);
-		uart_dma_send((unsigned short*)&trans_buff);
+		uart_dma_send((unsigned char*)&trans_buff);
 
 #elif(UART_MODE==UART_NDMA)
 		for(unsigned char i=0;i<trans_buff_Len;i++){
