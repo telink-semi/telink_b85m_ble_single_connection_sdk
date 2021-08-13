@@ -25,9 +25,10 @@
  *  Created on: 2018-9-21
  *      Author: Administrator
  */
+#include "app_config.h"
 #include "tl_common.h"
 #include "drivers.h"
-#include "app_config.h"
+
 
 #if (DRIVER_TEST_MODE == TEST_RF_EMI)
 unsigned char  mode=1;//1
