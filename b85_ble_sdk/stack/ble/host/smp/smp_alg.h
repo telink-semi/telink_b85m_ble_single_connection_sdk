@@ -163,11 +163,11 @@ void 			blt_smp_alg_h7 (unsigned char *r, unsigned char salt[16], unsigned char 
  */
 void 			blt_smp_alg_h8 (unsigned char *r, unsigned char k[16], unsigned char s[16], unsigned char keyId[4]);
 
-#if (LL_FEATURE_ENABLE_LL_PRIVACY)
-	void			blt_crypto_alg_prand(u8 prand[3]);
 
-	void			blt_crypto_alg_ah(const u8 irk[16], u8 r[3], u8 out[3]);
-#endif
+void			blt_crypto_alg_prand(u8 prand[3]);
+
+void			blt_crypto_alg_ah(const u8 irk[16], u8 r[3], u8 out[3]);
+
 
 #endif /* SMP_ALG_H_ */
 
