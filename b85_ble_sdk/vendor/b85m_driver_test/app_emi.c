@@ -27,9 +27,9 @@
  */
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
-
-
+#if (DRIVER_TEST_MODE == TEST_RF_EMI)
 unsigned char  mode=1;//1
 unsigned char  power_level = 0;
 unsigned char  chn = 2;//2
@@ -279,3 +279,4 @@ void emi_con_tx0f(RF_ModeTypeDef rf_mode,RF_PowerTypeDef pwr,signed char rf_chn)
 	rf_continue_mode_run();
 	rf_emi_stop();
 }
+#endif

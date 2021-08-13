@@ -21,7 +21,9 @@
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
+#if (DRIVER_TEST_MODE == TEST_PWM)
 
 //normal mode
 #define  TEST_PWM_NORMAL_MODE_1				1
@@ -319,7 +321,7 @@ _attribute_ram_code_ void app_pwm_irq_test_proc(void)
 	}
 }
 
-
+#endif
 
 
 

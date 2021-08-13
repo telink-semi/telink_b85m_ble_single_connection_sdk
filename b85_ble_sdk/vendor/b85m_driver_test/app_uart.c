@@ -21,8 +21,9 @@
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
-
+#if (DRIVER_TEST_MODE == TEST_UART)
 
 #define UART_DMA  		1     //uart use dma
 #define UART_NDMA  		2     //uart not use dma
@@ -224,3 +225,5 @@ void app_uart_test_irq_proc(void)
 #endif
 
 }
+
+#endif

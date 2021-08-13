@@ -21,13 +21,17 @@
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
+#if(DRIVER_TEST_MODE == TEST_IIC )
 
-extern void i2c_master_test_init(void);
-extern void i2c_slave_test_init(void);
-extern void	i2c_master_mainloop(void);
-extern void	i2c_slave_mainloop(void);
-
+#if(I2C_DEMO_SELECT == I2C_DEMO_MASTER)
+	extern void i2c_master_test_init(void);
+	extern void	i2c_master_mainloop(void);
+#elif(I2C_DEMO_SELECT == I2C_DEMO_SLAVE)
+	extern void i2c_slave_test_init(void);
+	extern void	i2c_slave_mainloop(void);
+#endif
 
 void app_i2c_test_init(void)
 {
@@ -61,3 +65,4 @@ void app_i2c_test_start(void)
 
 #endif
 }
+#endif

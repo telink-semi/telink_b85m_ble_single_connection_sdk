@@ -22,6 +22,9 @@
 
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
+
+#if (DRIVER_TEST_MODE == TEST_SPI)
 
 void spi_slave_test_init(void)
 {
@@ -32,3 +35,4 @@ void spi_slave_test_init(void)
     spi_slave_gpio_set(SPI_GPIO_GROUP_A2A3A4D6);      //slave mode £ºspi pin set
 #endif
 }
+#endif
