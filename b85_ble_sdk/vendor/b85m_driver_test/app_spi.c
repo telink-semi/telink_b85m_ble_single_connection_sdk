@@ -21,9 +21,9 @@
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
-
-
+#if (DRIVER_TEST_MODE == TEST_SPI)
 
 extern void spi_master_test_init(void);
 extern void spi_slave_test_init(void);
@@ -65,3 +65,5 @@ void app_spi_test_irq_proc(void)
 {
 
 }
+
+#endif

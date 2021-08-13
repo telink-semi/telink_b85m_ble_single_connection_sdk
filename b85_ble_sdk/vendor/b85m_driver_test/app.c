@@ -21,7 +21,7 @@
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
-
+#include "app_config.h"
 
 extern void app_timer_test_init(void);
 

@@ -27,6 +27,7 @@
  */
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
 #if (DRIVER_TEST_MODE == TEST_GPIO_IRQ)
 

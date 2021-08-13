@@ -28,7 +28,9 @@
 
 #include "tl_common.h"
 #include "drivers.h"
+#include "app_config.h"
 
+#if (DRIVER_TEST_MODE == TEST_LOW_POWER)
 
 
 #define TEST_LP_SUSPEND_NO_WAKEUP						1 //ext32k+suspend+none: 45.09uA
@@ -238,3 +240,6 @@ void test_low_power(void)
 
 
 }
+
+
+#endif
