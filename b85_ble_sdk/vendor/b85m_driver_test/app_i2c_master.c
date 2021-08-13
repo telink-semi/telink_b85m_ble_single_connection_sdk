@@ -25,9 +25,10 @@
  *  Created on: 2018-6-15
  *      Author: Administrator
  */
+#include "app_config.h"
 #include "tl_common.h"
 #include "drivers.h"
-#include "app_config.h"
+
 
 
 #if(DRIVER_TEST_MODE == TEST_IIC && I2C_DEMO_SELECT == I2C_DEMO_MASTER)
