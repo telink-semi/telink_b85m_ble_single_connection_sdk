@@ -158,7 +158,7 @@
 	 * TL_AUDIO_RCU_SBC_HID_DONGLE_TO_STB		//need config 32k retention
 	 * TL_AUDIO_RCU_MSBC_HID					//need config 32k retention
 	 */
-	#define TL_AUDIO_MODE  						TL_AUDIO_RCU_ADPCM_GATT_GOOGLE
+	#define TL_AUDIO_MODE  						TL_AUDIO_RCU_ADPCM_GATT_TLEINK
 
 #endif
 

@@ -54,6 +54,7 @@ extern u8 read_by_type_req_uuidLen;
 extern u8 read_by_type_req_uuid[16];
 extern void host_att_set_current_readByTypeReq_uuid(u8 *uuid, u8 uuid_len);
 
+extern bool		blm_push_fifo (int connHandle, u8 *dat);
 extern const u8 my_OtaUUID[16];
 
 
@@ -365,8 +366,8 @@ void proc_ota (void)
 	     * will be called to get the handle and set host_ota_start to 2*/
 		host_att_set_current_readByTypeReq_uuid((u8 *)my_OtaUUID, 16);
 
-	    att_req_read_by_type (dat, 0, 0xffff, read_by_type_req_uuid, 16);
-	    if( blm_push_fifo (BLM_CONN_HANDLE, dat) ){
+
+	    if(BLE_SUCCESS==blc_gatt_pushReadByTypeRequest (BLM_CONN_HANDLE, 0, 0xffff, read_by_type_req_uuid, 16)){
 	    	host_ota_start = 3;
 	    }
 

@@ -79,7 +79,7 @@ void app_uart_test_init(void)
 	WaitMs(2000);  //leave enough time for SWS_reset when power on
 
 	//note: dma addr must be set first before any other uart initialization! (confirmed by sihui)
-	uart_recbuff_init( (unsigned short *)&rec_buff, sizeof(rec_buff));
+	uart_recbuff_init( (unsigned char *)&rec_buff, sizeof(rec_buff));
 
 	uart_gpio_set(UART_TX_PB1, UART_RX_PB0);// uart tx/rx pin set
 
@@ -109,7 +109,7 @@ void app_uart_test_init(void)
 	#if(MCU_CORE_TYPE == MCU_CORE_827x)
 		irq_disable_type(FLD_IRQ_DMA_EN);
 	#elif(MCU_CORE_TYPE == MCU_CORE_825x)
-		irq_clr_mask(FLD_IRQ_DMA_EN);
+		reg_irq_mask &= ~FLD_IRQ_DMA_EN;
 	#endif
 
 	dma_chn_irq_enable(FLD_DMA_CHN_UART_RX | FLD_DMA_CHN_UART_TX, 0);

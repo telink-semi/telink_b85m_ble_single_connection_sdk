@@ -193,6 +193,7 @@ typedef struct{
 
 unsigned long crc32_half_cal(unsigned long crc, unsigned char* input, unsigned long* table, int len);
 unsigned long crc32_cal(unsigned long crc, unsigned char* input, unsigned long* table, int len);
+unsigned short crc16 (unsigned char *pD, int len);
 
 
 #if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)

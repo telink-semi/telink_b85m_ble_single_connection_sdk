@@ -164,6 +164,8 @@ int host_att_service_wait_event (u16 handle, u8 *p, u32 timeout)
 {
 	host_att_req_busy = handle | (p[6] << 16);
 	p_att_response = p;
+
+	extern bool		blm_push_fifo (int connHandle, u8 *dat);
 	blm_push_fifo (handle, p);
 
 	u32 t = clock_time ();

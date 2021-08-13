@@ -54,7 +54,6 @@
 								</option>
 								<option id="com.telink.tc32eclipse.linker.option.libs.603281141" name="Libraries (-l)" superClass="com.telink.tc32eclipse.linker.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lt_825x"/>
-									<listOptionValue builtIn="false" value="lt_b85_gl_audio"/>
 								</option>
 								<inputType id="com.telink.tc32eclipse.tool.linker.input.1255367234" name="OBJ Files" superClass="com.telink.tc32eclipse.tool.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

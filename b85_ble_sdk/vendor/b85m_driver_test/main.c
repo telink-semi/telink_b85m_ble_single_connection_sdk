@@ -19,6 +19,7 @@
  *			 file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided. 
  *           
  *******************************************************************************************************/
+#include "app_config.h"
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"

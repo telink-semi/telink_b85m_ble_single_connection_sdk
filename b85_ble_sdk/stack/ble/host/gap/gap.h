@@ -104,6 +104,22 @@
 void 		blc_gap_peripheral_init(void);
 
 
+ /******************************* gap start ************************************************************************/
+
+
+
+ /**
+  * @brief      this  function is used to initialize GAP Central
+  * @param	   none
+  * @return     none
+  */
+ void 		blc_gap_central_init(void);
+
+
+
+ /******************************* gap end ************************************************************************/
+
+
 
 
 
