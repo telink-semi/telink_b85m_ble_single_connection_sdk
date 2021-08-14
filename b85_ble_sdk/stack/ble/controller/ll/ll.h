@@ -283,6 +283,16 @@ bool 		blc_ll_isBrxBusy (void);
 
 void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code);
 
+ble_sts_t blc_hci_le_getLocalSupportedFeatures(u8 *features);
+
+ble_sts_t  		blc_hci_reset(void);
+
+void 		blc_ll_init_max_md_nums(u8 num);
+
+u8* 	blc_ll_get_macAddrRandom(void);
+
+u8* 	blc_ll_get_macAddrPublic(void);
+
 
 #if (MCU_CORE_TYPE == MCU_CORE_9518)
 /**

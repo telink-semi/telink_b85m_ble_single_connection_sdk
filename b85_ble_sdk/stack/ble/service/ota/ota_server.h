@@ -206,6 +206,7 @@ void	  blc_ota_setAttHandleOffset(s8 attHandle_offset);
 	extern int otaWrite(u16 connHandle, void * p);
 #elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 	extern int otaWrite(void * p);
+	extern int otaRead(void * p);
 #endif
 
 
