@@ -49,7 +49,11 @@
 #define	log_tick(en,id)
 
 //1-byte (000_id-5bits)
-#define	log_event(en,id)
+#if (MCU_CORE_TYPE == MCU_CORE_9518)
+	#define	log_event_irq(en,id)
+#else if(MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_825x )
+	#define	log_event_irq(id)
+#endif
 
 //1-byte (01x_id-5bits) 1-bit data: id0 & id1 reserved for hardware
 #define	log_task(en,id,b)

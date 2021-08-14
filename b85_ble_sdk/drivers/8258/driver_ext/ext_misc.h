@@ -36,6 +36,8 @@ enum{
 
 /******************************* stimer_start ******************************************************************/
 
+#define	    sys_tick_per_us   				16
+
 /**
  * @brief    This function serves to set system timer capture tick.
  * @return  none
