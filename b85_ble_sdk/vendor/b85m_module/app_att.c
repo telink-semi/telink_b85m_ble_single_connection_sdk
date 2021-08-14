@@ -100,6 +100,7 @@ static u16 serviceChangeVal[2] = {0};
 
 static u8 serviceChangeCCC[2] = {0,0};
 
+#define  MAX_DEV_NAME_LEN 				    18
 #define MY_DEV_NAME                        "KModule"
 extern  u8 ble_devName[];
 
