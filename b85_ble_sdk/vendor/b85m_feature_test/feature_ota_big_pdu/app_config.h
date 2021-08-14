@@ -60,7 +60,7 @@
 #define	UI_LED_ENABLE									1
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
-#define DEBUG_GPIO_ENABLE								1
+#define DEBUG_GPIO_ENABLE								0
 
 /////////////////////// Feature Test Board Select Configuration ///////////////////////////////
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48

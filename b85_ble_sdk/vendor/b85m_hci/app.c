@@ -319,7 +319,7 @@ void user_init_normal(void)
 		usb_dp_pullup_en (1);  //open USB enum
 	#else	//uart
 		//note: dma addr must be set first before any other uart initialization!
-		uart_recbuff_init( (unsigned short *)hci_rx_fifo_b, hci_rx_fifo.size);
+		uart_recbuff_init( (unsigned char *)hci_rx_fifo_b, hci_rx_fifo.size);
 		uart_gpio_set(UART_TX_PB1, UART_RX_PB0);
 		uart_reset();  //will reset uart digital registers from 0x90 ~ 0x9f, so uart setting must set after this reset
 
