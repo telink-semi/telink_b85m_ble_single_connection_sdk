@@ -51,7 +51,7 @@
 //1-byte (000_id-5bits)
 #if (MCU_CORE_TYPE == MCU_CORE_9518)
 	#define	log_event_irq(en,id)
-#else if(MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_825x )
+#elif(MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_825x )
 	#define	log_event_irq(id)
 #endif
 
@@ -71,7 +71,6 @@
 #define	log_tick_irq_2(en,id,t)
 
 
-#define	log_event_irq(en,id)
 
 
 #define	log_task_irq(en,id,b)
