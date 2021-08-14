@@ -90,6 +90,7 @@ _attribute_data_retention_	my_fifo_t	blt_txfifo = {
 _attribute_data_retention_	u32 connect_event_occurTick = 0;
 _attribute_data_retention_  u32 mtuExchange_check_tick = 0;
 _attribute_data_retention_ 	int  dle_started_flg = 0;
+_attribute_data_retention_ u32 dle_started_tick;
 _attribute_data_retention_ 	int  mtuExchange_started_flg = 0;
 _attribute_data_retention_	u16  final_MTU_size = 23;
 
@@ -235,7 +236,7 @@ void	task_connect (u8 e, u8 *p, int n)
 {
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 
-	blc_ll_exchangeDataLength(LL_LENGTH_REQ,256);
+	blc_ll_exchangeDataLength(LL_LENGTH_REQ,DLE_TX_SUPPORTED_DATA_LEN);
 
 	device_in_connection_state = 1;//
 
@@ -289,7 +290,7 @@ void	task_dle_exchange (u8 e, u8 *p, int n)
 {
 	dle_started_flg = 1;
 
-	blc_att_requestMtuSizeExchange(BLS_CONN_HANDLE,DLE_TX_SUPPORTED_DATA_LEN);
+	dle_started_tick = clock_time();
 }
 
 
@@ -574,7 +575,11 @@ void main_loop (void)
 		proc_keyboard (0,0, 0);
 	#endif
 
-
+	if(dle_started_flg && clock_time_exceed(dle_started_tick,2000000))
+	{
+		blc_att_requestMtuSizeExchange(BLS_CONN_HANDLE,MTU_SIZE_SETTING);
+		dle_started_flg = 0;
+	}
 	////////////////////////////////////// PM Process /////////////////////////////////
 	blt_pm_proc();
 }
