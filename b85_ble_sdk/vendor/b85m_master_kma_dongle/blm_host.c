@@ -67,7 +67,7 @@ int	app_host_smp_sdp_pending = 0; 		//security & service discovery
 
 extern u8 read_by_type_req_uuidLen;
 extern u8 read_by_type_req_uuid[16];
-
+extern bool		blm_push_fifo (int connHandle, u8 *dat);
 
 
 dev_char_info_t cur_conn_device;
