@@ -145,11 +145,27 @@ ble_sts_t   bls_ll_setAdvType(u8 advType);
 ble_sts_t 	blt_set_adv_addrtype(u8* cmdPara);
 #endif
 
+extern u32  blc_rcvd_connReq_tick;
 
+
+
+static inline u32 	bls_ll_getConnectionCreateTime(void)
+{
+	return blc_rcvd_connReq_tick;
+}
 ble_sts_t   blc_ll_addAdvertisingInConnSlaveRole(void);
 ble_sts_t   blc_ll_removeAdvertisingFromConnSLaveRole(void);
 ble_sts_t 	blc_ll_setAdvParamInConnSlaveRole( u8 		  *adv_data,  u8              advData_len, u8 *scanRsp_data,  u8 scanRspData_len,
 											   adv_type_t  advType,   own_addr_type_t ownAddrType, u8 adv_channelMap, adv_fp_type_t advFilterPolicy);
+
+ble_sts_t 	bls_ll_setAdvInterval(u16 intervalMin, u16 intervalMax);
+ble_sts_t 	bls_ll_setAdvChannelMap(adv_chn_map_t adv_channelMap);
+ble_sts_t 	bls_ll_setAdvFilterPolicy(adv_fp_type_t advFilterPolicy);
+
+typedef int (*advertise_prepare_handler_t) (rf_packet_adv_t * p);
+void bls_set_advertise_prepare (void *p);
+
+u16 		blc_ll_readMaxAdvDataLength(void);
 
 
 

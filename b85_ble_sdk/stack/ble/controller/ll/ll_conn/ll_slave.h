@@ -125,5 +125,13 @@ ble_sts_t 	bls_hci_mod_setEventMask_cmd(u32 evtMask);
 	#define blc_ll_disconnect(conn, reason)     	bls_ll_terminateConnection(reason)
 #endif
 
+void blc_ll_resetInfoRSSI(void);
+ble_sts_t 	bls_hci_le_readChannelMap(u16 connHandle, u8 *returnChannelMap);
+ble_sts_t 	bls_hci_le_getRemoteSupportedFeatures(u16 connHandle);
+
+void blc_pm_modefy_brx_early_set(int us);
+int blc_pm_get_brx_early_time(void);
+
+
 
 #endif /* LL_SLAVE_H_ */

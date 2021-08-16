@@ -65,6 +65,8 @@
 	#include "../b85m_bqb_lowertester/app_config.h"
 #elif(__PROJECT_8258_INTERNAL_TEST__ ||  __PROJECT_8278_INTERNAL_TEST__)
 	#include "../b85m_internal_test/app_config.h"
+#elif(__PROJECT_8258_DRIVER_TEST__ ||  __PROJECT_8278_DRIVER_TEST__)
+	#include "../b85m_driver_test/app_config.h"
 #else
 	#include "../common/default_config.h"
 #endif
