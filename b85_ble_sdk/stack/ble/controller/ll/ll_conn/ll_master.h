@@ -66,6 +66,8 @@ ble_sts_t	blm_ll_setHostChannel (u16 handle, u8 * map);
 
 rf_packet_l2cap_t *		blm_l2cap_packet_pack (u16 conn, u8 * raw_pkt);
 
+ble_sts_t	blm_ll_readRemoteFeature (u16 handle);
+
 
 
 #endif /* LL_MASTER_H_ */

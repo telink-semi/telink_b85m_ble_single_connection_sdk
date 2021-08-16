@@ -293,6 +293,8 @@ u8* 	blc_ll_get_macAddrRandom(void);
 
 u8* 	blc_ll_get_macAddrPublic(void);
 
+ble_sts_t blc_hci_le_getLocalSupportedFeatures(u8 *features);
+
 
 #if (MCU_CORE_TYPE == MCU_CORE_9518)
 /**
