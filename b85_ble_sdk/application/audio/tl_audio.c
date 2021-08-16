@@ -517,7 +517,7 @@ _attribute_ram_code_ void	proc_mic_encoder (void)
 
 		// step4: Soft HPF, NONE need
 #endif
-		sbc_enc((u8 *)ps, MIC_SHORT_DEC_SIZE << 1, out, (ADPCM_PACKET_LEN+3), Temp_out_len);
+		sbc_enc((u8 *)ps, MIC_SHORT_DEC_SIZE << 1, out, (ADPCM_PACKET_LEN+3), (u32*)Temp_out_len);
 
 		buffer_mic_rptr = buffer_mic_rptr ? 0 : (TL_MIC_BUFFER_SIZE>>2);
 		buffer_mic_pkt_wptr ++;
@@ -625,7 +625,7 @@ void	proc_mic_encoder (void)
 
 		// step4: Soft HPF, NONE need
 #endif
-		sbc_enc((u8 *)ps, MIC_SHORT_DEC_SIZE << 1, out, ADPCM_PACKET_LEN, Temp_out_len);
+		sbc_enc((u8 *)ps, MIC_SHORT_DEC_SIZE << 1, out, ADPCM_PACKET_LEN, (u32*)Temp_out_len);
 
 		buffer_mic_rptr = buffer_mic_rptr ? 0 : (TL_MIC_BUFFER_SIZE>>2);
 		buffer_mic_pkt_wptr ++;
@@ -1349,7 +1349,6 @@ void abuf_mic_add (u32 *p)
 _attribute_ram_code_ void abuf_mic_dec ()
 {
 	static int start = 1;
-	static int abuf_reset_no;
 	static u32 smbc_decode_len = 0;
 	if (abuf_reset)
 	{
@@ -1499,7 +1498,6 @@ void abuf_mic_add (u32 *p)
 _attribute_ram_code_ void abuf_mic_dec ()
 {
 	static int start = 1;
-	static int abuf_reset_no;
 	static u32 smbc_decode_len = 0;
 	if (abuf_reset)
 	{
