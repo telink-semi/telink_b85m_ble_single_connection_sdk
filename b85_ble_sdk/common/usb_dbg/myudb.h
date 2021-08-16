@@ -87,7 +87,7 @@
 
 #define	log_b16_irq(en,id,d)
 
-
+#define	log_event(id)
 
 
 #endif

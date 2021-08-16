@@ -49,6 +49,10 @@
 
 
 /******************************* User Interface  ************************************/
+#ifndef	BLM_CONN_ENC_REFRESH
+#define BLM_CONN_ENC_REFRESH	BIT(10)
+#endif
+
 void		blc_ll_initMasterRoleSingleConn_module(void);
 bool		blm_ll_isRfStateMachineBusy(void);
 
