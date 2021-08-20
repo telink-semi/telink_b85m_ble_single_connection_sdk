@@ -63,7 +63,7 @@ extern "C" {
 
 
 
-#define DRIVER_TEST_MODE								TEST_UART
+#define DRIVER_TEST_MODE								TEST_LOW_POWER
 
 
 
@@ -85,7 +85,7 @@ extern "C" {
 
 
 	//select i2c demo here(master or slave)
-	#define     I2C_DEMO_SELECT 		I2C_DEMO_SLAVE
+	#define     I2C_DEMO_SELECT 		I2C_DEMO_MASTER
 
 
 
@@ -100,7 +100,7 @@ extern "C" {
 
 	#define SPI_MASTER_MODE	1   //spi use master mode
 	#define SPI_SLAVE_MODE	2   //spi use slave mode
-	#define SPI_MODE		SPI_MASTER_MODE
+	#define SPI_MODE		SPI_SLAVE_MODE
 
 	#define SLAVE_REGADDR1  0x04
 	#define SLAVE_REGADDR2  0x80

@@ -79,7 +79,11 @@ struct  test_list_s  ate_list[] = {
 };
 
 
-
+/**
+ * @brief		Initialization of rf emi test
+ * @param[in]	none
+ * @return      none
+ */
 void app_emi_init(void)
 {
 	write_reg32(0x408,0x29417671 );//access code  0xf8118ac9
@@ -96,7 +100,11 @@ void app_emi_init(void)
 }
 
 
-
+/**
+ * @brief		Main loop of rf emi test
+ * @param[in]	none
+ * @return      none
+ */
 void app_rf_emi_test_start(void)
 {
 	unsigned char i=0;

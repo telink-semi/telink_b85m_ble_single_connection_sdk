@@ -25,7 +25,11 @@
 
 
 #if (DRIVER_TEST_MODE == TEST_SPI)
-
+/**
+ * @brief      Initialize the spi slave test
+ * @param[in]  none
+ * @return     none
+ */
 void spi_slave_test_init(void)
 {
 	spi_slave_init((unsigned char)(CLOCK_SYS_CLOCK_HZ/(2*500000)-1),SPI_MODE0);           //slave mode init

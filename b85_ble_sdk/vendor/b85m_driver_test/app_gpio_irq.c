@@ -50,7 +50,11 @@
 
 
 unsigned char gpio_irq_test_mode = 0;
-
+/**
+ * @brief      Initialize the gpio irq test
+ * @param[in]  none
+ * @return     none
+ */
 void app_gpio_irq_test_init(void)
 {
 
@@ -116,7 +120,12 @@ void app_gpio_irq_test_init(void)
 
 }
 
-//init the LED pin,for indication
+
+/**
+ * @brief		Initialization of LED pin for indication
+ * @param[in]	none
+ * @return      none
+ */
 void app_led_init(void)
 {
 
@@ -142,7 +151,11 @@ int gpio_all_irq_cnt;
 int gpio_irq_cnt;
 int gpio_irq_risr0_cnt;
 int gpio_irq_risr1_cnt;
-
+/**
+ * @brief		this function is used to process apio irq
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void app_gpio_irq_test_proc(void)
 {
 	gpio_all_irq_cnt ++;

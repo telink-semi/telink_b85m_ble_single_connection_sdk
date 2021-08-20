@@ -90,12 +90,11 @@ int i2c_irq_flag = IRQ_IIC_CLEAR;
 
 
 
-
-
-
-
-
-
+/**
+ * @brief      Initialize the i2c slave test
+ * @param[in]  none
+ * @return     none
+ */
 void i2c_slave_test_init(void)
 {
 #if(MCU_CORE_TYPE == MCU_CORE_827x)
@@ -147,7 +146,11 @@ void i2c_slave_test_init(void)
 
 }
 
-
+/**
+ * @brief		Main loop of i2c slave test
+ * @param[in]	none
+ * @return      none
+ */
 void i2c_slave_mainloop(void)
 {
 
@@ -220,7 +223,11 @@ int irq_cnt = 0;
 int i2c_read_cnt = 0;   //for debug
 int i2c_write_cnt = 0;  //for debug
 
-
+/**
+ * @brief		this function is used to process i2c irq
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void app_i2c_test_irq_proc(void)
 {
 

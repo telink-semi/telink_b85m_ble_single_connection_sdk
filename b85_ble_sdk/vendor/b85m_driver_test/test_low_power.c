@@ -47,7 +47,7 @@
 #define TEST_LP_DEEPSLEEP_RET16K_TIMER_WAKEUP			10//ext32k+deepret16k+tmr:  3.00uA                    //int32k+deepret16k+tmr:  1.87uA
 
 
-#define TEST_LP_MODE									5
+#define TEST_LP_MODE									TEST_LP_DEEPSLEEP_GPIO_PAD_WAKEUP
 
 
 
@@ -55,7 +55,11 @@ int first_power_on = 0;
 
 u8 AA_wakeupSrc[256];
 u8 AA_wkp_index;
-
+/**
+ * @brief		this function is used to test low power
+ * @param[in]	none
+ * @return      none
+ */
 void test_low_power(void)
 {
 	if(analog_read(0x3a) == 0x5a){  //read flag

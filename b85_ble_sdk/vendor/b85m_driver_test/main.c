@@ -37,7 +37,11 @@ extern void app_timer_test_irq_proc(void);
 extern void app_gpio_irq_test_proc(void);
 extern void app_pwm_irq_test_proc(void);
 
-
+/**
+ * @brief		this function is used to process irq
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void irq_handler(void)
 {
 
@@ -69,7 +73,11 @@ _attribute_ram_code_ void irq_handler(void)
 #endif
 
 }
-
+/**
+ * @brief		This is main function
+ * @param[in]	none
+ * @return      none
+ */
 int main (void) {
 
 	blc_pm_select_internal_32k_crystal();
@@ -77,7 +85,7 @@ int main (void) {
 #if(MCU_CORE_TYPE == MCU_CORE_8258)
 	cpu_wakeup_init();
 #elif(MCU_CORE_TYPE == MCU_CORE_8278)
-	cpu_wakeup_init(LDO_MODE,EXTERNAL_XTAL_24M);
+	cpu_wakeup_init(DCDC_MODE,EXTERNAL_XTAL_24M);
 #endif
 
 	int deepRetWakeUp = pm_is_MCU_deepRetentionWakeup();  //MCU deep retention wakeUp

@@ -35,10 +35,11 @@
 
 
 
-
-
-
-
+	/**
+	 * @brief		Initialization of analog input pin
+	 * @param[in]	none
+	 * @return      none
+	 */
 void adc_gpio_ain_init(void)
 {
 	//set misc channel en,  and adc state machine state cnt 2( "set" stage and "capture" state for misc channel)
@@ -90,8 +91,11 @@ void adc_gpio_ain_init(void)
 }
 
 
-
-
+/**
+ * @brief		Initialization of vbat detect
+ * @param[in]	none
+ * @return      none
+ */
 void adc_vbat_detect_init(void)
 {
 
@@ -148,7 +152,11 @@ void adc_vbat_detect_init(void)
 
 }
 
-
+/**
+ * @brief      Initialize the adc test
+ * @param[in]  none
+ * @return     none
+ */
 void app_adc_test_init(void)
 {
 ////Step 1: power off sar adc/////////////////////////////////////////////////////////
@@ -215,6 +223,11 @@ u8  Adc_cal_vol_octIndex= 0;
 
 
 u32 tick_adc_sample = 0;
+/**
+ * @brief		Main loop of adc test
+ * @param[in]	none
+ * @return      none
+ */
 void app_adc_test_start(void)
 {
 
