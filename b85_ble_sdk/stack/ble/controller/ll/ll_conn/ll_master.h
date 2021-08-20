@@ -53,19 +53,76 @@
 #define BLM_CONN_ENC_REFRESH	BIT(10)
 #endif
 
+
+/**
+ * @brief      for user to initialize ACL connection master role.
+ * @param	   none
+ * @return     none
+ */
 void		blc_ll_initMasterRoleSingleConn_module(void);
+
+
+/**
+ * @brief      for user to check if RF Machine is busy.
+ * @param	   none
+ * @return     status. 1:  busy
+ * 					   other: not busy
+ */
 bool		blm_ll_isRfStateMachineBusy(void);
 
+
+/**
+ * @brief      for user to start disconnection process in master role .
+ * @param[in]  handle - connect handle
+ * @param[in]  reason - terminate reason
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t	blm_ll_disconnect (u16 handle, u8 reason);
+
+
+/**
+ * @brief      for user to start update prarameter process in master role .
+ * @param[in]  connHandle - connect handle
+ * @param[in]  conn_min - minimum connection interval
+ * @param[in]  conn_max - maximum connection interval
+ * @param[in]  conn_latency - connection latency
+ * @param[in]  timeout - connection timeout
+ * @param[in]  ce_min - not supported
+ * @param[in]  ce_max - not supported
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t	blm_ll_updateConnection (u16 connHandle,
 							  u16 conn_min, u16 conn_max, u16 conn_latency, u16 timeout,
 							  u16 ce_min, u16 ce_max );
 
+
+/**
+ * @brief      for user to start update channel map process in master role .
+ * @param[in]  handle - connect handle
+ * @param[in]  map - pointer of channel map
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t	blm_ll_setHostChannel (u16 handle, u8 * map);
 
 
+/**
+ * @brief      l2cap layer processing function in master role.
+ * @param[in]  conn - connect handle
+ * @param[in]  raw_pkt - pointer of packet
+ * @return     address of l2cap layer packet
+ */
 rf_packet_l2cap_t *		blm_l2cap_packet_pack (u16 conn, u8 * raw_pkt);
 
+
+/**
+ * @brief      for user to read remote feature in master role .
+ * @param[in]  handle - connect handle
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t	blm_ll_readRemoteFeature (u16 handle);
 
 

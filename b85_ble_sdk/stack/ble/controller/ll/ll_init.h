@@ -51,17 +51,55 @@ extern int blm_create_connection;
 
 
 /******************************* User Interface  ************************************/
+
+/**
+ * @brief      this function is used to initiate link layer initiating state .
+ * @param	   none
+ * @return     none
+ */
 void	 	blc_ll_initInitiating_module(void);
 
 
+/**
+ * @brief      this function is used to start connection process .
+ * @param[in]  scan_interval - scan interval
+ * @param[in]  scan_window - scan window
+ * @param[in]  initiator_filter_policy - filter policy
+ * @param[in]  adr_type - ADV type
+ * @param[in]  mac - MAC
+ * @param[in]  own_adr_type - own type
+ * @param[in]  conn_min - minimum connection interval
+ * @param[in]  connHandle - connect handle
+ * @param[in]  conn_min - minimum connection interval
+ * @param[in]  conn_max - maximum connection interval
+ * @param[in]  conn_latency - connection latency
+ * @param[in]  timeout - connection timeout
+ * @param[in]  ce_min - not supported
+ * @param[in]  ce_max - not supported
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t 	blc_ll_createConnection (u16 scan_interval, u16 scan_window, init_fp_type_t initiator_filter_policy,
 							  u8 adr_type, u8 *mac, u8 own_adr_type,
 							  u16 conn_min, u16 conn_max, u16 conn_latency, u16 timeout,
 							  u16 ce_min, u16 ce_max );
 
+
+/**
+ * @brief      this function is used to to cancel create connection process .
+ * @param	   none
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t 	blc_ll_createConnectionCancel (void);
 
 
+/**
+ * @brief      this function is used to set create connection process timeout.
+ * @param	   timeout_ms - timeout threshold
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t   blc_ll_setCreateConnectionTimeout (u32 timeout_ms);
 
 
