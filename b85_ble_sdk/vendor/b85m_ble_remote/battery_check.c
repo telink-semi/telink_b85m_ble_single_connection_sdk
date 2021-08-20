@@ -99,8 +99,11 @@ _attribute_data_retention_  u16     batt_vol_mv;
 #endif
 
 
-
-
+	/**
+	 * @brief      This function enable battery detect
+	 * @param[in]  en - 1: enable;  0: disable.
+	 * @return     none.
+	 */
 void battery_set_detect_enable (int en)
 {
 	lowBattDet_enable = en;
@@ -111,14 +114,22 @@ void battery_set_detect_enable (int en)
 
 }
 
-
+/**
+ * @brief      This function get enable state of battery detect
+ * @param[in]  none.
+ * @return     0: Battery detect is disable 	 1:Battery detect is enable.
+ */
 int battery_get_detect_enable (void)
 {
 	return lowBattDet_enable;
 }
 
 
-
+/**
+ * @brief		Initialization of vbat detect
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void adc_vbat_detect_init(void)
 {
 #if (MCU_CORE_TYPE == MCU_CORE_827x)

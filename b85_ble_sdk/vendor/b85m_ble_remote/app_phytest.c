@@ -83,6 +83,11 @@ MYFIFO_INIT(hci_tx_fifo, HCI_TXFIFO_SIZE, HCI_TXFIFO_NUM);
 
 
 #if (BLE_PHYTEST_MODE == PHYTEST_MODE_OVER_HCI_WITH_UART)
+/**
+ * @brief		this function is used to process rx uart data.
+ * @param[in]	none
+ * @return      0 is ok
+ */
 	int rx_from_uart_cb (void)
 	{
 		if(my_fifo_get(&hci_rx_fifo) == 0)
@@ -106,7 +111,11 @@ MYFIFO_INIT(hci_tx_fifo, HCI_TXFIFO_SIZE, HCI_TXFIFO_NUM);
 
 	}
 
-
+	/**
+	 * @brief		this function is used to process tx uart data.
+	 * @param[in]	none
+	 * @return      0 is ok
+	 */
 	int tx_to_uart_cb (void)
 	{
 		uart_data_t T_txdata_buf;

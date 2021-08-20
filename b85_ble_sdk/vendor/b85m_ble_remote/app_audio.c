@@ -62,6 +62,11 @@ _attribute_data_retention_	int     ui_mtu_size_exchange_req = 0;
 #if (BLE_AUDIO_ENABLE)
 
 #if BLE_DMIC_ENABLE
+/**
+ * @brief      the func serve to init dmic
+ * @param[in]  none
+ * @return     none
+ */
 	void dmic_gpio_reset (void)
 	{
 		gpio_set_func(GPIO_DMIC_BIAS, AS_GPIO);
@@ -80,6 +85,11 @@ _attribute_data_retention_	int     ui_mtu_size_exchange_req = 0;
 		gpio_write(GPIO_DMIC_CK, 0);
 	}
 #else
+	/**
+	 * @brief      the func serve to init amic
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void amic_gpio_reset (void)
 	{
 		gpio_set_func(GPIO_AMIC_BIAS, AS_GPIO);
@@ -107,6 +117,11 @@ u32 	key_voice_pressTick = 0;
 
 extern u8		buffer_mic_pkt_wptr;
 extern u8		buffer_mic_pkt_rptr;
+/**
+ * @brief      for open the audio and mtu size exchange
+ * @param[in]  en   0:close the micphone  1:open the micphone
+ * @return     none
+ */
 void ui_enable_mic (int en)
 {
 	ui_mic_enable = en;
@@ -205,7 +220,11 @@ void ui_enable_mic (int en)
 			voice_press_proc();
 		}
 	}
-
+	/**
+	 * @brief      for open the audio and mtu size exchange
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void voice_press_proc(void)
 	{
 		key_voice_press = 0;
@@ -217,7 +236,11 @@ void ui_enable_mic (int en)
 		}
 	}
 
-
+	/**
+	 * @brief      audio task in loop for encode and transmit encode data
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void task_audio (void)
 	{
 		static u32 audioProcTick = 0;
@@ -243,7 +266,11 @@ void ui_enable_mic (int en)
 			}
 		}
 	}
-
+	/**
+	 * @brief      This function serves to Request ConnParamUpdate
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void blc_checkConnParamUpdate(void)
 	{
 		extern u32 interval_update_tick;
@@ -255,6 +282,11 @@ void ui_enable_mic (int en)
 			bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);
 		}
 	}
+	/**
+	 * @brief      audio proc in main loop
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void proc_audio(void){
 		//blc_checkConnParamUpdate();
 		if(ui_mic_enable){
@@ -287,6 +319,11 @@ void ui_enable_mic (int en)
 	_attribute_data_retention_ u8    audio_send_index = 0;
 	_attribute_data_retention_ u32   audio_stick = 0;
 	_attribute_data_retention_	u8  audio_start = 0;
+	/**
+	 * @brief      for open the audio and mtu size exchange
+	 * @param[in]  en   0:close the micphone  1:open the micphone
+	 * @return     none
+	 */
 	void ui_enable_mic (int en)
 	{
 		ui_mic_enable = en;
@@ -401,7 +438,11 @@ void ui_enable_mic (int en)
 			}
 		}
 	}
-
+	/**
+	 * @brief      audio task in loop for encode and transmit encode data
+	 * @param[in]  none
+	 * @return     none
+	 */
 	_attribute_ram_code_ void task_audio (void)
 	{
 		static u32 audioProcTick = 0;
@@ -495,6 +536,11 @@ void ui_enable_mic (int en)
 
 	extern u8		buffer_mic_pkt_wptr;
 	extern u8		buffer_mic_pkt_rptr;
+	/**
+	 * @brief      for open the audio and mtu size exchange
+	 * @param[in]  en   0:close the micphone  1:open the micphone
+	 * @return     none
+	 */
 	void ui_enable_mic (int en)
 	{
 		ui_mic_enable = en;
@@ -652,7 +698,11 @@ void ui_enable_mic (int en)
 		return 0;
 	}
 
-
+	/**
+	 * @brief      audio task in loop for encode and transmit encode data
+	 * @param[in]  none
+	 * @return     none
+	 */
 	_attribute_ram_code_ void task_audio (void)
 	{
 		static u32 audioProcTick = 0;
@@ -747,6 +797,11 @@ void ui_enable_mic (int en)
 
 	extern u8		buffer_mic_pkt_wptr;
 	extern u8		buffer_mic_pkt_rptr;
+	/**
+	 * @brief      for open the audio and mtu size exchange
+	 * @param[in]  en   0:close the micphone  1:open the micphone
+	 * @return     none
+	 */
 	void ui_enable_mic (int en)
 	{
 		ui_mic_enable = en;
@@ -895,7 +950,11 @@ void ui_enable_mic (int en)
 		return 0;
 	}
 
-
+	/**
+	 * @brief      audio task in loop for encode and transmit encode data
+	 * @param[in]  none
+	 * @return     none
+	 */
 	_attribute_ram_code_ void task_audio (void)
 	{
 		static u32 audioProcTick = 0;
@@ -989,6 +1048,11 @@ void ui_enable_mic (int en)
 
 		extern u8		buffer_mic_pkt_wptr;
 		extern u8		buffer_mic_pkt_rptr;
+		/**
+		 * @brief      for open the audio and mtu size exchange
+		 * @param[in]  en   0:close the micphone  1:open the micphone
+		 * @return     none
+		 */
 		void ui_enable_mic (int en)
 		{
 			ui_mic_enable = en;
@@ -1137,7 +1201,11 @@ void ui_enable_mic (int en)
 			return 0;
 		}
 
-
+		/**
+		 * @brief      audio task in loop for encode and transmit encode data
+		 * @param[in]  none
+		 * @return     none
+		 */
 		_attribute_ram_code_ void task_audio (void)
 		{
 			///////////////////////////////////////////////////////////////
