@@ -54,9 +54,13 @@ _attribute_data_retention_	u32 flash_sector_mac_address = CFG_ADR_MAC_512K_FLASH
 _attribute_data_retention_	u32 flash_sector_calibration = CFG_ADR_CALIBRATION_512K_FLASH;	//default flash is 512k
 
 
-
-
-
+/**
+ * @brief		This function can automatically recognize the flash size,
+ * 				and the system selects different customized sector according
+ * 				to different sizes.
+ * @param[in]	none
+ * @return      none
+ */
 void blc_readFlashSize_autoConfigCustomFlashSector(void)
 {
 
@@ -106,7 +110,13 @@ void blc_readFlashSize_autoConfigCustomFlashSector(void)
 * 				Vulture : VVWWXX D119C4
  * random_static_mac: VVWWXXYYZZ C0
  */
-
+/**
+ * @brief		This function is used to initialize the MAC address
+ * @param[in]	flash_addr - flash address for MAC address
+ * @param[in]	mac_public - public address
+ * @param[in]	mac_random_static - random static MAC address
+ * @return      none
+ */
 void blc_initMacAddress(int flash_addr, u8 *mac_public, u8 *mac_random_static)
 {
 	if(flash_sector_mac_address == 0){

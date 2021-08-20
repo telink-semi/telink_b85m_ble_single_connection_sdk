@@ -103,9 +103,10 @@ extern u32 flash_sector_calibration;
 
 
 
-
-/*
- * only 1 can be set
+/**
+ * @brief		This function is used to enable the external crystal capacitor,only 1 can be set
+ * @param[in]	en - enable the external crystal capacitor
+ * @return      none
  */
 static inline void blc_app_setExternalCrystalCapEnable(u8  en)
 {
@@ -115,8 +116,11 @@ static inline void blc_app_setExternalCrystalCapEnable(u8  en)
 
 }
 
-
-
+/**
+ * @brief		This function is used to load customized parameters from flash sector for application
+ * @param[in]	none
+ * @return      none
+ */
 static inline void blc_app_loadCustomizedParameters(void)
 {
 	 if(!blt_miscParam.ext_cap_en)
@@ -165,10 +169,22 @@ static inline void blc_app_loadCustomizedParameters(void)
 #endif
 }
 
-
+/**
+ * @brief		This function can automatically recognize the flash size,
+ * 				and the system selects different customized sector according
+ * 				to different sizes.
+ * @param[in]	none
+ * @return      none
+ */
 void blc_readFlashSize_autoConfigCustomFlashSector(void);
 
-
+/**
+ * @brief		This function is used to initialize the MAC address
+ * @param[in]	flash_addr - flash address for MAC address
+ * @param[in]	mac_public - public address
+ * @param[in]	mac_random_static - random static MAC address
+ * @return      none
+ */
 void blc_initMacAddress(int flash_addr, u8 *mac_public, u8 *mac_random_static);
 
 
