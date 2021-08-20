@@ -189,7 +189,11 @@ static const u8 my_OtaCharVal[19] = {
 	TELINK_SPP_DATA_OTA
 };
 
-
+/**
+ * @brief      write callback of Attribute of TelinkSppDataClient2ServerUUID
+ * @param[in]  para - rf_packet_att_write_t
+ * @return     0
+ */
 int module_onReceiveData(void *para)
 {
 	rf_packet_att_write_t *p = (rf_packet_att_write_t*)para;

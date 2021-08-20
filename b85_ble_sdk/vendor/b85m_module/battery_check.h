@@ -57,10 +57,25 @@
 #define VBAT_ALRAM_THRES_MV				2000   // 2000 mV low battery alarm
 
 
-
+/**
+ * @brief		set lowBattery detect enable
+ * @param[in]	en - lowBattDet_enable value
+ * @return      none
+ */
 void battery_set_detect_enable (int en);
+
+/**
+ * @brief		get the value of lowBattDet_enable
+ * @param[in]	none
+ * @return      the value of lowBattDet_enable
+ */
 int  battery_get_detect_enable (void);
 
+/**
+ * @brief		This is battery check function
+ * @param[in]	alram_vol_mv - input battery calue
+ * @return      0 fail 1 success
+ */
 int app_battery_power_check(u16 alram_vol_mv);
 
 
