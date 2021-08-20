@@ -64,7 +64,7 @@ typedef struct
 
 /**
  * @brief      write callback of Attribute of TelinkSppDataClient2ServerUUID
- * @param[in]  p - rf_packet_att_write_t
+ * @param[in]  para - rf_packet_att_write_t
  * @return     0
  */
 int module_onReceiveData(void *para)

@@ -90,12 +90,36 @@ typedef struct {
 	u8  param[0];
 } spp_event_t;
 
-
+/**
+ * @brief		this function is used to process rx uart data to remote device.
+ * @param[in]   p - data pointer
+ * @param[in]   n - data length
+ * @return      0 is ok
+ */
 int bls_uart_handler (u8 *p, int n);
+
+/**
+ * @brief		this function is used to process tx uart data to remote device.
+ * @param[in]   header - hci event type
+ * @param[in]   pEvent - event data
+ * @return      0 is ok
+ */
 int spp_send_data (u32 header, spp_event_t * pEvt);
 
+/**
+ * @brief		this function is used to restart module.
+ * @param[in]	none
+ * @return      none
+ */
 void spp_restart_proc(void);
 
+/**
+ * @brief      BLE host event handler call-back.
+ * @param[in]  h       event type
+ * @param[in]  para    Pointer point to event parameter buffer.
+ * @param[in]  n       the length of event parameter.
+ * @return
+ */
 int app_host_event_callback (u32 h, u8 *para, int n);
 
 #endif /* SPP_H_ */

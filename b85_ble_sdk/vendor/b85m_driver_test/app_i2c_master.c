@@ -77,12 +77,11 @@ int master_rx_index = 0;
 
 
 
-
-
-
-
-
-
+/**
+ * @brief      Initialize the i2c master test
+ * @param[in]  none
+ * @return     none
+ */
 void i2c_master_test_init(void)
 {
 
@@ -99,7 +98,11 @@ void i2c_master_test_init(void)
 
 }
 
-
+/**
+ * @brief		Main loop of i2c master test
+ * @param[in]	none
+ * @return      none
+ */
 void i2c_master_mainloop(void)
 {
 
@@ -146,8 +149,11 @@ void i2c_master_mainloop(void)
 
 
 
-
-
+/**
+ * @brief		this function is used to process i2c irq
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void app_i2c_test_irq_proc(void)
 {
 

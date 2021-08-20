@@ -28,7 +28,7 @@
 
 #define UART_DMA  		1     //uart use dma
 #define UART_NDMA  		2     //uart not use dma
-#define UART_MODE		UART_DMA
+#define UART_MODE		UART_NDMA
 
 
 
@@ -68,12 +68,11 @@ volatile unsigned char uart_ndmairq_index=0;
 
 
 
-
-
-
-
-
-
+	/**
+	 * @brief		Initialization of uart test
+	 * @param[in]	none
+	 * @return      none
+	 */
 void app_uart_test_init(void)
 {
 	WaitMs(2000);  //leave enough time for SWS_reset when power on
@@ -127,8 +126,11 @@ void app_uart_test_init(void)
 
 
 
-
-
+/**
+ * @brief		Main loop of uart test
+ * @param[in]	none
+ * @return      none
+ */
 void app_uart_test_start(void)
 {
 
@@ -175,7 +177,11 @@ void app_uart_test_start(void)
 volatile unsigned int cnt=0;
 
 
-
+/**
+ * @brief		this function is used to process uart irq
+ * @param[in]	none
+ * @return      none
+ */
 void app_uart_test_irq_proc(void)
 {
 

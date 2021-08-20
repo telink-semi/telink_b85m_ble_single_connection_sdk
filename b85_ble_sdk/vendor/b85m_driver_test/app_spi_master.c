@@ -51,7 +51,11 @@
 volatile unsigned char spi_master_tx_buff[DBG_DATA_LEN]={0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
 //read buff
 volatile unsigned char spi_master_rx__buff[DBG_DATA_LEN]={0x00};
-
+/**
+ * @brief      Initialize the spi master test
+ * @param[in]  none
+ * @return     none
+ */
 void spi_master_test_init(void)
 {
 	//spi clock 500K, only master need set i2c clock
@@ -62,7 +66,11 @@ void spi_master_test_init(void)
 	spi_master_gpio_set(SPI_GPIO_GROUP_A2A3A4D6);    //master mode £ºspi pin set
 #endif
 }
-
+/**
+ * @brief		Main loop of spi master test
+ * @param[in]	none
+ * @return      none
+ */
 void spi_master_mainloop(void)
 {
 	WaitMs(1000);   //1S

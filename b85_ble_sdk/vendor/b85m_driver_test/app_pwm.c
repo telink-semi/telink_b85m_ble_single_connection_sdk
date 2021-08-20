@@ -79,7 +79,11 @@ pwm_dma_data_t T_dmaData_buf;
     PWM4_N :  PC0.  PC6.
     PWM5_N :  PC7.
  *********************************************************************************/
-
+/**
+ * @brief		Initialization of pwm test
+ * @param[in]	none
+ * @return      none
+ */
 void app_pwm_test(void)
 {
 	pwm_set_clk(CLOCK_SYS_CLOCK_HZ, CLOCK_SYS_CLOCK_HZ);
@@ -311,8 +315,11 @@ void app_pwm_test(void)
 }
 
 
-
-
+/**
+ * @brief		this function is used to process pwm irq
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void app_pwm_irq_test_proc(void)
 {
 

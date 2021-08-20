@@ -48,7 +48,11 @@ extern void test_low_power(void);
 
 extern void app_emi_init(void);
 extern void app_rf_emi_test_start(void);
-
+/**
+ * @brief		user initialization when MCU power on or wake_up from deepSleep mode
+ * @param[in]	none
+ * @return      none
+ */
 void user_init()
 {
 
@@ -97,10 +101,13 @@ void user_init()
 }
 
 
-/////////////////////////////////////////////////////////////////////
-// main loop flow
-/////////////////////////////////////////////////////////////////////
+
 u32 tick_wakeup;
+/**
+ * @brief     Main loop
+ * @param[in]  none.
+ * @return     none.
+ */
 void main_loop (void)
 {
 #if (DRIVER_TEST_MODE == TEST_UART)

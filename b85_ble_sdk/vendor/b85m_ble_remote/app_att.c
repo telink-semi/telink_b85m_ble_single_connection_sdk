@@ -291,7 +291,7 @@ static const u8 reportMap[] =
 static u16 extServiceUUID;
 
 
-/////////////////////////////////////////////////////////
+////////////////////////OTA/////////////////////////////////
 static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
 static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 static u8 my_OtaData 						        = 0x00;

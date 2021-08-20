@@ -32,7 +32,11 @@ extern void spi_master_mainloop(void);
 
 
 
-
+/**
+ * @brief      Initialize the spi test
+ * @param[in]  none
+ * @return     none
+ */
 void app_spi_test_init(void)
 {
 	WaitMs(2000);  //leave enough time for SWS_reset when power on
@@ -49,7 +53,11 @@ void app_spi_test_init(void)
 
 
 
-
+/**
+ * @brief		Main loop of spi test
+ * @param[in]	none
+ * @return      none
+ */
 void app_spi_test_start(void)
 {
 #if (SPI_MODE==SPI_MASTER_MODE)
@@ -61,7 +69,11 @@ void app_spi_test_start(void)
 #endif
 }
 
-
+/**
+ * @brief		this function is used to process spi irq
+ * @param[in]	none
+ * @return      none
+ */
 void app_spi_test_irq_proc(void)
 {
 

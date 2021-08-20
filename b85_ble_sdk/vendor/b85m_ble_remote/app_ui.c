@@ -177,6 +177,11 @@ static const u16 vk_consumer_map[16] = {
 
 
 #if (BLE_REMOTE_OTA_ENABLE)
+	/**
+	 * @brief      this function is used to register the function for OTA start.
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void app_enter_ota_mode(void)
 	{
 		ota_is_working = 1;
@@ -187,7 +192,12 @@ static const u16 vk_consumer_map[16] = {
 	}
 
 
-
+	/**
+	 * @brief       no matter whether the OTA result is successful or fail.
+	 *              code will run here to tell user the OTA result.
+	 * @param[in]   result    OTA result:success or fail(different reason)
+	 * @return      none
+	 */
 	void app_debug_ota_result(int result)
 	{
 

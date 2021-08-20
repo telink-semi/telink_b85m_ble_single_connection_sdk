@@ -276,6 +276,12 @@ int rx_from_uart_cb (void)//UART data send to Master,we will handler the data as
 	return 0;
 }
 
+/**
+ * @brief		this function is used to process rx uart data to remote device.
+ * @param[in]   p - data pointer
+ * @param[in]   n - data length
+ * @return      0 is ok
+ */
 ///////////////////////////////////////////the default bls_uart_handler///////////////////////////////
 int bls_uart_handler (u8 *p, int n)
 {
@@ -446,7 +452,12 @@ int bls_uart_handler (u8 *p, int n)
 }
 
 
-
+/**
+ * @brief		this function is used to process tx uart data to remote device.
+ * @param[in]   header - hci event type
+ * @param[in]   pEvent - event data
+ * @return      0 is ok
+ */
 int spp_send_data (u32 header, spp_event_t * pEvt)
 {
 
@@ -490,6 +501,12 @@ int spp_send_data (u32 header, spp_event_t * pEvt)
 }
 
 uart_data_t T_txdata_buf;
+
+/**
+ * @brief		this function is used to process tx uart data.
+ * @param[in]	none
+ * @return      0 is ok
+ */
 int tx_to_uart_cb (void)
 {
 	u8 *p = my_fifo_get (&spp_tx_fifo);
@@ -519,7 +536,11 @@ int tx_to_uart_cb (void)
 	return 0;
 }
 
-
+/**
+ * @brief		this function is used to restart module.
+ * @param[in]	none
+ * @return      none
+ */
 void spp_restart_proc(void)
 {
 	//when received SPP_CMD_RESTART_MOD, leave 500ms(you can change this time) for moudle to send uart ack to host, then restart.

@@ -30,7 +30,11 @@ int timer0_irq_cnt = 0;
 int timer1_irq_cnt = 0;
 int timer2_irq_cnt = 0;
 
-
+/**
+ * @brief      Initialize the timer test
+ * @param[in]  none
+ * @return     none
+ */
 void app_timer_test_init(void)
 {
 	//timer0 10ms interval irq
@@ -58,7 +62,11 @@ void app_timer_test_init(void)
 	irq_enable();
 }
 
-
+/**
+ * @brief		this function is used to process timer irq
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void app_timer_test_irq_proc(void){
 	if(reg_tmr_sta & FLD_TMR_STA_TMR0){
 		reg_tmr_sta = FLD_TMR_STA_TMR0; //clear irq status
