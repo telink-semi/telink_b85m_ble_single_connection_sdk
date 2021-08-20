@@ -272,28 +272,65 @@ ble_sts_t 	blt_ll_exchangeDataLength (u8 opcode, u16 maxTxOct);   ///core4.2 dat
 void		bls_app_registerEventCallback (u8 e, blt_event_callback_t p);
 
 
-
-
-
-
-
+/**
+ * @brief      this function is used to get TX FIFO Number of current state
+ * @param[in]  none.
+ * @return     total_fifo_num
+ */
 bool 		blc_ll_isBrxBusy (void);
 
 
-
+/**
+ * @brief      this function is used to set customized access code
+ * @param[in]  none.
+ * @return     none.
+ */
 void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code);
 
+
+/**
+ * @brief      this function is used to get local supported feature by HCI.
+ * @param[in]  features - support feature buffer.
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t blc_hci_le_getLocalSupportedFeatures(u8 *features);
 
+
+/**
+ * @brief      this function is used to reset HCI state.
+ * @param	   none
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
 ble_sts_t  		blc_hci_reset(void);
 
+
+/**
+ * @brief      this function is used to set maximum md number.
+ * @param[in]  num - max number
+ * @return     none
+ */
 void 		blc_ll_init_max_md_nums(u8 num);
 
+
+/**
+ * @brief      this function is used to get random MAC address.
+ * @param[in]  none
+ * @return     none
+ */
 u8* 	blc_ll_get_macAddrRandom(void);
 
+
+/**
+ * @brief      this function is used to get public MAC address.
+ * @param[in]  none
+ * @return     none
+ */
 u8* 	blc_ll_get_macAddrPublic(void);
 
-ble_sts_t blc_hci_le_getLocalSupportedFeatures(u8 *features);
+
+
 
 
 #if (MCU_CORE_TYPE == MCU_CORE_9518)

@@ -129,21 +129,61 @@ void    blm_host_smp_setSecurityTrigger(u8 trigger);
 u8		blm_host_smp_getSecurityTrigger(void);
 
 
-
-
+/**
+ * @brief      This function is used to config pairing security infomation address.
+ * @param[in]  addr - Callback function triggered when SMP is completed.
+ * @return     none.
+ */
 void 	blm_smp_configParingSecurityInfoStorageAddr (int addr);
 
 
+/**
+ * @brief      This function is used to deal smp function in master role.
+ * @param[in]  conn_handle - connection handle
+ * @param[in]  p - packet pointer
+ * @return     none.
+ */
 void 	blm_host_smp_handler(u16 conn_handle, u8 *p);
+
+
+/**
+ * @brief      This function is used to search bonding message in slave role.
+ * @param[in]  adr_type - address type
+ * @param[in]  addr - data address
+ * @return     status 0:success  other£ºfail.
+ */
 int 	tbl_bond_slave_search(u8 adr_type, u8 * addr);
+
+
+/**
+ * @brief      This function is used to delete bonding message in slave role.
+ * @param[in]  adr_type - address type
+ * @param[in]  addr - data address
+ * @return     status 0:success  other£ºfail.
+ */
 int 	tbl_bond_slave_delete_by_adr(u8 adr_type, u8 *addr);
+
+
+/**
+ * @brief      This function is used to delete bonding message .
+ * @param[in]  adr_type - address type
+ * @param[in]  addr - data address
+ * @return     none.
+ */
 void 	tbl_bond_slave_unpair_proc(u8 adr_type, u8 *addr);
 
+
+/**
+ * @brief      This function is used to delete bonding message in slave role.
+ * @param[in]  adr_type - address type
+ * @param[in]  addr - data address
+ * @return     none.
+ */
 void	blm_smp_encChangeEvt(u8 status, u16 connhandle, u8 enc_enable);
 
 
 /**
- * @brief      This function is used to register the callback function that is triggered when the SMP is completed.
+ * @brief      This function is used to register call back of system finish
  * @param[in]  cb - Callback function triggered when SMP is completed.
  * @return     none.
  */
