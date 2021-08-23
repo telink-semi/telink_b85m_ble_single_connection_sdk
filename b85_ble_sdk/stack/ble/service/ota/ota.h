@@ -191,8 +191,32 @@ typedef struct{
 }ota_pdu16_t;
 
 
+/**
+ * @brief      ota crc32 related fuinction.
+ * @param[in]  crc: initial crc value.
+ * @param[in]  input: input data.
+ * @param[in]  table: crc calculate table.
+ * @param[in]  len: data length.
+ * @return     crc result.
+ */
 unsigned long crc32_half_cal(unsigned long crc, unsigned char* input, unsigned long* table, int len);
+
+/**
+ * @brief      ota crc32 related fuinction.
+ * @param[in]  crc: initial crc value.
+ * @param[in]  input: input data.
+ * @param[in]  table: crc calculate table.
+ * @param[in]  len: data length.
+ * @return     crc result.
+ */
 unsigned long crc32_cal(unsigned long crc, unsigned char* input, unsigned long* table, int len);
+
+/**
+ * @brief      ota crc16 related fuinction.
+ * @param[in]  pD: input data.
+ * @param[in]  len: data length.
+ * @return     crc result.
+ */
 unsigned short crc16 (unsigned char *pD, int len);
 
 
