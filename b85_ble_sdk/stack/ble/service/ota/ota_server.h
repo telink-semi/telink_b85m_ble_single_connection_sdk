@@ -179,18 +179,11 @@ ble_sts_t blc_ota_setOtaDataPacketTimeout(int timeout_second);
 
 /**
  * @brief      This function is used to set resolution of OTA schedule indication by PDU number
+ * 			   This API must be called when initialization, after "blc_ota_initOtaServer_module"
  * @param[in]  pdu_num -
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t blc_ota_setOtaScheduleIndication_by_pduNum(int pdu_num);
-
-
-/**
- * @brief      This function is used to set resolution of OTA schedule indication by firmware size
- * @param[in]  fw_size -
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
- */
-ble_sts_t blc_ota_setOtaScheduleIndication_by_FiimwareSize(int fw_size);
 
 
 /**
