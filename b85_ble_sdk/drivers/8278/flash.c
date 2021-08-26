@@ -69,8 +69,8 @@
 unsigned int flash_support_mid[] = {0x1160C8, 0x1360C8, 0x1460C8, 0x11325E, 0x12325E, 0x13325E, 0x14325E, 0x136085, 0x1360EB};
 const unsigned int FLASH_CNT = sizeof(flash_support_mid)/sizeof(*flash_support_mid);
 
-flash_hander_t flash_read_page = flash_read_data;
-flash_hander_t flash_write_page = flash_page_program;
+_attribute_data_retention_ flash_hander_t flash_read_page = flash_read_data;
+_attribute_data_retention_ flash_hander_t flash_write_page = flash_page_program;
 
 _attribute_data_retention_	  unsigned int  flash_type = 0;
 _attribute_data_retention_	  unsigned int  get_flash_mid = FLASH_ETOX_GD;
