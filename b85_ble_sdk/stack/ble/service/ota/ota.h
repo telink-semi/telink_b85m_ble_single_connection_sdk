@@ -171,6 +171,7 @@ typedef struct {
  *  @brief data structure of OTA command "CMD_OTA_SCHEDULE_PDU_NUM"
  */
 typedef struct {
+	u16  	ota_cmd;
 	u16  	success_pdu_cnt;	// successful OTA PDU number
 } ota_sche_pdu_num_t;
 
@@ -178,6 +179,7 @@ typedef struct {
  *  @brief data structure of OTA command "CMD_OTA_SCHEDULE_FW_SIZE"
  */
 typedef struct {
+	u16  	ota_cmd;
 	u32		success_fw_size;	// successful OTA firmware size (unit: Byte)
 } ota_sche_fw_size_t;
 
