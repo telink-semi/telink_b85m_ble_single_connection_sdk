@@ -64,9 +64,7 @@ _attribute_data_retention_	u32 flash_sector_calibration = CFG_ADR_CALIBRATION_51
 void blc_readFlashSize_autoConfigCustomFlashSector(void)
 {
 
-
-	u8	flash_cap = ((get_flash_mid&0x00ff0000)>>16);
-	unsigned char adc_vref_calib_value_rd[4] = {0};
+	u8	flash_cap = flash_get_capacity();
 
 	if(flash_cap == FLASH_SIZE_512K){
 		flash_sector_mac_address = CFG_ADR_MAC_512K_FLASH;
@@ -82,21 +80,6 @@ void blc_readFlashSize_autoConfigCustomFlashSector(void)
 		while(1);
 	}
 
-	//load adc vref value from flash
-	if(adc_vref_cfg.adc_calib_en)
-	{
-		flash_read_page(flash_sector_calibration+CALIB_OFFSET_ADC_VREF, 4, adc_vref_calib_value_rd);
-		if((adc_vref_calib_value_rd[2] != 0xff) || (adc_vref_calib_value_rd[3]  != 0xff ))
-		{
-			/******Method of calculating calibration Flash_vbat_Vref value: ********/
-			/******Vref = [1175 +First_Byte-255+Second_Byte] mV =  [920 + First_Byte + Second_Byte] mV  ********/
-			adc_vref_cfg.adc_vref = 920 + adc_vref_calib_value_rd[2] + adc_vref_calib_value_rd[3];
-		}
-		//else use the value init in efuse
-	}
-
-	extern void flash_set_capacity(Flash_CapacityDef flash_cap);
-	flash_set_capacity(flash_cap);
 }
 
 

@@ -167,8 +167,22 @@ static inline void blc_app_loadCustomizedParameters(void)
 		analog_write(0x0c, ((analog_read(0x0c) & 0xf8)  | (calib_value&0x7)));
 	}
 #endif
-}
 
+	unsigned char adc_vref_calib_value_rd[4] = {0};
+	//load adc vref value from flash
+	if(adc_vref_cfg.adc_calib_en)
+	{
+		flash_read_page(flash_sector_calibration+CALIB_OFFSET_ADC_VREF, 4, adc_vref_calib_value_rd);
+		if((adc_vref_calib_value_rd[2] != 0xff) || (adc_vref_calib_value_rd[3]  != 0xff ))
+		{
+			/******Method of calculating calibration Flash_vbat_Vref value: ********/
+			/******Vref = [1175 +First_Byte-255+Second_Byte] mV =  [920 + First_Byte + Second_Byte] mV  ********/
+			adc_vref_cfg.adc_vref = 920 + adc_vref_calib_value_rd[2] + adc_vref_calib_value_rd[3];
+		}
+		//else use the value init in efuse
+	}
+
+}
 /**
  * @brief		This function can automatically recognize the flash size,
  * 				and the system selects different customized sector according
