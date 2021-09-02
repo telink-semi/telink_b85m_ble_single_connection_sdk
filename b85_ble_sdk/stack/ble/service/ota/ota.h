@@ -143,6 +143,7 @@ typedef struct {
 typedef struct {
 	u16  	ota_cmd;
 	u8		result;
+	u8		rsvd;
 } ota_result_t;
 
 
