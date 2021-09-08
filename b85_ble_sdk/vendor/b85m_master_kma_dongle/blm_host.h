@@ -67,15 +67,40 @@ typedef void (*main_service_t) (void);
 
 extern main_service_t		main_service;
 
-
-int controller_event_callback (u32 h, u8 *p, int n);
-int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt);
-int app_host_smp_finish (void);
-
-void host_update_conn_proc(void);
-
 extern u32 host_update_conn_param_req;
 extern int	app_host_smp_sdp_pending;
+/**
+ * @brief      callback function of HCI Controller Event
+ * @param[in]  h - HCI Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     0
+ */
+int controller_event_callback (u32 h, u8 *p, int n);
+
+/**
+ * @brief      callback function of L2CAP layer handle packet data
+ * @param[in]  conn_handle - connect handle
+ * @param[in]  raw_pkt - Pointer point to l2cap data packet
+ * @return     0
+ */
+int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt);
+
+/**
+ * @brief      callback function of smp finish
+ * @param[in]  none
+ * @return     0
+ */
+int app_host_smp_finish (void);
+
+/**
+ * @brief      update connection parameter in mainloop
+ * @param[in]  none
+ * @return     none
+ */
+void host_update_conn_proc(void);
+
+
 
 
 #endif /* APP_HOST_H_ */

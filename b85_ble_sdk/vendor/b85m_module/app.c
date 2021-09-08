@@ -118,13 +118,13 @@ _attribute_data_retention_	my_fifo_t	blt_txfifo = {
 
 
 
-#define     MY_APP_ADV_CHANNEL					BLT_ENABLE_ADV_37
-#define 	MY_ADV_INTERVAL_MIN					ADV_INTERVAL_30MS
-#define 	MY_ADV_INTERVAL_MAX					ADV_INTERVAL_40MS
+#define     	MY_APP_ADV_CHANNEL					BLT_ENABLE_ADV_37
+#define 	   	MY_ADV_INTERVAL_MIN					ADV_INTERVAL_30MS
+#define 	   	MY_ADV_INTERVAL_MAX					ADV_INTERVAL_40MS
 
-#define 	MY_DIRECT_ADV_TMIE					2000000  //us
+#define 	   	MY_DIRECT_ADV_TMIE						2000000  //us
 
-#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
+#define	 	MY_RF_POWER_INDEX						RF_POWER_P3dBm
 
 #define		BLE_DEVICE_ADDRESS_TYPE 			BLE_DEVICE_ADDRESS_PUBLIC
 
@@ -261,7 +261,7 @@ void show_ota_result(int result)
 #endif
 
 
-#define MAX_INTERVAL_VAL		16
+#define 		MAX_INTERVAL_VAL					16
 
 
 
@@ -468,7 +468,9 @@ void user_init_normal(void)
 								 MY_APP_ADV_CHANNEL,
 								 ADV_FP_NONE);
 
-	if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
+	if(status != BLE_SUCCESS) {
+		while(1);
+	}  //debug: adv setting err
 
 
 	bls_ll_setAdvEnable(1);  //adv enable
@@ -555,65 +557,65 @@ void user_init_normal(void)
 
 
 #if (PM_DEEPSLEEP_RETENTION_ENABLE)
-/**
- * @brief		user initialization when MCU wake_up from deepSleep_retention mode
- * @param[in]	none
- * @return      none
- */
-_attribute_ram_code_ void user_init_deepRetn(void)
-{
-	blc_ll_initBasicMCU();   //mandatory
-	rf_set_power_level_index (MY_RF_POWER_INDEX);
+	/**
+	 * @brief		user initialization when MCU wake_up from deepSleep_retention mode
+	 * @param[in]	none
+	 * @return      none
+	 */
+	_attribute_ram_code_ void user_init_deepRetn(void)
+	{
+		blc_ll_initBasicMCU();   //mandatory
+		rf_set_power_level_index (MY_RF_POWER_INDEX);
 
-	blc_ll_recoverDeepRetention();
+		blc_ll_recoverDeepRetention();
 
-	DBG_CHN0_HIGH;    //debug
+		DBG_CHN0_HIGH;    //debug
 
-	irq_enable();
-
-
-	////////////////// SPP initialization ///////////////////////////////////
-	//note: dma addr must be set first before any other uart initialization!
-
-	u8 *uart_rx_addr = (spp_rx_fifo_b + (spp_rx_fifo.wptr & (spp_rx_fifo.num-1)) * spp_rx_fifo.size);
-	uart_recbuff_init( (unsigned char *)uart_rx_addr, spp_rx_fifo.size);
+		irq_enable();
 
 
-	uart_gpio_set(UART_TX_PB1, UART_RX_PB0);
+		////////////////// SPP initialization ///////////////////////////////////
+		//note: dma addr must be set first before any other uart initialization!
 
-	uart_reset();  //will reset uart digital registers from 0x90 ~ 0x9f, so uart setting must set after this reset
-
-
-	DBG_CHN0_LOW;  //debug
-
-	//baud rate: 115200
-	#if (CLOCK_SYS_CLOCK_HZ == 16000000)
-		uart_init(9, 13, PARITY_NONE, STOP_BIT_ONE);
-	#elif (CLOCK_SYS_CLOCK_HZ == 24000000)
-		uart_init(12, 15, PARITY_NONE, STOP_BIT_ONE);
-	#elif (CLOCK_SYS_CLOCK_HZ == 32000000)
-		uart_init(30, 8, PARITY_NONE, STOP_BIT_ONE);
-	#elif (CLOCK_SYS_CLOCK_HZ == 48000000)
-		uart_init(25, 15, PARITY_NONE, STOP_BIT_ONE);
-	#endif
-
-	uart_dma_enable(1, 1); 	//uart data in hardware buffer moved by dma, so we need enable them first
-
-	irq_set_mask(FLD_IRQ_DMA_EN);
-	dma_chn_irq_enable(FLD_DMA_CHN_UART_RX | FLD_DMA_CHN_UART_TX, 1);   	//uart Rx/Tx dma irq enable
-
-	uart_irq_enable(0, 0);  	//uart Rx/Tx irq no need, disable them
-
-	//mcu can wake up module from suspend or deepsleep by pulling up GPIO_WAKEUP_MODULE
-	cpu_set_gpio_wakeup (GPIO_WAKEUP_MODULE, Level_High, 1);  // pad high wakeup deepsleep
-
-	GPIO_WAKEUP_MODULE_LOW;
+		u8 *uart_rx_addr = (spp_rx_fifo_b + (spp_rx_fifo.wptr & (spp_rx_fifo.num-1)) * spp_rx_fifo.size);
+		uart_recbuff_init( (unsigned char *)uart_rx_addr, spp_rx_fifo.size);
 
 
+		uart_gpio_set(UART_TX_PB1, UART_RX_PB0);
+
+		uart_reset();  //will reset uart digital registers from 0x90 ~ 0x9f, so uart setting must set after this reset
 
 
-	DBG_CHN0_HIGH;   //debug
-}
+		DBG_CHN0_LOW;  //debug
+
+		//baud rate: 115200
+		#if (CLOCK_SYS_CLOCK_HZ == 16000000)
+			uart_init(9, 13, PARITY_NONE, STOP_BIT_ONE);
+		#elif (CLOCK_SYS_CLOCK_HZ == 24000000)
+			uart_init(12, 15, PARITY_NONE, STOP_BIT_ONE);
+		#elif (CLOCK_SYS_CLOCK_HZ == 32000000)
+			uart_init(30, 8, PARITY_NONE, STOP_BIT_ONE);
+		#elif (CLOCK_SYS_CLOCK_HZ == 48000000)
+			uart_init(25, 15, PARITY_NONE, STOP_BIT_ONE);
+		#endif
+
+		uart_dma_enable(1, 1); 	//uart data in hardware buffer moved by dma, so we need enable them first
+
+		irq_set_mask(FLD_IRQ_DMA_EN);
+		dma_chn_irq_enable(FLD_DMA_CHN_UART_RX | FLD_DMA_CHN_UART_TX, 1);   	//uart Rx/Tx dma irq enable
+
+		uart_irq_enable(0, 0);  	//uart Rx/Tx irq no need, disable them
+
+		//mcu can wake up module from suspend or deepsleep by pulling up GPIO_WAKEUP_MODULE
+		cpu_set_gpio_wakeup (GPIO_WAKEUP_MODULE, Level_High, 1);  // pad high wakeup deepsleep
+
+		GPIO_WAKEUP_MODULE_LOW;
+
+
+
+
+		DBG_CHN0_HIGH;   //debug
+	}
 #endif
 
 /**

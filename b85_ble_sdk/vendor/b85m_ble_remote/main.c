@@ -50,7 +50,11 @@
 #include "app.h"
 #include "battery_check.h"
 
-
+/**
+ * @brief      The function serves to scan if there is a key_event after deepsleep before program initialization.
+ * @param[in]  none
+ * @return     none
+ */
 extern void deep_wakeup_proc(void);
 
 extern void rc_ir_irq_prc(void);

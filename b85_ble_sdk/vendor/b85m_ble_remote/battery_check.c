@@ -99,11 +99,11 @@ _attribute_data_retention_  u16     batt_vol_mv;
 #endif
 
 
-	/**
-	 * @brief      This function enable battery detect
-	 * @param[in]  en - 1: enable;  0: disable.
-	 * @return     none.
-	 */
+/**
+ * @brief      This function enable battery detect
+ * @param[in]  en - 1: enable;  0: disable.
+ * @return     none.
+ */
 void battery_set_detect_enable (int en)
 {
 	lowBattDet_enable = en;
@@ -259,6 +259,13 @@ _attribute_ram_code_ void adc_vbat_detect_init(void)
 }
 
 #if (VBAT_LEAKAGE_PROTECT_EN)
+
+/**
+ * @brief		This function serves to set the protect power level of the chip.
+ * @param[in]	threshold_deep_vol_mv    - the power-level that the chip enter deepsleep.
+ * @param[in]	threshold_suspend_vol_mv - the power-level that the chip enter suspend.
+ * @return      none
+ */
 _attribute_ram_code_ int app_battery_power_check(u16 threshold_deep_vol_mv, u16 threshold_suspend_vol_mv)
 {
 	u16 temp;
@@ -479,6 +486,11 @@ _attribute_ram_code_ int app_battery_power_check(u16 threshold_deep_vol_mv, u16 
 	return 0;
 }
 #else
+/**
+ * @brief		This function serves to set the warning-light power level of the program.
+ * @param[in]	alram_vol_mv    - the warning-light power level.
+ * @return      none
+ */
 _attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)
 {
 	u16 temp;
@@ -694,10 +706,11 @@ _attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)
 }
 #endif
 
-
-
-
-
+/**
+ * @brief		This function is the initialization of the battery check.
+ * @param[in]	none.
+ * @return      none.
+ */
 _attribute_ram_code_ void user_init_battery_power_check(void)
 {
 	/*****************************************************************************************

@@ -46,13 +46,14 @@
 #ifndef BLM_OTA_H_
 #define BLM_OTA_H_
 
-
-
-void proc_ota (void);
-
-
 extern int 	master_ota_test_mode;
 
+/**
+ * @brief		ota proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
+void proc_ota (void);
 
 
 #endif /* BLM_OTA_H_ */
