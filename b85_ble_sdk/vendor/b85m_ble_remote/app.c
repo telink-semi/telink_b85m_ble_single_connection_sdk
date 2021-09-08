@@ -149,8 +149,6 @@ _attribute_data_retention_	u32	latest_user_event_tick;
 _attribute_data_retention_	u32	lowBattDet_tick   = 0;
 
 
-
-
 /**
  * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_ADV_DURATION_TIMEOUT"
  * @param[in]  e - LinkLayer Event type
@@ -170,8 +168,13 @@ void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
 	bls_ll_setAdvEnable(1);  //must: set adv enable
 }
 
-
-
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_TERMINATE"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
 void 	ble_remote_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
 	device_in_connection_state = 0;
@@ -247,18 +250,37 @@ void	task_connect (u8 e, u8 *p, int n)
 	interval_update_tick = clock_time() | 1; //none zero
 }
 
-
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_CONN_PARA_REQ"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
 void	task_conn_update_req (u8 e, u8 *p, int n)
 {
 
 }
 
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_CONN_PARA_UPDATE"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
 void	task_conn_update_done (u8 e, u8 *p, int n)
 {
 
 }
 
-
+/**
+ * @brief		call back function of connect parameter update response
+ * @param[in]	id - connect id
+ * @param[in]	result - connect parameter update response result
+ * @return      0    - success
+ *              else - reserved
+ */
 int app_conn_param_update_response(u8 id, u16  result)
 {
 	if(result == CONN_PARAM_UPDATE_ACCEPT){

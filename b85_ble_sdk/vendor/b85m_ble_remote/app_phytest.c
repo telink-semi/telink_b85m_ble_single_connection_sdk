@@ -73,7 +73,7 @@ typedef struct{
 	unsigned int len;        // data max 252
 	unsigned char data[UART_DATA_LEN];
 }uart_data_t;
-
+extern const led_cfg_t led_cfg[];
 MYFIFO_INIT(hci_rx_fifo, HCI_RXFIFO_SIZE, HCI_RXFIFO_NUM);
 MYFIFO_INIT(hci_tx_fifo, HCI_TXFIFO_SIZE, HCI_TXFIFO_NUM);
 
@@ -88,61 +88,65 @@ MYFIFO_INIT(hci_tx_fifo, HCI_TXFIFO_SIZE, HCI_TXFIFO_NUM);
  * @param[in]	none
  * @return      0 is ok
  */
-	int rx_from_uart_cb (void)
+int rx_from_uart_cb (void)
+{
+	if(my_fifo_get(&hci_rx_fifo) == 0)
 	{
-		if(my_fifo_get(&hci_rx_fifo) == 0)
-		{
-			return 0;
-		}
-
-		u8* p = my_fifo_get(&hci_rx_fifo);
-		u32 rx_len = p[0]; //usually <= 255 so 1 byte should be sufficient
-
-		if (rx_len)
-		{
-			blc_hci_handler(&p[4], rx_len - 4);
-			my_fifo_pop(&hci_rx_fifo);
-		}
-
-		return 0;
-
-
-
-
-	}
-
-	/**
-	 * @brief		this function is used to process tx uart data.
-	 * @param[in]	none
-	 * @return      0 is ok
-	 */
-	int tx_to_uart_cb (void)
-	{
-		uart_data_t T_txdata_buf;
-		static u32 uart_tx_tick = 0;
-
-		u8 *p = my_fifo_get (&hci_tx_fifo);
-
-		#if (ADD_DELAY_FOR_UART_DATA)
-			if (p && !uart_tx_is_busy () && clock_time_exceed(uart_tx_tick, 30000))
-		#else
-			if (p && !uart_tx_is_busy ())
-		#endif
-		{
-			memcpy(&T_txdata_buf.data, p + 2, p[0]+p[1]*256);
-			T_txdata_buf.len = p[0]+p[1]*256 ;
-
-			uart_dma_send((unsigned char*)&T_txdata_buf);
-			my_fifo_pop (&hci_tx_fifo);
-			uart_tx_tick = clock_time();
-		}
 		return 0;
 	}
+
+	u8* p = my_fifo_get(&hci_rx_fifo);
+	u32 rx_len = p[0]; //usually <= 255 so 1 byte should be sufficient
+
+	if (rx_len)
+	{
+		blc_hci_handler(&p[4], rx_len - 4);
+		my_fifo_pop(&hci_rx_fifo);
+	}
+
+	return 0;
+
+
+
+
+}
+
+/**
+ * @brief		this function is used to process tx uart data.
+ * @param[in]	none
+ * @return      0 is ok
+ */
+int tx_to_uart_cb (void)
+{
+	uart_data_t T_txdata_buf;
+	static u32 uart_tx_tick = 0;
+
+	u8 *p = my_fifo_get (&hci_tx_fifo);
+
+	#if (ADD_DELAY_FOR_UART_DATA)
+		if (p && !uart_tx_is_busy () && clock_time_exceed(uart_tx_tick, 30000))
+	#else
+		if (p && !uart_tx_is_busy ())
+	#endif
+	{
+		memcpy(&T_txdata_buf.data, p + 2, p[0]+p[1]*256);
+		T_txdata_buf.len = p[0]+p[1]*256 ;
+
+		uart_dma_send((unsigned char*)&T_txdata_buf);
+		my_fifo_pop (&hci_tx_fifo);
+		uart_tx_tick = clock_time();
+	}
+	return 0;
+}
 #endif
 
 
 
-
+/**
+ * @brief		this function is used to process the phytest irq.
+ * @param[in]	none
+ * @return      none
+ */
 _attribute_ram_code_ void irq_phyTest_handler(void)
 {
 #if(FEATURE_TEST_MODE == TEST_BLE_PHY)
@@ -166,10 +170,11 @@ _attribute_ram_code_ void irq_phyTest_handler(void)
 #endif
 }
 
-
-
-extern const led_cfg_t led_cfg[];
-
+/**
+ * @brief		this function is used to switch the mode of phytest.
+ * @param[in]	none
+ * @return      none
+ */
 void app_trigger_phytest_mode(void)
 {
 	static u8 phyTestFlag = 0;
@@ -185,11 +190,11 @@ void app_trigger_phytest_mode(void)
 
 }
 
-
-
-
-
-
+/**
+ * @brief		this function is the initialization of phytest.
+ * @param[in]	none
+ * @return      none
+ */
 void app_phytest_init(void)
 {
 	blc_phy_initPhyTest_module();
@@ -223,12 +228,5 @@ void app_phytest_init(void)
 	#endif
 
 }
-
-
-
-
-
-
-
 
 #endif  //end of  BLE_PHYTEST_MODE != PHYTEST_MODE_DISABLE

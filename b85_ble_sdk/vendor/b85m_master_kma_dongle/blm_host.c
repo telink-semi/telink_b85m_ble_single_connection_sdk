@@ -205,6 +205,11 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 
 	}
 
+    /**
+	 * @brief      This function serves to register the main service.
+	 * @param[in]  none
+	 * @return     none
+	 */
 	void app_register_service (void *p)
 	{
 		main_service = p;
@@ -664,8 +669,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
  * @param[in]  none
  * @return     none
  */
-_attribute_ram_code_
-void host_update_conn_proc(void)
+_attribute_ram_code_ void host_update_conn_proc(void)
 {
 	//at least 50ms later and make sure smp/sdp is finished
 	if( host_update_conn_param_req && clock_time_exceed(host_update_conn_param_req, 50000) && !app_host_smp_sdp_pending)

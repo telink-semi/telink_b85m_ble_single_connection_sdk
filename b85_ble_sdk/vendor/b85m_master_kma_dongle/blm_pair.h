@@ -46,8 +46,8 @@
 #ifndef BLM_PAIR_H_
 #define BLM_PAIR_H_
 
-
-
+extern int	dongle_pairing_enable;
+extern int dongle_unpair_enable;
 
 #if (!BLE_HOST_SMP_ENABLE)
 
@@ -69,16 +69,18 @@
 
 #endif
 
-
+/**
+ * @brief       this function serves to set current ReadRequest attribute handle
+ * @param[in]	handle - connect handle
+ * @return      none
+ */
 void app_setCurrentReadReq_attHandle(u16 handle);
 
+/**
+ * @brief		host pair or upair proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
 void host_pair_unpair_proc(void);
-
-
-
-extern int	dongle_pairing_enable;
-extern int dongle_unpair_enable;
-
-
 
 #endif /* APP_PAIR_H_ */

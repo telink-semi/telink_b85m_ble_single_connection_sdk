@@ -46,10 +46,28 @@
 #ifndef APP_UI_H_
 #define APP_UI_H_
 
+extern 	u8 		key_type;
+extern	int 	key_not_released;
 
+extern	int 	ir_not_released;
+extern	u8 		user_key_mode;
+extern	u8      ir_hw_initialed;
+extern	u8 		ota_is_working;
+extern	int		lowBatt_alarmFlag;
+
+/**
+ * @brief		this function serves to set UI task initialization after power on or deepsleep .
+ * @param[in]	none
+ * @return      none
+ */
 void app_ui_init_normal(void);
-void app_ui_init_deepRetn(void);
 
+/**
+ * @brief		this function serves to set UI task initialization atfer deepsleep-retention.
+ * @param[in]	none
+ * @return      none
+ */
+void app_ui_init_deepRetn(void);
 
 /**
  * @brief      this function is used to detect if key pressed or released.
@@ -61,33 +79,22 @@ void app_ui_init_deepRetn(void);
 void proc_keyboard (u8 e, u8 *p, int n);
 
 
-
-
-
 #if (BLE_REMOTE_OTA_ENABLE)
-	void app_enter_ota_mode(void);
-	void app_debug_ota_result(int result);
+/**
+ * @brief      this function is used to register the function for OTA start.
+ * @param[in]  none
+ * @return     none
+ */
+void app_enter_ota_mode(void);
+
+/**
+ * @brief       no matter whether the OTA result is successful or fail.
+ *              code will run here to tell user the OTA result.
+ * @param[in]   result    OTA result:success or fail(different reason)
+ * @return      none
+ */
+void app_debug_ota_result(int result);
 #endif
-
-
-
-extern 	u8 		key_type;
-extern	int 	key_not_released;
-
-extern	int 	ir_not_released;
-extern	u8 		user_key_mode;
-extern	u8      ir_hw_initialed;
-extern	u8 		ota_is_working;
-extern	int		lowBatt_alarmFlag;
-
-
-
-
-
-
-
-
-
 
 
 #endif /* APP_UI_H_ */

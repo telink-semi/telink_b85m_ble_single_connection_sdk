@@ -46,15 +46,54 @@
 #ifndef BLM_ATT_H_
 #define BLM_ATT_H_
 
-
-
-
+/**
+ * @brief       call this function when report keyborad
+ * @param[in]	conn - connect handle
+ * @param[in]	p - pointer of l2cap data packet
+ * @return      none
+ */
 void	att_keyboard (u16 conn, u8 *p);
+
+/**
+ * @brief       call this function when report consumer key
+ * @param[in]	conn - connect handle
+ * @param[in]	p - pointer of l2cap data packet
+ * @return      none
+ */
 void	att_keyboard_media (u16 conn, u8 *p);
+
+/**
+ * @brief       call this function when attribute handle:HID_HANDLE_MOUSE_REPORT
+ * @param[in]	conn - connect handle
+ * @param[in]	p - pointer of l2cap data packet
+ * @return      none
+ */
 void 	att_mouse(u16 conn, u8 *p);
 
+/**
+ * @brief       this function serves to clear host attribute data
+ * @param[in]	none
+ * @return      none
+ */
 void host_att_data_clear(void);
+
+/**
+ * @brief       this function serves to find handle of uuid16
+ * @param[in]	p - pointer of data attribute
+ * @param[in]	uuid
+ * @param[in]	ref - HID Report
+ * @return      0 - fail to find handle of uuid16
+ *              1 - the handle of uuid16 that find
+ */
 u16 blm_att_findHandleOfUuid16 (att_db_uuid16_t *p, u16 uuid, u16 ref);
+
+/**
+ * @brief       this function serves to find handle of uuid128
+ * @param[in]	p - pointer of data attribute
+ * @param[in]	uuid - pointer of uuid
+ * @return      0 - fail to find handle of uuid128
+ *              1 - the handle of uuid128 that find
+ */
 u16 blm_att_findHandleOfUuid128 (att_db_uuid128_t *p, const u8 * uuid);
 
 #endif /* BLM_ATT_H_ */

@@ -52,17 +52,42 @@
 #define VBAT_SUSPEND_THRES_MV			1800   // 1800 mV low battery alarm
 
 
-
+/**
+ * @brief      This function enable battery detect
+ * @param[in]  en - 1: enable;  0: disable.
+ * @return     none.
+ */
 void battery_set_detect_enable (int en);
+
+/**
+ * @brief      This function get enable state of battery detect
+ * @param[in]  none.
+ * @return     0: Battery detect is disable 	 1:Battery detect is enable.
+ */
 int  battery_get_detect_enable (void);
 
 #if(VBAT_LEAKAGE_PROTECT_EN)
+/**
+ * @brief		This function serves to set the protect power level of the chip.
+ * @param[in]	threshold_deep_vol_mv    - the power-level that the chip enter deepsleep.
+ * @param[in]	threshold_suspend_vol_mv - the power-level that the chip enter suspend.
+ * @return      none
+ */
 _attribute_ram_code_ int app_battery_power_check(u16 threshold_deep_vol_mv, u16 threshold_suspend_vol_mv);
 #else
+/**
+ * @brief		This function serves to set the warning-light power level of the program.
+ * @param[in]	alram_vol_mv    - the warning-light power level.
+ * @return      none
+ */
 int app_battery_power_check(u16 alram_vol_mv);
 #endif
 
-
+/**
+ * @brief		This function is the initialization of the battery check.
+ * @param[in]	none.
+ * @return      none.
+ */
 void user_init_battery_power_check(void);
 
 

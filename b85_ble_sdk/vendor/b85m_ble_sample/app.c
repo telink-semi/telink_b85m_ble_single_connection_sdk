@@ -54,21 +54,21 @@
 #include "application/usbstd/usbkeycode.h"
 
 
-#define 	ADV_IDLE_ENTER_DEEP_TIME			60  //60 s
-#define 	CONN_IDLE_ENTER_DEEP_TIME			60  //60 s
+#define 	   ADV_IDLE_ENTER_DEEP_TIME				60  //60 s
+#define 	   CONN_IDLE_ENTER_DEEP_TIME			60  //60 s
 
-#define 	MY_DIRECT_ADV_TMIE					2000000
-
-
-#define     MY_APP_ADV_CHANNEL					BLT_ENABLE_ADV_ALL
-#define 	MY_ADV_INTERVAL_MIN					ADV_INTERVAL_30MS
-#define 	MY_ADV_INTERVAL_MAX					ADV_INTERVAL_35MS
-
-#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
+#define 	   MY_DIRECT_ADV_TMIE							2000000
 
 
+#define     MY_APP_ADV_CHANNEL					    BLT_ENABLE_ADV_ALL
+#define 	   MY_ADV_INTERVAL_MIN						ADV_INTERVAL_30MS
+#define 	   MY_ADV_INTERVAL_MAX						ADV_INTERVAL_35MS
 
-#define		BLE_DEVICE_ADDRESS_TYPE 			BLE_DEVICE_ADDRESS_PUBLIC
+#define	   MY_RF_POWER_INDEX							RF_POWER_P3dBm
+
+
+
+#define	   BLE_DEVICE_ADDRESS_TYPE 					BLE_DEVICE_ADDRESS_PUBLIC
 
 _attribute_data_retention_	own_addr_type_t 	app_own_address_type = OWN_ADDRESS_PUBLIC;
 
@@ -76,11 +76,11 @@ _attribute_data_retention_	own_addr_type_t 	app_own_address_type = OWN_ADDRESS_P
 /**
  * @brief      LinkLayer RX & TX FIFO configuration
  */
-#define RX_FIFO_SIZE	64
-#define RX_FIFO_NUM		8
+#define	   RX_FIFO_SIZE											64
+#define	   RX_FIFO_NUM											8
 
-#define TX_FIFO_SIZE	40
-#define TX_FIFO_NUM		16
+#define	   TX_FIFO_SIZE											40
+#define	   TX_FIFO_NUM											16
 
 
 _attribute_data_retention_  u8 		 	blt_rxfifo_b[RX_FIFO_SIZE * RX_FIFO_NUM] = {0};
@@ -131,9 +131,9 @@ _attribute_data_retention_	u32	latest_user_event_tick;
 
 #if (UI_KEYBOARD_ENABLE)
 
-_attribute_data_retention_	int 	key_not_released;
+_attribute_data_retention_	int 		key_not_released;
 _attribute_data_retention_	u8 		key_type;
-_attribute_data_retention_	static u32 keyScanTick = 0;
+_attribute_data_retention_	static 	u32 keyScanTick = 0;
 
 extern u32	scan_pin_need;
 

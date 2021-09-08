@@ -65,6 +65,7 @@ MYFIFO_INIT(blt_rxfifo, 64, 16);
 #endif
 MYFIFO_INIT(blt_txfifo, 40, 8);
 
+extern void usb_handle_irq(void);
 
 /**
  * @brief		user initialization
@@ -176,7 +177,7 @@ void user_init(void)
 
 
 
-extern void usb_handle_irq(void);
+
 
 /**
  * @brief     BLE main idle loop
