@@ -59,24 +59,140 @@
 
 
 /******************************* User Interface  Begin *****************************************************************/
+
+/**
+ * @brief		for user to add device to resolving list
+ * @param[i]	peerIdAddrType - peer device address type
+ * @param[i]	peerIdAddr - peer device address
+ * @param[i]	peer_irk - peer device IRK
+ * @param[i]	local_irk - peer device local IRK
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_add(u8 peerIdAddrType, u8 *peerIdAddr, u8 *peer_irk, u8 *local_irk);
+
+/**
+ * @brief		for user to delete device to resolving list
+ * @param[i]	peerIdAddrType - peer device address type
+ * @param[i]	peerIdAddr - peer device address
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_delete(u8 peerIdAddrType, u8 *peerIdAddr);
+
+/**
+ * @brief		for user to reset resolving list
+ * @param[i]	none
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_reset(void);
+
+/**
+ * @brief		for user to get peer resolving list number
+ * @param[i]	Size - get resolve list
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_getSize(u8 *Size);
+
+/**
+ * @brief		for user to get peer device address .
+ * @param[i]	peerIdAddrType - peer device address type
+ * @param[i]	peerIdAddr - peer device address
+ * @param[i]	peerResolvableAddr - peer device address
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_getPeerResolvableAddr (u8 peerIdAddrType, u8* peerIdAddr, u8* peerResolvableAddr); //not available now
+
+/**
+ * @brief		for user to get local device Resolvable address .
+ * @param[i]	peerIdAddrType - peer device address type
+ * @param[i]	peerIdAddr - peer device address
+ * @param[i]	LocalResolvableAddr - local device address
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_getLocalResolvableAddr(u8 peerIdAddrType, u8* peerIdAddr, u8* LocalResolvableAddr); //not available now
+
+/**
+ * @brief		for user to set Resolution en
+ * @param[i]	resolutionEn - enable 1 stand for enable.
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_setAddrResolutionEnable (u8 resolutionEn);
+
+/**
+ * @brief		for user to set Resolution en
+ * @param[i]	timeout_s - enable 1 stand for enable.
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_setResolvablePrivateAddrTimer (u16 timeout_s);   //not available now
+
+/**
+ * @brief		for user to set privacy mode .
+ * @param[i]	peerIdAddrType - peer device address type
+ * @param[i]	peerIdAddr - peer device address
+ * @param[i]	privMode - mode
+ * @return  	statue : BLE_SUCCESS OK else : fail.
+ */
 ble_sts_t  		ll_resolvingList_setPrivcyMode(u8 peerIdAddrType, u8* peerIdAddr, u8 privMode);
 
+/**
+ * @brief		for user to set privacy mode .
+ * @param		none.
+ * @return  	time : timeout value.
+ */
 u16				blc_ll_resolvGetRpaTmo(void);
+
+/**
+ * @brief		for user to resolve a address by rpa .
+ * @param[in]	rpa - rpa address.
+ * @return  	i : index in resolve table.
+ */
 int				blc_ll_resolvPeerRpaResolvedAny(const u8* rpa);
-//void			blc_ll_resolvGetRpaByRlEntry(ll_resolv_list_t* rl, u8* addr, u8 local);
+
+/**
+ * @brief		for user to set rpa by index .
+ * @param[in]	idx - index in table.
+ * @param[out]	rpa - rpa buffer address.
+ * @return  	none.
+ */
 void			blc_ll_resolvSetPeerRpaByIdx(u8 idx, u8 *rpa);
+
+/**
+ * @brief		for user to set local rpa by index .
+ * @param[in]	idx - index in table.
+ * @param[out]	rpa - rpa buffer address.
+ * @return  	none.
+ */
 void			blc_ll_resolvSetLocalRpaByIdx(u8 idx, u8 *rpa);
+
+/**
+ * @brief		for user to set privacy mode .
+ * @param[i]	peerIdAddrType - peer device address type
+ * @param[i]	peerIdAddr - peer device address
+ * @param[i]	rpa - rpa store buffer
+ * @param[i]	local - 0:peer RPA  1:local RPA
+ * @return  	1 : get in table 0: not in table
+ */
 bool			blc_ll_resolvGetRpaByAddr(u8* peerIdAddr, u8 peerIdAddrType, u8* rpa, u8 local);
+
+/**
+ * @brief 	Resolvable a Private Address
+ * @param[in]	irk  - The IRKs are stored in little endian format
+ * @param[in]	rpa  - The addr are stored in little endian format
+ * @return      1: Address resolution succeeded; 0: Address resolution failed
+ * */
 bool			blc_ll_resolvIsAddrResolved(const u8* irk, const u8* rpa);
+
+/**
+ * @brief 		Is resolve address from resolve list enable.
+ * @param		none
+ * @return  	1: enable; 0: not enable
+ * */
 bool			blc_ll_resolvIsAddrRlEnabled(void);
+
+/**
+ * @brief 		init resolve list.
+ * @param		none
+ * @return  	none
+ * */
 void			blc_ll_resolvListInit(void);
 /******************************* User Interface  End  ******************************************************************/
 

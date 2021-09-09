@@ -53,38 +53,11 @@
 #define PWM_CARRIER_CYCLE_TICK			( CLOCK_SYS_CLOCK_HZ/IR_CARRIER_FREQ )  //16M: 421 tick, f = 16000000/421 = 38004,T = 421/16=26.3125 us
 #define PWM_CARRIER_HIGH_TICK			( PWM_CARRIER_CYCLE_TICK/3 )   // 1/3 duty
 
-#define PWM_CARRIER_HALF_CYCLE_TICK		(PWM_CARRIER_CYCLE_TICK>>1)
-
-
-#define IR_HIGH_CARR_TIME			565			// in us
-#define IR_HIGH_NO_CARR_TIME		1685
-#define IR_LOW_CARR_TIME			560
-#define IR_LOW_NO_CARR_TIME			565
-#define IR_INTRO_CARR_TIME			9000
-#define IR_INTRO_NO_CARR_TIME		4500
-
-#define IR_SWITCH_CODE              0x0d
-#define IR_ADDR_CODE                0x00
-#define IR_CMD_CODE                 0xbf
-
-#define IR_REPEAT_INTERVAL_TIME     40500
-#define IR_REPEAT_NO_CARR_TIME      2250
-#define IR_END_TRANS_TIME			563
-
-//#define IR_CARRIER_FREQ				37917//38222
-#define IR_CARRIER_DUTY				3
-#define IR_LEARN_SERIES_CNT     	160
-
-
-
-
 enum{
 	IR_SEND_TYPE_TIME_SERIES,
 	IR_SEND_TYPE_BYTE,
 	IR_SEND_TYPE_HALF_TIME_SERIES,
 };
-
-
 
 typedef struct{
 	u32 cycle;
@@ -119,33 +92,34 @@ typedef struct{
 
 ir_send_ctrl_t ir_send_ctrl;
 
-
-
-
-
-
-
-
-
-void ir_config_carrier(u16 cycle_tick, u16 high_tick);
-void ir_config_byte_timing(u32 logic_1_carr, u32 logic_1_none, u32 logic_0_carr, u32 logic_0_none);
-
-void ir_send_add_series_item(u32 *time_series, u8 series_cnt, ir_ctrl_t *pIrCtrl, u8 start_high);
-void ir_send_add_byte_item(u8 code, u8 start_high);
-
-
+/**
+ * @brief		IR send related parameter init .
+ * @param[in]	none
+ * @return      none
+ */
 void rc_ir_init(void);
+
+/**
+ * @brief		IR send finish .
+ * @param[in]	none
+ * @return      none
+ */
 void ir_send_release(void);
 
-void ir_irq_send(void);
-void ir_repeat_handle(void);
-
-
+/**
+ * @brief		check if IR is sending for other API use.
+ * @param[in]	none
+ * @return      1:IR is sending
+ */
 int ir_sending_check(void);
 
-
-
-
+/**
+ * @brief		IR send function with nec format.
+ * @param[in]	addr1 - address code 1
+ * @param[in]	addr2 - address code 2
+ * @param[in]	cmd - command
+ * @return      none
+ */
 void ir_nec_send(u8 addr1, u8 addr2, u8 cmd);
 
 
