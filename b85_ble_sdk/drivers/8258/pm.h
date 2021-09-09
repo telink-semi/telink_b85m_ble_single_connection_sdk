@@ -62,7 +62,7 @@
 #define EMPTYRUN_TIME_US       	    		1500
 
 #define PM_DCDC_DELAY_DURATION      		1000
-
+#define EARLYWAKEUP_TIME_MS_SUSPEND	 1
 #define EARLYWAKEUP_TIME_MS_DEEP	2
 #define	tick_32k_tick_per_ms		32
 #define PM_EMPTYRUN_TIME_US			2
@@ -379,6 +379,15 @@ void sleep_start(void);
 unsigned int cpu_get_32k_tick(void);
 
 void soft_reboot_dly13ms_use24mRC(void);
+/**
+* @brief      This function servers to wake up the cpu from sleep mode.
+* @param[in]  sleep_mode - sleep mode type select.
+* @param[in]  wakeup_src - wake up source select.
+* @param[in]  wakeup_tick - the 32k tick which you want to sleep.(32768 -> 1s)
+* 							 Note that the frequency of the external 32k crystal is 32768, not 32000. The sleep tick value is calculated based on 32768 ticks being 1s.
+* @return     indicate whether the cpu is wake up successful.
+*/
+int cpu_long_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
 
 
 #if PM_LONG_SLEEP_WAKEUP_EN
