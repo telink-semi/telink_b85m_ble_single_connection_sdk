@@ -53,8 +53,8 @@
 #define PM_DEEPSLEEP_RETENTION_ENABLE		1
 #define BLE_REMOTE_SECURITY_ENABLE      	1
 #define BLE_REMOTE_OTA_ENABLE				1
-#define REMOTE_IR_ENABLE					1
-#define REMOTE_IR_LEARN_ENABLE				1
+#define REMOTE_IR_ENABLE					0
+#define REMOTE_IR_LEARN_ENABLE				0
 #define BATT_CHECK_ENABLE       			1   //must enable
 #define BLE_AUDIO_ENABLE					1
 #define BLT_APP_LED_ENABLE					1
