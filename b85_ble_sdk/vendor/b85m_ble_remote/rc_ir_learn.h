@@ -174,14 +174,72 @@ typedef struct{
     unsigned int   data_num;
 }ir_send_dma_data_t;
 
+/**
+ * @brief		IR learn send init,set pwn and irq related.
+ * @param		none
+ * @return      none.
+ */
 void ir_learn_start(void);
+
+/**
+ * @brief		Stop IR learn process.
+ * @param		none
+ * @return      none.
+ */
 void ir_learn_stop(void);
+
+/**
+ * @brief		Copy necessary parameter to send_buffer to buffer.
+ * @param		none
+ * @return		none
+ */
 void ir_learn_copy_result(ir_learn_send_t* send_buffer);
+
+/**
+ * @brief		IR learn process in irq
+ *              learning high frequency carrier wave.
+ * @param		none
+ * @return      none.
+ */
 void ir_learn_irq_handler(void);
+
+/**
+ * @brief		Copy necessary parameter to send_buffer to buffer.
+ * @param		none
+ * @return		none
+ */
 void ir_learn_send(ir_learn_send_t* send_buffer);
+
+/**
+ * @brief		IR learn send init,set pwn and irq related.
+ * @param		none
+ * @return      none.
+ */
 void ir_learn_send_init(void);
+
+/**
+ * @brief		IR learn deal process,better to use it every loop.
+ * @param		none
+ * @return		none
+ */
 void ir_learn_detect(void);
+
+/**
+ * @brief		ir learn init algorithm ,set related GPIO function and
+ * 			    irq related.
+ * @param[in]	none.
+ * @return      none.
+ */
 void ir_learn_init(void);
+
+/**
+ * @brief		Stop IR learn process.
+ * @param		none
+ * @return      0 	 : ir learn success
+ * 				1 	 : ir learn is doing or disable
+ * 				else : ir learn fail ,return fail reason,
+ * 					   match enum ir_learn_states
+ */
 unsigned char get_ir_learn_state(void);
 
 #endif /* RC_IR_LEARN_H_ */
