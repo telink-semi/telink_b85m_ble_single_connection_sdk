@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	boot_32k_retn_8251.link
  *
- * @brief	This is the link file for B85
+ * @brief	This is the link file for BLE SDK
  *
  * @author	BLE GROUP
  * @date	06,2020

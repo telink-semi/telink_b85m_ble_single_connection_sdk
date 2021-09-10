@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	div_mod.S
  *
- * @brief	This is the assembly file for B85
+ * @brief	This is the boot file for BLE SDK
  *
  * @author	BLE GROUP
  * @date	06,2020

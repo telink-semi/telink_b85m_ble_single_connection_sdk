@@ -171,7 +171,7 @@ void 			blt_smp_alg_h8 (unsigned char *r, unsigned char k[16], unsigned char s[1
 void			blt_crypto_alg_prand(u8 prand[3]);
 
 /**
- * @brief	random adress hash function.
+ * @brief	random address hash function.
  * @param[in]   irk: irk buffer
  * @param[in]   r:key
  * @param[out]  out: result

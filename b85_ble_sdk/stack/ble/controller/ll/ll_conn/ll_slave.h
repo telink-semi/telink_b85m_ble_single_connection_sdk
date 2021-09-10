@@ -43,7 +43,6 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
 #ifndef LL_SLAVE_H_
 #define LL_SLAVE_H_
 

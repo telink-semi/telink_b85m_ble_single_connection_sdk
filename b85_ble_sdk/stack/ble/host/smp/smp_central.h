@@ -150,7 +150,7 @@ void 	blm_host_smp_handler(u16 conn_handle, u8 *p);
  * @brief      This function is used to search bonding message in slave role.
  * @param[in]  adr_type - address type
  * @param[in]  addr - data address
- * @return     status 0:success  other£ºfail.
+ * @return     status 0:success  otherfail.
  */
 int 	tbl_bond_slave_search(u8 adr_type, u8 * addr);
 
@@ -159,7 +159,7 @@ int 	tbl_bond_slave_search(u8 adr_type, u8 * addr);
  * @brief      This function is used to delete bonding message in slave role.
  * @param[in]  adr_type - address type
  * @param[in]  addr - data address
- * @return     status 0:success  other£ºfail.
+ * @return     status 0:success  otherfail.
  */
 int 	tbl_bond_slave_delete_by_adr(u8 adr_type, u8 *addr);
 
