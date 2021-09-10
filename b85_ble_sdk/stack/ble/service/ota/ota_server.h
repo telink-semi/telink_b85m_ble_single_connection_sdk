@@ -43,7 +43,6 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-
 #ifndef STACK_BLE_SERVICE_OTA_OTA_SERVER_H_
 #define STACK_BLE_SERVICE_OTA_OTA_SERVER_H_
 

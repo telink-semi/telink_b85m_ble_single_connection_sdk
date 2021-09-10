@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	cstartup_8251_RET_16K.S
  *
- * @brief	This is the boot file for B85
+ * @brief	This is the boot file for BLE SDK
  *
  * @author	BLE GROUP
  * @date	06,2020
