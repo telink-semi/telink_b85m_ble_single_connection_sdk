@@ -130,7 +130,7 @@ u8		blm_host_smp_getSecurityTrigger(void);
 
 
 /**
- * @brief      This function is used to config pairing security infomation address.
+ * @brief      This function is used to config pairing security information address.
  * @param[in]  addr - Callback function triggered when SMP is completed.
  * @return     none.
  */
