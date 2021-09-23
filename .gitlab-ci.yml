@@ -4,7 +4,6 @@ stages:
   - build
   - clean_build
   - plainPW_check
-  - misspellChecking 
 
 genLicense:
   variables:
@@ -84,16 +83,4 @@ plainPW_check:
     paths:
     - result.txt
   when: manual
-
-misspellChecking:
-  stage: misspellChecking
-  tags:
-    - LINUX
-  script:
-    - echo "--------------- Begin ------------------------"
-    - misspell-check
-    - echo "---------------- End -----------------------"
-  artifacts:
-    paths:
-    - misspell_result.txt 
 
