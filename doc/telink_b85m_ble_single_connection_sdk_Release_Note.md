@@ -1,8 +1,8 @@
-## telink_b85m_ble_single_connection_sdk_v3.4.2.0
+## telink_b85m_ble_single_connection_sdk_V3.4.2.0
 
 
 ### Features
-* SDK version：telink_b85m_ble_single_connection_sdk_v3.4.2.0
+* SDK version：telink_b85m_ble_single_connection_sdk_V3.4.2.0
 * Support B85(8251/8253/8258) & B87(8271/8273/8278) series chips 
 * Support BLE 5.0 feature 
 	+ BLE Coded PHY (S2,S8) and 2M PHY
@@ -25,7 +25,7 @@
 
 
 ### Features
-* SDK 版本：telink_b85m_ble_single_connection_sdk_v3.4.2.0
+* SDK 版本：telink_b85m_ble_single_connection_sdk_V3.4.2.0
 * 支持B85(8251/8253/8258) & B87(8271/8273/8278)系列芯片
 * 支持BLE 5.0特性
 	+ BLE Coded PHY (S2,S8) 以及2M PHY
