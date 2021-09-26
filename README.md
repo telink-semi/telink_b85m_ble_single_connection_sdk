@@ -1,4 +1,4 @@
-## telink_b85m_ble_single_connection_sdk_V3.4.2.0
+## V3.4.2.0
 
 
 ### Features
