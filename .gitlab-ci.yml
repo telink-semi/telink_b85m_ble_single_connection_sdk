@@ -4,6 +4,8 @@ stages:
   - build
   - clean_build
   - plainPW_check
+  - cov
+  - fossid
 
 genLicense:
   variables:
@@ -82,5 +84,31 @@ plainPW_check:
   artifacts:
     paths:
     - result.txt
+  when: manual
+
+# The cov job definition
+cov:
+  variables:
+    CODE_COMPILE_ARCH: 'EAGLE_ANDES'
+    COV_PF_CATALOG: 'BLE'
+  stage: cov
+  tags:
+    - COV
+  before_script:
+  script:
+    - $COV_B COV_$CI_PROJECT_NAME $COV_B_TEMPLATE/$CODE_COMPILE_ARCH $ANDESRISCV_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import ./eagle_ble_sdk -cleanBuild eagle_ble_sdk/B91_ble_sample
+    - $COV_A COV_$CI_PROJECT_NAME
+    - cov_add_commit_steam_project_2_platform.sh
+  when: manual
+
+fossid:
+  tags:
+    - FOSSID
+  stage: fossid
+  script:
+    - fossid_check.sh
+  artifacts:
+    paths:
+    - fossid*.txt
   when: manual
 
