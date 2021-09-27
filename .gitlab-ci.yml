@@ -98,6 +98,7 @@ cov:
     - TC32
   before_script:
   script:
+    - chmod +x ble_sdk_multimode/*.sh
     - $COV_B COV_$CI_PROJECT_NAME $COV_B_TEMPLATE/$CODE_COMPILE_ARCH $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import ./b85_ble_sdk -cleanBuild b85m_ble_single_connection_sdk/825x_ble_sample
     - $COV_A COV_$CI_PROJECT_NAME 
     - cov_add_commit_steam_project_2_platform.sh
