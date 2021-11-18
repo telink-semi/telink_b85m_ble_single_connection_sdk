@@ -53,7 +53,7 @@ build:
     - which tc32-elf-gcc
     - chmod +x b85_ble_sdk/*.sh
     - date
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import ./b85_ble_sdk/  -cleanBuild $ECLIPSE_PROJECT/$ECLIPSE_BUILD_TARGET
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import ./b85_ble_sdk/  -cleanBuild b85m_ble_single_connection_sdk/$ECLIPSE_BUILD_TARGET
     - date
 
   artifacts:
