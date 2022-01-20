@@ -201,7 +201,12 @@ void	  blc_ota_setAttHandleOffset(s8 attHandle_offset);
 	extern int otaRead(void * p);
 #endif
 
-
+/**
+ * @brief      This function is used to response ota version request
+ * @param      none
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t blt_ota_pushVersionRsp(void);
 
 /**
  * @brief      This function is used to erase flash area which will store new firmware.
