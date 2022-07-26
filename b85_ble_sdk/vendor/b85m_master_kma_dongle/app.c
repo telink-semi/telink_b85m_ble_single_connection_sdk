@@ -65,7 +65,64 @@ MYFIFO_INIT(blt_rxfifo, 64, 16);
 #endif
 MYFIFO_INIT(blt_txfifo, 40, 8);
 
-extern void usb_handle_irq(void);
+#if	LL_FEATURE_ENABLE_LL_PRIVACY
+	#if (MASTER_RESOLVABLE_ADD_EN)
+
+	smp_master_param_save_t  dev_msg;
+	/**
+	 * @brief      callback function of Host Event
+	 * @param[in]  h - Host Event type
+	 * @param[in]  para - data pointer of event
+	 * @param[in]  n - data length of event
+	 * @return     0
+	 */
+	int app_host_event_callback (u32 h, u8 *para, int n)
+	{
+		u8 event = h & 0xFF;
+
+		switch(event)
+		{
+			case GAP_EVT_SMP_PAIRING_SUCCESS:
+			{
+				gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
+
+				if(p->bonding_result){
+					printf("save smp key succ %x,handle %x\n",p->bonding_result,p->connHandle);
+
+					dev_char_info_t *pt = &cur_conn_device;		//get current device mac
+					u8	index = tbl_bond_slave_search(pt->mac_adrType,pt->mac_addr);
+
+					extern bond_slave_t  tbl_bondSlave;  //slave mac bond table
+					u32 device_add = tbl_bondSlave.bond_flash_idx[index-1];
+
+					printf("bond number = %x\n",device_add);
+
+					//flash_read_data
+					flash_read_page(device_add,sizeof(smp_param_save_t),(unsigned char *)(&dev_msg) );
+
+					u8	local_irk[16];
+					get_local_irk(local_irk);
+					u8 reason = ll_resolvingList_add(dev_msg.adr_type,&dev_msg.address[0],&dev_msg.irk[0],local_irk);
+					extern ll_ResolvingListTbl_t	ll_resolvingList_tbl;
+//					swapN(ll_resolvingList_tbl.rlList[0].rlPeerIrk,16);
+//					printf("add resolv reason %d \n",reason);
+
+				}
+				else{
+					printf("save smp key failed %x,handle %x\n",p->bonding_result,p->connHandle);
+				}
+
+
+
+			}
+			break;
+		}
+
+		return 0;
+	}
+
+	#endif
+#endif
 
 /**
  * @brief		user initialization
@@ -162,9 +219,26 @@ void user_init(void)
 	extern int host_att_register_idle_func (void *p);
 	host_att_register_idle_func (main_idle_loop);
 
+#if	LL_FEATURE_ENABLE_LL_PRIVACY
+	#if(MASTER_RESOLVABLE_ADD_EN)
+	{
+		blc_gap_setEventMask( GAP_EVT_MASK_SMP_PAIRING_SUCCESS );
+		blc_gap_registerHostEventHandler( app_host_event_callback );
+		ll_resolvingList_setAddrResolutionEnable(1);
+		extern bond_slave_t  tbl_bondSlave;
+		if(tbl_bondSlave.curNum != 0)
+		{
+			flash_read_page(tbl_bondSlave.bond_flash_idx[tbl_bondSlave.curNum-1],sizeof(smp_master_param_save_t),(unsigned char *)(&dev_msg) );
 
-
-
+			u8	local_irk[16];
+			get_local_irk(local_irk);
+			u8 reason = ll_resolvingList_add(dev_msg.adr_type,&dev_msg.address[0],&dev_msg.irk[0],local_irk);
+//			extern ll_ResolvingListTbl_t	ll_resolvingList_tbl;
+//			swapN(&ll_resolvingList_tbl.rlList[0].rlPeerIrk,16);
+		}
+	}
+	#endif
+#endif
 
 	//set scan parameter and scan enable
 
@@ -177,7 +251,7 @@ void user_init(void)
 
 
 
-
+extern void usb_handle_irq(void);
 
 /**
  * @brief     BLE main idle loop

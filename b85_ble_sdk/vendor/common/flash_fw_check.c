@@ -44,11 +44,8 @@
  *
  *******************************************************************************************************/
 #include "flash_fw_check.h"
-#include "../../drivers/8278/flash.h"
+#include "drivers.h"
 
-extern _attribute_data_retention_   u32		ota_program_offset;
-extern _attribute_data_retention_	int		ota_program_bootAddr;
-extern unsigned long crc32_half_cal(unsigned long crc, unsigned char* input, unsigned long* table, int len);
 
 static const unsigned long fw_crc32_half_tbl[16] = {
 	0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,

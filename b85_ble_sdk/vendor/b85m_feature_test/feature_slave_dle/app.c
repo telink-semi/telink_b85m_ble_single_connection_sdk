@@ -119,7 +119,7 @@ _attribute_data_retention_	u32 app_test_data_tick = 0;
 int module_onReceiveData(void *para)
 {
 	rf_packet_att_write_t *p = (rf_packet_att_write_t*)para;
-	u8 len = p->l2capLen - 3;
+	u16 len = p->l2capLen - 3;
 	if(len > 0)
 	{
 		printf("RF_RX len: %d\nc2s:write data: %d\n", p->rf_len, len);

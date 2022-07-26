@@ -51,14 +51,10 @@
 
 #if(MCU_CORE_TYPE == MCU_CORE_825x)
 	#include "drivers/8258/driver_8258.h"
-	#include "drivers/8258/driver_ext/ext_rf.h"
-	#include "drivers/8258/driver_ext/ext_pm.h"
-	#include "drivers/8258/driver_ext/ext_misc.h"
+	#include "drivers/8258/driver_ext/driver_ext.h"
 #elif(MCU_CORE_TYPE == MCU_CORE_827x)
 	#include "drivers/8278/driver_8278.h"
-	#include "drivers/8278/driver_ext/ext_rf.h"
-	#include "drivers/8278/driver_ext/ext_pm.h"
-	#include "drivers/8278/driver_ext/ext_misc.h"
+	#include "drivers/8278/driver_ext/driver_ext.h"
 #else
 	#error MCU core typr error !
 #endif

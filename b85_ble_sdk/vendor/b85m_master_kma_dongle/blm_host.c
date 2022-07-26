@@ -123,6 +123,25 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 	u8 google_voice_model = 0;
 #endif
 
+#if	LL_FEATURE_ENABLE_LL_PRIVACY
+	#if (MASTER_RESOLVABLE_ADD_EN)
+		void att_rsp_read_by_type (u8 *p, u8 pair_length, u16 attHandle, u8 value)
+		{
+			p[0] = 2;
+			p[1] = 9 ;
+			p[2] = 5 ;
+			p[3] = 0;
+			p[4] = 4;
+			p[5] = 0;
+			p[6] = ATT_OP_READ_BY_TYPE_RSP;
+			p[7] = pair_length;
+			p[8] = attHandle;
+			p[9] = attHandle>>8;
+			p[10]= value;
+		}
+	#endif
+#endif
+
 	/**
 	 * @brief      callback function of service discovery
 	 * @param[in]  none
@@ -205,11 +224,6 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 
 	}
 
-    /**
-	 * @brief      This function serves to register the main service.
-	 * @param[in]  none
-	 * @return     none
-	 */
 	void app_register_service (void *p)
 	{
 		main_service = p;
@@ -346,16 +360,57 @@ int blm_le_adv_report_event_handle(u8 *p)
 
 	if(master_auto_connect || user_manual_paring)
 	{
+#if	LL_FEATURE_ENABLE_LL_PRIVACY
+		#if (MASTER_RESOLVABLE_ADD_EN)
+		printf("OK!\n");
+		u8 status;
+		extern bond_slave_t  tbl_bondSlave;
+		if(tbl_bondSlave.curNum != 0)
+		{
 
-		//send create connection cmd to controller, trigger it switch to initiating state, after this cmd,
-		//controller will scan all the adv packets it received but not report to host, to find the specified
-		//device(adr_type & mac), then send a connection request packet after 150us, enter to connection state
-		// and send a connection complete event(HCI_SUB_EVT_LE_CONNECTION_COMPLETE)
-		u8 status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
-								 pa->adr_type, pa->mac, BLE_ADDR_PUBLIC, \
-								 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
-								 0, 0xFFFF);
+			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_WL,  \
+									 pa->adr_type, pa->mac, OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC, \
+									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
+									 0, 0xFFFF);
+		}
+		else
+		{
+			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
+									 pa->adr_type, pa->mac, OWN_ADDRESS_PUBLIC, \
+									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
+									 0, 0xFFFF);
+		}
+		#else
 
+		u8 status;
+		extern bond_slave_t  tbl_bondSlave;
+		if(tbl_bondSlave.curNum != 0)
+		{
+			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
+									 pa->adr_type, pa->mac, OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC, \
+									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
+									 0, 0xFFFF);
+		}
+		else
+		{
+			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
+									 pa->adr_type, pa->mac, OWN_ADDRESS_PUBLIC, \
+									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
+									 0, 0xFFFF);
+		}
+		#endif
+
+#else
+			//send create connection cmd to controller, trigger it switch to initiating state, after this cmd,
+			//controller will scan all the adv packets it received but not report to host, to find the specified
+			//device(adr_type & mac), then send a connection request packet after 150us, enter to connection state
+			// and send a connection complete event(HCI_SUB_EVT_LE_CONNECTION_COMPLETE)
+			u8 status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
+									 pa->adr_type, pa->mac, BLE_ADDR_PUBLIC, \
+									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
+									 0, 0xFFFF);
+
+#endif
 		if(status == BLE_SUCCESS)   //create connection success
 		{
 			#if (!BLE_HOST_SMP_ENABLE)
@@ -619,6 +674,8 @@ int controller_event_callback (u32 h, u8 *p, int n)
 				//equals to connection establish. connection complete means that master controller set all the ble timing
 				//get ready, but has not received any slave packet, if slave rf lost the connection request packet, it will
 				//not send any packet to master controller
+				printf("conn_success");
+
 			}
 			//------hci le event: le connection establish event---------------------------------
 			else if(subEvt_code == HCI_SUB_EVT_LE_CONNECTION_ESTABLISH)  //connection establish(telink private event)
@@ -669,7 +726,8 @@ int controller_event_callback (u32 h, u8 *p, int n)
  * @param[in]  none
  * @return     none
  */
-_attribute_ram_code_ void host_update_conn_proc(void)
+_attribute_ram_code_
+void host_update_conn_proc(void)
 {
 	//at least 50ms later and make sure smp/sdp is finished
 	if( host_update_conn_param_req && clock_time_exceed(host_update_conn_param_req, 50000) && !app_host_smp_sdp_pending)
@@ -759,6 +817,24 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			#endif
 			//u16 slave_ota_handle;
 		}
+
+#if	LL_FEATURE_ENABLE_LL_PRIVACY
+		#if (MASTER_RESOLVABLE_ADD_EN)
+		else if(pAtt->opcode == ATT_OP_READ_BY_TYPE_REQ)  //slave ack ATT_OP_READ_BY_TYPE_REQ data
+		{
+			printf("dat[2]=%x,dat[3]=%x\n",pAtt->dat[2],pAtt->dat[3]);
+			if(pAtt->dat[2]==0xa6 && pAtt->dat[3]==0x2a)
+			{
+				u8	tmp[37];
+				att_rsp_read_by_type (tmp, 3, 0x001a , 1);
+				if( !blm_push_fifo (BLM_CONN_HANDLE, tmp) ){
+					printf("push_fail\n");
+				}
+
+			}
+		}
+		#endif
+#endif
 		else if(pAtt->opcode == ATT_OP_HANDLE_VALUE_NOTI)  //slave handle notify
 		{
 
@@ -1018,7 +1094,8 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 		}
 		else if (pAtt->opcode == ATT_OP_HANDLE_VALUE_IND)
 		{
-
+			u8 format =  ATT_OP_HANDLE_VALUE_CFM;
+			blc_l2cap_pushData_2_controller(conn_handle, L2CAP_CID_ATTR_PROTOCOL, &format, 1, NULL, 0);
 		}
 
 	}

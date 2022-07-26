@@ -466,12 +466,6 @@ static const u8 my_OtaCharVal[19] = {
 		AUDIO_GOOGL_CTL_CHAR_UUID,
 	};
 #endif
-
-/**
- * @brief      this function is call back function of audio measurement from server to client
- * @param[in]  p:data pointer.
- * @return     will always return 0
- */
 int normal_client2service(void *p)
 {
 #if(TL_AUDIO_MODE & TL_AUDIO_MASK_HID_SERVICE_CHANNEL)

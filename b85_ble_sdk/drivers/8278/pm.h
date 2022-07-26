@@ -214,6 +214,11 @@ extern  suspend_handler_t 		 func_before_suspend;
 typedef void (*check_32k_clk_handler_t)(void);
 extern  check_32k_clk_handler_t  pm_check_32k_clk_stable;
 
+extern unsigned int	ota_program_bootAddr;
+extern unsigned int	ota_firmware_max_size;
+extern unsigned int	ota_program_offset;
+
+
 /**
  * @brief      This function serves to enable dp and dm deep gpio low level wakeup. if enable, current will
  * 						add about 0.1uA

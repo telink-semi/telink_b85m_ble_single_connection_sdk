@@ -28,6 +28,8 @@
 #ifndef DRIVERS_8278_EXT_RF_H_
 #define DRIVERS_8278_EXT_RF_H_
 
+#define			STOP_RF_STATE_MACHINE						( REG_ADDR8(0xf00) = 0x80 )//Todo:need check by sunwei
+#define			REG_BB_LL_BASE_ADDR							0xf00//Todo:need check by sunwei
 enum{
 	FLD_RF_R_CMD                 =	BIT_RNG(0,3),
 	FLD_RF_R_STOP                =	0,
@@ -52,6 +54,14 @@ static inline void rf_trigle_codedPhy_accesscode(void)
 	WRITE_REG8(0x405, REG_ADDR8(0x405) | BIT(7)); //reg_rf_acc_len |= FLD_RF_LR_ACC_TRIG;
 }
 
+static inline void rf_set_dma_tx_addr(unsigned int src_addr)//Todo:need check by sunwei
+{
+	reg_dma3_addr = (unsigned short)(src_addr);
+}
+
+
+unsigned int cpu_stall_WakeUp_By_RF_SystemTick(int WakeupSrc, unsigned short rf_mask, unsigned int tick);
+
 
 #define		rf_receiving_flag				is_rf_receiving_pkt ///static inline
 #define		rf_tx_settle_adjust				tx_settle_adjust    ///static inline
@@ -63,6 +73,7 @@ static inline void rf_trigle_codedPhy_accesscode(void)
 
 #define 	reg_rf_ll_cmd_schedule 			REG_ADDR32(0xf18)
 #define 	reg_rf_ll_cmd					REG_ADDR8(0xf00)
+#define     reg_rf_ll_rest_pid        		REG_ADDR8(0xf01)
 
 #endif
 

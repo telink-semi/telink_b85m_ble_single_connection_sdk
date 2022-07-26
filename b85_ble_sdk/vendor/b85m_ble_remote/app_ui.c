@@ -140,6 +140,7 @@ static const u16 vk_consumer_map[16] = {
 #endif
 
 
+
 #if (REMOTE_IR_ENABLE)
 	//ir key
 	#define TYPE_IR_SEND			1
@@ -173,73 +174,81 @@ static const u16 vk_consumer_map[16] = {
 
 #endif
 
+
+
 #if (BLE_REMOTE_OTA_ENABLE)
-/**
- * @brief      this function is used to register the function for OTA start.
- * @param[in]  none
- * @return     none
- */
-void app_enter_ota_mode(void)
-{
-	ota_is_working = 1;
-	#if (BLT_APP_LED_ENABLE)
-		device_led_setup(led_cfg[LED_SHINE_OTA]);
-	#endif
-	bls_ota_setTimeout(15 * 1000 * 1000); //set OTA timeout  15 seconds
-}
-
-/**
- * @brief       no matter whether the OTA result is successful or fail.
- *              code will run here to tell user the OTA result.
- * @param[in]   result    OTA result:success or fail(different reason)
- * @return      none
- */
-void app_debug_ota_result(int result)
-{
-
-	#if(0 && BLT_APP_LED_ENABLE)  //this is only for debug
-
-		gpio_set_output_en(GPIO_LED, 1);
-
-		if(result == OTA_SUCCESS){  //led for debug: OTA success
-			gpio_write(GPIO_LED, 1);
-			sleep_us(500000);
-			gpio_write(GPIO_LED, 0);
-			sleep_us(500000);
-			gpio_write(GPIO_LED, 1);
-			sleep_us(500000);
-			gpio_write(GPIO_LED, 0);
-			sleep_us(500000);
-		}
-		else{  //OTA fail
-
-			#if 0 //this is only for debug,  can not use this in application code
-				irq_disable();
-				WATCHDOG_DISABLE;
+	/**
+	 * @brief      this function is used to register the function for OTA start.
+	 * @param[in]  none
+	 * @return     none
+	 */
+	void app_enter_ota_mode(void)
+	{
+		ota_is_working = 1;
+		#if (BLT_APP_LED_ENABLE)
+			device_led_setup(led_cfg[LED_SHINE_OTA]);
+		#endif
+		bls_ota_setTimeout(15 * 1000 * 1000); //set OTA timeout  15 seconds
+	}
 
 
+	/**
+	 * @brief       no matter whether the OTA result is successful or fail.
+	 *              code will run here to tell user the OTA result.
+	 * @param[in]   result    OTA result:success or fail(different reason)
+	 * @return      none
+	 */
+	void app_debug_ota_result(int result)
+	{
 
-				while(1){
-					gpio_write(GPIO_LED, 1);
-					sleep_us(200000);
-					gpio_write(GPIO_LED, 0);
-					sleep_us(200000);
-				}
+		#if(0 && BLT_APP_LED_ENABLE)  //this is only for debug
 
-			#endif
+			gpio_set_output_en(GPIO_LED, 1);
 
-		}
+			if(result == OTA_SUCCESS){  //led for debug: OTA success
+				gpio_write(GPIO_LED, 1);
+				sleep_us(500000);
+				gpio_write(GPIO_LED, 0);
+				sleep_us(500000);
+				gpio_write(GPIO_LED, 1);
+				sleep_us(500000);
+				gpio_write(GPIO_LED, 0);
+				sleep_us(500000);
+			}
+			else{  //OTA fail
 
-		gpio_set_output_en(GPIO_LED, 0);
-	#endif
-}
+				#if 0 //this is only for debug,  can not use this in application code
+					irq_disable();
+					WATCHDOG_DISABLE;
+
+
+
+					while(1){
+						gpio_write(GPIO_LED, 1);
+						sleep_us(200000);
+						gpio_write(GPIO_LED, 0);
+						sleep_us(200000);
+					}
+
+				#endif
+
+			}
+
+			gpio_set_output_en(GPIO_LED, 0);
+		#endif
+	}
 #endif
 
-/**
- * @brief      The function serves to scan if there is a key_event after deepsleep before program initialization.
- * @param[in]  none
- * @return     none
- */
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+
+//This function process ...
 void deep_wakeup_proc(void)
 {
 
@@ -259,11 +268,10 @@ void deep_wakeup_proc(void)
 #endif
 }
 
-/**
- * @brief      Function describe:After reconn to the peer device when there is no key event,local device will send the cache key event to the peer device.
- * @param[in]  *det_key - used to judge if there is a key event.
- * @return     none
- */
+
+
+
+
 void deepback_pre_proc(int *det_key)
 {
 #if (DEEPBACK_FAST_KEYSCAN_ENABLE)
@@ -285,11 +293,6 @@ void deepback_pre_proc(int *det_key)
 #endif
 }
 
-/**
- * @brief      The function serves to judge if the key is released.If the key is not released,not handle.If the key is released,give a release handle.
- * @param[in]  none
- * @return     none
- */
 void deepback_post_proc(void)
 {
 #if (DEEPBACK_FAST_KEYSCAN_ENABLE)
@@ -561,11 +564,8 @@ void proc_keyboard (u8 e, u8 *p, int n)
 extern u32	scan_pin_need;
 
 
-/**
- * @brief		this function is a callback function when the soft timer is triggered.
- * @param[in]	none
- * @return      none
- */
+
+
 int gpio_test0(void)
 {
 	//gpio 0 toggle to see the effect
@@ -574,11 +574,7 @@ int gpio_test0(void)
 	return 0;
 }
 
-/**
- * @brief		this function is a callback function when the soft timer is triggered.
- * @param[in]	none
- * @return      none
- */
+
 int gpio_test1(void)
 {
 	//gpio 1 toggle to see the effect
@@ -589,11 +585,6 @@ int gpio_test1(void)
 
 }
 
-/**
- * @brief		this function is a callback function when the soft timer is triggered.
- * @param[in]	none
- * @return      none
- */
 int gpio_test2(void)
 {
 	DBG_CHN6_TOGGLE;
@@ -601,11 +592,6 @@ int gpio_test2(void)
 	return 0;
 }
 
-/**
- * @brief		this function is a callback function when the soft timer is triggered.
- * @param[in]	none
- * @return      none
- */
 int gpio_test3(void)
 {
 	DBG_CHN7_TOGGLE;
@@ -614,13 +600,15 @@ int gpio_test3(void)
 }
 
 
-/**
- * @brief		this function serves to set UI task initialization after power on or deepsleep .
- * @param[in]	none
- * @return      none
- */
+
+
+
+
 void app_ui_init_normal(void)
 {
+
+
+
 	/////////// keyboard gpio wakeup init ////////
 	u32 pin[] = KB_DRIVE_PINS;
 	for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
@@ -662,11 +650,7 @@ void app_ui_init_normal(void)
 }
 
 
-/**
- * @brief		this function serves to set UI task initialization atfer deepsleep-retention.
- * @param[in]	none
- * @return      none
- */
+
 void app_ui_init_deepRetn(void)
 {
 	/////////// keyboard gpio wakeup init ////////

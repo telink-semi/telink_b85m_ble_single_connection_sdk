@@ -589,6 +589,8 @@ enum {
 };
 
 #define reg_aes_data            REG_ADDR32(0x548)
+
+#define aeskey_reg_start		0x550				//attention: used in aes_ccm
 #define reg_aes_key(v)     		REG_ADDR8(0x550+v)
 
 

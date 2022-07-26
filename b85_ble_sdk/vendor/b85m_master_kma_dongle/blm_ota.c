@@ -102,9 +102,6 @@ u32 ota_result_tick;
 int host_ota_start = 0;
 int host_ota_update_pending;
 
-u8 adr_index_max_l;
-u8 adr_index_max_h;
-
 /**
  * @brief		this function serves to use led status to show the ota result
  * @param[in]	success - led status indicate
@@ -143,6 +140,8 @@ void ota_set_result(int success)
 }
 
 /*Set OTA process timeout*/
+u8 adr_index_max_l;
+u8 adr_index_max_h;
 
 /**
  * @brief		this function serves to use button to trigger the ota start

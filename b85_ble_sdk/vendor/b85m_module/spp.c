@@ -140,9 +140,8 @@ int controller_event_handler(u32 h, u8 *para, int n)
 				//Master send SIG_Connection_Param_Update_Rsp pkt,and the reply result is 0x0000. When connection event counter value is equal
 				//to the instant, a callback event BLT_EV_FLAG_CONN_PARA_UPDATE will generate. The connection interval at this time should be the
 				//currently updated and valid connection interval!
-
-				//printf("Update param event occur.\n");
-				//	printf("Current Connection interval:%dus.\n", bls_ll_getConnectionInterval() * 1250);
+//				printf("Update param event occur.\n");
+//				printf("Current Connection interval:%dus.\n", bls_ll_getConnectionInterval() * 1250);
 			}
 			break;
 
@@ -192,15 +191,17 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
 
 			if(p->bonding_result){
+
 			}
 			else{
+
 			}
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-			//gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
+//			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
 		}
 		break;
 
@@ -219,8 +220,8 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_TK_DISPALY:
 		{
-			//char pc[7];
-			//	u32 pinCode = *(u32*)para;
+//			char pc[7];
+//			u32 pinCode = *(u32*)para;
 		}
 		break;
 
@@ -238,8 +239,8 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_TK_NUMERIC_COMPARE:
 		{
-			//	char pc[7];
-			//	u32 pinCode = *(u32*)para;
+//			char pc[7];
+//			u32 pinCode = *(u32*)para;
 		}
 		break;
 

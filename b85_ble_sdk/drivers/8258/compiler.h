@@ -63,10 +63,14 @@
 #endif
 
 #if (BLC_PM_DEEP_RETENTION_MODE_EN)
-	#define _attribute_data_retention_   	_attribute_session_(".retention_data")
-	#define _attribute_data_no_init_   		_attribute_session_(".data_no_init")    //save retention ram size
+	#define _attribute_data_retention_sec_	__attribute__((section(".retention_data")))
+	#define _attribute_data_retention_   	__attribute__((section(".retention_data")))
+	#define _attribute_ble_data_retention_  __attribute__((section(".retention_data")))
+	#define _attribute_data_no_init_   		__attribute__((section(".data_no_init")))    //save retention ram size
 #else
+	#define _attribute_data_retention_sec_
     #define _attribute_data_retention_
+	#define _attribute_ble_data_retention_
 	#define _attribute_data_no_init_
 #endif
 

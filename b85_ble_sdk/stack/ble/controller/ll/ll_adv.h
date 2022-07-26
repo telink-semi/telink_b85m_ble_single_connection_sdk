@@ -82,6 +82,16 @@ ble_sts_t 	bls_ll_setScanRspData(u8 *data, u8 len);
 
 
 /**
+* @brief	   This function is used to set whether to check the adv_interval
+* @param[in]  enable -  adv_interval_check_enable
+* @return     none
+*/
+void blc_ll_setAdvIntervalCheckEnable(u8 enable);
+
+
+
+
+/**
  * @brief      This function is used to set the advertising parameters.
  * @param[in]  intervalMin - Minimum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)
  * @param[in]  intervalMin - Maximum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)

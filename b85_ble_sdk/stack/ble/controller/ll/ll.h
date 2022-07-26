@@ -288,6 +288,15 @@ bool 		blc_ll_isBrxBusy (void);
 void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code);
 
 
+
+
+/**
+ * @brief      this function is Interval between the current time and the next RF interrupt
+ * @param[in]  none.
+ * @return     us.
+ */
+u32  blc_ll_GetBrxNextTick(void);
+
 /**
  * @brief      this function is used to get local supported feature by HCI.
  * @param[in]  features - support feature buffer.

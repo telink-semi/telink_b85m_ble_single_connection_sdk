@@ -57,11 +57,6 @@
 
 #define     TELINK_UNPAIR_KEYVALUE		0xFF  //conn state, unpair
 
-extern void usbkb_hid_report(kb_data_t *data);
-extern void report_to_KeySimTool(u8 len,u8 * keycode);
-extern void usbkb_report_consumer_key(u16 consumer_key);
-
-extern void report_media_key_to_KeySimTool(u16);
 
 const u8 my_MicUUID[16]		= WRAPPING_BRACES(TELINK_MIC_DATA);
 const u8 my_SpeakerUUID[16]	= WRAPPING_BRACES(TELINK_SPEAKER_DATA);
@@ -78,28 +73,6 @@ u8 read_by_type_req_uuidLen;
 
 u16 	current_read_req_handle;
 
-rf_packet_mouse_t	pkt_mouse = {
-		sizeof (rf_packet_mouse_t) - 4,	// dma_len
-
-		sizeof (rf_packet_mouse_t) - 5,	// rf_len
-		RF_PROTO_BYTE,		// proto
-		PKT_FLOW_DIR,		// flow
-		FRAME_TYPE_MOUSE,					// type
-
-//		U32_MAX,			// gid0
-
-		0,					// rssi
-		0,					// per
-		0,					// seq_no
-		1,					// number of frame
-};
-
-u8	*p_att_response = 0;
-volatile u32	host_att_req_busy = 0;
-typedef int (*host_att_idle_func_t) (void);
-host_att_idle_func_t host_att_idle_func = 0;
-extern void usbmouse_add_frame (rf_packet_mouse_t *packet_mouse);
-
 /**
  * @brief       host layer set current readByTypeRequest UUID
  * @param[in]	uuid
@@ -111,6 +84,16 @@ void host_att_set_current_readByTypeReq_uuid(u8 *uuid, u8 uuid_len)
 	read_by_type_req_uuidLen = uuid_len;
 	memcpy(read_by_type_req_uuid, uuid, uuid_len);
 }
+
+
+
+
+
+
+
+u8	*p_att_response = 0;
+
+volatile u32	host_att_req_busy = 0;
 
 /**
  * @brief       host layer client handle
@@ -126,7 +109,7 @@ int host_att_client_handler (u16 connHandle, u8 *p)
 		if ((connHandle & 7) == (host_att_req_busy & 7) && p_rsp->chanId == 0x04 &&
 				(p_rsp->opcode == 0x01 || p_rsp->opcode == ((host_att_req_busy >> 16) | 1)))
 		{
-			memcpy (p_att_response, p, 32);
+			memcpy (p_att_response, p, p_rsp->l2capLen + 6);	//+6 indicate type(1B)+rf_len(1B)+l2cap_len
 			host_att_req_busy = 0;
 		}
 	}
@@ -142,6 +125,9 @@ void host_att_service_disccovery_clear(void)
 {
 	p_att_response = 0;
 }
+
+typedef int (*host_att_idle_func_t) (void);
+host_att_idle_func_t host_att_idle_func = 0;
 
 /**
  * @brief       host layer clear service discovery
@@ -260,7 +246,7 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 
 	// char discovery: att_read_by_type
 		// hid discovery: att_find_info
-	u8  dat[32];
+	u8  dat[256];		//247(MTU) +2(LL Data channel PDU header) +4(L2CAP header) +3(align(4))
 	u16 s = 1;
 	u16 uuid = GATT_UUID_CHARACTER;
 	do {
@@ -280,14 +266,20 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 
 		if (p_rsp->datalen == 21)		//uuid128
 		{
-			s = p_rsp->data[3] + p_rsp->data[4] * 256;
-			if (i128 < n128)
+			u8 *pd = p_rsp->data;
+			while (p_rsp->l2capLen > 21)
 			{
-				p128->property = p_rsp->data[2];
-				p128->handle = s;
-				memcpy (p128->uuid, p_rsp->data + 5, 16);
-				i128++;
-				p128++;
+				s = pd[3] + pd[4] * 256;
+				if (i128 < n128)
+				{
+					p128->property = pd[2];
+					p128->handle = s;
+					memcpy (p128->uuid, pd + 5, 16);
+					i128++;
+					p128++;
+				}
+				p_rsp->l2capLen -= 21;
+				pd += 21;
 			}
 		}
 		else if (p_rsp->datalen == 7) //uuid16
@@ -370,6 +362,31 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 	return  BLE_SUCCESS;
 }
 
+
+
+
+
+
+
+rf_packet_mouse_t	pkt_mouse = {
+		sizeof (rf_packet_mouse_t) - 4,	// dma_len
+
+		sizeof (rf_packet_mouse_t) - 5,	// rf_len
+		RF_PROTO_BYTE,		// proto
+		PKT_FLOW_DIR,		// flow
+		FRAME_TYPE_MOUSE,					// type
+
+//		U32_MAX,			// gid0
+
+		0,					// rssi
+		0,					// per
+		0,					// seq_no
+		1,					// number of frame
+};
+
+
+extern void usbmouse_add_frame (rf_packet_mouse_t *packet_mouse);
+
 /**
  * @brief       call this function when attribute handle:HID_HANDLE_MOUSE_REPORT
  * @param[in]	conn - connect handle
@@ -383,6 +400,13 @@ void	att_mouse (u16 conn, u8 *p)
     usbmouse_add_frame(&pkt_mouse);
 }
 
+
+
+extern void usbkb_hid_report(kb_data_t *data);
+extern void report_to_KeySimTool(u8 len,u8 * keycode);
+extern void usbkb_report_consumer_key(u16 consumer_key);
+
+extern void report_media_key_to_KeySimTool(u16);
 
 /**
  * @brief       call this function when report consumer key

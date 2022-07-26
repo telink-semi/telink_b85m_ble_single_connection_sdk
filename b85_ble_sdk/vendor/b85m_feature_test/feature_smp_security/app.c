@@ -469,6 +469,8 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_SMP_TK_REQUEST_OOB:
 		{
 			printf("TK Request OOB\n");
+			u8 oobData[16] = {1,2,3};
+			blc_smp_setTK_by_OOB(oobData);
 		}
 		break;
 
@@ -634,6 +636,33 @@ void user_init_normal(void)
 						  GAP_EVT_MASK_SMP_PARING_SUCCESS   		|  \
 						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
 						  GAP_EVT_MASK_SMP_TK_DISPALY				|  \
+						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE     |  \
+						  GAP_EVT_MASK_SMP_SECURITY_PROCESS_DONE);
+#elif ( SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_OOB )
+
+	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
+
+	//set security level: "LE_Security_Mode_1_Level_3"
+	blc_smp_setSecurityLevel(Authenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
+	blc_smp_enableAuthMITM(1);
+	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
+	blc_smp_setIoCapability(IO_CAPABLITY_KEYBOARD_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	blc_smp_enableOobAuthentication(1);
+
+	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
+	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
+	//   should re_stored) , so it must be done after battery check
+	//Notice:if user set smp parameters: it should be called after usr smp settings
+	blc_smp_peripheral_init();
+
+	blc_smp_configSecurityRequestSending(SecReq_IMM_SEND, SecReq_PEND_SEND, 1000); //if not set, default is:  send "security request" immediately after link layer connection established(regardless of new connection or reconnection )
+
+	//host(GAP/SMP/GATT/ATT) event process: register host event callback and set event mask
+	blc_gap_registerHostEventHandler( app_host_event_callback );
+	blc_gap_setEventMask( GAP_EVT_MASK_SMP_PARING_BEAGIN 			|  \
+						  GAP_EVT_MASK_SMP_PARING_SUCCESS   		|  \
+						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
+						  GAP_EVT_MASK_SMP_TK_REQUEST_OOB			|  \
 						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE     |  \
 						  GAP_EVT_MASK_SMP_SECURITY_PROCESS_DONE);
 

@@ -57,12 +57,11 @@ ir_learn_ctrl_t *g_ir_learn_ctrl = &ir_learn_ctrl;
 ir_send_dma_data_t ir_send_dma_data;
 extern ir_send_ctrl_t ir_send_ctrl;
 
-/**
- * @brief		ir learn init algorithm ,set related GPIO function and
- * 			    irq related.
- * @param[in]	none.
- * @return      none.
- */
+/************************************************************************
+* Functionir_learn_init(void)				  			 				*
+* Description ir learn init algorithm ,set related GPIO function and	*
+* 			    irq related. 											*
+************************************************************************/
 void ir_learn_init(void)
 {
 
@@ -91,12 +90,12 @@ void ir_learn_init(void)
 	reg_irq_mask |= FLD_IRQ_GPIO_EN;
 }
 
-/**
- * @brief		IR learn algorithm ,need to put in ram code when
- *              learning high frequency carrier wave.
- * @param[in]	tm - clock time now ,to count interval between 2 interrupt.
- * @return      none.
- */
+/***********************************************************************
+* Functionir_record(u32 tm) 				  			 			   *
+* DescriptionIR learn algorithm ,need to put in ram code when 	   *
+*               learning high frequency carrier wave.  				   *
+* Parametertm:clock time now ,to count interval between 2 interrupt  *
+***********************************************************************/
 _attribute_ram_code_
 static inline void ir_record(u32 tm)
 {
@@ -197,12 +196,10 @@ static inline void ir_record(u32 tm)
     g_ir_learn_ctrl->last_trigger_tm_point = g_ir_learn_ctrl->curr_trigger_tm_point;
 }
 
-/**
- * @brief		IR learn process in irq
- *              learning high frequency carrier wave.
- * @param		none
- * @return      none.
- */
+/***********************************************************************
+* Functionir_learn_irq_handler(void)			  			 		   *
+* DescriptionIR learn process in irq. 				  			   *
+***********************************************************************/
 _attribute_ram_code_
 void ir_learn_irq_handler(void)
 {
@@ -214,11 +211,10 @@ void ir_learn_irq_handler(void)
 	ir_record(clock_time());  // IR Learning
 }
 
-/**
- * @brief		IR learn send init,set pwn and irq related.
- * @param		none
- * @return      none.
- */
+/***********************************************************************
+* Functionir_learn_send_init(void)				  			 	   *
+* Description IR learn send init,set pwn and irq related.			   *
+***********************************************************************/
 void ir_learn_send_init(void)
 {
 	//only pwm0 support fifo mode
@@ -241,11 +237,10 @@ void ir_learn_send_init(void)
 	ir_send_ctrl.last_cmd = 0xff; //must
 }
 
-/**
- * @brief		IR learn send init,set pwn and irq related.
- * @param		none
- * @return      none.
- */
+/***********************************************************************
+* Functionir_learn_start(void)					  			 	   *
+* Description Begin IR learn process.			   					   *
+***********************************************************************/
 void ir_learn_start(void)
 {
 	memset(&ir_learn_ctrl,0,sizeof(ir_learn_ctrl));
@@ -255,25 +250,24 @@ void ir_learn_start(void)
 	g_ir_learn_ctrl -> ir_learn_tick = clock_time();
 }
 
-/**
- * @brief		Stop IR learn process.
- * @param		none
- * @return      none.
- */
+/***********************************************************************
+* Functionir_learn_start(void)					  			 	   *
+* Description Stop IR learn process.			   					   *
+***********************************************************************/
 void ir_learn_stop(void)
 {
     reg_irq_src = IR_LEARN_INTERRUPT_MASK;
 	gpio_en_interrupt(GPIO_IR_LEARN_IN, 0);
 }
 
-/**
- * @brief		Stop IR learn process.
- * @param		none
- * @return      0 	 : ir learn success
- * 				1 	 : ir learn is doing or disable
- * 				else : ir learn fail ,return fail reason,
- * 					   match enum ir_learn_states
- */
+/***********************************************************************
+* Functionget_ir_learn_state(void)				  			 	   *
+* Description Get ir learn state in UI layer.						   *
+*  				0 	 : ir learn success								   *
+* 				1 	 : ir learn is doing or disable					   *
+* 				else : ir learn fail ,return fail reason,			   *
+* 					   match enum ir_learn_states 	         		   *
+***********************************************************************/
 unsigned char get_ir_learn_state(void)
 {
 	if(g_ir_learn_ctrl -> ir_learn_state == IR_LEARN_SUCCESS)
@@ -284,11 +278,10 @@ unsigned char get_ir_learn_state(void)
 		return (g_ir_learn_ctrl -> ir_learn_state);
 }
 
-/**
- * @brief		Copy necessary parameter to send_buffer to buffer.
- * @param		none
- * @return		none
- */
+/***********************************************************************
+* Functionir_learn_copy_result(ir_learn_send_t* send_buffer)				  			 	   *
+* Description Copy necessary parameter to send_buffer to 			   					   *
+***********************************************************************/
 void ir_learn_copy_result(ir_learn_send_t* send_buffer)
 {
 	ir_learn_send_t* g_ir_learn_send = send_buffer;
@@ -300,11 +293,10 @@ void ir_learn_copy_result(ir_learn_send_t* send_buffer)
 	}
 }
 
-/**
- * @brief		IR learn deal process,better to use it every loop.
- * @param		none
- * @return		none
- */
+/***********************************************************************
+* Functionir_learn_detect(void)					  			 	   *
+* DescriptionIR learn deal process,better to use it every loop	   *
+***********************************************************************/
 void ir_learn_detect(void)
 {
 	//ir learn overtime
@@ -331,11 +323,10 @@ void ir_learn_detect(void)
 	}
 }
 
-/**
- * @brief		IR code that be learned.
- * @param[in]	send_buffer : send buffer
- * @return		none
- */
+/***********************************************************************
+* Functionir_learn_send(void)					  			 	  	   *
+* DescriptionSend IR code that be learned. 		   			       *
+* *********************************************************************/
 _attribute_ram_code_
 void ir_learn_send(ir_learn_send_t* send_buffer)
 {

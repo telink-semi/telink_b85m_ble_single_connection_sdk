@@ -49,7 +49,8 @@
 
 
 
-#define	FLOW_NO_OS				1
+#define	FLOW_NO_OS						1
+#define	MASTER_RESOLVABLE_ADD_EN		0
 
 
 

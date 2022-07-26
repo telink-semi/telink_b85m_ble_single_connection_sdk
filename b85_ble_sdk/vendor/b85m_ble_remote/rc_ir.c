@@ -108,13 +108,7 @@ int ir_sending_check(void);
 
 
 
-/**
- * @brief		IR send function with nec format.
- * @param[in]	addr1 - address code 1
- * @param[in]	addr2 - address code 2
- * @param[in]	cmd - command
- * @return      none
- */
+
 void ir_nec_send(u8 addr1, u8 addr2, u8 cmd)
 {
 
@@ -174,17 +168,18 @@ void ir_nec_send(u8 addr1, u8 addr2, u8 cmd)
 
 		ir_send_ctrl.sending_start_time = clock_time();
 
+//		gpio_set_func(GPIO_PB3, AS_PWM0_N);
 		pwm_start_dma_ir_sending();
 
 	}
 }
 
-/**
- * @brief		check if IR is sending .
- * @param[in]	none
- * @return      1:IR is sending
- */
-int ir_is_sending(void)
+
+
+
+
+
+int ir_is_sending()
 {
 	if(ir_send_ctrl.is_sending && clock_time_exceed(ir_send_ctrl.sending_start_time, 300*1000))
 	{
@@ -196,11 +191,6 @@ int ir_is_sending(void)
 	return ir_send_ctrl.is_sending;
 }
 
-/**
- * @brief		check if IR is sending for other API use.
- * @param[in]	none
- * @return      1:IR is sending
- */
 int ir_sending_check(void)
 {
 	u8 r = irq_disable();
@@ -212,11 +202,8 @@ int ir_sending_check(void)
 	return 0;
 }
 
-/**
- * @brief		IR send finish .
- * @param[in]	none
- * @return      none
- */
+
+
 void ir_send_release(void)
 {
 	u8 r = irq_disable();
@@ -248,11 +235,7 @@ void ir_send_release(void)
 #if (ADD_REPEAT_ONE_BY_ONE)
 
 
-/**
- * @brief		IR send related function in irq .
- * @param[in]	none
- * @return      none
- */
+
 #if (REMOTE_IR_ENABLE)
 _attribute_ram_code_
 #endif
@@ -310,11 +293,6 @@ void rc_ir_irq_prc(void)
 
 #else
 
-/**
- * @brief		IR send related function in irq .
- * @param[in]	none
- * @return      none
- */
 #if (REMOTE_IR_ENABLE)
 _attribute_ram_code_
 #endif
@@ -382,11 +360,7 @@ void rc_ir_irq_prc(void)
 
 
 
-/**
- * @brief		IR send related parameter init .
- * @param[in]	none
- * @return      none
- */
+
 void rc_ir_init(void)
 {
 

@@ -70,7 +70,7 @@ typedef struct
 int module_onReceiveData(void *para)
 {
 	rf_packet_att_write_t *p = (rf_packet_att_write_t*)para;
-	u8 len = p->l2capLen - 3;
+	u16 len = p->l2capLen - 3;
 	if(len > 0)
 	{
 		array_printf(&p->opcode, p->l2capLen);

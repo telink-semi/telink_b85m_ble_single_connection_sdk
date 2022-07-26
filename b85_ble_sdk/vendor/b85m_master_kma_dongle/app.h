@@ -46,12 +46,17 @@
 #ifndef APP_H_
 #define APP_H_
 
+
+
+
 /**
  * @brief		user initialization
  * @param[in]	none
  * @return      none
  */
 void user_init(void);
+
+
 
 /**
  * @brief     BLE main loop
@@ -60,6 +65,7 @@ void user_init(void);
  */
 void main_loop (void);
 
+
 /**
  * @brief     BLE main idle loop
  * @param[in]  none.
@@ -67,11 +73,9 @@ void main_loop (void);
  */
 int main_idle_loop (void);
 
-/**
-	 * @brief		this function is used to detect if button pressed or released.
-	 * @param[in]	none
-	 * @return      none
-	 */
+
+
+
 void proc_button (void);
 
 
