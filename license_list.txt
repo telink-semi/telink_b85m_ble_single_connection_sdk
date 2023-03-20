@@ -298,18 +298,14 @@
 ./b85_ble_sdk/drivers/8278/flash/flash_type.h		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid1360c8.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid14325e.h		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid136085.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid13325e.h		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid1360eb.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid1460c8.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid13325e.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid11325e.h		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid14325e.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid1160c8.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid1460c8.h		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid1360eb.h		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid11325e.c		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid136085.h		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid1360c8.h		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/flash/flash_mid1160c8.h		TELINK_BSD
 ./b85_ble_sdk/drivers/8278/gpio_default_8278.h		TELINK_BSD
@@ -405,7 +401,3 @@
 ./b85_ble_sdk/drivers/8258/rf_pa.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8258/audio.h		TELINK_BSD
 ./b85_ble_sdk/proj_lib/firmware_encrypt.h		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid136085.c		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid1360eb.c		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid1360eb.h		TELINK_BSD
-./b85_ble_sdk/drivers/8278/flash/flash_mid136085.h		TELINK_BSD
