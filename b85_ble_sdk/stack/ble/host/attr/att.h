@@ -205,6 +205,15 @@ void  		blt_att_resetRxMtuSize(u16 connHandle);
 u16  blc_att_getEffectiveMtuSize(u16 connHandle);
 
 
+/**
+ * @brief      This function is used to set reject of write request. If enable, return of ATT write callback will take effect.  Error codes refer to Core Spec.
+ * @param[in]  WriteReqReject_en - 0: Disable;
+ *                           1: Enable.
+ * @return     none.
+ */
+void 		blc_att_enableWriteReqReject (u8 WriteReqReject_en);
+
+
 #if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 /**
  * @brief      set device name

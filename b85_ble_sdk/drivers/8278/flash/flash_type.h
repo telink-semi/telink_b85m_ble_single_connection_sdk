@@ -53,8 +53,7 @@
 #include "flash_mid11325e.h"	// ZB25WD10A
 #include "flash_mid13325e.h"	// ZB25WD40B
 #include "flash_mid14325e.h"	// ZB25WD80B
-#include "flash_mid136085.h"	// P25D40L
-#include "flash_mid1360eb.h"	// TH25D40LA
+#include "flash_mid146085.h"    // P25Q80U
 
 
 /**

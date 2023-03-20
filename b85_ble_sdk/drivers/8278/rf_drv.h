@@ -239,9 +239,9 @@ extern const RF_PowerTypeDef rf_power_Level_list[60];
 #define    RF_ZIGBEE_PACKET_RSSI_GET(p)     			(p[p[0]+2])
 #define    RF_ZIGBEE_PACKET_TIMESTAMP_GET(p)           	(p[p[0]-4] | (p[p[0]-3]<<8) | (p[p[0]-2]<<16) | (p[p[0]-1]<<24))
 #define    RF_ZIGBEE_PACKET_PAYLOAD_LENGTH_GET(p)      	(p[4])
-#define    RF_NRF_ESB_PACKET_LENGTH_OK(p)              	(p[0] == (p[4] & 0x3f) + 11)
-#define    RF_NRF_ESB_PACKET_CRC_OK(p)                 	((p[p[0]+3] & 0x01) == 0x00)
-#define    RF_NRF_ESB_PACKET_RSSI_GET(p)               	(p[p[0]+2])
+#define    RF_TPLL_PACKET_LENGTH_OK(p)              	(p[0] == (p[4] & 0x3f) + 11)
+#define    RF_TPLL_PACKET_CRC_OK(p)                 	((p[p[0]+3] & 0x01) == 0x00)
+#define    RF_TPLL_PACKET_RSSI_GET(p)               	(p[p[0]+2])
 #define    RF_NRF_SB_PACKET_PAYLOAD_LENGTH_GET(p)      	(p[0] - 10)
 #define    RF_NRF_SB_PACKET_CRC_OK(p)                  	((p[p[0]+3] & 0x01) == 0x00)
 #define    RF_NRF_SB_PACKET_CRC_GET(p)                 	((p[p[0]-8]<<8) + p[p[0]-7]) //Note: here assume that the MSByte of CRC is received first
@@ -855,7 +855,7 @@ static inline unsigned char is_rf_receiving_pkt(void)
  */
 extern void rf_set_channel_500k(signed short chn, unsigned short set);
 /**
-*	@brief		this function is to set shock burst for RF.
+*	@brief		this function is to set private mode payload len for RF.
 *	@param[in]	len - length of shockburst.
 *	@return	 	none.
 */

@@ -52,11 +52,10 @@
 /*
  *	If add flash type, need pay attention to the read uid command and the bit number of status register
 	Flash Type	uid CMD			MID		Company		Sector Erase Time(MAX)
+	P25Q80U     0x4b        0x146085    PUYA        20ms
 	GD25LD10C	0x4b(AN)	0x1160C8	GD			500ms
 	GD25LD40C	0x4b		0x1360C8	GD			500ms
 	GD25LD80C	0x4b(AN)	0x1460C8	GD			500ms
-	P25D40L		0x4b		0x136085	PUYA		20ms
-	TH25D40LA	0x4b		0x1360EB	TH			12ms
 	ZB25WD10A	0x4b		0x11325E	ZB			500ms
 	ZB25WD40B	0x4b		0x13325E	ZB			500ms
 	ZB25WD80B	0x4b		0x14325E	ZB			500ms
@@ -66,7 +65,7 @@
 	The uid of the early ZB25WD40B (mid is 0x13325E) is 8 bytes. If you read 16 bytes of uid,
 	the next 8 bytes will be read as 0xff. Later, the uid of ZB25WD40B has been switched to 16 bytes.
  */
-unsigned int flash_support_mid[] = {0x1160C8, 0x1360C8, 0x1460C8, 0x11325E, 0x12325E, 0x13325E, 0x14325E, 0x136085, 0x1360EB};
+unsigned int flash_support_mid[] = {0x1160C8, 0x1360C8, 0x1460C8, 0x11325E, 0x12325E, 0x13325E, 0x14325E,0x146085};
 const unsigned int FLASH_CNT = sizeof(flash_support_mid)/sizeof(*flash_support_mid);
 
 _attribute_data_retention_ flash_hander_t flash_read_page = flash_read_data;

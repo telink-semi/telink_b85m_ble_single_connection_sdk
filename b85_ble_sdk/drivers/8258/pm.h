@@ -192,11 +192,6 @@ extern  check_32k_clk_handler_t  pm_check_32k_clk_stable;
 typedef unsigned int (*pm_get_32k_clk_handler_t)(void);
 extern  pm_get_32k_clk_handler_t	pm_get_32k_tick;
 
-
-extern unsigned int	ota_program_bootAddr;
-extern unsigned int	ota_firmware_max_size;
-extern unsigned int	ota_program_offset;
-
 /******************************* User Interface  ************************************/
 void bls_pm_registerFuncBeforeSuspend (suspend_handler_t func );
 
@@ -378,7 +373,7 @@ extern 	unsigned short 			tick_32k_calib;
 extern  unsigned int 			tick_cur;
 extern  unsigned int 			tick_32k_cur;
 extern  unsigned char       	pm_long_suspend;
-
+extern  unsigned int 		tick_doublerCal;
 void sleep_start(void);
 
 unsigned int cpu_get_32k_tick(void);
