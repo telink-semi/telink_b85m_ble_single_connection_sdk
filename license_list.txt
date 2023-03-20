@@ -405,3 +405,7 @@
 ./b85_ble_sdk/drivers/8258/rf_pa.c		TELINK_BSD
 ./b85_ble_sdk/drivers/8258/audio.h		TELINK_BSD
 ./b85_ble_sdk/proj_lib/firmware_encrypt.h		TELINK_BSD
+./b85_ble_sdk/drivers/8278/flash/flash_mid136085.c		TELINK_BSD
+./b85_ble_sdk/drivers/8278/flash/flash_mid1360eb.c		TELINK_BSD
+./b85_ble_sdk/drivers/8278/flash/flash_mid1360eb.h		TELINK_BSD
+./b85_ble_sdk/drivers/8278/flash/flash_mid136085.h		TELINK_BSD
