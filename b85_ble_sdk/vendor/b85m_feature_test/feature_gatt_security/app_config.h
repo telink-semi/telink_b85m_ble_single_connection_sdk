@@ -85,7 +85,7 @@
 
 #define     SMP_TEST_MODE						LE_SECURITY_MODE_1_LEVEL_2
 
-//use lightblue or nrf connect app, after connected, enable notify, write some data into characteristic Telink SPP:Phone->Module
+//use app, after connected, enable notify, write some data into characteristic Telink SPP:Phone->Module
 
 //client to server RX character permission
 //refer to core5.0 Vol3,Part C, Table 10.2 for more information
