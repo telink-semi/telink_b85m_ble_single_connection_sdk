@@ -189,6 +189,10 @@ extern  suspend_handler_t 		 func_before_suspend;
 typedef void (*check_32k_clk_handler_t)(void);
 extern  check_32k_clk_handler_t  pm_check_32k_clk_stable;
 
+extern unsigned int	ota_program_bootAddr;
+extern unsigned int	ota_firmware_max_size;
+extern unsigned int	ota_program_offset;
+
 typedef unsigned int (*pm_get_32k_clk_handler_t)(void);
 extern  pm_get_32k_clk_handler_t	pm_get_32k_tick;
 
