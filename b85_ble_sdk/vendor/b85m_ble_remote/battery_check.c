@@ -138,7 +138,7 @@ _attribute_ram_code_ void adc_vbat_detect_init(void)
 	/******power off sar adc********/
 	adc_power_on_sar_adc(0);
 
-#if (ADC_INPUT_PCHN!=VBAT)
+#ifdef GPIO_VBAT_DETECT
 	gpio_set_output_en(GPIO_VBAT_DETECT, 1);
 	gpio_write(GPIO_VBAT_DETECT, 1);
 #endif
