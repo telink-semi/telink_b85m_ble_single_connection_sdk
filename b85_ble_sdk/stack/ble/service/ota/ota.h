@@ -65,16 +65,6 @@
 #define CMD_OTA_SCHEDULE_FW_SIZE			0xFF09	//server -> client
 
 
-/**
- * @brief 	Multiple boot address enumarion
- */
-typedef enum{
-	MULTI_BOOT_ADDR_0x20000 	= 0x20000,	//128 K
-	MULTI_BOOT_ADDR_0x40000		= 0x40000,  //256 K
-	MULTI_BOOT_ADDR_0x80000	    = 0x80000,  //512 K
-}multi_boot_addr_e;
-
-
 
 /**
  * @brief	OTA result
