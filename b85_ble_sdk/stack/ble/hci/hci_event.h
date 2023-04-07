@@ -623,8 +623,11 @@ void hci_le_data_len_update_evt(u16 connhandle,u16 effTxOctets, u16 effRxOctets,
 int hci_le_longTermKeyRequest_evt(u16 connHandle, u8* random, u16 ediv, u8* result);
 int hci_le_readLocalP256KeyComplete_evt(u8* localP256Key, u8 status);
 int hci_le_generateDHKeyComplete_evt(u8* DHkey, u8 status);
+
+#if (LL_FEATURE_ENABLE_LL_PRIVACY)
 void hci_le_enhancedConnectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr, u8 *loaclRpa, u8 *peerRpa,
                                            u16 connInterval, u16 connLatency, u16 supervisionTimeout, u8 masterClkAccuracy);
+#endif
 int hci_le_encryptChange_evt(u16 connhandle,  u8 encrypt_en);
 int hci_le_encryptKeyRefresh_evt(u16 connhandle);
 

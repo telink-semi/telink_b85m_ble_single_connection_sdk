@@ -69,24 +69,12 @@ typedef enum {
 /*
  * smp parameter need save to flash.
  * */
-
-#define DEVICE_IDX_MASK				0x03
-
-typedef union {
-	struct{
-		u8 	device_idx	 :2;
-		u8 	rsvd		 :6;
-	};
-	u8 cflg_pack;
-}comb_flg_t;  //combine flag type
-
-
 typedef struct {  //82
 	u8		flag;
 	u8		peer_addr_type;  //address used in link layer connection
 	u8		peer_addr[6];
 
-	comb_flg_t	cflg_union;
+	u8 		peer_key_size;
 	u8		peer_id_adrType; //peer identity address information in key distribution, used to identify
 	u8		peer_id_addr[6];
 
@@ -97,25 +85,6 @@ typedef struct {  //82
 
 }smp_param_save_t;
 
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-/*
- * smp parameter need save to flash.
- * */
-typedef struct {  //82
-	u8 bond_mark;
-	u8 adr_type;
-	u8 address[6];
-
-	u8 rand[8];
-
-	u16 ediv;
-	u8 rsv[14];
-
-	u8 ltk[16];
-	u8 peer_irk[16];
-	u8 local_irk[16];
-}smp_master_param_save_t;
-#endif
 
 /**
  * @brief      This function is used to get the number of currently bound devices.
@@ -172,19 +141,8 @@ void		bls_smp_setIndexUpdateMethod(index_updateMethod_t method);
  */
 void		bls_smp_eraseAllParingInformation(void);
 
-
-
-
 #if (LL_FEATURE_ENABLE_LL_PRIVACY)
-/*
- *  Address resolution is not supported by default. After pairing and binding, we need to obtain the central Address Resolution
- *  feature value of the opposite end to determine whether the opposite end supports the address resolution function, and write
- *  the result to smp_bonding_flg. Currently, we leave it to the user to obtain this feature.
- */
-#define 	IS_PEER_ADDR_RES_SUPPORT(peerAddrResSuppFlg)	(!(peerAddrResSuppFlg & BIT(7)))
-
-int			blc_smp_setPeerAddrResSupportFlg(u32 flash_addr, u8 support);
-
+int		blc_smp_setPeerAddrResSupportFlg(u32 flash_addr, u8 support);
 #endif
 
 

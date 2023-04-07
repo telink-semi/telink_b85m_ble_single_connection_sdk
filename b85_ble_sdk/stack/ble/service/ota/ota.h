@@ -65,6 +65,16 @@
 #define CMD_OTA_SCHEDULE_FW_SIZE			0xFF09	//server -> client
 
 
+/**
+ * @brief 	Multiple boot address enumarion
+ */
+typedef enum{
+	MULTI_BOOT_ADDR_0x20000 	= 0x20000,	//128 K
+	MULTI_BOOT_ADDR_0x40000		= 0x40000,  //256 K
+	MULTI_BOOT_ADDR_0x80000	    = 0x80000,  //512 K
+}multi_boot_addr_e;
+
+
 
 /**
  * @brief	OTA result
@@ -92,10 +102,7 @@ enum{
 	OTA_DATA_PACKET_TIMEOUT,	   			//time interval between two consequent packet exceed a value(user can adjust this value)
  	OTA_TIMEOUT,							//OTA flow total timeout
  	OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE,	//OTA fail due to current connection terminate(maybe connection timeout or local/peer device terminate connection)
-	OTA_MCU_NOT_SUPPORTED,					//MCU does not support this OTA mode
-
-	//0x10
-	OTA_LOGIC_ERR,							//software logic error, please contact FAE of TeLink
+ 	OTA_LOGIC_ERR,							//software logic error, please contact FAE of TeLink
 };
 
 
@@ -215,5 +222,12 @@ unsigned long crc32_cal(unsigned long crc, unsigned char* input, unsigned long* 
  */
 unsigned short crc16 (unsigned char *pD, int len);
 
+
+#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
+	#define	bls_ota_registerStartCmdCb			blc_ota_registerOtaStartCmdCb
+	#define	bls_ota_registerVersionReqCb		blc_ota_registerOtaFirmwareVersionReqCb
+	#define	bls_ota_registerResultIndicateCb	blc_ota_registerOtaResultIndicationCb
+	#define bls_ota_setTimeout(tm_us)			blc_ota_setOtaProcessTimeout( (tm_us)/1000000 )
+#endif
 
 #endif /* OTA_H_ */

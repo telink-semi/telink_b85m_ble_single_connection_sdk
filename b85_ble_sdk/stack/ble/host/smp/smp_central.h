@@ -81,22 +81,6 @@ typedef struct {
 	u8 address[6];
 } mac_adr_t;
 
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-
-//  6 byte slave_MAC   8 byte rand  2 byte ediv
-// 16 byte ltk
-#define PAIR_INFO_SECTOR_SIZE	 				80
-
-#define PAIR_OFFSET_SLAVE_MAC	 				2
-
-#define PAIR_OFFSET_RAND		 				8
-#define PAIR_OFFSET_EDIV		 				16
-#define PAIR_OFFSET_ATT			 				18   //ATT handle
-#define PAIR_OFFSET_LTK			 				32
-#define PAIR_OFFSET_IRK			 				48
-#define	PAIR_OFFSET_LOCAL_IRK					64
-
-#else
 
 //  6 byte slave_MAC   8 byte rand  2 byte ediv
 // 16 byte ltk
@@ -109,8 +93,6 @@ typedef struct {
 #define PAIR_OFFSET_ATT			 				18   //ATT handle
 #define PAIR_OFFSET_LTK			 				32
 #define PAIR_OFFSET_IRK			 				48
-
-#endif
 
 #if (LL_MASTER_MULTI_CONNECTION)
 	#define	PAIR_SLAVE_MAX_NUM            			8
