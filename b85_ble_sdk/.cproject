@@ -31,8 +31,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.762792633" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.441674730" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.1624989927" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8258_BLE_REMOTE__=1"/>
@@ -70,7 +71,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B87|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -110,6 +111,8 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.1565800147" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.1778665714" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.807317074" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
@@ -148,7 +151,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B87|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -188,8 +191,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.633307548" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.2039950824" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.901483765" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8258_MODULE__=1"/>
@@ -227,7 +231,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B87|vendor/b85m_driver_test|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -267,8 +271,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.174659319" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.1412907837" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.607452791" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8258_FEATURE_TEST__=1"/>
@@ -306,7 +311,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B87|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -346,6 +351,8 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.1022134976" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.835600872" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.598153653" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
@@ -384,7 +391,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B87|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -424,6 +431,8 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.685729606" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.865964976" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.1506003277" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
@@ -462,7 +471,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B87|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|drivers/8278|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -502,8 +511,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.177023043" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.725746134" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8278}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.1628399569" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8278_MASTER_KMA_DONGLE__=1"/>
@@ -541,7 +551,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B85|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -581,7 +591,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.1888079247" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.1826149933" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8278}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.174743338" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8278_BLE_SAMPLE__=1"/>
@@ -619,7 +631,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B85|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8255_driver_test|vendor/82x8_internal_test|vendor/8258_ble_remote|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -659,8 +671,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.1545922846" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.1410198606" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8278}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.21270513" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8278_FEATURE_TEST__=1"/>
@@ -698,7 +711,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B85|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -738,8 +751,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.701675593" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.1593793610" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8278}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.698942283" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8278_BLE_REMOTE__=1"/>
@@ -778,7 +792,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B85|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_sample|vendor/827x_feature_test|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_hci|drivers/8258|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -818,7 +832,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.1796881099" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.527599774" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8278}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.1972278591" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8278_HCI__=1"/>
@@ -856,7 +872,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B85|vendor/b85m_driver_test|vendor/b85m_module|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_module|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_module|vendor/82x8_master_kma_dongle|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/8258_module|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -896,8 +912,9 @@
 								<option id="com.telink.tc32eclipse.compiler.option.optimize.2057567400" name="Optimization Level" superClass="com.telink.tc32eclipse.compiler.option.optimize" value="com.telink.tc32eclipse.compiler.optimize.two" valueType="enumerated"/>
 								<option id="com.telink.tc32eclipse.compiler.option.incpath.1613120139" name="Include Paths (-I)" superClass="com.telink.tc32eclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8278}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/drivers/8258}&quot;"/>
 								</option>
 								<option id="com.telink.tc32eclipse.compiler.option.def.812068919" name="Define Syms (-D)" superClass="com.telink.tc32eclipse.compiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__PROJECT_8278_MODULE__=1"/>
@@ -935,7 +952,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="vendor/b85m_driver_test|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="boot/B85|vendor/b85m_driver_test|vendor/b85m_master_kma_dongle|vendor/b85m_internal_test|vendor/b85m_hci|vendor/b85m_feature_test|vendor/b85m_ble_sample|vendor/b85m_ble_remote|vendor/827x_hci|vendor/827x_internal_test|vendor/827x_master_kma_dongle|vendor/827x_ble_remote|vendor/827x_ble_sample|vendor/827x_feature_test|drivers/8258|vendor/82x8_master_kma_dongle|vendor/82x8_hci|vendor/82x8_ble_remote|vendor/8258_internal_test|vendor/82x8_ble_sample|vendor/8258_bqb_lowertester|vendor/8258_hci|vendor/8255_ble_remote|vendor/8258_bqb_uppertester|vendor/8258_feature_test|vendor/8258_driver_test|vendor/8258_master_slave|vendor/8258_ble_sample|vendor/8255_driver_test|vendor/8258_ble_remote|vendor/82x8_internal_test|drivers/8255|vendor/8258_master_kma_dongle|vendor/82x8_feature_test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

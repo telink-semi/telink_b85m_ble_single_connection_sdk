@@ -54,6 +54,7 @@
 #define FEATURE_DEEPSLEEP_RETENTION_ENABLE				0
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
+#define APP_FLASH_INIT_LOG_EN							0
 
 ///////////////////////// PHYTEST CONFIGURATION ////////////////////////////
 #define 		PHYTEST_MODE_THROUGH_2_WIRE_UART		1   //Direct Test Mode through a 2-wire UART interface

@@ -4,43 +4,21 @@
  * @brief	This is the header file for B85
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2018
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #pragma once
@@ -50,6 +28,21 @@
 
 #define PAGE_SIZE		256
 #define PAGE_SIZE_OTP	256
+
+/**
+ * @brief     flash mid definition
+ */
+typedef enum{
+	MID011460C8   =   0x011460c8,//GD25LE80C / GD25LQ80C
+	MID1060C8     =   0x1060c8,//GD25LD05C
+	MID13325E     =   0x13325e,//ZB25WD40B
+	MID134051     =   0x134051,//MD25D40D
+	MID136085     =   0x136085,//P25Q40L
+	MID1360C8     =   0x1360c8,//GD25LD40C
+	MID1360EB     =   0x1360eb,//TH25D40UA / TH25D40LA
+	MID14325E     =   0x14325e,//ZB25WD80B
+	MID1460C8     =   0x1460c8,//GD25LD80C
+}flash_mid_e;
 
 /**
  * @brief     flash command definition
@@ -64,7 +57,7 @@ enum{
 	FLASH_SECT_ERASE_CMD				=	0x20,
 	FLASH_ERASE_SECURITY_REGISTERS_CMD	=	0x44,
 
-	FLASH_READ_UID_CMD_GD_PUYA_ZB_TH	=	0x4B,	//Flash Type = GD/PUYA/ZB/UT
+	FLASH_READ_UID_CMD_GD_PUYA_ZB_TH	=	0x4B,	//Flash Type = GD/PUYA/ZB/TH
 	FLASH_READ_UID_CMD_XTX				=	0x5A,	//Flash Type = XTX
 
 	FLASH_GET_JEDEC_ID					=	0x9F,
@@ -123,14 +116,14 @@ typedef enum{
  *			The value of (mid&0x00ff0000)>>16 reflects flash capacity.
  */
 typedef enum {
-	FLASH_SIZE_64K 	= 0x10,
-	FLASH_SIZE_128K = 0x11,
-	FLASH_SIZE_256K = 0x12,
-	FLASH_SIZE_512K = 0x13,
-	FLASH_SIZE_1M 	= 0x14,
-	FLASH_SIZE_2M 	= 0x15,
-	FLASH_SIZE_4M 	= 0x16,
-	FLASH_SIZE_8M 	= 0x17,
+    FLASH_SIZE_64K     = 0x10,
+    FLASH_SIZE_128K    = 0x11,
+    FLASH_SIZE_256K    = 0x12,
+    FLASH_SIZE_512K    = 0x13,
+    FLASH_SIZE_1M      = 0x14,
+    FLASH_SIZE_2M      = 0x15,
+    FLASH_SIZE_4M      = 0x16,
+    FLASH_SIZE_8M      = 0x17,
 } Flash_CapacityDef;
 
 /**
@@ -147,14 +140,12 @@ typedef enum {
     FLASH_VOLTAGE_1V6      = 0x00,
 } Flash_VoltageDef;
 
-typedef void (*flash_hander_t)(unsigned long, unsigned long, unsigned char*);
-extern flash_hander_t flash_read_page;
-extern flash_hander_t flash_write_page;
+typedef void (*flash_handler_t)(unsigned long, unsigned long, unsigned char*);
+extern flash_handler_t flash_read_page;
+extern flash_handler_t flash_write_page;
 /*******************************************************************************************************************
  *												Primary interface
  ******************************************************************************************************************/
-
-extern unsigned int flash_type,get_flash_mid;
 
 /**
  * @brief 		This function serve to change the read function and write function.
@@ -162,16 +153,20 @@ extern unsigned int flash_type,get_flash_mid;
  * @param[in]   write	- the write function.
  * @none
  */
-static inline void flash_change_rw_func(flash_hander_t read, flash_hander_t write)
+static inline void flash_change_rw_func(flash_handler_t read, flash_handler_t write)
 {
 	flash_read_page = read;
 	flash_write_page = write;
 }
+
 /**
  * @brief 		This function serves to erase a sector.
  * @param[in]   addr	- the start address of the sector needs to erase.
  * @return 		none.
- * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ * @note        Attention: The block erase takes a long time, please pay attention to feeding the dog in advance.
+ * 				The maximum block erase time is listed at the beginning of this document and is available for viewing.
+ *
+ * 				Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
  *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
  *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
  *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
@@ -207,7 +202,7 @@ void flash_read_data(unsigned long addr, unsigned long len, unsigned char *buf);
  * @param[in]   len		- the length(in byte) of content needs to write into the flash.
  * @param[in]   buf		- the start address of the content needs to write into.
  * @return 		none.
- * @note        the funciton support cross-page writing,which means the len of buf can bigger than 256.
+ * @note        the function support cross-page writing,which means the len of buf can bigger than 256.
  *
  *              Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
  *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
@@ -251,7 +246,8 @@ unsigned int flash_read_raw_mid(void);
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
-unsigned int flash_read_mid(void);
+flash_mid_e flash_read_mid(void);
+
 /**
  * @brief	  	This function serves to read UID of flash.Before reading UID of flash, you must read MID of flash.
  * 				and then you can look up the related table to select the idcmd and read UID of flash.
@@ -271,7 +267,7 @@ unsigned int flash_read_mid(void);
 void flash_read_uid(unsigned char idcmd, unsigned char *buf);
 
 /*******************************************************************************************************************
- *												Primary interface
+ *												Secondary interface
  ******************************************************************************************************************/
 
 /**
@@ -344,11 +340,3 @@ static inline unsigned char flash_get_vdd_f_calib_value(void)
  * @return		0 - err, other - flash vendor.
  */
 unsigned int flash_get_vendor(unsigned int flash_mid);
-
-
-/**
- * @brief		This function serves to get flash capacity.
- * @param[in]	none.
- * @return		Flash_CapacityDef.
- */
-Flash_CapacityDef flash_get_capacity(void);

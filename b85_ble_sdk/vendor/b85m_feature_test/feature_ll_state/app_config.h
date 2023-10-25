@@ -60,6 +60,7 @@
 #endif
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
+#define APP_FLASH_INIT_LOG_EN							0
 
 ///////////////////////// UI Configuration ////////////////////////////////////////////////////
 #define	UI_LED_ENABLE									1

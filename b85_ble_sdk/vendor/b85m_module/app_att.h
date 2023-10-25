@@ -94,6 +94,7 @@ typedef enum
 	SPP_CLIENT_TO_SERVER_DP_H,			 //UUID: telink spp c2s uuid,  VALUE: SppDataClient2ServerData
 	SPP_CLIENT_TO_SERVER_DESC_H,		 //UUID: 2901, 	VALUE: TelinkSPPC2SDescriptor
 
+#if (BLE_OTA_ENABLE)
 	//// Ota ////
 	/**********************************************************************************************/
 	OTA_PS_H, 								//UUID: 2800, 	VALUE: telink ota service uuid
@@ -101,6 +102,7 @@ typedef enum
 	OTA_CMD_OUT_DP_H,						//UUID: telink ota uuid,  VALUE: otaData
 	OTA_CMD_INPUT_CCB_H,					//UUID: 2902, 	VALUE: otaDataCCC
 	OTA_CMD_OUT_DESC_H,						//UUID: 2901, 	VALUE: otaName
+#endif
 
 
 	ATT_END_H,

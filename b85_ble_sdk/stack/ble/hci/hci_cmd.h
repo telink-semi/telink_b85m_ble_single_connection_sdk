@@ -49,7 +49,6 @@
 
 #include "stack/ble/ble_format.h"
 
-
 /**
  *  @brief  Command Parameters for "7.8.5 LE Set Advertising Parameters command"
  */
@@ -63,8 +62,9 @@ typedef struct {
 	u8  peerAddr[6];//BLE_ADDR_LEN];
 	u8  advChannelMap;
 	u8  advFilterPolicy;
-} adv_para_t;
+} hci_le_setAdvParam_cmdParam_t;
 
+#define adv_para_t hci_le_setAdvParam_cmdParam_t
 
 /* Advertising_Interval, Time = N * 0.625 ms,
  * Notice that these are just part of but not all Advertising_Interval value */
@@ -188,6 +188,9 @@ typedef enum{
 	OWN_ADDRESS_RESOLVE_PRIVATE_RANDOM = 3,
 }own_addr_type_t;
 
+#define OWN_ADDRESS_TYPE_RANDOM_MASK		BIT(0)
+#define OWN_ADDRESS_TYPE_RPA_MASK			BIT(1)
+
 /* Advertising_Channel_Map */
 typedef enum{
 	BLT_ENABLE_ADV_37	=		BIT(0),
@@ -289,14 +292,35 @@ typedef enum{
 	SCAN_WINDOW_1000MS              =            1600,
 }scan_wind_t;
 
-/* Scanning_Filter_Policy */
-typedef enum {
-	SCAN_FP_ALLOW_ADV_ANY						=		0x00,  //except direct adv address not match
-	SCAN_FP_ALLOW_ADV_WL        				=		0x01,  //except direct adv address not match
-	SCAN_FP_ALLOW_UNDIRECT_ADV      			=		0x02,  //and direct adv address match initiator's resolvable private MAC
-	SCAN_FP_ALLOW_ADV_WL_DIRECT_ADV_MACTH		=		0x03,  //and direct adv address match initiator's resolvable private MAC
 
+
+
+/**
+ *  @brief Scanning_Filter_Policy
+ *
+ *	0x00 	Accept all advertising and scan response PDUs except directed advertising PDUs not addressed to this device
+ *
+ *	0x01 	Accept only advertising and scan response PDUs from devices where the advertiser's address is in the White List.
+ *			Directed advertising PDUs which are not addressed to this device shall be ignored.
+ *
+ *	0x02 	Accept all advertising and scan response PDUs except directed advertising PDUs where the identity address
+ *				corresponding to TargetA does not address this device.
+ *			Note: Directed advertising PDUs where the TargetA is a resolvable private address that cannot be resolved are also accepted.
+ *
+ *	0x03 	Accept all advertising and scan response PDUs except:
+ *			. advertising and scan response PDUs where the advertiser's identity address is not in the White List; and
+ *			. directed advertising PDUs where the identity address corresponding to TargetA does not address this device.
+ *			Note: Directed advertising PDUs where TargetA is a resolvable private address that cannot be resolved are also accepted.
+ */
+typedef enum {
+	SCAN_FP_ALLOW_ADV_ANY						=		0x00,
+	SCAN_FP_ALLOW_ADV_WL 	      				=		0x01,
+	SCAN_FP_ALLOW_UNDIRECTED_ADV      			=		0x02,
+	SCAN_FP_ALLOW_ADV_WL_DIRECT_ADV_MATCH		=		0x03,
 } scan_fp_type_t;
+
+#define SCAN_FP_WHITELIST_MASK							BIT(0)
+#define SCAN_FP_DIRECT_RPA_PASS_MASK					BIT(1)
 
 
 
@@ -321,13 +345,48 @@ typedef enum {
 /**
  *  @brief  Command Parameters for "7.8.12 LE Create Connection command"
  */
+typedef struct __attribute__((packed)) {
+	u16		scan_inter;
+	u16		scan_wind;
+	u8		fp; //init_filter_policy
+  	u8		peerAddr_type;
+	u8		peer_addr[6];
+	u8		ownAddr_type;
+  	u16		conn_min;
+  	u16		conn_max;
+  	u16 	connLatency;
+  	u16		timeout;
+  	u16		ceLen_min;
+  	u16		ceLen_max;
+} hci_le_createConn_cmdParam_t;
 
-/* Initiator_Filter_Policy */
+
+
+/**
+ *  @brief Initiator_Filter_Policy
+ *
+ *	0x00 	White List is not used to determine which advertiser to connect to. Peer_Address_Type and Peer_Address shall be used.
+ *
+ *	0x01 	White List is     used to determine which advertiser to connect to. Peer_Address_Type and Peer_Address shall be ignored
+ */
 typedef enum {
 	INITIATE_FP_ADV_SPECIFY        				=		0x00,  //connect ADV specified by host
 	INITIATE_FP_ADV_WL         					=		0x01,  //connect ADV in whiteList
+} init_fp_t;
 
-} init_fp_type_t;   //init_filterPolicy_type_t
+
+/**
+ *  @brief Peer_Address_Type
+ */
+typedef enum {
+	PEERATYPE_PUBLIC_DEVICE_ADDRESS		=	0x00,  // Public Device Address
+	PEERATYPE_RANDOM_DEVICE_ADDRESS		=	0x01,  // Random Device Address
+	PEERATYPE_PUBLIC_IDENTITY_ADDRESS	=	0x02,  // Public Identity Address (Corresponds to peer's Resolvable Private Address)
+	PEERATYPE_RANDOM_IDENTITY_ADDRESS	=	0x03,  // Random (static) Identity Address (Corresponds to peer's Resolvable Private Address).
+}peer_address_type_t;
+
+#define	PEERATYPE_RANDOM_MASK			BIT(0)
+#define	PEERATYPE_IDENTITY_MASK			BIT(1)
 
 /* Connection_Interval, Time = N * 1.25 ms,
  * Notice that these are just part of but not all Connection_Interval value */
@@ -413,10 +472,74 @@ typedef enum{
 	CONN_TIMEOUT_20S				 =			  2000,
 }conn_tm_t;
 
+typedef struct{
+	u8		peer_identity_address_type;
+	u8		peer_identity_address[6];
+} le_identityAddress_t;
 
+/**
+ *  @brief  Return Parameters for "7.8.14 LE Read White List Size command"
+ */
+typedef struct {
+	u8		status;
+	u8		wl_size;
+} hci_le_readWhiteListSizeCmd_retParam_t;
 
+/**
+ *  @brief  Command Parameters for "7.8.16 LE Add Device To Filter Accept List command"
+ */
+typedef struct{
+	u8		adr_type;
+	u8		addr[6];
+} hci_le_addDeviceAcceptlist_cmdParam_t;
 
+/**
+ *  @brief  Command Parameters for "7.8.38 LE Add Device To Resolving List command"
+ */
+typedef struct{
+	u8		peer_identity_address_type;
+	u8		peer_identity_address[6];
+	u8		peer_IRK[16];
+	u8		local_IRK[16];
+} hci_le_addDeviceResolvinglist_cmdParam_t;
+/**
+ *  @brief  Identity_Address_Type
+ */
+typedef enum{
+	PUBLIC_IDENTITY_ADDRESS				= 	0x00,	//Public Identity Address
+	RANDOM_IDENTITY_ADDRESS				=	0x01,	//Random (static) Identity Address
+}ida_type_t; //identity address type
 
+/**
+ *  @brief  Return Parameters for "7.8.41 LE Read Resolving List Size command"
+ */
+typedef struct{
+	u8		status;
+	u8		rl_size;	//resolving list size
+} hci_le_readResolvingListSizeCmd_retParam_t;
+
+/**
+ *  @brief  Return Parameters for "7.8.42 LE Read Peer Resolvable Address command"
+ */
+typedef struct{
+	u8		status;
+	u8		peer_res_addr[6];
+} hci_le_readPeerResolvableAddress_retParam_t;
+
+/**
+ *  @brief  Command Parameters for "7.8.77 LE Set Privacy Mode command"
+ */
+typedef struct{
+	u8		peer_identity_address_type;
+	u8		peer_identity_address[6];
+	u8		privacy_mode;
+} hci_le_setPrivacyMode_cmdParam_t;
+
+/* Privacy_Mode for peer device */
+typedef enum{
+	NETWORK_PRIVACY_MODE	=		0x00,
+	DEVICE_PRIVACY_MODE 	=		0x01,
+}privacy_mode_t;
 
 
 /**
@@ -430,7 +553,24 @@ typedef struct {
 	u16        support_max_rx_time;
 } hci_le_readMaxDataLengthCmd_retParam_t;
 
+/**
+ *  @brief  Return Parameters for "7.8.43 LE Read Local Resolvable Address command"
+ */
+typedef struct{
+	u8		status;
+	u8		local_res_addr[6];
+} hci_le_readLocalResolvableAddress_retParam_t;
 
+/**
+ *  @brief  Command Parameters for "7.8.44 LE Set Address Resolution Enable command"
+ */
+/**
+ *  @brief  Identity_Address_Type
+ */
+typedef enum {
+	ADDR_RES_DISABLE = 0x00,	//Address Resolution Disable
+	ADDR_RES_ENABLE  = 0x01,		//Address Resolution Enable
+} addr_res_en_t;
 
 
 
@@ -546,7 +686,7 @@ typedef enum{
 #define ADVEVT_PROP_MASK_LEGACY_CONNECTABLE_SCANNABLE			(0x0013)  // ADVEVT_PROP_MASK_LEGACY | ADVEVT_PROP_MASK_CONNECTABLE | ADVEVT_PROP_MASK_SCANNABLE
 
 /* Advertising Event Properties
- * See the Core_v5.0(Vol 2/Part E/7.8.53 & Vol 6/Part B/4.4.2/Table 4.1) for more information
+ * refer to BLE SPEC:  Vol 4, Part E, "7.8.53 LE Set Extended Advertising Parameters command" & Vol 6, Part B, "4.4.2 Advertising state" for more information.
 */
 typedef enum{
   ADV_EVT_PROP_LEGACY_CONNECTABLE_SCANNABLE_UNDIRECTED 				       	= 0x0013,		//  0001 0011'b 	ADV_IND

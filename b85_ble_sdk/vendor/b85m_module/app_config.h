@@ -54,11 +54,28 @@
 #define BLE_OTA_ENABLE						1
 #define TELIK_SPP_SERVICE_ENABLE			1
 #define BLE_MODULE_INDICATE_DATA_TO_MCU		1
-#define BATT_CHECK_ENABLE       			1   //enable or disable battery voltage detection
-#define BLT_APP_LED_ENABLE					1
+#define BATT_CHECK_ENABLE		       		1	//enable or disable battery voltage detection
+#define UI_LED_ENABLE						1
+#define APP_FLASH_PROTECTION_ENABLE			0
+#define APP_BATT_VOL_LOG_EN					0
 
 //firmware check
 #define FIRMWARES_SIGNATURE_ENABLE          0
+
+///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
+#define DEBUG_GPIO_ENABLE					0
+#define UART_PRINT_DEBUG_ENABLE				0
+
+#define APP_LOG_EN							1
+#define APP_SMP_LOG_EN						0
+#define APP_KEY_LOG_EN						1
+#define APP_CONTR_EVENT_LOG_EN				1  //controller event log
+#define APP_HOST_EVENT_LOG_EN				1  //host event log
+#define APP_OTA_LOG_EN						1
+#define APP_FLASH_INIT_LOG_EN				1
+#define APP_FLASH_PROT_LOG_EN				1
+#define APP_BATT_CHECK_LOG_EN				1
+#define APP_BATT_VOL_LOG_EN					0
 
 
 //////////////// SMP SETTING  //////////////////////////////
@@ -100,13 +117,49 @@
 #endif
 
 //////////////////// LED CONFIG (EVK board) ///////////////////////////
-#if (BLT_APP_LED_ENABLE)
-	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#define LED_ON_LEVAL 					1 			//gpio output high voltage to turn on led
-		#define	GPIO_LED						GPIO_PD5    //red
-		#define PD5_FUNC						AS_GPIO
+#if (UI_LED_ENABLE)
+	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+		/* 825X EVK and 827X EVK use same GPIO for LED: PD2/PD3/PD4/PD5 */
+		#define	GPIO_LED_BLUE			GPIO_PD2
+		#define	GPIO_LED_GREEN			GPIO_PD3
+		#define	GPIO_LED_WHITE			GPIO_PD4
+		#define	GPIO_LED_RED			GPIO_PD5
+
+		#define PD2_FUNC				AS_GPIO
+		#define PD3_FUNC				AS_GPIO
+		#define PD4_FUNC				AS_GPIO
+		#define PD5_FUNC				AS_GPIO
+
+		#define	PD2_OUTPUT_ENABLE		1
+		#define	PD3_OUTPUT_ENABLE		1
+		#define PD4_OUTPUT_ENABLE		1
+		#define	PD5_OUTPUT_ENABLE		1
+
+		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
+	#elif (BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3 || BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
+		/* 825X Dongle and 827X Dongle use same GPIO for LED: PA3/PB1/PA2/PB0/PA4 */
+		#define	GPIO_LED_RED			GPIO_PA3
+		#define	GPIO_LED_WHITE			GPIO_PB1
+		#define	GPIO_LED_GREEN			GPIO_PA2
+		#define	GPIO_LED_BLUE			GPIO_PB0
+		#define	GPIO_LED_YELLOW			GPIO_PA4
+
+		#define PA3_FUNC				AS_GPIO
+		#define PB1_FUNC				AS_GPIO
+		#define PA2_FUNC				AS_GPIO
+		#define PB0_FUNC				AS_GPIO
+		#define PA4_FUNC				AS_GPIO
+
+		#define	PA3_OUTPUT_ENABLE		1
+		#define	PB1_OUTPUT_ENABLE		1
+		#define PA2_OUTPUT_ENABLE		1
+		#define	PB0_OUTPUT_ENABLE		1
+		#define	PA4_OUTPUT_ENABLE		1
+
+		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
 	#endif
 #endif
+
 
 
 
@@ -228,6 +281,13 @@ typedef struct{
 	#endif
 #endif  //end of DEBUG_GPIO_ENABLE
 
+/////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           					GPIO_PB5
+	#define PULL_WAKEUP_SRC_PB5         					PM_PIN_PULLUP_10K
+	#define PB5_OUTPUT_ENABLE         						1
+	#define PB5_DATA_OUT                                    1 //must
+#endif
 
 /////////////////// set default   ////////////////
 

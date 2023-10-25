@@ -61,8 +61,9 @@
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE								0
-
 #define UART_PRINT_DEBUG_ENABLE							1
+#define APP_FLASH_INIT_LOG_EN							0
+#define APP_LOG_EN										1
 
 /////////////////////// Feature Test Board Select Configuration ///////////////////////////////
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
@@ -162,21 +163,16 @@
 
 #if (UART_PRINT_DEBUG_ENABLE)
     #if(FEATURE_TEST_MODE == TEST_MDATA_LENGTH_EXTENSION)
-		//the baud rate should not bigger than 1M(system timer clock is constant 16M)
-		#define PRINT_BAUD_RATE             					1000000
 		#define DEBUG_INFO_TX_PIN           					GPIO_PB2
 		#define PULL_WAKEUP_SRC_PB2         					PM_PIN_PULLUP_10K
 		#define PB2_OUTPUT_ENABLE         						1
 		#define PB2_DATA_OUT                                    1 //must
 	#else
-		//the baud rate should not bigger than 1M(system timer clock is constant 16M)
-		#define PRINT_BAUD_RATE             					1000000
 		#define DEBUG_INFO_TX_PIN           					GPIO_PB1
 		#define PULL_WAKEUP_SRC_PB1         					PM_PIN_PULLUP_10K
 		#define PB1_OUTPUT_ENABLE         						1
         #define PB1_DATA_OUT                                    1 //must
 	#endif
-	#include "application/print/u_printf.h"
 #endif
 
 /**

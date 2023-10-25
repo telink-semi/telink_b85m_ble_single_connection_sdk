@@ -61,6 +61,7 @@
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE								0
+#define APP_FLASH_INIT_LOG_EN							0
 
 
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48

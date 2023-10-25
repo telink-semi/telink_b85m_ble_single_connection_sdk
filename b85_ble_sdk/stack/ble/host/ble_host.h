@@ -50,6 +50,7 @@
 #include "stack/ble/ble_format.h"
 
 #include "stack/ble/host/l2cap/l2cap.h"
+#include "stack/ble/host/signaling/signaling.h"
 
 
 #include "stack/ble/host/attr/att.h"
@@ -57,7 +58,6 @@
 
 
 #include "stack/ble/host/smp/smp.h"
-#include "stack/ble/host/smp/smp_alg.h"
 #include "stack/ble/host/smp/smp_peripheral.h"
 #include "stack/ble/host/smp/smp_storage.h"
 
@@ -66,6 +66,7 @@
 #include "stack/ble/host/gap/gap_event.h"
 
 
+#include "stack/ble/device/multi_device.h"
 
 
 #if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)

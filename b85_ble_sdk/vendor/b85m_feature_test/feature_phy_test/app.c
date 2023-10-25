@@ -196,9 +196,9 @@ void app_phytest_irq_proc(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
-
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 
@@ -220,6 +220,10 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 	u8  mac_public[6];
 	u8  mac_random_static[6];
@@ -244,7 +248,7 @@ void user_init_normal(void)
 		uart_reset();
 	#endif
 
-		uart_recbuff_init((unsigned short*)hci_rx_fifo_b, hci_rx_fifo.size);
+		uart_recbuff_init((unsigned char*)hci_rx_fifo_b, hci_rx_fifo.size);
 
 	#if (CLOCK_SYS_CLOCK_HZ == 16000000)
 		uart_init(9,13,PARITY_NONE, STOP_BIT_ONE); //baud rate: 115200

@@ -190,7 +190,7 @@ typedef struct {
 	u8         peerAddrType;
 	u8         peerAddr[6];
 	u16        connInterval;
-	u16        slaveLatency;
+	u16        peripheralLatency;
 	u16        supervisionTimeout;
 	u8         masterClkAccuracy;
 } hci_le_connectionCompleteEvt_t;
@@ -317,7 +317,7 @@ typedef struct {
 /**
  *  @brief  Event Parameters for "7.7.65.10 LE Enhanced Connection Complete event"
  */
-typedef struct {
+typedef struct __attribute__((packed))  {
 	u8         subEventCode;
 	u8         status;
 	u16		   connHandle;
@@ -327,8 +327,8 @@ typedef struct {
 	u8         localRslvPrivAddr[6];
 	u8         Peer_RslvPrivAddr[6];
 	u16        connInterval;
-	u16        conneLatency;
-	u16        supervisionTimeout;
+	u16        connLatency;
+	u16        superTimeout;
 	u8         masterClkAccuracy;
 } hci_le_enhancedConnCompleteEvt_t;
 
@@ -608,8 +608,8 @@ int  hci_cmdComplete_evt(u8 numHciCmds, u8 opCode_ocf, u8 opCode_ogf, u8 paraLen
 void hci_cmdStatus_evt(u8 numHciCmds, u8 opCode_ocf, u8 opCode_ogf, u8 status, u8 *result);
 
 
-void hci_le_connectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr,
-                                   u16 connInterval, u16 slaveLatency, u16 supervisionTimeout, u8 masterClkAccuracy);
+int		hci_le_connectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr,
+                                      u16 connInterval, u16 periphr_Latency, u16 supervisionTimeout, u8 masterClkAccuracy);
 void hci_le_connectionUpdateComplete_evt(u8 status, u16 connHandle, u16 connInterval,
         									u16 connLatency, u16 supervisionTimeout);
 void hci_le_readRemoteFeaturesComplete_evt(u8 status, u16 connHandle, u8 * feature);
@@ -623,11 +623,8 @@ void hci_le_data_len_update_evt(u16 connhandle,u16 effTxOctets, u16 effRxOctets,
 int hci_le_longTermKeyRequest_evt(u16 connHandle, u8* random, u16 ediv, u8* result);
 int hci_le_readLocalP256KeyComplete_evt(u8* localP256Key, u8 status);
 int hci_le_generateDHKeyComplete_evt(u8* DHkey, u8 status);
-
-#if (LL_FEATURE_ENABLE_LL_PRIVACY)
-void hci_le_enhancedConnectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr, u8 *loaclRpa, u8 *peerRpa,
-                                           u16 connInterval, u16 connLatency, u16 supervisionTimeout, u8 masterClkAccuracy);
-#endif
+int		hci_le_enhancedConnectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr, u8 *localRpa, u8 *peerRpa,
+                                              u16 connInterval, u16 connLatency, u16 supervisionTimeout, u8 masterClkAccuracy);
 int hci_le_encryptChange_evt(u16 connhandle,  u8 encrypt_en);
 int hci_le_encryptKeyRefresh_evt(u16 connhandle);
 

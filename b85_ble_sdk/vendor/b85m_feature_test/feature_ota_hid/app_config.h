@@ -55,6 +55,7 @@
 #define TEST_CONN_CURRENT_ENABLE            			0 //test connection current, disable UI to have a pure power
 #define BLE_REMOTE_SECURITY_ENABLE      				1
 #define FEATURE_HID_OTA									1
+#define APP_FLASH_INIT_LOG_EN							0
 
 /////////////////////// Sample Test Board Select Configuration ///////////////////////////////
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
@@ -64,11 +65,11 @@
 
 
 
-#if (__PROJECT_8258_BLE_SAMPLE__)
+#if (__PROJECT_8258_FEATURE_TEST__)
 	/* can only choose BOARD_825X_EVK_C1T139A30 or BOARD_825X_DONGLE_C1T139A3,
 	 * default use EVK, user can select Dongle */
 	#define BOARD_SELECT							BOARD_825X_EVK_C1T139A30
-#elif (__PROJECT_8278_BLE_SAMPLE__)
+#elif (__PROJECT_8278_FEATURE_TEST__)
 	/* can only choose BOARD_827X_EVK_C1T197A30 or BOARD_827X_DONGLE_C1T201A3,
 	 * default use EVK, user can select Dongle */
 	#define BOARD_SELECT							BOARD_827X_EVK_C1T197A30

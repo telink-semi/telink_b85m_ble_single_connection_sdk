@@ -95,13 +95,16 @@
 #define TEST_WHITELIST									110
 #define	TEST_CSA2										120
 
+#define	TEST_MULTIPLE_LOCAL_DEVICE						125
+
+#define TEST_USER_BLT_SOFT_UART							130
 
 #define TEST_FEATURE_BACKUP								200
 
 
 
 
-#define FEATURE_TEST_MODE								TEST_LL_PRIVACY_MASTER
+#define FEATURE_TEST_MODE								TEST_FEATURE_BACKUP
 
 
 

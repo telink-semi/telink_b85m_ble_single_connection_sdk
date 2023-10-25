@@ -267,7 +267,7 @@ static const u16 include[3] = {BATT_PS_H, BATT_LEVEL_INPUT_CCB_H, SERVICE_UUID_B
 
 //// GAP attribute values
 static const u8 my_devNameCharVal[5] = {
-	CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ,
 	U16_LO(GenericAccess_DeviceName_DP_H), U16_HI(GenericAccess_DeviceName_DP_H),
 	U16_LO(GATT_UUID_DEVICE_NAME), U16_HI(GATT_UUID_DEVICE_NAME)
 };
@@ -368,12 +368,12 @@ static const u8 my_batCharVal[5] = {
 
 //// OTA attribute values
 static const u8 my_OtaCharVal[19] = {
-	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY | CHAR_PROP_WRITE,
 	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
 	TELINK_SPP_DATA_OTA,
 };
 
-extern int module_onReceiveData(rf_packet_att_write_t *p);
+extern int module_onReceiveData(void *p);
 
 // TM : to modify
 static const attribute_t my_Attributes[] = {

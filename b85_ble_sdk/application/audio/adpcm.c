@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	adpcm.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -154,26 +154,29 @@ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start
 //static int serial_id = 0;
 
 unsigned short adpcm_serial_num = 0;
-
+static int predict_idx = 1;
+static int predict = 0;
 void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start)
 {
 	int i, j;
 	unsigned short code=0;
 	unsigned short code16=0;
 	static signed short *pd;
-	static int predict_idx = 1;
 	code = 0;
-	static int predict;
-
+//	static unsigned short codec_used = 0x02; // 16k
 	//Seq# 2bytes; Id: 1bytes; Prev.pred: 2bytes; index: 1bytes
-	if (start)
+	if (start == GOOGLE_AUDIO_V0P4)
 	{
 		pd = pds;
 		*pd++ = ((adpcm_serial_num>>8)&0x00ff)|((adpcm_serial_num<<8)&0xff00);
 		*pd++ = (ADPCM_ANDROID_ID)|((predict&0xff00));
 		*pd++ = ((predict)&0x00ff)|((predict_idx<<8)&0xff00);
-		adpcm_serial_num ++;
 	}
+	// v1.0 pure audio data
+	else if(start == GOOGLE_AUDIO_V1P0) {
+		pd = pds;
+	}
+	adpcm_serial_num ++;
 
 	for(i=0 ; i<len; i++){//unit sample
 
@@ -188,7 +191,7 @@ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start
 			code = 8;
 		}
 
-		int diffq = step >> 3;
+		int diffq = step >> 3; 
 
 		for(j=4; j>0; j=j>>1){
 			if(diff >= step){

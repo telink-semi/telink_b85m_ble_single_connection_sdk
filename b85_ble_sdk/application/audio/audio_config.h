@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	audio_config.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -57,9 +57,20 @@
 		#define TL_MIC_ADPCM_UNIT_SIZE			248
 		#define	TL_MIC_BUFFER_SIZE				992
 	#elif (TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_GOOGLE)
-		#define	ADPCM_PACKET_LEN				136		//(128+6+2)
-		#define TL_MIC_ADPCM_UNIT_SIZE			256
-		#define	TL_MIC_BUFFER_SIZE				1024
+		#define GOOGLE_AUDIO_V0P4				1
+		#define	GOOGLE_AUDIO_V1P0				2
+		#define GOOGLE_AUDIO_VERSION			GOOGLE_AUDIO_V1P0
+		#if(GOOGLE_AUDIO_VERSION == GOOGLE_AUDIO_V1P0)
+			#define TL_MIC_ADPCM_UNIT_SIZE						240
+			#define ADPCM_PACKET_LEN							120
+			#define TL_MIC_BUFFER_SIZE							960
+			#define ADPCM_BUFFER_SIZE			(GOOGLE_V1P0_ADPCM_PACKET_LEN * GOOGLE_V1P0_ADPCM_PACKET_NUM)
+			#define GOOGLE_AUDIO_DLE							0
+		#else
+			#define	ADPCM_PACKET_LEN							136		//(128+6+2)
+			#define TL_MIC_ADPCM_UNIT_SIZE						256
+			#define	TL_MIC_BUFFER_SIZE							1024
+		#endif
 	#elif (TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_HID_DONGLE_TO_STB)
 		#define	ADPCM_PACKET_LEN				120
 		#define TL_MIC_ADPCM_UNIT_SIZE			240

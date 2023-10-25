@@ -80,13 +80,9 @@ int main (void)
 
 	gpio_init(1);
 
-	rf_drv_init(RF_MODE_BLE_1M);
+	rf_drv_ble_init();
 
 	usb_init ();
-
-	blc_readFlashSize_autoConfigCustomFlashSector();//read flash size
-
-	blc_app_loadCustomizedParameters();  //load customized freq_offset cap value
 
 	user_init ();
 

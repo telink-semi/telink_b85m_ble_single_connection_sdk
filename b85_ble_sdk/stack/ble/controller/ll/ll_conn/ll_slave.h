@@ -149,9 +149,6 @@ ble_sts_t 	bls_hci_mod_setEventMask_cmd(u32 evtMask);
 	void		bls_ll_restoreConnBrxEvent(void);
 #endif
 
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-	#define blc_ll_disconnect(conn, reason)     	bls_ll_terminateConnection(reason)
-#endif
 
 /**
  * @brief      Reset the most recently recorded average RSSI.

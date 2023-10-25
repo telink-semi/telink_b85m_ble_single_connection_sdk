@@ -66,7 +66,7 @@
 #include "stack/ble/controller/ll/ll_conn/ll_conn.h"
 #include "stack/ble/controller/ll/ll_conn/ll_slave.h"
 #include "stack/ble/controller/ll/ll_conn/ll_conn_csa.h"
-
+#include "stack/ble/debug/debug.h"
 #if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 #include "stack/ble/controller/ll/ll_init.h"
 #include "stack/ble/controller/ll/ll_conn/ll_master.h"
@@ -74,13 +74,15 @@
 
 #include "stack/ble/controller/ll/ll_ext_adv.h"
 
+#include "stack/ble/device/multi_device.h"
 
 #include "phy/phy.h"
+
 #include "phy/phy_test.h"
 
+#include "algorithm/algorithm.h"
 
-#include "algorithm/ecc/ecc_ll.h"
-#include "algorithm/aes_ccm/aes_ccm.h"
+
 
 
 

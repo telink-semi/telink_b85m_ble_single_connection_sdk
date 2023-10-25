@@ -57,6 +57,8 @@
 
 #if (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
 
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
+
 MYFIFO_INIT(blt_rxfifo, 64, 16);
 MYFIFO_INIT(blt_txfifo, 40, 8);
 
@@ -64,7 +66,7 @@ MYFIFO_INIT(blt_txfifo, 40, 8);
 
 u8	local_addr_type = OWN_ADDRESS_PUBLIC;
 
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
+#if	LL_FEATURE_ENABLE_PRIVACY
 
 	smp_master_param_save_t  dev_msg;
 	/**
@@ -82,56 +84,9 @@ u8	local_addr_type = OWN_ADDRESS_PUBLIC;
 		{
 			case GAP_EVT_SMP_PAIRING_SUCCESS:
 			{
-				gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
+				gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
 
 				if(p->bonding_result){
-
-					dev_char_info_t *pt = &cur_conn_device;		//get current device mac
-					u8	index = 0;
-					if(IS_RESOLVABLE_PRIVATE_ADDR(pt->mac_adrType,pt->mac_addr))	//resolvable
-					{
-						u8 index_rl = blt_ll_searchAddr_in_ResolvingList_index(pt->mac_adrType,pt->mac_addr);
-						if( index_rl )
-						{
-							index = tbl_bond_slave_search(ll_resolvingList_tbl.rlList[index_rl-1].rlIdAddrType,ll_resolvingList_tbl.rlList[index_rl-1].rlIdAddr);
-						}
-					}
-					else
-					{
-						index = tbl_bond_slave_search(pt->mac_adrType,pt->mac_addr);
-					}
-
-
-					extern bond_slave_t  tbl_bondSlave;  //slave mac bond table
-					u32 device_add = tbl_bondSlave.bond_flash_idx[index-1];
-
-					printf("bond number after Conn = %x\n",device_add);
-
-					//flash_read_data
-					flash_read_page(device_add,sizeof(smp_master_param_save_t),(unsigned char *)(&dev_msg) );
-
-					ll_resolvingList_setAddrResolutionEnable(0);
-
-					u8 reason = ll_resolvingList_add(dev_msg.adr_type,&dev_msg.address[0],&dev_msg.peer_irk[0],&dev_msg.local_irk[0]);
-
-					printf("Conn :");
-					printf("peer adr: ");
-					printf("%x %x %x %x %x %x\n",ll_resolvingList_tbl.rlList[0].rlPeerRpa[0],ll_resolvingList_tbl.rlList[0].rlPeerRpa[1],	\
-												 ll_resolvingList_tbl.rlList[0].rlPeerRpa[2],ll_resolvingList_tbl.rlList[0].rlPeerRpa[3],	\
-												 ll_resolvingList_tbl.rlList[0].rlPeerRpa[4],ll_resolvingList_tbl.rlList[0].rlPeerRpa[5]);
-
-					printf("local adr: ");
-					printf("%x %x %x %x %x %x\n",ll_resolvingList_tbl.rlList[0].rlLocalRpa[0],ll_resolvingList_tbl.rlList[0].rlLocalRpa[1],	\
-												 ll_resolvingList_tbl.rlList[0].rlLocalRpa[2],ll_resolvingList_tbl.rlList[0].rlLocalRpa[3],	\
-												 ll_resolvingList_tbl.rlList[0].rlLocalRpa[4],ll_resolvingList_tbl.rlList[0].rlLocalRpa[5]);
-
-					ll_resolvingList_setAddrResolutionEnable(1);
-					ll_resolvingList_setResolvablePrivateAddrTimer(15);
-
-					printf("reason:%x , blm:%d\n",reason,blm_create_connection);
-
-					printf("En:%d",ll_resolvingList_tbl.rpaTmoCtrl.rpaTmrEn);
-					printf("Tick:%x",ll_resolvingList_tbl.rpaTmoCtrl.rpaTmr1sChkTick);
 
 				}
 				else{
@@ -156,6 +111,10 @@ void user_init(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 	//set USB ID
 	REG_ADDR8(0x74) = 0x62;
@@ -190,7 +149,7 @@ void user_init(void)
 	blc_ll_initConnection_module();						//connection module  mandatory for BLE slave/master
 	blc_ll_initMasterRoleSingleConn_module();			//master module: 	 mandatory for BLE master,
 
-	rf_set_power_level_index (RF_POWER_P3dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	////// Host Initialization  //////////
 	blc_gap_central_init();										//gap initialization
@@ -209,7 +168,7 @@ void user_init(void)
 
 
 
-	blm_smp_configParingSecurityInfoStorageAddr(FLASH_ADR_PARING);
+	blm_smp_configPairingSecurityInfoStorageAddr(FLASH_ADR_PARING);
 	blm_smp_registerSmpFinishCb(app_host_smp_finish);
 
 	blc_smp_central_init();
@@ -220,11 +179,6 @@ void user_init(void)
 
 	extern int host_att_register_idle_func (void *p);
 	host_att_register_idle_func (main_idle_loop);
-
-
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-
-	blc_ll_resolvListInit();
 
 	blc_gap_setEventMask( GAP_EVT_MASK_SMP_PAIRING_SUCCESS );
 	blc_gap_registerHostEventHandler( app_host_event_callback );
@@ -242,20 +196,12 @@ void user_init(void)
 		flash_read_page(device_add,sizeof(smp_master_param_save_t),(unsigned char *)(&dev_msg) );
 
 		//add bonding message to resolve list
-		ll_resolvingList_add(dev_msg.adr_type,&dev_msg.address[0],&dev_msg.peer_irk[0],&dev_msg.local_irk[0]);
+		blc_ll_addDeviceToResolvingList(dev_msg.adr_type,dev_msg.address,dev_msg.peer_irk,dev_msg.local_irk);
 
-#if	LOCAL_ADDR_RPA_EN
 		local_addr_type = OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC;
 
-		ll_resolvingList_setAddrResolutionEnable(1);
-		ll_resolvingList_setResolvablePrivateAddrTimer(15);
-#else
-		local_addr_type = OWN_ADDRESS_PUBLIC;
-#endif
+		blc_ll_setAddressResolutionEnable(1);
 	}
-
-
-#endif
 
 	//set scan parameter and scan enable
 

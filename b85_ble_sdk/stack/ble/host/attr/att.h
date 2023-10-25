@@ -50,7 +50,7 @@
 
 /** @defgroup ATT_PERMISSIONS_BITMAPS GAP ATT Attribute Access Permissions Bit Fields
  * @{
- * (See the Core_v5.0(Vol 3/Part C/10.3.1/Table 10.2) for more information)
+ * (refer to BLE SPEC: Vol 3, Part C, "10.3.1 Responding to a Service Request" for more information.)
  */
 #define ATT_PERMISSIONS_AUTHOR				 0x10 //Attribute access(Read & Write) requires Authorization
 #define ATT_PERMISSIONS_ENCRYPT				 0x20 //Attribute access(Read & Write) requires Encryption
@@ -121,8 +121,16 @@ typedef struct attribute
   att_readwrite_callback_t r;
 } attribute_t;
 
+typedef struct {
+	unsigned char opcode;
+	unsigned char data[0];
+} attr_pkt_t;
 
-
+typedef struct {
+	u16 handle;
+	u16 length;
+	u8* value;
+} atts_mulHandleNtf_t;
 
 /**
  * @brief	This function is used to define ATT MTU size exchange callback
@@ -135,6 +143,15 @@ typedef int (*att_mtuSizeExchange_callback_t)(u16, u16);
 typedef int (*att_handleValueConfirm_callback_t)(void);
 
 
+/**
+ * @brief		application custom ATT handle table element structure
+ * @attention	All att handles, including attHl_sdk and attHl_cus must be sorted in ascending order.
+ * @attention	The min attHl_cus must larger than att table size.
+ */
+typedef struct att_convert_t{
+  u16  attHl_sdk; //attribute handle value in attribute table
+  u16  attHl_cus; //attribute handle value for custom need
+} attHl_convert_t;
 
 
 /**
@@ -212,6 +229,15 @@ u16  blc_att_getEffectiveMtuSize(u16 connHandle);
  * @return     none.
  */
 void 		blc_att_enableWriteReqReject (u8 WriteReqReject_en);
+
+/**
+ * @brief      This function is used to set reject of read request. If enable, return of ATT read callback will take effect.  Error codes refer to Core Spec.
+ * @param[in]  ReadReqReject_en - 0: Disable;
+ *                           1: Enable.
+ * @return     none.
+ */
+void 		blc_att_enableReadReqReject (u8 ReadReqReject_en);
+
 
 
 #if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
@@ -335,6 +361,15 @@ void 	att_req_write (u8 *dat, u16 attHandle, u8 *buf, int len);
  * @return     none
  */
 void 	att_req_write_cmd (u8 *dat, u16 attHandle, u8 *buf, int len);
+
+/**
+ * @brief      This function is used to send command, 0x20: ATT_OP_READ_MULTIPLE_VARIABLE_REQ
+ * @param[in]  p - send buffer
+ * @param[in]  h - attribute handle
+ * @param[in]  n - handles number
+ * @return     none
+ */
+void    att_req_read_multiple_variable (u8 *p, u16 *h ,u8 n);
 
 #endif
 

@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	sbc.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020

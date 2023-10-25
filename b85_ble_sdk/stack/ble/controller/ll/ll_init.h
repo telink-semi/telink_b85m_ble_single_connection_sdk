@@ -47,42 +47,35 @@
 #define LL_INIT_H_
 
 
-extern int blm_create_connection;
-
-
-/******************************* User Interface  ************************************/
 
 /**
- * @brief      this function is used to initiate link layer initiating state .
+ * @brief      for user to initialize legacy initiating module
+ * 			   notice that only one module can be selected between legacy initiating module and extended initiating module
  * @param	   none
  * @return     none
  */
 void	 	blc_ll_initInitiating_module(void);
 
 
+
 /**
- * @brief      this function is used to start connection process .
- * @param[in]  scan_interval - scan interval
- * @param[in]  scan_window - scan window
- * @param[in]  initiator_filter_policy - filter policy
- * @param[in]  adr_type - ADV type
- * @param[in]  mac - MAC
- * @param[in]  own_adr_type - own type
- * @param[in]  conn_min - minimum connection interval
- * @param[in]  connHandle - connect handle
- * @param[in]  conn_min - minimum connection interval
- * @param[in]  conn_max - maximum connection interval
- * @param[in]  conn_latency - connection latency
- * @param[in]  timeout - connection timeout
- * @param[in]  ce_min - not supported
- * @param[in]  ce_max - not supported
- * @return     status, 0x00:  succeed
- * 					   other: failed
+ * @brief      This function is used to create an ACL connection to a connectable advertiser.
+ * @param[in]  scan_interval - recommendations from the Host on how frequently (LE_Scan_Interval) the Controller should scan.
+ * @param[in]  scan_window - recommendations from the Host on how long (LE_Scan_Window) the Controller should scan.
+ * @param[in]  filter_policy - used to determine whether the White List is used.
+ * @param[in]  adr_type - indicates the type of address used in the connectable advertisement sent by the peer.
+ * @param[in]  *mac - indicates the Peer's Public Device Address.
+ * @param[in]  own_adr_type - indicates the type of address being used in the connection request packets.
+ * @param[in]  conn_min - the minimum allowed connection interval.
+ * @param[in]  conn_max - the maximum allowed connection interval.
+ * @param[in]  conn_latency - he maximum allowed connection latency
+ * @param[in]  timeout - defines the link supervision timeout for the connection.
+ * @param[in]  ce_min - informative parameters providing the Controller with the expected minimum length of the connection events.
+ * @param[in]  ce_max - informative parameters providing the Controller with the expected maximum length of the connection events.
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_ll_createConnection (u16 scan_interval, u16 scan_window, init_fp_type_t initiator_filter_policy,
-							  u8 adr_type, u8 *mac, u8 own_adr_type,
-							  u16 conn_min, u16 conn_max, u16 conn_latency, u16 timeout,
-							  u16 ce_min, u16 ce_max );
+ble_sts_t 	blc_ll_createConnection( scan_inter_t scanInter, scan_wind_t scanWindow, init_fp_t initiator_fp, u8 peerAdrType,    u8 *peerAddr, own_addr_type_t ownAdrType,
+									 conn_inter_t conn_min,  conn_inter_t conn_max,  u16 conn_latency,       conn_tm_t timeout, u16 ce_min,   u16 ce_max );
 
 
 /**

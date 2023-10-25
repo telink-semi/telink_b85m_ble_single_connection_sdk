@@ -61,6 +61,17 @@
  */
 ble_sts_t	blc_gatt_pushHandleValueNotify  (u16 connHandle, u16 attHandle, u8 *p, int len);
 
+/**
+ * @brief	   This function is used to notify a client of the Handle-Length-Value Tuple of a Characteristic Value from a server
+ * @param[in]  connHandle - connection handle
+ * @param[in]  lists - Handle Length Value Tuple
+ * 				Handle    | Length    | Value
+ * 				----------|-----------|---------------
+ * 				2 octets  | 2 octets  | (Length)octets
+ * @param[in]  listNum - number of handle value length tuple list
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t	blc_gatt_pushMultiHandleValueNotify  (u16 connHandle, atts_mulHandleNtf_t* lists, u8 listNum);
 
 /**
  * @brief	   This function is used to indicate the Characteristic Value from a server to a client.
@@ -164,4 +175,32 @@ ble_sts_t 	blc_gatt_pushReadBlobRequest (u16 connHandle, u16 attHandle, u16 offs
 ble_sts_t 	blc_gatt_pushReadByGroupTypeRequest (u16 connHandle, u16 start_attHandle, u16 end_attHandle, u8 *uuid, int uuid_len);
 
 
+/**
+ * @brief	   This function is used to transmit prepare data to peer side.
+ * @param[in]  connHandle -  connection handle
+ * @param[in]  attHandle -  attribute handle.
+ * @param[in]  valOffset   - data offset.
+ * @param[in]  data - transmit data.
+ * @param[in]  data_len - transmit data len.
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t blc_gatt_pushPrepareWriteRequest (u16 connHandle, u16 attHandle, u16 valOffset,u8 *data, int data_len);
+
+
+/**
+ * @brief	   This function is used to execute prepare write.
+ * @param[in]  connHandle -  connection handle
+ * @param[in]  value - 0x00:Cancel all prepared writes
+ * 					   0x01:Immediately write all pending prepared values
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t blc_gatt_pushExecuteWriteRequest(u16 connHandle,u8 value);
+
+
+/**
+ * @brief       Send ATT handle value confirm.
+ * @param[in]   connHandle         - connection handle.
+ * @return      ble_sts_t.
+ */
+ble_sts_t blc_gatt_pushConfirm(u16 connHandle);
 #endif /* GATT_H_ */

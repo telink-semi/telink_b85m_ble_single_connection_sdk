@@ -101,16 +101,11 @@ _attribute_ram_code_ int main (void)    //must run in ramcode
 	cpu_wakeup_init(LDO_MODE,EXTERNAL_XTAL_24M);
 #endif
 
-	rf_drv_init(RF_MODE_BLE_1M);
+	rf_drv_ble_init();
 
 	gpio_init(1);
 
 	clock_init(SYS_CLK_TYPE);
-
-	//read flash size
-	blc_readFlashSize_autoConfigCustomFlashSector();
-
-	blc_app_loadCustomizedParameters();  //load customized freq_offset cap value
 
 
 #if	(PM_DEEPSLEEP_RETENTION_ENABLE)

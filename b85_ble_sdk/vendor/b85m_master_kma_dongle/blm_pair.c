@@ -63,7 +63,7 @@ man_pair_t blm_manPair;
 /* define pair slave max num,
    if exceed this max num, two methods to process new slave pairing
    method 1: overwrite the oldest one(telink use this method)
-   method 2: not allow paring unness unpair happened  */
+   method 2: not allow pairing unness unpair happened  */
 #define	USER_PAIR_SLAVE_MAX_NUM       1  //telink use max 1
 
 
@@ -289,7 +289,7 @@ void	user_bond_slave_flash_clean (void)
 }
 
 /**
- * @brief		this function serves to init the master host paring
+ * @brief		this function serves to init the master host pairing
  * @param[in]	none
  * @return      none
  */
@@ -322,7 +322,7 @@ void	user_master_host_pairing_flash_init(void)
 }
 
 /**
- * @brief		this function serves to init the master host paring management
+ * @brief		this function serves to init the master host pairing management
  * @param[in]	none
  * @return      none
  */

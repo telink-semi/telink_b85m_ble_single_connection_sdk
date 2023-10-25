@@ -85,7 +85,7 @@ typedef struct {
 
 typedef struct {
 	u8	token;
-	u8  paramLen;
+	u16  paramLen;
 	u16 eventId;
 	u8  param[0];
 } spp_event_t;

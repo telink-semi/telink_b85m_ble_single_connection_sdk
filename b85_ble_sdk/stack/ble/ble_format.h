@@ -91,8 +91,6 @@ typedef struct {
     u8 rf_len;
 }rf_cis_data_hdr_t;
 
-
-
 typedef struct {
     u8 llid   :2;
     u8 cssn   :3;
@@ -100,8 +98,6 @@ typedef struct {
     u8 rfu0   :2;
     u8 rf_len;
 }rf_bis_data_hdr_t;
-
-
 
 typedef struct{
 	u32 dma_len;
@@ -117,38 +113,6 @@ typedef struct{
 	u8	advA[6];			//address
 	u8	data[31];
 }rf_packet_adv_t;
-
-
-
-typedef struct{
-	u32 dma_len;
-
-	u8  type   :4;
-	u8  rfu1   :1;
-	u8  chan_sel:1;
-	u8  txAddr :1;
-	u8  rxAddr :1;
-
-	u8  rf_len;				//LEN(6)_RFU(2)
-
-	u8	scanA[6];			//
-	u8	advA[6];			//
-}rf_packet_scan_req_t;
-
-typedef struct{
-	u32 dma_len;
-
-	u8  type   :4;
-	u8  rfu1   :1;
-	u8  chan_sel:1;
-	u8  txAddr :1;
-	u8  rxAddr :1;
-
-	u8  rf_len;				//LEN(6)_RFU(2)
-
-	u8	advA[6];			//address
-	u8	data[31];			//0-31 byte
-}rf_packet_scan_rsp_t;
 
 typedef struct{
 	u32 dma_len;
@@ -173,28 +137,7 @@ typedef struct{
 	u8	hop;				//sca(3)_hop(5)
 }rf_packet_connect_t;
 
-typedef struct{
-	u32 dma_len;
 
-	u8  type   :4;
-	u8  rfu1   :1;
-	u8  chan_sel:1;
-	u8  txAddr :1;
-	u8  rxAddr :1;
-
-	u8  rf_len;				//LEN(6)_RFU(2)
-	u8	scanA[6];			//
-	u8	advA[6];			//
-	u8	aa[4];				// access code
-	u8	crcinit[3];
-	u8	wsize;
-	u16	woffset;
-	u16 interval;
-	u16 latency;
-	u16 timeout;
-	u8	chm[5];
-	u8	hop;				//sca(3)_hop(5)
-}rf_packet_ll_init_t;
 
 typedef struct {
 	u8	type;
@@ -423,17 +366,6 @@ typedef struct{
 	u8 data[1];
 }rf_packet_l2cap_t;
 
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-typedef struct{
-	rf_data_head_t	header;
-	u8  rf_len;
-	u16	l2capLen;
-	u16	chanId;
-	u8  opcode;
-	u16  handle;
-	u8	dat[20];
-}rf_packet_att_t;
-#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 typedef struct{
 	rf_data_head_t	header;
 	u8  rf_len;
@@ -444,7 +376,6 @@ typedef struct{
 	u8  handle1;
 	u8	dat[20];
 }rf_packet_att_t;
-#endif
 
 typedef struct{
 	u8	type;

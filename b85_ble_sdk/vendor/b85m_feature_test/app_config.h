@@ -80,6 +80,10 @@
 	#include "feature_ota_hid/app_config.h"
 #elif (FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_TIMER || FEATURE_TEST_MODE == TEST_WHITELIST || FEATURE_TEST_MODE == TEST_CSA2)
 	#include "feature_misc/app_config.h"
+#elif(FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_UART)
+	#include "feature_soft_uart/app_config.h"
+#elif (FEATURE_TEST_MODE == TEST_MULTIPLE_LOCAL_DEVICE)
+	#include "feature_multi_local_dev/app_config.h"
 #elif (FEATURE_TEST_MODE == TEST_FEATURE_BACKUP)
 	#include "feature_backup/app_config.h"
 #endif

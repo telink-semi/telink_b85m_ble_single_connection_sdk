@@ -70,7 +70,9 @@ static const u16 reportRefUUID = GATT_UUID_REPORT_REF;
 
 static const u16 characterPresentFormatUUID = GATT_UUID_CHAR_PRESENT_FORMAT;
 
+#if (BLE_OTA_ENABLE)
 static const u16 userdesc_UUID	= GATT_UUID_CHAR_USER_DESC;
+#endif
 
 static const u16 serviceChangeUUID = GATT_UUID_SERVICE_CHANGE;
 
@@ -107,13 +109,14 @@ extern  u8 ble_devName[];
 static const u8 my_PnPtrs [] = {0x02, 0x8a, 0x24, 0x66, 0x82, 0x01, 0x00};
 
 
-
+#if (BLE_OTA_ENABLE)
 //////////////////////// OTA  ////////////////////////////////////////////////////
 static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
 static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 static u8 my_OtaData 						        = 0x00;
 static u8 otaDataCCC[2] 							= {0,0};
 static const  u8 my_OtaName[] 						= {'O', 'T', 'A'};
+#endif
 
 ////////////////////// SPP ////////////////////////////////////
 static const u8 TelinkSppServiceUUID[16]	      	    = WRAPPING_BRACES(TELINK_SPP_UUID_SERVICE);
@@ -137,7 +140,7 @@ static const u8 TelinkSPPC2SDescriptor[]        		= "Telink SPP: Phone->Module";
 
 //// GAP attribute values
 static const u8 my_devNameCharVal[5] = {
-	CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ,
 	U16_LO(GenericAccess_DeviceName_DP_H), U16_HI(GenericAccess_DeviceName_DP_H),
 	U16_LO(GATT_UUID_DEVICE_NAME), U16_HI(GATT_UUID_DEVICE_NAME)
 };
@@ -182,12 +185,14 @@ static const u8 TelinkSppDataClient2ServerCharVal[19] = {
 };
 
 
+#if (BLE_OTA_ENABLE)
 //// OTA attribute values
 static const u8 my_OtaCharVal[19] = {
-	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY | CHAR_PROP_WRITE,
 	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
 	TELINK_SPP_DATA_OTA
 };
+#endif
 
 /**
  * @brief      write callback of Attribute of TelinkSppDataClient2ServerUUID
@@ -251,7 +256,7 @@ static const attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(SppDataClient2ServerData),(u8*)(&TelinkSppDataClient2ServerUUID), (u8*)(SppDataClient2ServerData), (att_readwrite_callback_t)&module_onReceiveData},	//value
 	{0,ATT_PERMISSIONS_READ,2,sizeof(TelinkSPPC2SDescriptor),(u8*)&userdesc_UUID,(u8*)(&TelinkSPPC2SDescriptor)},
 
-
+#if (BLE_OTA_ENABLE)
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////
 	// 0017 - 001B OTA
 	{5,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
@@ -259,7 +264,7 @@ static const attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
 	{0,ATT_PERMISSIONS_RDWR,2,sizeof(otaDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(otaDataCCC), 0},				//value
 	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
-
+#endif
 };
 
 

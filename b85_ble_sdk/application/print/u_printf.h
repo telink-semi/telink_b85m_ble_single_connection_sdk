@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	u_printf.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -45,9 +45,12 @@
  *******************************************************************************************************/
 #pragma once
 
+#include <stdarg.h>
+
 #if (UART_PRINT_DEBUG_ENABLE || USB_PRINT_DEBUG_ENABLE)//print info by a gpio or usb printer
 	int  u_printf(const char *fmt, ...);
 	int  u_sprintf(char* s, const char *fmt, ...);
+	void tl_array_printf(const char *fmt, unsigned char*data, unsigned int len);
 	void u_array_printf(unsigned char*data, unsigned int len);
 
 	#define printf	 		u_printf
@@ -59,3 +62,7 @@
 	#define array_printf
 #endif
 
+
+
+
+int v_printf(const char *format, va_list args);

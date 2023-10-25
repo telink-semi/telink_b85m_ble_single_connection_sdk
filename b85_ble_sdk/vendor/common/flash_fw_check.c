@@ -45,6 +45,7 @@
  *******************************************************************************************************/
 #include "flash_fw_check.h"
 #include "drivers.h"
+#include "stack/ble/ble.h"
 
 
 static const unsigned long fw_crc32_half_tbl[16] = {

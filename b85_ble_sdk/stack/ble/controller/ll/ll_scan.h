@@ -55,11 +55,7 @@
  * @param	   none
  * @return     none
  */
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-void 		blc_ll_initScanning_module(void);
-#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 void 		blc_ll_initScanning_module(u8 *public_adr);
-#endif
 
 
 /**
@@ -68,10 +64,10 @@ void 		blc_ll_initScanning_module(u8 *public_adr);
  * @param[in]  scan_interval - time interval from when the Controller started its last LE scan until it begins the subsequent LE scan
  * @param[in]  scan_window - The duration of the LE scan.
  * @param[in]  ownAddrType - Own_Address_Type
- * @param[in]  scanFilterPolicy
+ * @param[in]  scan_fp - Scanning_Filter_Policy
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_ll_setScanParameter (scan_type_t scan_type, u16 scan_interval, u16 scan_window, own_addr_type_t  ownAddrType, scan_fp_type_t scanFilter_policy);
+ble_sts_t 	blc_ll_setScanParameter (scan_type_t scan_type, u16 scan_interval, u16 scan_window, own_addr_type_t  ownAddrType, scan_fp_type_t scan_fp);
 
 
 /**
@@ -116,7 +112,20 @@ ble_sts_t    blc_ll_addScanningInConnSlaveRole(void);
 ble_sts_t    blc_ll_removeScanningFromConnSLaveRole(void);
 
 
+/**
+ * @brief      This function is used to determine whether scan request is sent for all advertising.
+ * @param[in]  scan_req_filter_enable - Scan request filter enable.
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t   blc_ll_scanReq_filter_en(u8 scan_req_filter_enable);
 
+/**
+ * @brief      This function is used to set Scan channel.
+ * @param[in]  scan_channelMap - channel map
+ * @return     Status - 0x00:  success;
+ * 						other: fail
+ */
+ble_sts_t bls_ll_setScanChannelMap(adv_chn_map_t scan_channelMap);
 
 
 

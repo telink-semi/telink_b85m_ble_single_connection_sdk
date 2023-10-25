@@ -117,7 +117,7 @@ _attribute_data_retention_	int device_in_connection_state;
  * @param[in]  n - data length of event
  * @return     none
  */
-void	user_set_rf_power (u8 e, u8 *p, int n)
+void	task_suspend_exit (u8 e, u8 *p, int n)
 {
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
@@ -156,7 +156,10 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
 
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
@@ -323,7 +326,7 @@ void user_init_normal(void)
 	bls_ll_setAdvEnable(1);  //adv enable
 
 
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 
 
@@ -338,7 +341,7 @@ void user_init_normal(void)
 		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
 	#endif
 
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 #else
 	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 #endif
@@ -354,9 +357,9 @@ void user_init_normal(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
-
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 

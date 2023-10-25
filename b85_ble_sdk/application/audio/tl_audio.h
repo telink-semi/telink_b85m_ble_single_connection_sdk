@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	tl_audio.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -84,6 +84,7 @@
 s16		buffer_mic[TL_MIC_BUFFER_SIZE>>1];
 #endif
 
+
 #if TL_NOISE_SUPRESSION_ENABLE
 extern int md_long;
 extern int md_short;
@@ -132,7 +133,10 @@ void 	filter_setting();
 
 void 	audio_mic_param_init(void);
 void	proc_mic_encoder (void);
+
 int	*	mic_encoder_data_buffer ();
+
+
 void 	mic_encoder_data_read_ok (void);
 
 #elif (TL_AUDIO_MODE & DONGLE_PROJECT)								//Dongle

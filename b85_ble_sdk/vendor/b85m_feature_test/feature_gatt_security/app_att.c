@@ -73,9 +73,9 @@ int module_onReceiveData(void *para)
 	u16 len = p->l2capLen - 3;
 	if(len > 0)
 	{
-		array_printf(&p->opcode, p->l2capLen);
+		tlkapi_send_string_data(APP_ATT_LOG_EN, "[APP][ATT] module receive data", &p->opcode, p->l2capLen);
 
-		blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, 0x11, &p->value, len);
+		blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, SPP_SERVER_TO_CLIENT_DP_H, &p->value, len);
 	}
 
 	return 0;
@@ -154,7 +154,7 @@ static const u8 TelinkSPPC2SDescriptor[]        		= "Telink SPP: Phone->Module";
 
 //// GAP attribute values
 static const u8 my_devNameCharVal[5] = {
-	CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ,
 	U16_LO(GenericAccess_DeviceName_DP_H), U16_HI(GenericAccess_DeviceName_DP_H),
 	U16_LO(GATT_UUID_DEVICE_NAME), U16_HI(GATT_UUID_DEVICE_NAME)
 };
@@ -201,7 +201,7 @@ static const u8 TelinkSppDataClient2ServerCharVal[19] = {
 
 //// OTA attribute values
 static const u8 my_OtaCharVal[19] = {
-	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP,
+	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_WRITE,
 	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
 	TELINK_SPP_DATA_OTA
 };

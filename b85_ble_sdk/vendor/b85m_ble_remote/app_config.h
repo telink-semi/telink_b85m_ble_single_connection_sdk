@@ -57,17 +57,34 @@
 #define REMOTE_IR_LEARN_ENABLE				0
 #define BATT_CHECK_ENABLE       			1   //must enable
 #define BLE_AUDIO_ENABLE					1
-#define BLT_APP_LED_ENABLE					1
+#define UI_LED_ENABLE						1
 #define BLT_TEST_SOFT_TIMER_ENABLE			0
 
 #define UNUSED_GPIO_PULLDOWN_ENABLE			0
 #define FIRMWARE_CHECK_ENABLE				0   //flash firmware_check
 #define FIRMWARES_SIGNATURE_ENABLE          0   //firmware check
 #define AUDIO_TRANS_USE_2M_PHY_ENABLE		0
+#define APP_FLASH_PROTECTION_ENABLE			0
+#define APP_BATT_VOL_LOG_EN					0
 
 #if (BLT_TEST_SOFT_TIMER_ENABLE)
 	#define BLT_SOFTWARE_TIMER_ENABLE		1
 #endif
+
+
+/////////////////// DEBUG Configuration /////////////////////////////////
+#define UART_PRINT_DEBUG_ENABLE             0   //GPIO simulate uart print func
+
+#define APP_LOG_EN							1
+#define APP_SMP_LOG_EN						0
+#define APP_KEY_LOG_EN						1
+#define APP_CONTR_EVENT_LOG_EN				1  //controller event log
+#define APP_HOST_EVENT_LOG_EN				1  //host event log
+#define APP_OTA_LOG_EN						1
+#define APP_FLASH_INIT_LOG_EN				1
+#define APP_FLASH_PROT_LOG_EN				1
+#define APP_BATT_CHECK_LOG_EN				1
+#define APP_BATT_VOL_LOG_EN					0
 
 /////////////////////// RCU Board Select Configuration ///////////////////////////////
 #define BOARD_825X_RCU_C1T139A5						1     //TLSR8258DK48
@@ -112,7 +129,7 @@
 /**
  *  @brief  LED Configuration
  */
-#if (BLT_APP_LED_ENABLE)
+#if (UI_LED_ENABLE)
 	#if (BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
 		#define LED_ON_LEVAL 						1 			//gpio output high voltage to turn on led
 		#define	GPIO_LED							GPIO_PC6
@@ -158,7 +175,7 @@
 	 * TL_AUDIO_RCU_SBC_HID_DONGLE_TO_STB		//need config 32k retention
 	 * TL_AUDIO_RCU_MSBC_HID					//need config 32k retention
 	 */
-	#define TL_AUDIO_MODE  						TL_AUDIO_RCU_ADPCM_GATT_TLEINK
+	#define TL_AUDIO_MODE  						TL_AUDIO_RCU_ADPCM_GATT_GOOGLE
 
 #endif
 
@@ -437,6 +454,15 @@ enum{
 
 
 #define BLE_PHYTEST_MODE						PHYTEST_MODE_DISABLE
+
+
+/////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           					GPIO_PB5
+	#define PULL_WAKEUP_SRC_PB5         					PM_PIN_PULLUP_10K
+	#define PB5_OUTPUT_ENABLE         						1
+	#define PB5_DATA_OUT                                    1 //must
+#endif
 
 
 #include "../common/default_config.h"

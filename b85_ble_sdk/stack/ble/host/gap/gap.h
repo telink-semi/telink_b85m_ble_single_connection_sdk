@@ -126,7 +126,14 @@ void 		blc_gap_peripheral_init(void);
 
 
 
-
+/**
+* @brief      this function is used check if any host initialization incorrect.
+* 			  attention: this function must be called after all host Initialization finished.
+* @param	  none
+* @return     status - 0x00:  succeed, no error
+* 			  		   other: error code
+*/
+ init_err_t	blc_host_checkHostInitialization(void);
 
 
 

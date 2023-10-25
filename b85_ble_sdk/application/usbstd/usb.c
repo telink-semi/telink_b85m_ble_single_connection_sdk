@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	usb.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -92,7 +92,7 @@ extern u8 keyboard_interface_number, mouse_interface_number;
 
 u8		host_keyboard_status;
 u8		host_cmd[8];
-u8		host_cmd_paring_ok = 0;
+u8		host_cmd_pairing_ok = 0;
 static USB_Request_Hdr_t control_request;
 static u8 * g_response = 0;
 static u16 g_response_len = 0;
@@ -379,7 +379,7 @@ void usb_handle_out_class_intf_req(int data_request) {
 			break;
 		case HID_REPORT_CUSTOM:
 #if (USB_CUSTOM_HID_REPORT)
-		{	//Paring, EMI-TX, EMI-RX
+		{	//pairing, EMI-TX, EMI-RX
 			if (data_request) {
 				int i=0;
 				usbhw_reset_ctrl_ep_ptr (); //address
@@ -510,7 +510,7 @@ void usb_handle_in_class_intf_req() {
 					usbhw_write_ctrl_ep_data (0x04);
 					usbhw_write_ctrl_ep_data (0x58);
 					usbhw_write_ctrl_ep_data (0x00);
-					usbhw_write_ctrl_ep_data (host_cmd_paring_ok ? 0xa1 : 0x00);  //For binding OK
+					usbhw_write_ctrl_ep_data (host_cmd_pairing_ok ? 0xa1 : 0x00);  //For binding OK
 					usbhw_write_ctrl_ep_data (0x00);
 					usbhw_write_ctrl_ep_data (0x00);
 					usbhw_write_ctrl_ep_data (0x08);

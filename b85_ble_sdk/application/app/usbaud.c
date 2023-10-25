@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	usbaud.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020

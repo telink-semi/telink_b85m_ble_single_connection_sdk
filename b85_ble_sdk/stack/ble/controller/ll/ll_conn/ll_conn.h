@@ -66,39 +66,5 @@
  */
 void		blc_ll_initConnection_module(void);
 
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-/**
- * @brief      for user to initialize LinkLayer TX FIFO.
- * 			   notice that: size*(number - 1)<= 0xFFF
- * @param[in]  pTxbuf - TX FIFO buffer address.
- * @param[in]  size - TX FIFO size,  must 16 Byte aligned
- * @param[in]  number - TX FIFO number, can only be 9, 17 or 33
- * @return     status, 0x00:  succeed
- * 					   other: failed
- */
-ble_sts_t 	blc_ll_initAclConnTxFifo(u8 *pTxbuf, int size, int number);
-
-
-/**
- * @brief      for user to initialize LinkLayer RX FIFO.
- * @param[in]  pTxbuf - RX FIFO buffer address.
- * @param[in]  size - RX FIFO size
- * @param[in]  number - RX FIFO number, can only be 4, 8, 16 or 32
- * @return     status, 0x00:  succeed
- * 					   other: failed
- */
-ble_sts_t	blc_ll_initAclConnRxFifo(u8 *pRxbuf, int size, int number);
-
-
-
-/**
- * @brief      for user to set connMaxRxOctets and connMaxTxOctets
- * @param[in]  maxRxOct - connMaxRxOctets, should be in range of 27 ~ 251
- * @param[in]  maxTxOct - connMaxTxOctets, should be in range of 27 ~ 251
- * @return     status, 0x00:  succeed
- * 					   other: failed
- */
-ble_sts_t	blc_ll_setAclConnMaxOctetsNumber(u8 maxRxOct, u8 maxTxOct);
-#endif
 
 #endif /* LL_CONN_H_ */

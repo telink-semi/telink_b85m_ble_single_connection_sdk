@@ -50,7 +50,6 @@
 
 
 #define	FLOW_NO_OS						1
-#define	MASTER_RESOLVABLE_ADD_EN		0
 
 
 
@@ -61,7 +60,7 @@
 
 
 /////////////////// MODULE /////////////////////////////////
-#define BLE_HOST_SMP_ENABLE							1  //1 for standard security management,  0 for telink referenced paring&bonding(no security)
+#define BLE_HOST_SMP_ENABLE							1  //1 for standard security management,  0 for telink referenced pairing&bonding(no security)
 #define BLE_HOST_SIMPLE_SDP_ENABLE					1  //simple service discovery
 
 
@@ -72,7 +71,12 @@
 #define UI_BUTTON_ENABLE							1
 #define UI_LED_ENABLE								1
 
+///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
+#define USB_PRINT_DEBUG_ENABLE  					1
+#define DEBUG_GPIO_ENABLE							0
 
+#define APP_LOG_EN									1
+#define APP_FLASH_INIT_LOG_EN						1
 //////////////////// Audio /////////////////////////////////////
 #define MIC_RESOLUTION_BIT		16
 #define MIC_SAMPLE_RATE			16000
@@ -92,12 +96,12 @@
 	 * TL_AUDIO_DONGLE_SBC_HID_DONGLE_TO_STB
 	 * TL_AUDIO_DONGLE_MSBC_HID
 	 */
-	#define TL_AUDIO_MODE  			TL_AUDIO_DONGLE_ADPCM_GATT_TELINK
+	#define TL_AUDIO_MODE  			TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE
 
 	#if (TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)
 		#define GOOGLE_VERSION_0_4  0
 		#define GOOGLE_VERSION_1_0  1
-		#define GOOGLE_VOICE_OVER_BLE_SPCE_VERSION  GOOGLE_VERSION_0_4
+		#define GOOGLE_VOICE_OVER_BLE_SPCE_VERSION  GOOGLE_VERSION_1_0
 		#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
 			#define GOOGLE_VOICE_MODE	0x00	//	0x00: On-request; 0x01:PTT;	0x03:HTT
 		#endif
@@ -227,7 +231,6 @@ enum{
 
 
 
-#define DEBUG_GPIO_ENABLE							0
 
 #if(DEBUG_GPIO_ENABLE)
 //define debug GPIO here according to your hardware
@@ -247,7 +250,25 @@ enum{
 #endif  //end of DEBUG_GPIO_ENABLE
 
 
+/////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
 
+/* debug channel select */
+#define TLKAPI_DEBUG_CHANNEL_USB   			1 //USB debug
+#define TLKAPI_DEBUG_CHANNEL_UART  			2 //GPIO simulate UART debug
+#define TLKAPI_DEBUG_CHANNEL				TLKAPI_DEBUG_CHANNEL_USB
+
+#if(TLKAPI_DEBUG_CHANNEL == TLKAPI_DEBUG_CHANNEL_UART)
+	#define UART_PRINT_DEBUG_ENABLE               1   //GPIO simulate uart print func
+#elif(TLKAPI_DEBUG_CHANNEL == TLKAPI_DEBUG_CHANNEL_USB)
+	#define USB_PRINT_DEBUG_ENABLE   			  1   //USB print func
+#endif
+
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           					GPIO_PB5
+	#define PULL_WAKEUP_SRC_PB5         					PM_PIN_PULLUP_10K
+	#define PB5_OUTPUT_ENABLE         						1
+	#define PB5_DATA_OUT                                    1 //must
+#endif
 
 
 

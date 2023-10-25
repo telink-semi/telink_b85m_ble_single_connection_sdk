@@ -29,10 +29,13 @@
 #define DRIVERS_EXT_H_
 
 
-#include "ext_rf.h"
-#include "ext_pm.h"
+
 #include "ext_misc.h"
 #include "mcu_boot.h"
+#include "software_uart.h"
+#include "mcu_config.h"
+#include "rf_pa.h"
+#include "ext_calibration.h"
 
 
 #endif /* DRIVERS_EXT_H_ */

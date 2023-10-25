@@ -150,19 +150,6 @@
 	 */
 	void proc_button (void)
 	{
-//		static u32 button_det_tick;
-//		if(clock_time_exceed(button_det_tick, 5000))
-//		{
-//			button_det_tick = clock_time();
-//		}
-//		else{
-//			return;
-//		}
-
-
-		static u32 button_history = 0;
-		static u32 last_singleKey_press_tick;
-
 		static int button0_press_flag;
 		static u32 button0_press_tick;
 		static int button1_press_flag;
@@ -175,7 +162,6 @@
 
 
 			u8 key0 = vc_event.keycode[0];
-//			u8 key1 = vc_event.keycode[1];
 
 			if(vc_event.cnt == 2)  //two key press
 			{

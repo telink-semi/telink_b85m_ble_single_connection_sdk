@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	div_mod.S
  *
- * @brief	This is the boot file for BLE SDK
+ * @brief	This is the assembly file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -358,7 +358,8 @@ MZ_MUL2_END:
 
 #if (MCU_STARTUP_8258_RET_16K || MCU_STARTUP_8258_RET_32K ||\
      MCU_STARTUP_8253_RET_16K || MCU_STARTUP_8253_RET_32K ||\
-     MCU_STARTUP_8251_RET_16K || MCU_STARTUP_8251_RET_32K)
+     MCU_STARTUP_8251_RET_16K || MCU_STARTUP_8251_RET_32K ||\
+     MCU_STARTUP_8251 || MCU_STARTUP_8253 || MCU_STARTUP_8258)
 ///////// asm crc24 function 2
 	.section	.ram_code,"ax" //in ram code
 	.align	2

@@ -1,58 +1,38 @@
 /********************************************************************************************************
  * @file	flash_mid011460c8.h
  *
- * @brief	This is the header file for b85m
+ * @brief	This is the header file for B85
  *
  * @author	Driver Group
- * @date	2020
+ * @date	2018
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef __MID011460C8_H__
 #define __MID011460C8_H__
 
 /*
- * @brief     MID = 0x1460c8 Flash include GD25LE80C and GD25LQ80C.
+ * @brief     MID = 0x011460c8 Flash include GD25LE80C and GD25LQ80C.
  */
 
 
 /**
- * @brief     define the section of the protected memory area which is read-only and unalterable.
+ * @brief   define the section of the protected memory area which is read-only and unalterable.
+ * @note    when data protection, only enumeration items in mid011460c8_lock_block_e can be selected,
+ *          to ensure that the values returned by the interface flash_get_lock_block_mid011460c8 are in the mid011460c8_lock_block_e.
  */
 typedef enum{
 	FLASH_LOCK_NONE_MID011460C8			=	0x0000,	//000000h-000000h	//0x0020 0x407c...
@@ -93,18 +73,18 @@ typedef enum{
  * @brief     The starting address of the Security Registers.
  */
 typedef enum{
-	FLASH_OTP_0x001000_512K_MID011460C8	=	0x001000,	//001000h-0011FFh
-	FLASH_OTP_0x002000_512K_MID011460C8	=	0x002000,	//002000h-0021FFh
-	FLASH_OTP_0x003000_512K_MID011460C8	=	0x003000,	//003000h-0031FFh
+	FLASH_OTP_0x001000_512B_MID011460C8	=	0x001000,	//001000h-0011FFh
+	FLASH_OTP_0x002000_512B_MID011460C8	=	0x002000,	//002000h-0021FFh
+	FLASH_OTP_0x003000_512B_MID011460C8	=	0x003000,	//003000h-0031FFh
 }mid011460c8_otp_block_e;
 
 /**
  * @brief     the lock area of the Security Registers.
  */
 typedef enum{
-	FLASH_LOCK_OTP_0x001000_512K_MID011460C8	=	0x0800,	//001000h-0011FFh
-	FLASH_LOCK_OTP_0x002000_512K_MID011460C8	=	0x1000,	//002000h-0021FFh
-	FLASH_LOCK_OTP_0x003000_512K_MID011460C8	=	0x2000,	//003000h-0031FFh
+	FLASH_LOCK_OTP_0x001000_512B_MID011460C8	=	0x0800,	//001000h-0011FFh
+	FLASH_LOCK_OTP_0x002000_512B_MID011460C8	=	0x1000,	//002000h-0021FFh
+	FLASH_LOCK_OTP_0x003000_512B_MID011460C8	=	0x2000,	//003000h-0031FFh
 }mid011460c8_lock_otp_e;
 
 /**
@@ -178,6 +158,21 @@ void flash_lock_mid011460c8(mid011460c8_lock_block_e data);
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
  */
 void flash_unlock_mid011460c8(void);
+
+/**
+ * @brief 		This function serves to get the protection area of the flash.
+ * @return 		the protection area of the flash.
+ * @note        Attention: Before calling the FLASH function, please check the power supply voltage of the chip.
+ *              Only if the detected voltage is greater than the safe voltage value, the FLASH function can be called.
+ *              Taking into account the factors such as power supply fluctuations, the safe voltage value needs to be greater
+ *              than the minimum chip operating voltage. For the specific value, please make a reasonable setting according
+ *              to the specific application and hardware circuit.
+ *
+ *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
+ *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
+ *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
+ */
+mid011460c8_lock_block_e flash_get_lock_block_mid011460c8(void);
 
 /**
  * @brief 		This function serves to read data from the Security Registers of the flash.

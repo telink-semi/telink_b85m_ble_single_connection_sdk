@@ -59,6 +59,12 @@ _attribute_data_retention_	u8		ui_mic_enable = 0;
 _attribute_data_retention_	u8 		key_voice_press = 0;
 _attribute_data_retention_	int     ui_mtu_size_exchange_req = 0;
 
+_attribute_data_retention_	u32     audioProcStart_tick = 0;
+_attribute_data_retention_	u32     audioProcDelay_us = 0;
+
+
+
+
 #if (BLE_AUDIO_ENABLE)
 
 #if BLE_DMIC_ENABLE
@@ -113,6 +119,17 @@ _attribute_data_retention_	int     ui_mtu_size_exchange_req = 0;
 	}
 #endif
 
+/**
+ * @brief      This function is the microphone delay function.
+ * @param[in]  delay_time: microphone delay duration, unit is us.
+ * @return     none
+ */
+void audio_proc_delay(u32 delay_time_us)
+{
+	audioProcDelay_us = delay_time_us;
+}
+
+
 #if (TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_TLEINK)					//GATT Telink
 
 u32 	key_voice_pressTick = 0;
@@ -143,7 +160,7 @@ void ui_enable_mic (int en)
 	#endif
 	gpio_write (GPIO_AMIC_BIAS, en);
 #endif
-	#if (BLT_APP_LED_ENABLE)
+	#if (UI_LED_ENABLE)
 		extern const led_cfg_t led_cfg[];
 		device_led_setup(led_cfg[en ? 1 : 2]);
 	#endif
@@ -178,6 +195,10 @@ void ui_enable_mic (int en)
 			extern void filter_setting();
 			filter_setting();
 		#endif
+			if(audioProcDelay_us)
+			{
+				audioProcStart_tick = clock_time()|1;
+			}
 	}
 	else{  //audio off
 		#if BLE_DMIC_ENABLE
@@ -270,7 +291,13 @@ void task_audio (void)
 	else{
 		return;
 	}
-
+	if(audioProcStart_tick&&clock_time_exceed(audioProcStart_tick, audioProcDelay_us)){
+		memset(buffer_mic, 0, TL_MIC_BUFFER_SIZE);
+		audioProcStart_tick = 0;
+	}
+	else if(audioProcStart_tick!=0){
+		return;
+	}
 	///////////////////////////////////////////////////////////////
 	proc_mic_encoder ();
 
@@ -366,7 +393,7 @@ void ui_enable_mic (int en)
 	gpio_write (GPIO_AMIC_BIAS, en);
 #endif
 
-#if (BLT_APP_LED_ENABLE)
+#if (UI_LED_ENABLE)
 	extern const led_cfg_t led_cfg[];
 	device_led_setup(led_cfg[en ? 1 : 2]);
 #endif
@@ -383,8 +410,10 @@ if(en){  //audio on
 
 	///////////////////// AUDIO initialization///////////////////
 	//buffer_mic set must before audio_init !!!
+
 	audio_config_mic_buf ( (u16*)buffer_mic, TL_MIC_BUFFER_SIZE);
 	buffer_mic_pkt_rptr = buffer_mic_pkt_wptr = 0;
+
 	#if (BLE_DMIC_ENABLE)  //Dmic config
 		gpio_set_func(GPIO_DMIC_DI, AS_DMIC);
 		gpio_set_func(GPIO_DMIC_CK, AS_DMIC);
@@ -410,6 +439,10 @@ if(en){  //audio on
 		extern void filter_setting();
 		filter_setting();
 	#endif
+		if(audioProcDelay_us)
+		{
+			audioProcStart_tick = clock_time()|1;
+		}
 }
 else{  //audio off
 	#if BLE_DMIC_ENABLE
@@ -452,6 +485,10 @@ void key_voice_is_press(void)
 {
 	if(!ui_mic_enable && blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){
 
+#if GOOGLE_AUDIO_DLE
+		u8 ret = blc_att_requestMtuSizeExchange(BLS_CONN_HANDLE, 0x009e);
+
+#endif
 		if(app_audio_key_start(1) == APP_AUDIO_ENABLE){
 			ui_enable_mic(1);
 		}
@@ -495,15 +532,25 @@ _attribute_ram_code_ void task_audio (void)
 		return;
 	}
 
+	if(audioProcStart_tick&&clock_time_exceed(audioProcStart_tick, audioProcDelay_us)){
+		memset(buffer_mic, 0, TL_MIC_BUFFER_SIZE);
+		audioProcStart_tick = 0;
+	}
+	else if(audioProcStart_tick!=0){
+		return;
+	}
+
+
 	///////////////////////////////////////////////////////////////
 
 	if(app_audio_timeout_proc()){
 		return;
 	}
 	proc_mic_encoder ();
+	///////////////////////////////0.4e///////////////////////////////////
+#if (GOOGLE_AUDIO_VERSION == GOOGLE_AUDIO_V0P4)
 	u8 audio_send_length;
-	//////////////////////////////////////////////////////////////////
-	if (blc_ll_getTxFifoNumber() < 7)
+	if (blc_ll_getTxFifoNumber() < 6)
 	{
 		int *p = mic_encoder_data_buffer ();
 		if(p)
@@ -538,6 +585,51 @@ _attribute_ram_code_ void task_audio (void)
 			}
 		}
 	}
+#endif
+
+	////////////////////////////v 1.0////////////////////////////////////////////
+#if (GOOGLE_AUDIO_VERSION == GOOGLE_AUDIO_V1P0)
+
+	// can send data 20 bytes or dle 120 bytes
+#if GOOGLE_AUDIO_DLE
+	int *p = mic_encoder_data_buffer();
+	u8 dataLen = 120;
+	if(blc_ll_getTxFifoNumber() < 7)
+	{
+		if(p)
+		{
+			u8 ret = blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE,AUDIO_GOOGLE_RX_DP_H, (u8*)p, dataLen);
+			if(BLE_SUCCESS == ret){
+				mic_encoder_data_read_ok();
+			} else{
+				return;
+			}
+		}
+	}
+#else
+	if(blc_ll_getTxFifoNumber() < 7){
+		int *p = mic_encoder_data_buffer();
+		u8 dataLen = 20;
+		if(p)
+		{
+			for(int i = 0; i < 6; i++)
+			{
+				if(BLE_SUCCESS == blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE,AUDIO_GOOGLE_RX_DP_H, (u8*)p+audio_send_index*dataLen, dataLen))
+				{
+					audio_send_index++;
+				} else {
+					return;
+				}
+				if(audio_send_index == 6)
+				{
+					audio_send_index = 0;
+					mic_encoder_data_read_ok();
+				}
+			}
+		}
+	}
+#endif
+#endif
 }
 
 /**
@@ -603,7 +695,7 @@ void ui_enable_mic (int en)
 	#endif
 	gpio_write (GPIO_AMIC_BIAS, en);
 #endif
-	#if (BLT_APP_LED_ENABLE)
+	#if (UI_LED_ENABLE)
 		extern const led_cfg_t led_cfg[];
 		device_led_setup(led_cfg[en ? 1 : 2]);
 	#endif
@@ -640,6 +732,10 @@ void ui_enable_mic (int en)
 			extern void filter_setting();
 			filter_setting();
 		#endif
+			if(audioProcDelay_us)
+			{
+				audioProcStart_tick = clock_time()|1;
+			}
 	}
 	else{  //audio off
 		#if BLE_DMIC_ENABLE
@@ -772,6 +868,13 @@ _attribute_ram_code_ void task_audio (void)
 	else{
 		return;
 	}
+	if(audioProcStart_tick&&clock_time_exceed(audioProcStart_tick, audioProcDelay_us)){
+		memset(buffer_mic, 0, TL_MIC_BUFFER_SIZE);
+		audioProcStart_tick = 0;
+	}
+	else if(audioProcStart_tick!=0){
+		return;
+	}
 
 	///////////////////////////////////////////////////////////////
 
@@ -889,7 +992,7 @@ void ui_enable_mic (int en)
 	#endif
 	gpio_write (GPIO_AMIC_BIAS, en);
 #endif
-	#if (BLT_APP_LED_ENABLE)
+	#if (UI_LED_ENABLE)
 		extern const led_cfg_t led_cfg[];
 		device_led_setup(led_cfg[en ? 1 : 2]);
 	#endif
@@ -926,6 +1029,10 @@ void ui_enable_mic (int en)
 			extern void filter_setting();
 			filter_setting();
 		#endif
+			if(audioProcDelay_us)
+			{
+				audioProcStart_tick = clock_time()|1;
+			}
 	}
 	else{  //audio off
 		#if BLE_DMIC_ENABLE
@@ -1050,6 +1157,15 @@ _attribute_ram_code_ void task_audio (void)
 		return;
 	}
 
+	if(audioProcStart_tick&&clock_time_exceed(audioProcStart_tick, audioProcDelay_us)){
+		memset(buffer_mic, 0, TL_MIC_BUFFER_SIZE);
+		audioProcStart_tick = 0;
+	}
+	else if(audioProcStart_tick!=0){
+		return;
+	}
+
+
 	///////////////////////////////////////////////////////////////
 
 
@@ -1164,7 +1280,7 @@ void ui_enable_mic (int en)
 	#endif
 	gpio_write (GPIO_AMIC_BIAS, en);
 #endif
-	#if (BLT_APP_LED_ENABLE)
+	#if (UI_LED_ENABLE)
 		extern const led_cfg_t led_cfg[];
 		device_led_setup(led_cfg[en ? 1 : 2]);
 	#endif
@@ -1201,6 +1317,10 @@ void ui_enable_mic (int en)
 			extern void filter_setting();
 			filter_setting();
 		#endif
+			if(audioProcDelay_us)
+			{
+				audioProcStart_tick = clock_time()|1;
+			}
 	}
 	else{  //audio off
 		#if BLE_DMIC_ENABLE
@@ -1316,6 +1436,22 @@ int server2client_auido_proc(void* p)
  */
 _attribute_ram_code_ void task_audio (void)
 {
+	static u32 audioProcTick = 0;
+	if(clock_time_exceed(audioProcTick, 500)){
+		audioProcTick = clock_time();
+	}
+	else{
+		return;
+	}
+
+	if(audioProcStart_tick&&clock_time_exceed(audioProcStart_tick, audioProcDelay_us)){
+		memset(buffer_mic, 0, TL_MIC_BUFFER_SIZE);
+		audioProcStart_tick = 0;
+	}
+	else if(audioProcStart_tick!=0){
+		return;
+	}
+
 	///////////////////////////////////////////////////////////////
 	proc_mic_encoder ();
 

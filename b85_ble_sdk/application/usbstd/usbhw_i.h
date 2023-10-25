@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	usbhw_i.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -52,7 +52,7 @@
 #endif
 
 static inline void usbhw_set_printer_threshold(u8 th) {
-	reg_usb_ep8_send_thre = th;
+	reg_usb_ep8_send_thres = th;
 }
 
 static inline u32 usbhw_get_ctrl_ep_irq(void) {

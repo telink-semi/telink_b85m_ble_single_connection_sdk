@@ -188,7 +188,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
+			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
 
 			if(p->bonding_result){
 
@@ -201,7 +201,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-//			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
+//			gap_smp_pairingFailEvt_t* p = (gap_smp_pairingFailEvt_t*)para;
 		}
 		break;
 
@@ -209,7 +209,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		{
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
 
-			if(p->re_connect == SMP_STANDARD_PAIR){  //first paring
+			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
 			}
 			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect

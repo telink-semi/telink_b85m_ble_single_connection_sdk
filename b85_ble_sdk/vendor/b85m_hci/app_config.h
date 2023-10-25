@@ -61,6 +61,7 @@
 /////////////////// DEBUG  /////////////////////////////////
 //826x module's pin simulate as a uart tx, Just for debugging
 #define PRINT_DEBUG_INFO               		0	//open/close myprintf
+#define APP_FLASH_INIT_LOG_EN				0
 
 
 

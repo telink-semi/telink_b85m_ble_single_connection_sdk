@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	aes_ccm.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -66,8 +66,9 @@ typedef struct {
 
 
 typedef struct {
-	u32					enc_pno;
-	u32					dec_pno;
+	u64					enc_pno;
+	u64					dec_pno;
+//	u8                  ltk[16];		//not used in this SDK
 	u8					sk[16];			//session key
 	ble_cyrpt_nonce_t	nonce;
 	u8					st;
@@ -108,38 +109,8 @@ enum{
 	CRYPT_NONCE_TYPE_BIS = 2,
 };
 
-typedef union {
-	struct{
-		u8 enEncFlg:1; //enable encryption
-		u8 noneType:2; //ACL, CIS, BIS
-		u8 decMicFail:1;//Decryption status
-		u8 role:1;     //ll_ccm_enc: Master role must use 1, Slave role must use 0;
-        			   //ll_ccm_dec: Master role must use 0, Slave role must use 1;
-		u8 rsvd:3;     //Rsvd
-	};
-	u8 cryptBitsInfo;
-}cryptBitsInfo_t;
 
-typedef struct {
-	u64					txPayloadCnt; //Packet counter for Tx
-	u64					rxPayloadCnt; //Packet counter for Rx
-	u8					sk[16];   	  //Session key
-	ble_cyrpt_nonce_t	ccmNonce;     //CCM nonce format
-	cryptBitsInfo_t     cryptBitsInfo;//To save Ram
-	u16                 rsvd;         //For align
-	llPhysChnPdu_t*     pllPhysChnPdu;//LL physical channel PDU
-} leCryptCtrl_t;
-
-
-/**
- * @brief   	this function is used to encrypt the plaintext
- * @param[in]	*key - aes key: 128 bit key for the encryption of the data, little--endian.
- * @param[in]	*plaintext - 128 bit data block that is requested to be encrypted, little--endian.
- * @param[out]	*result - 128 bit encrypted data block, little--endian.
- * @return  	none.
- * @Note		Input data requires strict Word alignment
- */
-void aes_ll_encryption(u8* key, u8* plaintext, u8 *encrypted_data);
+extern volatile int aes_enc_dec_busy;
 
 
 /**
@@ -158,39 +129,29 @@ void aes_ll_ccm_encryption_init (u8 *ltk, u8 *skdm, u8 *skds, u8 *ivm, u8 *ivs, 
 /**
  * @brief   	this function is used to encrypt the aes_ccm value
  * @param[in]   pkt - plaint_text
- * @param[in]   master - ll_ccm_enc: Master role must use 1, Slave role must use 0;
-                         ll_ccm_dec: Master role must use 0, Slave role must use 1;
+ * @param[in]   role - ll_ccm_enc: Master role must use 1, Slave role must use 0;
+ *                     ll_ccm_dec: Master role must use 0, Slave role must use 1;
+ * @param[in]   ll_type -  CRYPT_NONCE_TYPE_ACL = 0,
+ *                         CRYPT_NONCE_TYPE_CIS = 1,
+ *                         CRYPT_NONCE_TYPE_BIS = 2,
  * @param[in]   pd - Reference structure ble_crypt_para_t
  * @return  	none
  */
-void aes_ll_ccm_encryption(u8 *pkt, int master, ble_crypt_para_t *pd);
-
-
-/**
- * @brief   	this function is used to encrypt the aes_ccm value, version2
- * @param[in]   pd - Reference structure leCryptCtrl_t
- * @return  	none
- */
-void aes_ll_ccm_encryption_v2(leCryptCtrl_t *pd);
+void aes_ll_ccm_encryption(llPhysChnPdu_t *pllPhysChnPdu, u8 role, u8 ll_type, ble_crypt_para_t *pd);
 
 
 /**
  * @brief   	this function is used to decrypt the aes_ccm value
  * @param[in]   pkt - plaint_text
- * @param[in]   master - ll_ccm_enc: Master role must use 1, Slave role must use 0;
-                         ll_ccm_dec: Master role must use 0, Slave role must use 1;
+ * @param[in]   role - ll_ccm_enc: Master role must use 1, Slave role must use 0;
+ *                     ll_ccm_dec: Master role must use 0, Slave role must use 1;
+ * @param[in]   ll_type -  CRYPT_NONCE_TYPE_ACL = 0,
+ *                         CRYPT_NONCE_TYPE_CIS = 1,
+ *                         CRYPT_NONCE_TYPE_BIS = 2,
  * @param[in]   pd - Reference structure ble_crypt_para_t
  * @return  	0: decryption succeeded; 1: decryption failed
  */
-int  aes_ll_ccm_decryption(u8 *pkt, int master, ble_crypt_para_t *pd);
-
-
-/**
- * @brief   	this function is used to decrypt the aes_ccm value, version2
- * @param[in]   pd - Reference structure leCryptCtrl_t
- * @return  	0: decryption succeeded; 1: decryption failed
- */
-int  aes_ll_ccm_decryption_v2(leCryptCtrl_t *pd);
+int aes_ll_ccm_decryption(llPhysChnPdu_t *pllPhysChnPdu, u8 role, u8 ll_type, ble_crypt_para_t *pd);
 
 
 

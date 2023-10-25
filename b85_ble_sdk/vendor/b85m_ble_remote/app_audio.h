@@ -68,4 +68,6 @@ void audio_state_check(void);
 void key_voice_is_press(void);
 void key_voice_is_release(void);
 
+void audio_proc_delay(u32 delay_time_us);
+
 #endif /* APP_AUDIO_H_ */

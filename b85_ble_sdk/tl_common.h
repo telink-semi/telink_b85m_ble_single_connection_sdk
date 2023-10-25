@@ -52,6 +52,7 @@
 #include "common/utility.h"
 #include "common/static_assert.h"
 #include "common/assert.h"
+#include "common/sdk_version.h"
 
 #include "application/print/u_printf.h"
 
@@ -61,9 +62,10 @@
 
 
 
-#include "common/usb_dbg/myudb.h"
-#include "vendor/common/blt_common.h"
+#include "vendor/common/ble_flash.h"
 #include "vendor/common/blt_fw_sign.h"
 #include "vendor/common/blt_led.h"
 #include "vendor/common/blt_soft_timer.h"
 #include "vendor/common/flash_fw_check.h"
+#include "vendor/common/flash_prot.h"
+#include "vendor/common/tlkapi_debug.h"

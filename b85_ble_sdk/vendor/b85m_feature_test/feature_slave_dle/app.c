@@ -56,6 +56,8 @@
 
 #if (FEATURE_TEST_MODE == TEST_SDATA_LENGTH_EXTENSION)
 
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
+
 #if (1) // support RF RX/TX MAX data Length: 251byte
 	#define RX_FIFO_SIZE	288  //rx-24   max:251+24 = 275  16 align-> 288
 	#define RX_FIFO_NUM		8
@@ -122,13 +124,13 @@ int module_onReceiveData(void *para)
 	u16 len = p->l2capLen - 3;
 	if(len > 0)
 	{
-		printf("RF_RX len: %d\nc2s:write data: %d\n", p->rf_len, len);
-		array_printf(&p->value, len);
+		tlkapi_printf(APP_LOG_EN, "RF_RX len: %d\nc2s:write data: %d\n", p->rf_len, len);
+		tlkapi_send_string_data(APP_LOG_EN, "", &p->value, len);
 
-		printf("s2c:notify data: %d\n", len);
-		array_printf(&p->value, len);
+		tlkapi_printf(APP_LOG_EN, "s2c:notify data: %d\n", len);
+		tlkapi_send_string_data(APP_LOG_EN, "", &p->value, len);
 #if 1
-		blc_gatt_pushHandleValueNotify(BLS_CONN_HANDLE, 0x11, &p->value, len);  //this API can auto handle MTU size
+		blc_gatt_pushHandleValueNotify(BLS_CONN_HANDLE, SPP_SERVER_TO_CLIENT_DP_H, &p->value, len);  //this API can auto handle MTU size
 #else
 		if( len + 3 <= final_MTU_size){   //opcode: 1 byte; attHandle: 2 bytes
 			blc_gatt_pushHandleValueNotify(BLS_CONN_HANDLE, 0x11, &p->value, len);
@@ -261,7 +263,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 * @param[in]  n - data length of event
 	 * @return     none
 	 */
-	void  ble_remote_set_sleep_wakeup (u8 e, u8 *p, int n)
+	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
@@ -286,7 +288,7 @@ _attribute_data_retention_	int device_in_connection_state;
  */
 void	task_connect (u8 e, u8 *p, int n)
 {
-	printf("----- connected -----\n");
+	tlkapi_printf(APP_LOG_EN, "----- connected -----\n");
 	connect_event_occurTick = clock_time()|1;
 
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
@@ -312,7 +314,7 @@ void	task_connect (u8 e, u8 *p, int n)
  */
 void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
-	printf("----- terminate rsn: 0x%x -----\n", *p);
+	tlkapi_printf(APP_LOG_EN, "----- terminate rsn: 0x%x -----\n", *p);
 	connect_event_occurTick = 0;
 	mtuExchange_check_tick = 0;
 
@@ -358,13 +360,13 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 void	task_dle_exchange (u8 e, u8 *p, int n)
 {
 	ll_data_extension_t* dle_param = (ll_data_extension_t*)p;
-	printf("----- DLE exchange: -----\n");
-	printf("connEffectiveMaxRxOctets: %d\n", dle_param->connEffectiveMaxRxOctets);
-	printf("connEffectiveMaxTxOctets: %d\n", dle_param->connEffectiveMaxTxOctets);
-	printf("connMaxRxOctets: %d\n", dle_param->connMaxRxOctets);
-	printf("connMaxTxOctets: %d\n", dle_param->connMaxTxOctets);
-	printf("connRemoteMaxRxOctets: %d\n", dle_param->connRemoteMaxRxOctets);
-	printf("connRemoteMaxTxOctets: %d\n", dle_param->connRemoteMaxTxOctets);
+	tlkapi_printf(APP_LOG_EN, "----- DLE exchange: -----\n");
+	tlkapi_printf(APP_LOG_EN, "connEffectiveMaxRxOctets: %d\n", dle_param->connEffectiveMaxRxOctets);
+	tlkapi_printf(APP_LOG_EN, "connEffectiveMaxTxOctets: %d\n", dle_param->connEffectiveMaxTxOctets);
+	tlkapi_printf(APP_LOG_EN, "connMaxRxOctets: %d\n", dle_param->connMaxRxOctets);
+	tlkapi_printf(APP_LOG_EN, "connMaxTxOctets: %d\n", dle_param->connMaxTxOctets);
+	tlkapi_printf(APP_LOG_EN, "connRemoteMaxRxOctets: %d\n", dle_param->connRemoteMaxRxOctets);
+	tlkapi_printf(APP_LOG_EN, "connRemoteMaxTxOctets: %d\n", dle_param->connRemoteMaxTxOctets);
 
 	dle_started_flg = 1;
 
@@ -387,37 +389,37 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 	{
 		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
-			printf("----- Pairing begin -----\n");
+			tlkapi_printf(APP_LOG_EN, "----- Pairing begin -----\n");
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
-			printf("Pairing success:bond flg %s\n", p->bonding ?"true":"false");
+			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
+			tlkapi_printf(APP_LOG_EN, "Pairing success:bond flg %s\n", p->bonding ?"true":"false");
 
 			if(p->bonding_result){
-				printf("save smp key succ\n");
+				tlkapi_printf(APP_LOG_EN, "save smp key succ\n");
 			}
 			else{
-				printf("save smp key failed\n");
+				tlkapi_printf(APP_LOG_EN, "save smp key failed\n");
 			}
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
-			printf("----- Pairing failed:rsn:0x%x -----\n", p->reason);
+			gap_smp_pairingFailEvt_t* p = (gap_smp_pairingFailEvt_t*)para;
+			tlkapi_printf(APP_LOG_EN, "----- Pairing failed:rsn:0x%x -----\n", p->reason);
 		}
 		break;
 
 		case GAP_EVT_SMP_CONN_ENCRYPTION_DONE:
 		{
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
-			printf("----- Connection encryption done -----\n");
+			tlkapi_printf(APP_LOG_EN, "----- Connection encryption done -----\n");
 
-			if(p->re_connect == SMP_STANDARD_PAIR){  //first paring
+			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
 			}
 			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect
@@ -429,13 +431,13 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_SMP_SECURITY_PROCESS_DONE:
 		{
 			gap_smp_connEncDoneEvt_t *p = (gap_smp_connEncDoneEvt_t*)para;
-			if(p->re_connect == SMP_FAST_CONNECT)//first paring
+			if(p->re_connect == SMP_FAST_CONNECT)//first pairing
 			{
-				printf("Paring process done--->SMP_FAST_CONNECT");
+				tlkapi_printf(APP_LOG_EN, "Pairing process done--->SMP_FAST_CONNECT");
 			}
 			else if(p->re_connect == SMP_STANDARD_PAIR)//auto connect
 			{
-				printf("Paring process done--->SMP_STABDARD_PAIR");
+				tlkapi_printf(APP_LOG_EN, "Pairing process done--->SMP_STABDARD_PAIR");
 			}
 
 		}
@@ -444,7 +446,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_ATT_EXCHANGE_MTU:
 		{
 			gap_gatt_mtuSizeExchangeEvt_t *pEvt = (gap_gatt_mtuSizeExchangeEvt_t *)para;
-			printf("MTU Peer MTU(%d)/Effect ATT MTU(%d).\n", pEvt->peer_MTU, pEvt->effective_MTU);
+			tlkapi_printf(APP_LOG_EN, "MTU Peer MTU(%d)/Effect ATT MTU(%d).\n", pEvt->peer_MTU, pEvt->effective_MTU);
 			final_MTU_size = pEvt->effective_MTU;
 			mtuExchange_started_flg = 1;   //set MTU size exchange flag here
 		}
@@ -465,9 +467,9 @@ int app_host_event_callback (u32 h, u8 *para, int n)
  * @param[in]  n - data length of event
  * @return     none
  */
-void	user_set_rf_power (u8 e, u8 *p, int n)
+void	task_suspend_exit (u8 e, u8 *p, int n)
 {
-	rf_set_power_level_index (RF_POWER_P3dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
 
@@ -510,7 +512,10 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
 
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
@@ -578,7 +583,7 @@ void user_init_normal(void)
 
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
 	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
@@ -588,7 +593,7 @@ void user_init_normal(void)
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
 	blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); //default use 16k deep retention
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
@@ -613,7 +618,7 @@ void user_init_normal(void)
 		}
 
 		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &ble_remote_set_sleep_wakeup);
+		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
 	#endif
 
 #else
@@ -633,8 +638,9 @@ void user_init_normal(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 
@@ -665,7 +671,7 @@ void feature_sdle_test_mainloop(void)
 		mtuExchange_check_tick = clock_time() | 1;
 		if(!mtuExchange_started_flg){  //master do not send MTU exchange request in time
 			blc_att_requestMtuSizeExchange(BLS_CONN_HANDLE, MTU_SIZE_SETTING);
-			printf("After conn 1.5s, S send  MTU size req to the Master.\n");
+			tlkapi_printf(APP_LOG_EN, "After conn 1.5s, S send  MTU size req to the Master.\n");
 		}
 
 
@@ -677,7 +683,7 @@ void feature_sdle_test_mainloop(void)
 		mtuExchange_check_tick = 0;
 
 		if(!dle_started_flg){ //master do not send data length request in time
-			printf("Master hasn't initiated the DLE yet, S send DLE req to the Master.\n");
+			tlkapi_printf(APP_LOG_EN, "Master hasn't initiated the DLE yet, S send DLE req to the Master.\n");
 			blc_ll_exchangeDataLength(LL_LENGTH_REQ , DLE_TX_SUPPORTED_DATA_LEN);
 			app_test_data_tick = clock_time() | 1;
 			dle_started_flg = 1;

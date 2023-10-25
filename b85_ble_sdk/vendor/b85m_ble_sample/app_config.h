@@ -49,8 +49,11 @@
 ///////////////////////// Feature Configuration////////////////////////////////////////////////
 #define BLE_APP_PM_ENABLE								1
 #define PM_DEEPSLEEP_RETENTION_ENABLE					1
-#define TEST_CONN_CURRENT_ENABLE            			1 //test connection current, disable UI to have a pure power
+#define TEST_CONN_CURRENT_ENABLE            			1 	//test connection current, disable UI to have a pure power
 #define BLE_REMOTE_SECURITY_ENABLE      				1
+#define BLE_OTA_SERVER_ENABLE							1
+#define APP_FLASH_PROTECTION_ENABLE						0
+#define BATT_CHECK_ENABLE								0
 
 /////////////////////// Sample Test Board Select Configuration ///////////////////////////////
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
@@ -72,15 +75,33 @@
 
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
-#define DEBUG_GPIO_ENABLE								0
+#define DEBUG_GPIO_ENABLE					0
+#define UART_PRINT_DEBUG_ENABLE				1
+
+#define APP_LOG_EN							1
+#define APP_SMP_LOG_EN						0
+#define APP_KEY_LOG_EN						1
+#define APP_CONTR_EVENT_LOG_EN				1  //controller event log
+#define APP_HOST_EVENT_LOG_EN				1  //host event log
+#define APP_OTA_LOG_EN						1
+#define APP_FLASH_INIT_LOG_EN				1
+#define APP_FLASH_PROT_LOG_EN				1
+#define APP_BATT_CHECK_LOG_EN				1
+#define APP_BATT_VOL_LOG_EN					0
 
 
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           	GPIO_PB1
+	#define PULL_WAKEUP_SRC_PB1         	PM_PIN_PULLUP_10K
+	#define PB1_OUTPUT_ENABLE         		1
+	#define PB1_DATA_OUT                    1
+#endif
 
 ///////////////////////// UI Configuration ////////////////////////////////////////////////////
 #if (TEST_CONN_CURRENT_ENABLE)
 	#define	UI_KEYBOARD_ENABLE							0
 	#define	UI_BUTTON_ENABLE							0
-	#define	UI_LED_ENABLE								0
+	#define	UI_LED_ENABLE								1
 #else
 	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
 		/* EVK use keyboard matrix */
@@ -235,7 +256,8 @@
 
 /////////////////// DEEP SAVE FLG //////////////////////////////////
 #define USED_DEEP_ANA_REG                   DEEP_ANA_REG0 //u8,can save 8 bit info when deep
-#define CONN_DEEP_FLG	                    BIT(0) //if 1: conn deep, 0: adv deep
+#define	LOW_BATT_FLG					    BIT(0) //if 1: low battery
+#define CONN_DEEP_FLG	                    BIT(1) //if 1: conn deep, 0: adv deep
 
 
 
@@ -313,12 +335,24 @@ enum{
 	#endif
 #endif  //end of DEBUG_GPIO_ENABLE
 
-
-
-
-
-
-
+/**
+ *  @brief  Battery_check Configuration
+ */
+#if (BATT_CHECK_ENABLE)
+	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+		#if 0//(__PROJECT_8278_BLE_REMOTE__)
+			//use VBAT(8278) , then adc measure this VBAT voltage
+			#define ADC_INPUT_PCHN					VBAT    //corresponding  ADC_InputPchTypeDef in adc.h
+		#else
+			//telink device: you must choose one gpio with adc function to output high level(voltage will equal to vbat), then use adc to measure high level voltage
+			//use PB7(8258) output high level, then adc measure this high level voltage
+			#define GPIO_VBAT_DETECT				GPIO_PB7
+			#define PB7_FUNC						AS_GPIO
+			#define PB7_INPUT_ENABLE				0
+			#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
+		#endif
+	#endif
+#endif
 
 
 #include "../common/default_config.h"

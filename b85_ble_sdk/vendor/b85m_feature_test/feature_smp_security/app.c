@@ -56,6 +56,7 @@
 
 #if (FEATURE_TEST_MODE == TEST_SMP_SECURITY)
 
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
 
 
 #define RX_FIFO_SIZE	64
@@ -64,7 +65,19 @@
 #define TX_FIFO_SIZE	40
 #define TX_FIFO_NUM		8
 
+#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_OOB)
 
+typedef struct{
+  sc_oob_data_t scoob_local;
+  sc_oob_data_t scoob_remote;
+
+  u8 scoob_local_used;
+  u8 scoob_remote_used;
+}ui_sc_oob_data_t;
+
+_attribute_ble_data_retention_	ui_sc_oob_data_t	sc_oob_data_cb;
+
+#endif
 
 _attribute_data_retention_  u8 		 	blt_rxfifo_b[RX_FIFO_SIZE * RX_FIFO_NUM] = {0};
 _attribute_data_retention_	my_fifo_t	blt_rxfifo = {
@@ -156,32 +169,31 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 		u8 key_value;
 		u8 key_buf[8] = {0,0,0,0,0,0,0,0};
 
-		printf("kb_cnt = %d , key_value = %x ",kb_event.cnt,key0);
-
 		key_not_released = 1;
 		if (kb_event.cnt >= 2){   //two or more key press, do  not process
 
 		}
 		else if(kb_event.cnt == 1){
 			key_value = key0;
-			if(key_value >= 0xf0 ){
+			if(key_value >= CR_VOL_UP ){
 				key_type = CONSUMER_KEY;
 				u16 consumer_key = vk_consumer_map[key_value & 0x0f];
+
 				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
-				printf("CK:0x%x pressed\n", consumer_key);
+				tlkapi_printf(APP_KEYBOARD_LOG_EN, "[APP][KEY] CK:0x%x pressed\n", consumer_key);
 
 				#if (SMP_TEST_MODE == SMP_TEST_SC_NUMERIC_COMPARISON)
 					//NOTICE:smp NC confirm (vol-)"YES" or (vol+)"NO"
 					if(blc_smp_isWaitingToCfmNumericComparison()){
 							if(consumer_key == MKEY_VOL_DN){
 								blc_smp_setNumericComparisonResult(1);// YES
-								printf("confirmed YES\n");
+								tlkapi_printf(APP_KEYBOARD_LOG_EN, "[APP][KEY] confirmed YES\n");
 
 								led_onoff(LED_ON_LEVAL);
 							}
 							else if(consumer_key == MKEY_VOL_UP){
 								blc_smp_setNumericComparisonResult(0);// NO
-								printf("confirmed NO\n");
+								tlkapi_printf(APP_KEYBOARD_LOG_EN, "[APP][KEY] confirmed NO\n");
 
 								led_onoff(LED_ON_LEVAL);
 							}
@@ -193,7 +205,7 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 				key_type = KEYBOARD_KEY;
 				key_buf[2] = key_value;
 				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8);
-				printf("KK:0x%x pressed\n", key_value);
+				tlkapi_printf(APP_KEYBOARD_LOG_EN, "[APP][KEY] KK:0x%x pressed\n", key_value);
 
 				#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
 					 SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI || SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI)
@@ -203,8 +215,9 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 								int i;
 								for(i = 0; i<10; i++){
 									if(vk_dig_map[i] == key_value){
-										printf("%d\n", i);
+										tlkapi_printf(APP_KEYBOARD_LOG_EN, "[APP][KEY] %d\n", i);
 										tk_input[digital_key_cnt++] = i;
+										blc_smp_sendKeypressNotify(BLS_CONN_HANDLE, KEYPRESS_NTF_PKE_DIGIT_ENTERED);
 										break;
 									}
 								}
@@ -219,8 +232,10 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 									digital_key_cnt = 0;
 									u32 pincode = tk_input[0]*100000 + tk_input[1]*10000 + \
 												  tk_input[2]*1000 + tk_input[3]*100 + tk_input[4]*10 + tk_input[5];
-									printf("TK 6-dig value:%d\n", pincode);
+									tlkapi_printf(APP_KEYBOARD_LOG_EN, "[APP][KEY] TK 6-dig value:%d\n", pincode);
 									blc_smp_setTK_by_PasskeyEntry(pincode);
+
+									blc_smp_sendKeypressNotify(BLS_CONN_HANDLE, KEYPRESS_NTF_PKE_COMPLETED);
 								}
 							}
 						}
@@ -234,13 +249,11 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 			{
 				u16 consumer_key = 0;
 				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
-				printf("CK:released\n");
 			}
 			else if(key_type == KEYBOARD_KEY)
 			{
 				key_buf[2] = 0;
 				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8);
-				printf("KK:released\n");
 			}
 
 			led_onoff(!LED_ON_LEVAL);
@@ -281,7 +294,7 @@ _attribute_data_retention_	u32 advertise_begin_tick;
 	 * @param[in]  n - data length of event
 	 * @return     none
 	 */
-	void  ble_remote_set_sleep_wakeup (u8 e, u8 *p, int n)
+	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
@@ -311,9 +324,9 @@ void	task_connect (u8 e, u8 *p, int n)
 	device_in_connection_state = 1;//
 
 	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, LED_ON_LEVAL);  // light on
+		gpio_write(GPIO_LED, LED_ON_LEVAL);  // light on
 	#endif
-	printf("connect ");
+	tlkapi_printf(APP_LOG_EN, "connect ");
 }
 
 
@@ -345,7 +358,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 
 
 #if (UI_LED_ENABLE)
-	gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);  // light off
+	gpio_write(GPIO_LED, !LED_ON_LEVAL);  // light off
 #endif
 
 	advertise_begin_tick = clock_time();
@@ -361,9 +374,9 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  * @param[in]  n - data length of event
  * @return     none
  */
-void	user_set_rf_power (u8 e, u8 *p, int n)
+void	task_suspend_exit (u8 e, u8 *p, int n)
 {
-	rf_set_power_level_index (RF_POWER_P3dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
 
@@ -407,7 +420,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 	{
 		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
-			printf("Pairing begin\n");
+			tlkapi_printf(APP_LOG_EN, "Pairing begin\n");
 
 			#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
 				 SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI || SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI)
@@ -418,31 +431,31 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
-			printf("Pairing success:bond flg %s\n", p->bonding ?"true":"false");
+			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
+			tlkapi_printf(APP_LOG_EN, "Pairing success:bond flg %s\n", p->bonding ?"true":"false");
 
 			if(p->bonding_result){
-				printf("save smp key succ\n");
+				tlkapi_printf(APP_LOG_EN, "save smp key succ\n");
 			}
 			else{
-				printf("save smp key failed\n");
+				tlkapi_printf(APP_LOG_EN, "save smp key failed\n");
 			}
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
-			printf("Pairing failed:rsn:0x%x\n", p->reason);
+			gap_smp_pairingFailEvt_t* p = (gap_smp_pairingFailEvt_t*)para;
+			tlkapi_printf(APP_LOG_EN, "Pairing failed:rsn:0x%x\n", p->reason);
 		}
 		break;
 
 		case GAP_EVT_SMP_CONN_ENCRYPTION_DONE:
 		{
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
-			printf("Connection encryption done\n");
+			tlkapi_printf(APP_LOG_EN, "Connection encryption done\n");
 
-			if(p->re_connect == SMP_STANDARD_PAIR){  //first paring
+			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
 			}
 			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect
@@ -456,19 +469,20 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 			char pc[7];
 			u32 pinCode = *(u32*)para;
 			sprintf(pc, "%d", pinCode);
-			printf("TK display:%s\n", pc);
+			tlkapi_printf(APP_LOG_EN, "TK display:%s\n", pc);
 		}
 		break;
 
 		case GAP_EVT_SMP_TK_REQUEST_PASSKEY:
 		{
-			printf("TK Request passkey\n");
+			tlkapi_printf(APP_LOG_EN, "TK Request passkey\n");
+			blc_smp_sendKeypressNotify(BLS_CONN_HANDLE, KEYPRESS_NTF_PKE_START);
 		}
 		break;
 
 		case GAP_EVT_SMP_TK_REQUEST_OOB:
 		{
-			printf("TK Request OOB\n");
+			tlkapi_printf(APP_LOG_EN, "TK Request OOB\n");
 			u8 oobData[16] = {1,2,3};
 			blc_smp_setTK_by_OOB(oobData);
 		}
@@ -479,10 +493,42 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 			char pc[7];
 			u32 pinCode = *(u32*)para;
 			sprintf(pc, "%d", pinCode);
-			printf("TK numeric comparison:%s\n", pc);
+			tlkapi_printf(APP_LOG_EN, "TK numeric comparison:%s\n", pc);
+		}
+		break;
+#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_OOB)
+		case GAP_EVT_SMP_TK_SEND_SC_OOB_DATA:
+		{
+			gap_smp_TkSendScOobDataEvt_t* pEvt = (gap_smp_TkSendScOobDataEvt_t*)para;
+
+			if(pEvt->sendScOobData2RemoteFlag){
+				tlkapi_printf(APP_LOG_EN, "[APP][SMP] need to send SC OOB data to remote device");
+
+				tlkapi_printf(APP_LOG_EN, "[APP][SMP] Send Local SC OOB data-r(be) (by UART) %s ", hex_to_str(sc_oob_data_cb.scoob_local.r, 16));
+				tlkapi_printf(APP_LOG_EN, "           Local SC OOB data-c(be) (by UART)      %s ", hex_to_str(sc_oob_data_cb.scoob_local.c, 16));
+			}
+			else{
+				tlkapi_printf(APP_LOG_EN, "[APP][SMP] not need to send SC OOB data to remote device");
+			}
 		}
 		break;
 
+		case GAP_EVT_SMP_TK_REQUEST_SC_OOB:
+		{
+			gap_smp_TkRequestScOobDataEvt_t* pEvt = (gap_smp_TkRequestScOobDataEvt_t*)para;
+
+			tlkapi_printf(APP_LOG_EN, "[APP][SMP] SC OOB scOobLocalUsed %d", pEvt->scOobLocalUsed);
+			tlkapi_printf(APP_LOG_EN, "[APP][SMP] SC OOB scOobRemoteUsed %d", pEvt->scOobRemoteUsed);
+
+			sc_oob_data_cb.scoob_remote_used = pEvt->scOobRemoteUsed;
+			sc_oob_data_cb.scoob_local_used = pEvt->scOobLocalUsed;
+
+			if(pEvt->scOobRemoteUsed || pEvt->scOobLocalUsed){
+				blc_smp_setScOobData(pEvt->connHandle, &sc_oob_data_cb.scoob_local, &sc_oob_data_cb.scoob_remote);
+			}
+		}
+		break;
+#endif
 		default:
 		break;
 	}
@@ -503,8 +549,14 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
 
-
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
+#if(UART_PRINT_DEBUG_ENABLE)
+	tlkapi_debug_init();
+	blc_debug_enableStackLog(STK_LOG_DISABLE);
+#endif
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
 	u8  mac_random_static[6];
@@ -533,16 +585,21 @@ void user_init_normal(void)
 
 #if ( SMP_TEST_MODE	== SMP_TEST_NO_SECURITY)
 
-	blc_smp_setSecurityLevel(No_Authentication_No_Encryption);  // LE_Security_Mode_1_Level_1	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
+	//blc_smp_setSecurityLevel(No_Authentication_No_Encryption);  // LE_Security_Mode_1_Level_1	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_1, FALSE, FALSE, UNSPECIFIED);
 
 #elif ( SMP_TEST_MODE == SMP_TEST_LEGACY_PAIRING_JUST_WORKS  )
 
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_2"
-	blc_smp_setSecurityLevel(Unauthenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
-	blc_smp_setIoCapability(IO_CAPABLITY_NO_IN_NO_OUT);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	///
+	//blc_smp_setSecurityLevel(Unauthenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
+	//blc_smp_setIoCapability(IO_CAPABLITY_NO_IN_NO_OUT);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_2, TRUE, FALSE, LEGACY_JW);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -564,10 +621,14 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_2"
-	blc_smp_setSecurityLevel(Unauthenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_setParingMethods(LE_Secure_Connection);
-	blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABLITY_NO_IN_NO_OUT);
-	blc_smp_setEcdhDebugMode(debug_mode); //use debug mode for sniffer decryption
+	///
+	//blc_smp_setSecurityLevel(Unauthenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableSecureConnections(1);
+	//blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABLITY_NO_IN_NO_OUT);
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_2, TRUE, FALSE, LESC_JW);
+	//use debug mode for sniffer decryption
+	blc_smp_setEcdhDebugMode(debug_mode);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -590,10 +651,13 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_3"
-	blc_smp_setSecurityLevel(Authenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_enableAuthMITM(1);
-	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
+	///
+	//blc_smp_setSecurityLevel(Authenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableAuthMITM(1);
+	//blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
 	blc_smp_setIoCapability(IO_CAPABILITY_DISPLAY_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_3, TRUE, FALSE, PASSKEY_DISPLAY);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -617,10 +681,12 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_3"
-	blc_smp_setSecurityLevel(Authenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_enableAuthMITM(1);
-	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
-	blc_smp_setIoCapability(IO_CAPABLITY_KEYBOARD_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	//blc_smp_setSecurityLevel(Authenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableAuthMITM(1);
+	//blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
+	//blc_smp_setIoCapability(IO_CAPABLITY_KEYBOARD_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_3, TRUE, FALSE, PASSKEY_INPUT);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -637,17 +703,21 @@ void user_init_normal(void)
 						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
 						  GAP_EVT_MASK_SMP_TK_DISPALY				|  \
 						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE     |  \
+						  GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY       |  \
 						  GAP_EVT_MASK_SMP_SECURITY_PROCESS_DONE);
 #elif ( SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_OOB )
 
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_3"
-	blc_smp_setSecurityLevel(Authenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_enableAuthMITM(1);
-	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
-	blc_smp_setIoCapability(IO_CAPABLITY_KEYBOARD_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
-	blc_smp_enableOobAuthentication(1);
+	///
+	//blc_smp_setSecurityLevel(Authenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableAuthMITM(1);
+	//blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
+	//blc_smp_setIoCapability(IO_CAPABLITY_KEYBOARD_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
+	//blc_smp_enableOobAuthentication(1);
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_3, TRUE, FALSE, LEGACY_OOB);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -671,10 +741,14 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_4"
-	blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_setParingMethods(LE_Secure_Connection);
-	blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABLITY_DISPLAY_YESNO);
-	blc_smp_setEcdhDebugMode(debug_mode); //use debug mode for sniffer decryption
+	///
+	//blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableSecureConnections(1);
+	//blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABLITY_DISPLAY_YESNO);
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_4, TRUE, FALSE, LESC_NC);
+	//use debug mode for sniffer decryption
+	blc_smp_setEcdhDebugMode(debug_mode);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -698,10 +772,14 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_4"
-	blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_setParingMethods(LE_Secure_Connection);
-	blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABILITY_DISPLAY_ONLY);
-	blc_smp_setEcdhDebugMode(debug_mode); //use debug mode for sniffer decryption
+	///
+	//blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableSecureConnections(1);
+	//blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABILITY_DISPLAY_ONLY);
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_4, TRUE, FALSE, PASSKEY_DISPLAY);
+	//use debug mode for sniffer decryption
+	blc_smp_setEcdhDebugMode(debug_mode);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -725,10 +803,14 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_4"
-	blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_setParingMethods(LE_Secure_Connection);
-	blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABLITY_KEYBOARD_ONLY);
-	blc_smp_setEcdhDebugMode(debug_mode); //use debug mode for sniffer decryption
+	///
+	//blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableSecureConnections(1);
+	//blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 1, IO_CAPABLITY_KEYBOARD_ONLY);
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_4, TRUE, FALSE, PASSKEY_INPUT);
+	//use debug mode for sniffer decryption
+	blc_smp_setEcdhDebugMode(debug_mode);
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -746,7 +828,39 @@ void user_init_normal(void)
 						  GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY		|  \
 						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE );
 
+#elif ( SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_OOB  )
 
+	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
+
+	//set security level: "LE_Security_Mode_1_Level_4"
+	///
+	//blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	//blc_smp_enableSecureConnections(1);
+	//blc_smp_setSecurityParamters(Bondable_Mode, 1, 1, 0, IO_CAPABILITY_NO_INPUT_NO_OUTPUT);
+	///below same as before setting TODO: test
+	blc_smp_setSecurity(LE_Security_Mode_1_Level_4, TRUE, FALSE, LESC_OOB);
+
+	blc_smp_generateScOobData(&sc_oob_data_cb.scoob_local);
+
+	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
+	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
+	//   should re_stored) , so it must be done after battery check
+	//Notice:if user set smp parameters: it should be called after usr smp settings
+	blc_smp_peripheral_init();
+
+	blc_smp_configSecurityRequestSending(SecReq_PEND_SEND, SecReq_PEND_SEND, 1000); //if not set, default is:  send "security request" immediately after link layer connection established(regardless of new connection or reconnection )
+
+	//host(GAP/SMP/GATT/ATT) event process: register host event callback and set event mask
+	blc_gap_registerHostEventHandler( app_host_event_callback );
+	blc_gap_setEventMask( GAP_EVT_MASK_SMP_PARING_BEAGIN 			|  \
+						  GAP_EVT_MASK_SMP_PARING_SUCCESS   		|  \
+						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
+						  GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY		|  \
+						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE |  \
+						  GAP_EVT_MASK_SMP_TK_SEND_SC_OOB_DATA |  \
+						  GAP_EVT_MASK_SMP_TK_REQUEST_SC_OOB);
+
+	blc_att_setRxMtuSize(247);
 #endif
 
 
@@ -761,7 +875,7 @@ void user_init_normal(void)
 	u8 status = bls_ll_setAdvParam(  ADV_INTERVAL_30MS, ADV_INTERVAL_30MS,
 									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
 									 0,  NULL,
-									 BLT_ENABLE_ADV_37,
+									 BLT_ENABLE_ADV_ALL,
 									 ADV_FP_NONE);
 	if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
 
@@ -770,7 +884,7 @@ void user_init_normal(void)
 
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
 	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
@@ -779,7 +893,7 @@ void user_init_normal(void)
 	///////////////////// Power Management initialization///////////////////
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
 	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
@@ -805,7 +919,7 @@ void user_init_normal(void)
 		}
 
 		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &ble_remote_set_sleep_wakeup);
+		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
 	#endif
 
 #else
@@ -826,8 +940,9 @@ void user_init_normal(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 

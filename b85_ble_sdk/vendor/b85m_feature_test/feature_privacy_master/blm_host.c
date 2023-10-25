@@ -86,14 +86,14 @@ int master_connected_led_on = 0;
 
 
 int master_auto_connect = 0;
-int user_manual_paring;
+int user_manual_pairing;
 
 
 
-const u8 	telink_adv_trigger_paring[] = {5, 0xFF, 0x11, 0x02, 0x01, 0x00};
+const u8 	telink_adv_trigger_pairing[] = {5, 0xFF, 0x11, 0x02, 0x01, 0x00};
 const u8 	telink_adv_trigger_unpair[] = {5, 0xFF, 0x11, 0x02, 0x01, 0x01};
 
-const u8 	telink_adv_trigger_paring_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x00, 0x58, 0x82};
+const u8 	telink_adv_trigger_pairing_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x00, 0x58, 0x82};
 const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0x58, 0x82};
 
 
@@ -119,24 +119,6 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 	extern const u8 sAudioGoogleTXUUID[16];
 	extern const u8 sAudioGoogleRXUUID[16];
 	extern const u8 sAudioGoogleCTLUUID[16];
-
-
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-	void att_rsp_read_by_type (u8 *p, u8 pair_length, u16 attHandle, u8 value)
-	{
-		p[0] = 2;
-		p[1] = 9 ;
-		p[2] = 5 ;
-		p[3] = 0;
-		p[4] = 4;
-		p[5] = 0;
-		p[6] = ATT_OP_READ_BY_TYPE_RSP;
-		p[7] = pair_length;
-		p[8] = attHandle;
-		p[9] = attHandle>>8;
-		p[10]= value;
-	}
-#endif
 
 	/**
 	 * @brief      callback function of service discovery
@@ -265,62 +247,35 @@ int blm_le_adv_report_event_handle(u8 *p)
 
 	/****************** Button press or Adv pair packet triggers pair ***********************/
 	int master_auto_connect = 0;
-	int user_manual_paring = 0;
+	int user_manual_pairing = 0;
 
-	//manual paring methods 1: button triggers
-	user_manual_paring = dongle_pairing_enable && (rssi > -56);  //button trigger pairing(rssi threshold, short distance)
+	//manual pairing methods 1: button triggers
+	user_manual_pairing = dongle_pairing_enable && (rssi > -56);  //button trigger pairing(rssi threshold, short distance)
 
-	//manual paring methods 2: special paring adv data
-	if(!user_manual_paring){  //special adv pair data can also trigger pairing
-		user_manual_paring = (memcmp(pa->data, telink_adv_trigger_paring_8258, sizeof(telink_adv_trigger_paring_8258)) == 0) && (rssi > -56);
+	//manual pairing methods 2: special pairing adv data
+	if(!user_manual_pairing){  //special adv pair data can also trigger pairing
+		user_manual_pairing = (memcmp(pa->data, telink_adv_trigger_pairing_8258, sizeof(telink_adv_trigger_pairing_8258)) == 0) && (rssi > -56);
 	}
 
-	master_auto_connect = tbl_bond_slave_search(pa->adr_type, pa->mac);
-
-	if(master_auto_connect || user_manual_paring)
+	if(blc_ll_getCurrentState() != BLS_LINK_STATE_INIT)
 	{
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
+		master_auto_connect = tbl_bond_slave_search(pa->adr_type, pa->mac);
+	}
+
+	if(master_auto_connect || user_manual_pairing)
+	{
 		printf("OK! Send connInd\n");
 		printf("Peer mac:%x %x %x %x %x %x \n",pa->mac[0],pa->mac[1],pa->mac[2],pa->mac[3],pa->mac[4],pa->mac[5]);
-		u8 status;
-		extern bond_slave_t  tbl_bondSlave;
-		if(tbl_bondSlave.curNum != 0)
-		{
-#if LOCAL_ADDR_RPA_EN
-			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_WL,  \
-									 pa->adr_type, pa->mac, OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC, \
-									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
-									 0, 0xFFFF);
-#else
-			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_WL,  \
-									 pa->adr_type, pa->mac, OWN_ADDRESS_PUBLIC, \
-									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
-									 0, 0xFFFF);
-#endif
-		}
-		else
-		{
-			status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
-									 pa->adr_type, pa->mac, OWN_ADDRESS_PUBLIC, \
-									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
-									 0, 0xFFFF);
-		}
 
-#else
-			//send create connection cmd to controller, trigger it switch to initiating state, after this cmd,
-			//controller will scan all the adv packets it received but not report to host, to find the specified
-			//device(adr_type & mac), then send a connection request packet after 150us, enter to connection state
-			// and send a connection complete event(HCI_SUB_EVT_LE_CONNECTION_COMPLETE)
-			u8 status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
-									 pa->adr_type, pa->mac, BLE_ADDR_PUBLIC, \
-									 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
-									 0, 0xFFFF);
+		 u8 status = blc_ll_createConnection( SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, INITIATE_FP_ADV_SPECIFY,  \
+								 pa->adr_type, pa->mac, OWN_ADDRESS_PUBLIC, \
+								 CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 0, CONN_TIMEOUT_4S, \
+								 0, 0xFFFF);
 
-#endif
 		if(status == BLE_SUCCESS)   //create connection success
 		{
 			#if (!BLE_HOST_SMP_ENABLE)
-				if(user_manual_paring && !master_auto_connect){  //manual pair
+				if(user_manual_pairing && !master_auto_connect){  //manual pair
 					blm_manPair.manual_pair = 1;
 					blm_manPair.mac_type = pa->adr_type;
 					memcpy(blm_manPair.mac, pa->mac, 6);
@@ -673,22 +628,6 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 		{
 			//u16 slave_ota_handle;
 		}
-
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-		else if(pAtt->opcode == ATT_OP_READ_BY_TYPE_REQ)  //slave ack ATT_OP_READ_BY_TYPE_REQ data
-		{
-			printf("dat[2]=%x,dat[3]=%x\n",pAtt->dat[2],pAtt->dat[3]);
-			if(pAtt->dat[2]==0xa6 && pAtt->dat[3]==0x2a)
-			{
-				u8	tmp[37];
-				att_rsp_read_by_type (tmp, 3, 0x001a , 1);
-				if( !blm_push_fifo (BLM_CONN_HANDLE, tmp) ){
-					printf("push_fail\n");
-				}
-
-			}
-		}
-#endif
 		else if(pAtt->opcode == ATT_OP_HANDLE_VALUE_NOTI)  //slave handle notify
 		{
 

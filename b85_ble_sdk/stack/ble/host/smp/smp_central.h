@@ -81,6 +81,22 @@ typedef struct {
 	u8 address[6];
 } mac_adr_t;
 
+#if	LL_FEATURE_ENABLE_PRIVACY
+
+//  6 byte slave_MAC   8 byte rand  2 byte ediv
+// 16 byte ltk
+#define PAIR_INFO_SECTOR_SIZE	 				80
+
+#define PAIR_OFFSET_SLAVE_MAC	 				2
+
+#define PAIR_OFFSET_RAND		 				8
+#define PAIR_OFFSET_EDIV		 				16
+#define PAIR_OFFSET_ATT			 				18   //ATT handle
+#define PAIR_OFFSET_LTK			 				32
+#define PAIR_OFFSET_IRK			 				48
+#define	PAIR_OFFSET_LOCAL_IRK					64
+
+#else
 
 //  6 byte slave_MAC   8 byte rand  2 byte ediv
 // 16 byte ltk
@@ -93,6 +109,8 @@ typedef struct {
 #define PAIR_OFFSET_ATT			 				18   //ATT handle
 #define PAIR_OFFSET_LTK			 				32
 #define PAIR_OFFSET_IRK			 				48
+
+#endif
 
 #if (LL_MASTER_MULTI_CONNECTION)
 	#define	PAIR_SLAVE_MAX_NUM            			8
@@ -134,7 +152,7 @@ u8		blm_host_smp_getSecurityTrigger(void);
  * @param[in]  addr - Callback function triggered when SMP is completed.
  * @return     none.
  */
-void 	blm_smp_configParingSecurityInfoStorageAddr (int addr);
+void 	blm_smp_configPairingSecurityInfoStorageAddr (int addr);
 
 
 /**
@@ -150,7 +168,7 @@ void 	blm_host_smp_handler(u16 conn_handle, u8 *p);
  * @brief      This function is used to search bonding message in slave role.
  * @param[in]  adr_type - address type
  * @param[in]  addr - data address
- * @return     status 0:success  otherfail.
+ * @return     status 0:success  other:fail.
  */
 int 	tbl_bond_slave_search(u8 adr_type, u8 * addr);
 
@@ -159,7 +177,7 @@ int 	tbl_bond_slave_search(u8 adr_type, u8 * addr);
  * @brief      This function is used to delete bonding message in slave role.
  * @param[in]  adr_type - address type
  * @param[in]  addr - data address
- * @return     status 0:success  otherfail.
+ * @return     status 0:success  other:fail.
  */
 int 	tbl_bond_slave_delete_by_adr(u8 adr_type, u8 *addr);
 

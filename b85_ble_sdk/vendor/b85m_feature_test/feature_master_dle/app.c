@@ -57,6 +57,7 @@
 #if (FEATURE_TEST_MODE == TEST_MDATA_LENGTH_EXTENSION)
 
 
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
 
 
 //need define att handle same with slave(Here: we use 8258 feature_test/slave_dle demo as slave device)
@@ -419,8 +420,8 @@ int controller_event_callback (u32 h, u8 *p, int n)
 				event_adv_report_t *pa = (event_adv_report_t *)p;
 				s8 rssi = pa->data[pa->len];
 
-				int user_manual_paring = dongle_pairing_enable && (rssi > -56);  //button trigger pairing(rssi threshold, short distance)
-				if(user_manual_paring)
+				int user_manual_pairing = dongle_pairing_enable && (rssi > -56);  //button trigger pairing(rssi threshold, short distance)
+				if(user_manual_pairing)
 				{
 					//send create connection cmd to controller, trigger it switch to initiating state, after this cmd,
 					//controller will scan all the adv packets it received but not report to host, to find the specified
@@ -463,6 +464,10 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 	u8  mac_public[6];
 	u8  mac_random_static[6];
@@ -479,9 +484,9 @@ void user_init_normal(void)
 	blc_ll_initMasterRoleSingleConn_module();			//master module: 	 mandatory for BLE master,
 
 #if (MCU_CORE_TYPE == MCU_CORE_8278)
-	rf_set_power_level_index (RF_POWER_P3p50dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 #else
-	rf_set_power_level_index (RF_POWER_P3p01dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 #endif
 
 	////// Host Initialization  //////////

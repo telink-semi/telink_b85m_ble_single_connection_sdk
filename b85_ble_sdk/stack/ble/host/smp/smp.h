@@ -92,16 +92,15 @@ typedef enum {
 	SecReq_PEND_SEND = BIT(1),  //"PEND" refer to pending,  pending "security request" for some time after link layer connection established, when pending time arrived. send it
 }secReq_cfg;
 
-
-//See the Core_v5.0(Vol 3/Part C/10.2, Page 2067) for more information.
+//refer to BLE SPEC: Vol 3, Part C, "10.2 LE SECURITY MODES" for more information.
 typedef enum {
 	LE_Security_Mode_1_Level_1 = BIT(0),  No_Authentication_No_Encryption			= BIT(0), No_Security = BIT(0),
-	LE_Security_Mode_1_Level_2 = BIT(1),  Unauthenticated_Paring_with_Encryption 	= BIT(1),
-	LE_Security_Mode_1_Level_3 = BIT(2),  Authenticated_Paring_with_Encryption 	    = BIT(2),
-	LE_Security_Mode_1_Level_4 = BIT(3),  Authenticated_LE_Secure_Connection_Paring_with_Encryption = BIT(3),
+	LE_Security_Mode_1_Level_2 = BIT(1),  Unauthenticated_Pairing_with_Encryption 	= BIT(1),
+	LE_Security_Mode_1_Level_3 = BIT(2),  Authenticated_Pairing_with_Encryption 	    = BIT(2),
+	LE_Security_Mode_1_Level_4 = BIT(3),  Authenticated_LE_Secure_Connection_Pairing_with_Encryption = BIT(3),
 
-	LE_Security_Mode_2_Level_1 = BIT(4),  Unauthenticated_Paring_with_Data_Signing 	= BIT(4),
-	LE_Security_Mode_2_Level_2 = BIT(5),  Authenticated_Paring_with_Data_Signing    = BIT(5),
+	LE_Security_Mode_2_Level_1 = BIT(4),  Unauthenticated_Pairing_with_Data_Signing 	= BIT(4),
+	LE_Security_Mode_2_Level_2 = BIT(5),  Authenticated_Pairing_with_Data_Signing    = BIT(5),
 
 	LE_Security_Mode_1 = (LE_Security_Mode_1_Level_1 | LE_Security_Mode_1_Level_2 | LE_Security_Mode_1_Level_3 | LE_Security_Mode_1_Level_4)
 }le_security_mode_level_t;
@@ -119,13 +118,24 @@ typedef enum {
 }bonding_mode_t;
 
 
-//Paring Methods select
-//See the Core_v5.0(Vol 3/Part H/2.3) for more information.
+//Pairing Methods select
+//refer to BLE SPEC: Vol 3, Part H, "2.3 PAIRING METHODS" for more information.
 typedef enum {
-	LE_Legacy_Paring     = 0,   // BLE 4.0/4.2
+	LE_Legacy_Pairing     = 0,   // BLE 4.0/4.2
 	LE_Secure_Connection = 1,   // BLE 4.2/5.0/5.1
-}paring_methods_t;
+}pairing_methods_t;
 
+
+typedef enum {
+	UNSPECIFIED = 0,
+	LEGACY_JW = 0,		/* Legacy JustWorks */
+	LESC_JW,			/* LESC JustWorks */
+	PASSKEY_INPUT,		/* Passkey Entry input */
+	PASSKEY_DISPLAY,	/* Passkey Entry display */
+	LESC_NC,           	/* LESC Numeric Comparison */
+	LESC_OOB,			/* LESC Out of Band */
+	LEGACY_OOB,			/* Legacy Out of Band */
+}smp_method_t;
 
 
 typedef enum {
@@ -138,6 +148,39 @@ typedef enum {
 } io_capability_t;
 
 
+
+//Keypress Notification type
+typedef enum {
+	KEYPRESS_NTF_PKE_START			=	0x00,
+	KEYPRESS_NTF_PKE_DIGIT_ENTERED	=	0x01,
+	KEYPRESS_NTF_PKE_DIGIT_ERASED	=	0x02,
+	KEYPRESS_NTF_PKE_CLEARED		=	0x03,
+	KEYPRESS_NTF_PKE_COMPLETED		=	0x04,
+} keypress_notify_t;
+
+/**
+ * @brief	local IRK generating strategy when controller use identity address in RF packet
+ * 			default use "LOCIRK_BINDING_WITH_DEVICE" if user not set
+ */
+typedef enum {
+	LOCIRK_BINDING_WITH_DEVICE = 0,  //every device have unique local IRK, never change
+	LOCIRK_RANDOM_GENERATE     = 1,  //random generate
+}loc_irk_gen_str_t;
+
+typedef struct  {
+    /** Random Number. */
+    u8 r[16]; //big--endian
+
+    /** Confirm Value. */
+    u8 c[16]; //big--endian
+}sc_oob_data_t;
+
+/**
+ * @brief      This function is used to set local IRK generating strategy.
+ * @param[in]  str - local IRK generating strategy.
+ * @return     none.
+ */
+void		blc_smp_setLocalIrkGenerateStrategy (loc_irk_gen_str_t  str);
 
 /**
  * @brief      This function is used to set the maximum number of devices that can be bound.
@@ -165,14 +208,21 @@ void 		blc_smp_preMakeEcdhKeysEnable(u8 enable);
 
 
 /**
- * @brief      This function is used to set paring method.
- * @param[in]  method - The paring method value can refer to the structure 'paring_methods_t'.
- *                      0: LE legacy paring;
+ * @brief      This function is used to set pairing method.
+ * @param[in]  method - The pairing method value can refer to the structure 'pairing_methods_t'.
+ *                      0: LE legacy pairing;
  *                      1: LE secure connection
  * @return     none.
  */
-void 		blc_smp_setParingMethods (paring_methods_t  method);       //select paring methods
+void 		blc_smp_setPairingMethods (pairing_methods_t  method);
 
+/**
+ * @brief      This function is used to set if support Secure Connections.
+ * @param[in]  SC_en  - 0: not support Secure Connections;
+ *                      1: support Secure Connections.
+ * @return     none.
+ */
+void		blc_smp_enableSecureConnections(int SC_en); //replace API: blc_smp_setPairingMethods
 
 /**
  * @brief      This function is used to set whether the device uses the ECDH DEBUG key.
@@ -243,6 +293,16 @@ void 		blc_smp_setSecurityParameters (bonding_mode_t mode, int MITM_en, int OOB_
 
 
 /**
+ * @brief      This function is used to set device's security.
+ * @param[in]  sec_level - The security level value can refer to the structure 'bonding_mode_t'.
+ * @param[in]  bondable - 0: non-bondable;  1: bondable.
+ * @param[in]  keypress - 0: if SC PK used keypress notify not used; 1: if SC PK used keypress notify used.
+ * @param[in]  expSmpMethod - The expected smp method can refer to the structure 'smp_method_t'.
+ * @return     none.
+ */
+bool		blc_smp_setSecurity(le_security_mode_level_t secLevel, bool bondable, bool keypress, smp_method_t expSmpMethod);
+
+/**
  * @brief      This function is used to set TK by OOB method.
  * @param[in]  oobData - TK's value, size: 16 byte.
  * @return     none.
@@ -277,12 +337,39 @@ int 		blc_smp_setTK_by_PasskeyEntry (u32 pinCodeInput);
 
 
 /**
+ * @brief      This function is used to send keypress notify during TK input phrase.
+ * param[in]   connHandle - Current ACL connection handle.
+ * @param[in]  ntfType - refer to 'keypress_notify_t'.
+ * @return     True: send SUCC
+ * 			   False: send FAIL
+ */
+bool		blc_smp_sendKeypressNotify (u16 connHandle, keypress_notify_t ntfType);
+
+
+/**
  * @brief      This function is used to set numeric compare confirm YES or NO.
  * @param[in]  YES_or_NO - 1: numeric compare confirm YES;
  *                         0: numeric compare confirm NO.
  * @return     none.
  */
 void		blc_smp_setNumericComparisonResult(bool YES_or_NO);
+
+
+
+/**
+ * @brief      This function is used to set manual pin code for debug in passkey entry mode.
+ * 			   attention: 1. PinCode should be generated randomly each time, so this API is not standard usage for security,
+ * 			              	 it is violation of security protocols.
+ * 			              2. If you set manual pin code with this API in correct range(1~999999), you can neglect callback
+ * 			                 event "GAP_EVT_MASK_SMP_TK_DISPALY", because the pin code displayed is the value you have set by this API.
+ * 			              3. pinCodeInput value 0 here is used to exit manual set mode, but not a Pin Code.
+ * @param[in]  connHandle - connection handle
+ * @param[in]  pinCodeInput - 0           :  exit  manual set mode, generated Pin Code randomly by SDK library.
+ * 							  other value :  enter manual set mode, pinCodeInput in range [1, 999999] will be TK's value.
+ * 							  				 if bigger than 999999, generated Pin Code randomly by SDK library
+ * @return     none.
+ */
+void 		blc_smp_manualSetPinCode_for_debug(u16 connHandle, u32 pinCodeInput);
 
 
 //////////////////////////////////////////////////////////////////////////////////////

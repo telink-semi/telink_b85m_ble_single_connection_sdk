@@ -46,7 +46,7 @@
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
-#include "vendor/common/blt_common.h"
+#include "vendor/common/ble_flash.h"
 
 
 
@@ -276,6 +276,11 @@ void user_init_normal(void)
 	//random number generator must be initiated here( in the beginning of user_init_nromal)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
+
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];

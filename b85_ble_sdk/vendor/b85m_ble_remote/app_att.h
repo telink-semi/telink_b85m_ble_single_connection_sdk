@@ -156,7 +156,7 @@ typedef enum
 	BATT_LEVEL_INPUT_DP_H,					//UUID: 2A19 	VALUE: batVal
 	BATT_LEVEL_INPUT_CCB_H,					//UUID: 2902, 	VALUE: batValCCC
 
-
+#if (BLE_REMOTE_OTA_ENABLE)
 	//// Ota ////
 	/**********************************************************************************************/
 	OTA_PS_H, 								//UUID: 2800, 	VALUE: telink ota service uuid
@@ -164,6 +164,7 @@ typedef enum
 	OTA_CMD_OUT_DP_H,						//UUID: telink ota uuid,  VALUE: otaData
 	OTA_CMD_INPUT_CCB_H,					//UUID: 2902, 	VALUE: otaDataCCC
 	OTA_CMD_OUT_DESC_H,						//UUID: 2901, 	VALUE: otaName
+#endif
 
 #if (TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_TLEINK)
 	//// Audio ////

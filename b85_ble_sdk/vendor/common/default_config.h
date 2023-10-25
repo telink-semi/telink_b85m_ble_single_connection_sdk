@@ -424,6 +424,12 @@ extern "C" {
 #endif
 
 
+#if PM_DEEPSLEEP_RETENTION_ENABLE
+asm(".equ __PM_DEEPSLEEP_RETENTION_ENABLE,	1");
+#else
+asm(".equ __PM_DEEPSLEEP_RETENTION_ENABLE,	0");
+#endif
+asm(".global __PM_DEEPSLEEP_RETENTION_ENABLE");
 
 
 

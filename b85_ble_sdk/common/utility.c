@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	utility.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -158,4 +158,24 @@ u8 * my_fifo_get (my_fifo_t *f)
 		return p;
 	}
 	return 0;
+}
+
+const char *hex_to_str(const void *buf, u8 len)
+{
+	static const char hex[] = "0123456789abcdef";
+	static char str[301];
+	const u8 *b = buf;
+	u8 i;
+
+	len = min(len, (sizeof(str) - 1) / 3);
+
+	for (i = 0; i < len; i++) {
+		str[i * 3]     = hex[b[i] >> 4];
+		str[i * 3 + 1] = hex[b[i] & 0xf];
+		str[i * 3 + 2] = ' ';
+	}
+
+	str[i * 3] = '\0';
+
+	return str;
 }

@@ -55,24 +55,28 @@
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		0
 
+
+/* Attention: The test mode marked 'not test', is not supported in this demo.
+   If user need to use it, please refer to feature_smp_security.  */
+
 // LE_Security_Mode_1_Level_1, no authentication and no encryption
 #define 	SMP_TEST_NO_SECURITY				1
 
 
-// LE_Security_Mode_1_Level_2, unauthenticated paring with encryption
+// LE_Security_Mode_1_Level_2, unauthenticated pairing with encryption
 #define 	SMP_TEST_LEGACY_PAIRING_JUST_WORKS	2 //JustWorks
-#define 	SMP_TEST_SC_PAIRING_JUST_WORKS		3 //JustWorks
+#define 	SMP_TEST_SC_PAIRING_JUST_WORKS		3 //JustWorks, not test
 
-// LE_Security_Mode_1_Level_3, authenticated paring with encryption
+// LE_Security_Mode_1_Level_3, authenticated pairing with encryption
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_SDMI	4 //PK_Resp_Dsply_Init_Input
-#define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI	5 //PK_Init_Dsply_Resp_Input
+#define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI	5 //PK_Init_Dsply_Resp_Input, not test
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI	6 //PK_BOTH_INPUT, not test
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_OOB	7 //OOB_Authentication, not test
 
-// LE_Security_Mode_1_Level_4, authenticated paring with encryption
-#define 	SMP_TEST_SC_NUMERIC_COMPARISON		8 //Numric_Comparison
+// LE_Security_Mode_1_Level_4, authenticated pairing with encryption
+#define 	SMP_TEST_SC_NUMERIC_COMPARISON		8 //Numric_Comparison, not test
 #define 	SMP_TEST_SC_PASSKEY_ENTRY_SDMI		9 //PK_Resp_Dsply_Init_Input
-#define 	SMP_TEST_SC_PASSKEY_ENTRY_MDSI		10//PK_Init_Dsply_Resp_Input
+#define 	SMP_TEST_SC_PASSKEY_ENTRY_MDSI		10//PK_Init_Dsply_Resp_Input, not test
 #define 	SMP_TEST_SC_PASSKEY_ENTRY_MISI		11//PK_BOTH_INPUT, not test
 #define 	SMP_TEST_SC_PASSKEY_ENTRY_OOB		12//OOB_Authentication, not test
 
@@ -119,6 +123,9 @@
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE								0
 #define UART_PRINT_DEBUG_ENABLE  						1
+#define APP_FLASH_INIT_LOG_EN							0
+#define APP_HOST_EVENT_LOG_EN							0
+#define APP_ATT_LOG_EN									0
 
 #define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
 #define BOARD_825X_DONGLE_C1T139A3						2     //
@@ -334,14 +341,10 @@ enum{
 
 /////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
 #if (UART_PRINT_DEBUG_ENABLE)
-		//the baud rate should not bigger than 1M(system timer clock is constant 16M)
-		#define PRINT_BAUD_RATE             					1000000
 		#define DEBUG_INFO_TX_PIN           					GPIO_PB1
 		#define PULL_WAKEUP_SRC_PB1         					PM_PIN_PULLUP_10K
 		#define PB1_OUTPUT_ENABLE         						1
         #define PB1_DATA_OUT                                    1 //must
-
-	    #include "application/print/u_printf.h"
 #endif
 
 #include "../common/default_config.h"

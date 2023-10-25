@@ -59,11 +59,12 @@
 
 
 /////////////////// MODULE /////////////////////////////////
-#define BLE_HOST_SMP_ENABLE							1  //1 for standard security management,  0 for telink referenced paring&bonding(no security)
+#define BLE_HOST_SMP_ENABLE							1  //1 for standard security management,  0 for telink referenced pairing&bonding(no security)
 #define BLE_HOST_SIMPLE_SDP_ENABLE					1  //simple service discovery
 
 #define UI_BUTTON_ENABLE							1
 #define UI_LED_ENABLE								1
+#define APP_FLASH_INIT_LOG_EN						0
 
 
 #define APPLICATION_DONGLE							1
@@ -171,15 +172,10 @@ enum{
 #define UART_PRINT_DEBUG_ENABLE               1   //GPIO simulate uart print func
 
 #if (UART_PRINT_DEBUG_ENABLE)
-
-    //the baud rate should not bigger than 1M(system timer clock is constant 16M)
-    #define PRINT_BAUD_RATE                   1000000
     #define DEBUG_INFO_TX_PIN                 GPIO_PB4
     #define PULL_WAKEUP_SRC_PB4               PM_PIN_PULLUP_10K
     #define PB4_OUTPUT_ENABLE                 1
     #define PB4_DATA_OUT                      1 //must
-    #include "application/print/u_printf.h"
-
 #endif
 
 

@@ -56,6 +56,7 @@
 
 #if (FEATURE_TEST_MODE == TEST_2M_CODED_PHY_EXT_ADV)
 
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
 
 
 #define RX_FIFO_SIZE	64
@@ -220,7 +221,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 * @param[in]  n - data length of event
 	 * @return     none
 	 */
-	void  ble_remote_set_sleep_wakeup (u8 e, u8 *p, int n)
+	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
@@ -298,9 +299,9 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  * @param[in]  n - data length of event
  * @return     none
  */
-void	user_set_rf_power (u8 e, u8 *p, int n)
+void	task_suspend_exit (u8 e, u8 *p, int n)
 {
-	rf_set_power_level_index (RF_POWER_P3dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
 
@@ -343,7 +344,10 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
 
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
@@ -372,7 +376,7 @@ void user_init_normal(void)
 	le_phy_type_t  user_secondary_adv_phy;
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 #if 0 // Extended, None_Connectable_None_Scannable undirected, without auxiliary packet
 
@@ -533,7 +537,7 @@ void user_init_normal(void)
 	///////////////////// Power Management initialization///////////////////
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
 	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
@@ -559,7 +563,7 @@ void user_init_normal(void)
 		}
 
 		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &ble_remote_set_sleep_wakeup);
+		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
 	#endif
 
 #else
@@ -577,8 +581,9 @@ void user_init_normal(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 

@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	u_printf.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -240,6 +240,11 @@ int u_printf(const char *format, ...) {
 	return ret;
 }
 
+int v_printf(const char *format, va_list args) {
+	print(0,format,args);
+	return 0;
+}
+
 int u_sprintf(char *out, const char *format, ...) {
 	int ret=0;
 	va_list args;
@@ -255,6 +260,15 @@ void u_array_printf(unsigned char*data, unsigned int len) {
 	u_printf("{");
 	for(int i = 0; i < len; ++i){
 		u_printf("%X%s", data[i], i<(len)-1? ":":" ");
+	}
+	u_printf("}\n");
+}
+
+void tl_array_printf(const char *fmt, unsigned char*data, unsigned int len){
+	u_printf(fmt);
+	u_printf("{");
+	for(int i = 0; i < len; ++i){
+		u_printf("0x%X%s", data[i], i<(len)-1? ":":" ");
 	}
 	u_printf("}\n");
 }

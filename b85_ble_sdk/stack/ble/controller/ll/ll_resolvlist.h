@@ -4,218 +4,100 @@
  * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	06,2020
+ * @date	11,2022
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef LL_RESOLVLIST_H_
 #define LL_RESOLVLIST_H_
 
 
-#include <stack/ble/ble_common.h>
 
 
 
-/******************************* Macro & Enumeration & Structure Definition for Stack Begin, user can not use!!!!  *****/
-
-
-
-
-
-
-/******************************* Macro & Enumeration & Structure Definition for Stack End ******************************/
-
-
-
-
-
-
-/******************************* Macro & Enumeration variables for User Begin ******************************************/
-
-
-/******************************* Macro & Enumeration variables for User End ********************************************/
-
-
-
-
-
-
-
-/******************************* User Interface  Begin *****************************************************************/
 
 /**
- * @brief		for user to add device to resolving list
- * @param[i]	peerIdAddrType - peer device address type
- * @param[i]	peerIdAddr - peer device address
- * @param[i]	peer_irk - peer device IRK
- * @param[i]	local_irk - peer device local IRK
- * @return  	statue : BLE_SUCCESS OK else : fail.
+ * @brief      This function is used to add a device to resolving list
+ * @param[in]  peerIdAddrType - Peer_Identity_Address_Type
+ * @param[in]  peerIdAddr - Peer_Identity_Address
+ * @param[in]  peer_irk - peer IRK
+ * @param[in]  local_irk - local IRK
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t  		ll_resolvingList_add(u8 peerIdAddrType, u8 *peerIdAddr, u8 *peer_irk, u8 *local_irk);
+ble_sts_t	blc_ll_addDeviceToResolvingList(ida_type_t peerIdAddrType, u8 *peerIdAddr, u8 *peer_irk, u8 *local_irk);
+
 
 /**
- * @brief		for user to delete device to resolving list
- * @param[i]	peerIdAddrType - peer device address type
- * @param[i]	peerIdAddr - peer device address
- * @return  	statue : BLE_SUCCESS OK else : fail.
+ * @brief      This function is used to remove a device from resolving list
+ * @param[in]  peerIdAddrType - Peer_Identity_Address_Type
+ * @param[in]  peerIdAddr - Peer_Identity_Address
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t  		ll_resolvingList_delete(u8 peerIdAddrType, u8 *peerIdAddr);
+ble_sts_t	blc_ll_removeDeviceFromResolvingList(ida_type_t peerIdAddrType, u8 *peerIdAddr);
+
 
 /**
- * @brief		for user to reset resolving list
- * @param[i]	none
- * @return  	statue : BLE_SUCCESS OK else : fail.
+ * @brief      This function is used to reset resolving list
+ * @param[in]  none
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t  		ll_resolvingList_reset(void);
+ble_sts_t	blc_ll_clearResolvingList(void);
+
 
 /**
- * @brief		for user to get peer resolving list number
- * @param[i]	Size - get resolve list
- * @return  	statue : BLE_SUCCESS OK else : fail.
+ * @brief      This function is used to read resolving list size
+ * @param[in]  none
+ * @return     resolving list size
  */
-ble_sts_t  		ll_resolvingList_getSize(u8 *Size);
+int			blc_ll_readResolvingListSize(void);
+
 
 /**
- * @brief		for user to get peer device address .
- * @param[i]	peerIdAddrType - peer device address type
- * @param[i]	peerIdAddr - peer device address
- * @param[i]	peerResolvableAddr - peer device address
- * @return  	statue : BLE_SUCCESS OK else : fail.
+ * @brief	This function is used to enable resolution of Resolvable Private Addresses in the Controller.
+ * @param[in]	resolution_en - Address Resolution Enable/Disable
+ * @return	Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t  		ll_resolvingList_getPeerResolvableAddr (u8 peerIdAddrType, u8* peerIdAddr, u8* peerResolvableAddr); //not available now
+ble_sts_t	blc_ll_setAddressResolutionEnable (addr_res_en_t resolution_en);
 
-/**
- * @brief		for user to get local device Resolvable address .
- * @param[i]	peerIdAddrType - peer device address type
- * @param[i]	peerIdAddr - peer device address
- * @param[i]	LocalResolvableAddr - local device address
- * @return  	statue : BLE_SUCCESS OK else : fail.
- */
-ble_sts_t  		ll_resolvingList_getLocalResolvableAddr(u8 peerIdAddrType, u8* peerIdAddr, u8* LocalResolvableAddr); //not available now
 
-/**
- * @brief		for user to set Resolution en
- * @param[i]	resolutionEn - enable 1 stand for enable.
- * @return  	statue : BLE_SUCCESS OK else : fail.
- */
-ble_sts_t  		ll_resolvingList_setAddrResolutionEnable (u8 resolutionEn);
-
-/**
- * @brief		for user to set Resolution en
- * @param[i]	timeout_s - enable 1 stand for enable.
- * @return  	statue : BLE_SUCCESS OK else : fail.
- */
-ble_sts_t  		ll_resolvingList_setResolvablePrivateAddrTimer (u16 timeout_s);   //not available now
-
-/**
- * @brief		for user to set privacy mode .
- * @param[i]	peerIdAddrType - peer device address type
- * @param[i]	peerIdAddr - peer device address
- * @param[i]	privMode - mode
- * @return  	statue : BLE_SUCCESS OK else : fail.
- */
-ble_sts_t  		ll_resolvingList_setPrivcyMode(u8 peerIdAddrType, u8* peerIdAddr, u8 privMode);
-
-/**
- * @brief		for user to set privacy mode .
- * @param		none.
- * @return  	time : timeout value.
- */
-u16				blc_ll_resolvGetRpaTmo(void);
-
-/**
- * @brief		for user to resolve a address by rpa .
- * @param[in]	rpa - rpa address.
- * @return  	i : index in resolve table.
- */
-int				blc_ll_resolvPeerRpaResolvedAny(const u8* rpa);
-
-/**
- * @brief		for user to set rpa by index .
- * @param[in]	idx - index in table.
- * @param[out]	rpa - rpa buffer address.
- * @return  	none.
- */
-void			blc_ll_resolvSetPeerRpaByIdx(u8 idx, u8 *rpa);
-
-/**
- * @brief		for user to set local rpa by index .
- * @param[in]	idx - index in table.
- * @param[out]	rpa - rpa buffer address.
- * @return  	none.
- */
-void			blc_ll_resolvSetLocalRpaByIdx(u8 idx, u8 *rpa);
-
-/**
- * @brief		for user to set privacy mode .
- * @param[i]	peerIdAddrType - peer device address type
- * @param[i]	peerIdAddr - peer device address
- * @param[i]	rpa - rpa store buffer
- * @param[i]	local - 0:peer RPA  1:local RPA
- * @return  	1 : get in table 0: not in table
- */
-bool			blc_ll_resolvGetRpaByAddr(u8* peerIdAddr, u8 peerIdAddrType, u8* rpa, u8 local);
-
-/**
- * @brief 	Resolvable a Private Address
- * @param[in]	irk  - The IRKs are stored in little endian format
- * @param[in]	rpa  - The addr are stored in little endian format
- * @return      1: Address resolution succeeded; 0: Address resolution failed
+/*
+ * @brief 	This function is used to set the length of time the controller uses a
+ * 			Resolvable Private Address before a new resolvable	private address is
+ * 			generated and starts being used. This timeout applies to all addresses
+ * 			generated by the controller
+*  @param[in]	rpa_timeout_s - RPA_Timeout: RPA_Timeout measured in seconds Range: 1 to 3600, Time range: 1 s to 1 hour
+ * @return	Status - 0x00: command succeeded; 0x01-0xFF: command failed
  * */
-bool			blc_ll_resolvIsAddrResolved(const u8* irk, const u8* rpa);
+ble_sts_t  		blc_ll_setResolvablePrivateAddressTimeout (u16 rpa_timeout_s);
 
-/**
- * @brief 		Is resolve address from resolve list enable.
- * @param		none
- * @return  	1: enable; 0: not enable
+
+/*
+ * @brief 	This function is used to allow the Host to specify the privacy mode to be used for a given entry on the resolving list.
+ * @param[in]	peerIdAddrType - Peer Identity Address Type
+ * @param[in]	peerIdAddr - Peer Identity Address
+ * @param[in]	privMode - Privacy_Mode: Network/Device Privacy Mode
+ * @return	Status - 0x00: command succeeded; 0x01-0xFF: command failed
  * */
-bool			blc_ll_resolvIsAddrRlEnabled(void);
-
-/**
- * @brief 		init resolve list.
- * @param		none
- * @return  	none
- * */
-void			blc_ll_resolvListInit(void);
-/******************************* User Interface  End  ******************************************************************/
+ble_sts_t  		blc_ll_setPrivacyMode(ida_type_t peerIdAddrType, u8* peerIdAddr, privacy_mode_t privMode);
 
 
+//This is to be compatible in older versions. If you don't use them, you can delete them.
+#define	ll_resolvingList_reset							blc_ll_clearResolvingList
+#define	ll_resolvingList_add							blc_ll_addDeviceToResolvingList
+#define	ll_resolvingList_setAddrResolutionEnable		blc_ll_setAddressResolutionEnable
 
 
-
-#endif /* LL_RESOLVLIST_H_ */
+#endif /* LL_RESOLVELIST_H_ */

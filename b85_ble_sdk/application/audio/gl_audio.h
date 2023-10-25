@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	gl_audio.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the header file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -57,6 +57,9 @@
 #define APP_AUDIO_GOOGLE_TIMEOUT1   		3000000 // 3s
 #define APP_AUDIO_GOOGLE_TIMEOUT2   		15000000 // 15s
 
+#define APP_AUDIO_GOOGLE_REMOTE_TIMEOUT		30000000
+#define APP_AUDIO_GOOGLE_TRANSFER_TIMEOUT	60000000
+
 #define AUDIO_GOOGLE_CMD_CAP     			0x0A
 #define AUDIO_GOOGLE_CMD_OPEN    			0x0C
 #define AUDIO_GOOGLE_CMD_CLOSE   			0x0D
@@ -68,6 +71,7 @@
 #define ATV_MIC_CHAR_RSP_CLOSE   			0x00
 #define ATV_MIC_CHAR_RSP_SYNC    			0x0A
 #define ATV_MIC_CHAR_RSP_MIC_OPEN_ERROR   	0x0C
+#define ATV_MIC_CHAR_RSP_SEARCH				0x08
 
 #define APP_AUDIO_FLAG_NONE      			0x0000
 #define APP_AUDIO_FLAG_T4H       			BIT(15) //bit[15]:0--google mode, 1--t4h mode
@@ -154,10 +158,11 @@ typedef enum {
 
 
 typedef enum {
-	 MIC_OPEN_ERROR_HIGH = 0x0F,
+	 MIC_ALREADY_OPEN_HIGH = 0x0F,
 	 MIC_ALREADY_OPEN_LOW = 0x01,
 	 MIC_REMOTE_ERROR_LOW = 0x02,
 	 MIC_DISABLE_CCC_LOW = 0x03,
+	 MIC_ONGOING_PTT_HTT = 0x04,
 	 MIC_ONGOING_LOW = 0x80,
 	 MIC_INTERNAL_ERROR_LOW = 0xff,
 }MicOpenError_TypeDef;

@@ -94,6 +94,7 @@ typedef int (*blc_main_loop_phyTest_callback_t)(void);
 #define			BLT_EV_FLAG_SUSPEND_ENTER						14
 #define			BLT_EV_FLAG_SUSPEND_EXIT						15
 #define			BLT_EV_FLAG_VERSION_IND_REV						16
+#define			BLT_EV_FLAG_SCAN_REQ							17
 
 
 
@@ -130,31 +131,8 @@ extern my_fifo_t		hci_tx_fifo;
  * @param	none
  * @return	bltData.connEffectiveMaxTxOctets
  */
-static inline u8 blc_ll_get_connEffectiveMaxTxOctets(void)
-{
-	#if (LL_FEATURE_ENABLE_LE_DATA_LENGTH_EXTENSION)
-		return bltData.connEffectiveMaxTxOctets;
-	#else
-		return 27;
-	#endif
-}
+u8 blc_ll_get_connEffectiveMaxTxOctets(void);
 
-
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-/**
- * @brief	This function is used to obtain the effective maximum RX data length
- * @param	none
- * @return	bltData.connEffectiveMaxRxOctets
- */
-static inline u8 blc_ll_get_connEffectiveMaxRxOctets(void)
-{
-	#if (LL_FEATURE_ENABLE_LE_DATA_LENGTH_EXTENSION)
-		return bltData.connEffectiveMaxRxOctets;
-	#else
-		return 27;
-	#endif
-}
-#endif
 
 /**
  * @brief	irq_handler for BLE stack, process system tick interrupt and RF interrupt
@@ -233,7 +211,7 @@ u8 			blc_ll_getCurrentState(void);
 /**
  * @brief      this function is used to get the most recent average RSSI
  * @param[in]  none.
- * @return     bltParam.ll_recentAvgRSSI
+ * @return     blmsParam.ll_recentAvgRSSI
  */
 u8 			blc_ll_getLatestAvgRSSI(void);
 
@@ -340,20 +318,14 @@ u8* 	blc_ll_get_macAddrPublic(void);
 
 
 
-
-
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
 /**
- * @brief      this function is used check if any controller buffer initialized by application incorrect.
- * 			   attention: this function must be called at the end of BLE LinkLayer Initialization.
+ * @brief      this function is used check if any controller initialization incorrect.
+ * 			   attention: this function must be called after all controller Initialization finished.
  * @param	   none
- * @return     status, 0x00:  succeed, no buffer error
- * 					   other: buffer error code
+* @return      status - 0x00:  succeed, no error
+* 			  		    other: error code
  */
-ble_sts_t	blc_controller_check_appBufferInitialization(void);
-#endif
-
-
+init_err_t	blc_contr_checkControllerInitialization(void);
 
 
 #endif /* LL__H_ */

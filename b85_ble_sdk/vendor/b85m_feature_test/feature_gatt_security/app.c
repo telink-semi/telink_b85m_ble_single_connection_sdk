@@ -58,6 +58,7 @@
 #if (FEATURE_TEST_MODE == TEST_GATT_SECURITY)
 
 
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
 
 #define RX_FIFO_SIZE	64
 #define RX_FIFO_NUM		8
@@ -165,9 +166,9 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  * @param[in]  n - data length of event
  * @return     none
  */
-void	user_set_rf_power (u8 e, u8 *p, int n)
+void	task_suspend_exit (u8 e, u8 *p, int n)
 {
-	rf_set_power_level_index (RF_POWER_P3dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
 
@@ -206,7 +207,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 	{
 		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
-			printf("Pairing begin\n");
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "Pairing begin\n");
 
 			#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
 				 SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI || SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI)
@@ -217,31 +218,31 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
-			printf("Pairing success:bond flg %s\n", p->bonding ?"true":"false");
+			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "Pairing success:bond flg %s\n", p->bonding ?"true":"false");
 
 			if(p->bonding_result){
-				printf("save smp key succ\n");
+				tlkapi_printf(APP_HOST_EVENT_LOG_EN, "save smp key succ\n");
 			}
 			else{
-				printf("save smp key failed\n");
+				tlkapi_printf(APP_HOST_EVENT_LOG_EN, "save smp key failed\n");
 			}
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
-			printf("Pairing failed:rsn:0x%x\n", p->reason);
+			gap_smp_pairingFailEvt_t* p = (gap_smp_pairingFailEvt_t*)para;
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "Pairing failed:rsn:0x%x\n", p->reason);
 		}
 		break;
 
 		case GAP_EVT_SMP_CONN_ENCRYPTION_DONE:
 		{
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
-			printf("Connection encryption done\n");
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "Connection encryption done\n");
 
-			if(p->re_connect == SMP_STANDARD_PAIR){  //first paring
+			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
 			}
 			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect
@@ -255,19 +256,19 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 			char pc[7];
 			u32 pinCode = *(u32*)para;
 			sprintf(pc, "%d", pinCode);
-			printf("TK display:%s\n", pc);
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN,"[APP][SMP]TK display:%s\n", pc);
 		}
 		break;
 
 		case GAP_EVT_SMP_TK_REQUEST_PASSKEY:
 		{
-			printf("TK Request passkey\n");
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "TK Request passkey\n");
 		}
 		break;
 
 		case GAP_EVT_SMP_TK_REQUEST_OOB:
 		{
-			printf("TK Request OOB\n");
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "TK Request OOB\n");
 		}
 		break;
 
@@ -276,7 +277,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 			char pc[7];
 			u32 pinCode = *(u32*)para;
 			sprintf(pc, "%d", pinCode);
-			printf("TK numeric comparison:%s\n", pc);
+			tlkapi_printf(APP_HOST_EVENT_LOG_EN, "TK numeric comparison:%s\n", pc);
 		}
 		break;
 
@@ -300,7 +301,10 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
 
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
@@ -337,7 +341,7 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_2"
-	blc_smp_setSecurityLevel(Unauthenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
+	blc_smp_setSecurityLevel(Unauthenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
 	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
 	blc_smp_setIoCapability(IO_CAPABLITY_NO_IN_NO_OUT);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
 
@@ -362,7 +366,7 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_3"
-	blc_smp_setSecurityLevel(Authenticated_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
+	blc_smp_setSecurityLevel(Authenticated_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
 	blc_smp_enableAuthMITM(1);
 	blc_smp_setBondingMode(Bondable_Mode);	// if not set, default is : Bondable_Mode
 	blc_smp_setIoCapability(IO_CAPABILITY_DISPLAY_ONLY);	// if not set, default is : IO_CAPABILITY_NO_INPUT_NO_OUTPUT
@@ -389,8 +393,8 @@ void user_init_normal(void)
 	blc_smp_param_setBondingDeviceMaxNumber(4);    //if not set, default is : SMP_BONDING_DEVICE_MAX_NUM
 
 	//set security level: "LE_Security_Mode_1_Level_4"
-	blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Paring_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Paring_with_Encryption)
-	blc_smp_setParingMethods(LE_Secure_Connection);
+	blc_smp_setSecurityLevel(Authenticated_LE_Secure_Connection_Pairing_with_Encryption);  //if not set, default is : LE_Security_Mode_1_Level_2(Unauthenticated_Pairing_with_Encryption)
+	blc_smp_enableSecureConnections(1);
 	blc_smp_setSecurityParamters(Bondable_Mode, 1, 0, 0, IO_CAPABILITY_DISPLAY_ONLY);
 	blc_smp_setEcdhDebugMode(debug_mode); //use debug mode for sniffer decryption
 
@@ -434,7 +438,7 @@ void user_init_normal(void)
 
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
 	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
@@ -443,7 +447,7 @@ void user_init_normal(void)
 	///////////////////// Power Management initialization///////////////////
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
 	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
@@ -477,8 +481,9 @@ void user_init_normal(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 

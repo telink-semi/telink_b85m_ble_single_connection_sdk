@@ -1,46 +1,28 @@
 /********************************************************************************************************
  * @file	emi.c
  *
- * @brief	This is the source file for B85
+ * @brief	This is the source file for B87
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2019
  *
- * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par		Copyright (c) 2019, Telink Semiconductor (Shanghai) Co., Ltd.
+ *			All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          The information contained herein is confidential property of Telink
+ *          Semiconductor (Shanghai) Co., Ltd. and is available under the terms
+ *          of Commercial License Agreement between Telink Semiconductor (Shanghai)
+ *          Co., Ltd. and the licensee or the terms described here-in. This heading
+ *          MUST NOT be removed from this file.
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *          Licensee shall not delete, modify or alter (or permit any third party to delete, modify, or
+ *          alter) any information contained herein in whole or in part except as expressly authorized
+ *          by Telink semiconductor (shanghai) Co., Ltd. Otherwise, licensee shall be solely responsible
+ *          for any claim to the extent arising out of or relating to such deletion(s), modification(s)
+ *          or alteration(s).
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Licensees are granted free, non-transferable use of the information in this
+ *          file under Mutual Non-Disclosure Agreement. NO WARRANTY of ANY KIND is provided.
  *
  *******************************************************************************************************/
 #include "emi.h"
@@ -56,6 +38,7 @@
 static unsigned char  emi_rx_packet[64] __attribute__ ((aligned (4)));
 static unsigned char  emi_zigbee_tx_packet[48]  __attribute__ ((aligned (4))) = {19,0,0,0,20,0,0};
 static unsigned char  emi_ble_tx_packet [48]  __attribute__ ((aligned (4))) = {39, 0, 0, 0,0, 37};
+static unsigned char  Private_TPLL_tx_packet[48] __attribute__ ((aligned (4))) = {0x21,0x00,0x00,0x00,0x20};
 static unsigned int   emi_rx_cnt=0,emi_rssibuf=0;
 static signed  char   rssi=0;
 static unsigned int   state0,state1;
@@ -94,7 +77,7 @@ void rf_set_power_level_index_singletone (RF_PowerTypeDef level)
  */
 void rf_emi_single_tone(RF_PowerTypeDef power_level,signed char rf_chn)
 {
-	rf_multi_mode_drv_init(RF_MODE_ZIGBEE_250K);
+	rf_drv_init(RF_MODE_ZIGBEE_250K);
 	rf_set_channel_singletone(rf_chn);//set freq
 	write_reg8 (0xf02, 0x45);  //tx_en
 	rf_set_power_level_index_singletone(power_level);
@@ -114,6 +97,7 @@ void rf_emi_stop(void)
 	rf_set_tx_rx_off();
 }
 
+static unsigned char rxpara_flag = 1;
 /**
  * @brief   This function serves to set rx mode and channel.
  * @param   mode - mode of RF
@@ -122,16 +106,35 @@ void rf_emi_stop(void)
  */
 void rf_emi_rx(RF_ModeTypeDef mode,signed char rf_chn)
 {
-	write_reg32 (0x408, 0x29417671);	//accesscode: 1001-0100 1000-0010 0110-1110 1000-1110   29 41 76 71
-	write_reg8 (0x405, read_reg8(0x405)|0x80); //trig accesscode
-
 	rf_rx_buffer_set(emi_rx_packet,64,0);
-	rf_multi_mode_drv_init(mode);
+	rf_drv_init(mode);
+	if(mode != RF_MODE_ZIGBEE_250K)
+	{
+		rf_access_code_comm(0x29417671 );//access code
+	}
+	if((mode == RF_MODE_PRIVATE_2M) || (mode == RF_MODE_PRIVATE_1M))
+	{
+		rf_acc_len_set(4);
+	}
 	rf_pn_disable();
 	rf_set_channel(rf_chn,0);//set freq
 	rf_set_tx_rx_off();
 	rf_set_rxmode();
 	sleep_us(150);
+	if(rxpara_flag == 1)
+	{
+		rf_set_rxpara();
+		rxpara_flag = 0;
+	}
+
+	if(rf_chn == 24 || rf_chn == 48 || rf_chn == 72)
+	{
+		rf_ldot_ldo_rxtxlf_bypass_en();
+	}
+	else
+	{
+		rf_ldot_ldo_rxtxlf_bypass_dis();
+	}
 	rssi = 0;
 	emi_rssibuf = 0;
 	emi_rx_cnt = 0;
@@ -264,7 +267,7 @@ void rf_continue_mode_run(void)
  */
 void rf_emi_tx_continue_setup(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_level,signed char rf_chn,unsigned char pkt_type)
 {
-	rf_multi_mode_drv_init(rf_mode);//RF_MODE_BLE_1M
+	rf_drv_init(rf_mode);//RF_MODE_BLE_1M
 	rf_pn_disable();
 	rf_set_channel(rf_chn,0);
 	write_reg8(0xf02, 0x45);  //tx_en
@@ -319,11 +322,13 @@ void rf_emi_tx_burst_setup(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_level,si
 	unsigned char i;
 	unsigned char tx_data=0;
 
-	write_reg32(0x408,0x29417671 );//access code  0xf8118ac9
-	write_reg8 (0x405, read_reg8(0x405)|0x80);
 	write_reg8(0x13c,0x10); // print buffer size set
 	rf_set_channel(rf_chn,0);
-	rf_multi_mode_drv_init(rf_mode);
+	rf_drv_init(rf_mode);
+	if(rf_mode != RF_MODE_ZIGBEE_250K)
+	{
+		rf_access_code_comm(0x29417671 );//access code
+	}
 	rf_pn_disable();
 	rf_set_power_level_index (power_level);
 	if(pkt_type==1)  tx_data = 0x0f;
@@ -334,7 +339,7 @@ void rf_emi_tx_burst_setup(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_level,si
 	{
 		case RF_MODE_LR_S2_500K:
 		case RF_MODE_LR_S8_125K:
-		case RF_MODE_BLE_1M:
+		case RF_MODE_BLE_1M_NO_PN:
 		case RF_MODE_BLE_2M:
 			emi_ble_tx_packet[4] = pkt_type;//type
 			for( i=0;i<37;i++)
@@ -348,6 +353,15 @@ void rf_emi_tx_burst_setup(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_level,si
 			for( i=0;i<37;i++)
 			{
 				emi_zigbee_tx_packet[5+i]=tx_data;
+			}
+			break;
+
+		case RF_MODE_PRIVATE_2M:
+		case RF_MODE_PRIVATE_1M:
+			Private_TPLL_tx_packet[5] = pkt_type;
+			for( i=0;i<37;i++)
+			{
+				Private_TPLL_tx_packet[5+i]=tx_data;
 			}
 			break;
 
@@ -373,11 +387,13 @@ void rf_emi_tx_brust_setup_ramp(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_lev
 	unsigned char i;
 	unsigned char tx_data=0;
 
-	write_reg32(0x408,0x29417671 );//access code  0xf8118ac9
-	write_reg8 (0x405, read_reg8(0x405)|0x80);
+	if(rf_mode != RF_MODE_ZIGBEE_250K)
+	{
+		rf_access_code_comm(0x29417671 );//access code
+	}
 	write_reg8(0x13c,0x10); // print buffer size set
 	rf_set_channel(rf_chn,0);
-	rf_multi_mode_drv_init(rf_mode);
+	rf_drv_init(rf_mode);
 	rf_pn_disable();
 	rf_set_tx_rx_off();
 
@@ -390,7 +406,7 @@ void rf_emi_tx_brust_setup_ramp(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_lev
 	{
 		case RF_MODE_LR_S2_500K:
 		case RF_MODE_LR_S8_125K:
-		case RF_MODE_BLE_1M:
+		case RF_MODE_BLE_1M_NO_PN:
 		case RF_MODE_BLE_2M:
 			emi_ble_tx_packet[4] = pkt_type;//type
 			for( i=0;i<37;i++)
@@ -406,7 +422,14 @@ void rf_emi_tx_brust_setup_ramp(RF_ModeTypeDef rf_mode,RF_PowerTypeDef power_lev
 				emi_zigbee_tx_packet[5+i]=tx_data;
 			}
 			break;
-
+		case RF_MODE_PRIVATE_2M:
+		case RF_MODE_PRIVATE_1M:
+			Private_TPLL_tx_packet[5] = pkt_type;
+			for( i=0;i<37;i++)
+			{
+				Private_TPLL_tx_packet[5+i]=tx_data;
+			}
+			break;
 		default:
 			break;
 	}
@@ -428,7 +451,7 @@ void rf_emi_tx_burst_loop_ramp(RF_ModeTypeDef rf_mode,unsigned char pkt_type)
 {
 	write_reg8(0xf00, 0x80); // stop SM
 	int power = (unsigned char)rf_power_Level_list[read_reg8(0x40008)];
-	if((rf_mode==RF_MODE_BLE_1M)||(rf_mode==RF_MODE_BLE_2M)||(rf_mode==RF_MODE_LR_S8_125K)||(rf_mode==RF_MODE_LR_S2_500K))//ble
+	if((rf_mode==RF_MODE_BLE_1M_NO_PN)||(rf_mode==RF_MODE_BLE_2M)||(rf_mode==RF_MODE_LR_S8_125K)||(rf_mode==RF_MODE_LR_S2_500K))//ble
 	{
 		for(int i=0;i<=power;i++)
 		{
@@ -449,7 +472,9 @@ void rf_emi_tx_burst_loop_ramp(RF_ModeTypeDef rf_mode,unsigned char pkt_type)
 	else if(rf_mode==RF_MODE_ZIGBEE_250K)//zigbee
 	{
 		for(int i=0;i<=power;i++)
+		{
 			sub_wr(0x137c, i , 6, 1);
+		}
 
 		rf_tx_pkt(emi_zigbee_tx_packet);
 		while(!rf_tx_finish());
@@ -459,6 +484,23 @@ void rf_emi_tx_burst_loop_ramp(RF_ModeTypeDef rf_mode,unsigned char pkt_type)
 		sleep_ms(4);
 		if(pkt_type==0)
 			rf_phy_test_prbs9(&emi_zigbee_tx_packet[5],37);
+	}
+	else if((rf_mode==RF_MODE_PRIVATE_2M)||(rf_mode==RF_MODE_PRIVATE_1M))
+	{
+		for(int i=0;i<=power;i++)
+		{
+			sub_wr(0x137c, i , 6, 1);
+		}
+		rf_tx_pkt (Private_TPLL_tx_packet);
+		while(!rf_tx_finish());
+		rf_tx_finish_clear_flag();
+		for(int i=power;i>=0;i--)
+		{
+			sub_wr(0x137c, i , 6, 1);
+		}
+		sleep_ms(2);
+		if(pkt_type==0)
+			rf_phy_test_prbs9(&Private_TPLL_tx_packet[5],37);
 	}
 }
 
@@ -475,7 +517,7 @@ void rf_emi_tx_burst_loop(RF_ModeTypeDef rf_mode,unsigned char pkt_type)
 {
 	write_reg8(0xf00, 0x80); // stop SM
 
-	if((rf_mode==RF_MODE_BLE_1M)||(rf_mode==RF_MODE_BLE_2M))//ble
+	if((rf_mode==RF_MODE_BLE_1M_NO_PN)||(rf_mode==RF_MODE_BLE_2M))//ble
 	{
 
 		rf_start_stx ((void *)emi_ble_tx_packet, read_reg32(0x740) + 10);
@@ -514,6 +556,15 @@ void rf_emi_tx_burst_loop(RF_ModeTypeDef rf_mode,unsigned char pkt_type)
 		sleep_us(625*2);//
 		if(pkt_type==0)
 			rf_phy_test_prbs9(&emi_zigbee_tx_packet[5],37);
+	}
+	else if((rf_mode==RF_MODE_PRIVATE_2M)||(rf_mode==RF_MODE_PRIVATE_1M))
+	{
+		rf_start_stx ((void *)Private_TPLL_tx_packet, read_reg32(0x740) + 10);
+		while(!rf_tx_finish());
+		rf_tx_finish_clear_flag();
+		sleep_us(625);//
+		if(pkt_type==0)
+			rf_phy_test_prbs9(&Private_TPLL_tx_packet[5],37);
 	}
 }
 

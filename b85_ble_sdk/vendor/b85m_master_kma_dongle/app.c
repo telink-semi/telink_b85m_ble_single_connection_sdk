@@ -65,65 +65,6 @@ MYFIFO_INIT(blt_rxfifo, 64, 16);
 #endif
 MYFIFO_INIT(blt_txfifo, 40, 8);
 
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-	#if (MASTER_RESOLVABLE_ADD_EN)
-
-	smp_master_param_save_t  dev_msg;
-	/**
-	 * @brief      callback function of Host Event
-	 * @param[in]  h - Host Event type
-	 * @param[in]  para - data pointer of event
-	 * @param[in]  n - data length of event
-	 * @return     0
-	 */
-	int app_host_event_callback (u32 h, u8 *para, int n)
-	{
-		u8 event = h & 0xFF;
-
-		switch(event)
-		{
-			case GAP_EVT_SMP_PAIRING_SUCCESS:
-			{
-				gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
-
-				if(p->bonding_result){
-					printf("save smp key succ %x,handle %x\n",p->bonding_result,p->connHandle);
-
-					dev_char_info_t *pt = &cur_conn_device;		//get current device mac
-					u8	index = tbl_bond_slave_search(pt->mac_adrType,pt->mac_addr);
-
-					extern bond_slave_t  tbl_bondSlave;  //slave mac bond table
-					u32 device_add = tbl_bondSlave.bond_flash_idx[index-1];
-
-					printf("bond number = %x\n",device_add);
-
-					//flash_read_data
-					flash_read_page(device_add,sizeof(smp_param_save_t),(unsigned char *)(&dev_msg) );
-
-					u8	local_irk[16];
-					get_local_irk(local_irk);
-					u8 reason = ll_resolvingList_add(dev_msg.adr_type,&dev_msg.address[0],&dev_msg.irk[0],local_irk);
-					extern ll_ResolvingListTbl_t	ll_resolvingList_tbl;
-//					swapN(ll_resolvingList_tbl.rlList[0].rlPeerIrk,16);
-//					printf("add resolv reason %d \n",reason);
-
-				}
-				else{
-					printf("save smp key failed %x,handle %x\n",p->bonding_result,p->connHandle);
-				}
-
-
-
-			}
-			break;
-		}
-
-		return 0;
-	}
-
-	#endif
-#endif
-
 /**
  * @brief		user initialization
  * @param[in]	none
@@ -135,6 +76,16 @@ void user_init(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE || USB_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 	//set USB ID
 	REG_ADDR8(0x74) = 0x62;
@@ -150,6 +101,7 @@ void user_init(void)
 
 	usb_dp_pullup_en (1);  //open USB enum
 
+	usb_set_pin_en();
 
 
 	///////////////// SDM /////////////////////////////////
@@ -164,6 +116,7 @@ void user_init(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 
 	////// Controller Initialization  //////////
@@ -201,14 +154,14 @@ void user_init(void)
 
 
 	#if (BLE_HOST_SMP_ENABLE)
-		blm_smp_configParingSecurityInfoStorageAddr(FLASH_ADR_PARING);
+		blm_smp_configPairingSecurityInfoStorageAddr(FLASH_ADR_PARING);
 		blm_smp_registerSmpFinishCb(app_host_smp_finish);
 
 		blc_smp_central_init();
 
 		//SMP trigger by master
 		blm_host_smp_setSecurityTrigger(MASTER_TRIGGER_SMP_FIRST_PAIRING | MASTER_TRIGGER_SMP_AUTO_CONNECT);
-	#else  //TeLink referenced paring&bonding without standard paring in BLE spec
+	#else  //TeLink referenced pairing&bonding without standard pairing in BLE spec
 		blc_smp_setSecurityLevel(No_Security);
 
 		user_master_host_pairing_management_init();
@@ -219,33 +172,14 @@ void user_init(void)
 	extern int host_att_register_idle_func (void *p);
 	host_att_register_idle_func (main_idle_loop);
 
-#if	LL_FEATURE_ENABLE_LL_PRIVACY
-	#if(MASTER_RESOLVABLE_ADD_EN)
-	{
-		blc_gap_setEventMask( GAP_EVT_MASK_SMP_PAIRING_SUCCESS );
-		blc_gap_registerHostEventHandler( app_host_event_callback );
-		ll_resolvingList_setAddrResolutionEnable(1);
-		extern bond_slave_t  tbl_bondSlave;
-		if(tbl_bondSlave.curNum != 0)
-		{
-			flash_read_page(tbl_bondSlave.bond_flash_idx[tbl_bondSlave.curNum-1],sizeof(smp_master_param_save_t),(unsigned char *)(&dev_msg) );
-
-			u8	local_irk[16];
-			get_local_irk(local_irk);
-			u8 reason = ll_resolvingList_add(dev_msg.adr_type,&dev_msg.address[0],&dev_msg.irk[0],local_irk);
-//			extern ll_ResolvingListTbl_t	ll_resolvingList_tbl;
-//			swapN(&ll_resolvingList_tbl.rlList[0].rlPeerIrk,16);
-		}
-	}
-	#endif
-#endif
-
 	//set scan parameter and scan enable
 
 	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS,	\
 							OWN_ADDRESS_PUBLIC, SCAN_FP_ALLOW_ADV_ANY);
 	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
 
+
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE kma dongle init \n");
 }
 
 
@@ -336,7 +270,6 @@ int main_idle_loop (void)
  */
 void main_loop (void)
 {
-
 	main_idle_loop ();
 
 	if (main_service)

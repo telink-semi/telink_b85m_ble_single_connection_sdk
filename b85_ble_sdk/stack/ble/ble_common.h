@@ -53,7 +53,7 @@
 typedef enum {
     BLE_SUCCESS = 0,
 
-//// HCI Status, See the Core_v5.0(Vol 2/Part D/1.3 "list of Error Codes") for more information)
+//// HCI Status, refer to BLE SPEC: Vol 1, Part F, "1.3 LIST OF ERROR CODES" for more information.
     HCI_ERR_UNKNOWN_HCI_CMD                                        = 0x01,
     HCI_ERR_UNKNOWN_CONN_ID                                        = 0x02,
     HCI_ERR_HW_FAILURE                                             = 0x03,
@@ -148,7 +148,11 @@ typedef enum {
     L2CAP_ERR_INSUFFICIENT_RESOURCES,
     L2CAP_ERR_PSM_NOT_REGISTER,
     L2CAP_ERR_CONTROL_NOT_READY,
-    L2CAP_ERR_PSM_HAVE_ESTABLISH,
+    L2CAP_ERR_COC_CREATING,
+	L2CAP_ERR_COC_DATA_STILL_SENT,
+	L2CAP_ERR_NO_CID_AVAILABLE,
+	L2CAP_ERR_ALL_CID_ALLOCATED,
+	L2CAP_ERR_NO_CREATE_COC_HANDLER,
 
     //SMP status
 	SMP_ERR_INVALID_PARAMETER 									   = 0xA0,
@@ -173,22 +177,50 @@ typedef enum {
 	//Service status
 	SERVICE_ERR_INVALID_PARAMETER 								   = 0xD0,
 
-	//Application buffer check error code
-	LL_ACL_RX_BUF_NO_INIT 							   	  		   = 0xE0,
-	LL_ACL_RX_BUF_PARAM_INVALID,
-	LL_ACL_RX_BUF_SIZE_NOT_MEET_MAX_RX_OCT,
-	LL_ACL_TX_BUF_NO_INIT,
-	LL_ACL_TX_BUF_PARAM_INVALID,
-	LL_ACL_TX_BUF_SIZE_MUL_NUM_EXCEED_4K,
-	LL_ACL_TX_BUF_SIZE_NOT_MEET_MAX_TX_OCT,
-
 } ble_sts_t;
 
 
 
 
 
+/**
+ *  @brief  error code for user initialization error
+ */
+typedef enum {
+    INIT_SUCCESS = 0,
 
+	///////// Controller ///////////
+
+	LL_ACL_RX_BUF_NO_INIT 							   	  		   = 0x0010,
+	LL_ACL_RX_BUF_PARAM_INVALID,
+	LL_ACL_RX_BUF_SIZE_NOT_MEET_MAX_RX_OCT,
+	LL_ACL_TX_BUF_NO_INIT,
+	LL_ACL_TX_BUF_PARAM_INVALID,
+	LL_ACL_TX_BUF_SIZE_NOT_MEET_MAX_TX_OCT,
+
+
+	////////////////// Host /////////////////////
+	//GAP
+
+
+	//L2CAP
+
+
+	//ATT
+
+
+
+	//GATT
+
+
+	//SMP
+	INIT_ERR_SMP_BONDING_MAX_NUMBER_EXCEED						   	= 0x1600,
+
+
+	////////////////// Service/Profile /////////////////////
+
+
+} init_err_t;
 
 
 
@@ -402,6 +434,18 @@ typedef enum {
 
 	DATA_TYPE_MANUFACTURER_SPECIFIC_DATA 	= 0xFF,     //	Manufacturer Specific Data
 }data_type_t;
+
+
+/**
+ * @brief      get SDK and Lib version.User should get at least 5 bytes,first 5 bytes show the SDK
+ * 			   version and the rest is reserved for future.
+ * 			   For example, if the number you get is {3,4,0,0,1} after call this API(DEC), it stands for
+ * 			   the SDK version is 3.4.0.0 patch 1.
+ * @param[in]  pbuf - the point of buffer to store version message.
+ * @param[in]  number - the length of version message,should be 5 to 16.
+ * @return     0:success  1:number is invalid
+ */
+unsigned char blc_get_sdk_version(unsigned char *pbuf,unsigned char number);
 
 
 #endif

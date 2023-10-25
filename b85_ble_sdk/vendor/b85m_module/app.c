@@ -167,16 +167,16 @@ int app_conn_param_update_response(u8 id, u16  result)
 {
 #if 0
 	if(result == CONN_PARAM_UPDATE_ACCEPT){
-		printf("SIG: the LE master Host has accepted the connection parameters.\n");
+		tlkapi_printf("SIG: the LE master Host has accepted the connection parameters.\n");
 		conn_update_cnt = 0;
 	}
 	else if(result == CONN_PARAM_UPDATE_REJECT)
 	{
-		printf("SIG: the LE master Host has rejected the connection parameters..\n");
-		printf("Current Connection interval:%dus.\n", bls_ll_getConnectionInterval() * 1250 );
+		tlkapi_printf("SIG: the LE master Host has rejected the connection parameters..\n");
+		tlkapi_printf("Current Connection interval:%dus.\n", bls_ll_getConnectionInterval() * 1250 );
 		conn_update_cnt++;
 		if(conn_update_cnt < 4){
-			printf("Slave sent update connPara req!\n");
+			tlkapi_printf("Slave sent update connPara req!\n");
 		}
 		if(conn_update_cnt == 1){
 			bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_20MS, 0, CONN_TIMEOUT_4S); //18.75ms iOS
@@ -189,7 +189,7 @@ int app_conn_param_update_response(u8 id, u16  result)
 		}
 		else{
 			conn_update_cnt = 0;
-			printf("Slave Connection Parameters Update table all tested and failed!\n");
+			tlkapi_printf("Slave Connection Parameters Update table all tested and failed!\n");
 		}
 	}
 #endif
@@ -210,9 +210,9 @@ void entry_ota_mode(void)
 {
 	bls_ota_setTimeout(15 * 1000 * 1000); //set OTA timeout  15 seconds
 
-	#if(BLT_APP_LED_ENABLE)
-		gpio_set_output_en(GPIO_LED, 1);  //output enable
-		gpio_write(GPIO_LED, 1);  //LED on for indicate OTA mode
+	#if(UI_LED_ENABLE)
+		gpio_set_output_en(GPIO_LED_RED, 1);  //output enable
+		gpio_write(GPIO_LED_RED, 1);  //LED on for indicate OTA mode
 	#endif
 }
 
@@ -224,17 +224,17 @@ void entry_ota_mode(void)
 void show_ota_result(int result)
 {
 
-	#if(1 && BLT_APP_LED_ENABLE)
-		gpio_set_output_en(GPIO_LED, 1);
+	#if(1 && UI_LED_ENABLE)
+		gpio_set_output_en(GPIO_LED_RED, 1);
 
 		if(result == OTA_SUCCESS){  //OTA success
-			gpio_write(GPIO_LED, 1);
+			gpio_write(GPIO_LED_RED, 1);
 			sleep_us(500000);
-			gpio_write(GPIO_LED, 0);
+			gpio_write(GPIO_LED_RED, 0);
 			sleep_us(500000);
-			gpio_write(GPIO_LED, 1);
+			gpio_write(GPIO_LED_RED, 1);
 			sleep_us(500000);
-			gpio_write(GPIO_LED, 0);
+			gpio_write(GPIO_LED_RED, 0);
 			sleep_us(500000);
 		}
 		else{  //OTA fail
@@ -245,9 +245,9 @@ void show_ota_result(int result)
 
 
 				while(1){
-					gpio_write(GPIO_LED, 1);
+					gpio_write(GPIO_LED_RED, 1);
 					sleep_us(200000);
-					gpio_write(GPIO_LED, 0);
+					gpio_write(GPIO_LED_RED, 0);
 					sleep_us(200000);
 				}
 
@@ -255,7 +255,7 @@ void show_ota_result(int result)
 
 		}
 
-		gpio_set_output_en(GPIO_LED, 0);
+		gpio_set_output_en(GPIO_LED_RED, 0);
 	#endif
 }
 #endif
@@ -303,6 +303,7 @@ void app_suspend_exit ()
 	GPIO_WAKEUP_MODULE_HIGH;  //module enter working state
 	bls_pm_setSuspendMask(SUSPEND_DISABLE);
 	tick_wakeup = clock_time () | 1;
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
 /**
@@ -366,6 +367,74 @@ void app_power_management ()
 #endif
 }
 
+#if (BATT_CHECK_ENABLE)  //battery check must do before OTA relative operation
+/**
+ * @brief		callback function of adjust whether allow enter to pm or not
+ * @param[in]	none
+ * @return      0 forbidden enter cpu_sleep_wakeup, 1 allow enter cpu_sleep_wakeup
+ */
+int app_suspend_enter_low_battery (void)
+{
+	if (!gpio_read(GPIO_WAKEUP_MODULE)) //gpio low level
+	{
+		analog_write(USED_DEEP_ANA_REG,  analog_read(USED_DEEP_ANA_REG)|LOW_BATT_FLG);  //mark
+		return 1;//allow enter cpu_sleep_wakeup
+	}
+
+	analog_write(USED_DEEP_ANA_REG,  analog_read(USED_DEEP_ANA_REG)&(~LOW_BATT_FLG));  //clr
+	return 0; //forbidden enter cpu_sleep_wakeup
+}
+/**
+ * @brief		this function is used to process battery power.
+ * 				The low voltage protection threshold 2.0V is an example and reference value. Customers should
+ * 				evaluate and modify these thresholds according to the actual situation. If users have unreasonable designs
+ * 				in the hardware circuit, which leads to a decrease in the stability of the power supply network, the
+ * 				safety thresholds must be increased as appropriate.
+ * @param[in]	none
+ * @return      none
+ */
+_attribute_ram_code_ void user_battery_power_check(u16 alarm_vol_mv)
+{
+	/*For battery-powered products, as the battery power will gradually drop, when the voltage is low to a certain
+	  value, it will cause many problems.
+		a) When the voltage is lower than operating voltage range of chip, chip can no longer guarantee stable operation.
+		b) When the battery voltage is low, due to the unstable power supply, the write and erase operations
+			of Flash may have the risk of error, causing the program firmware and user data to be modified abnormally,
+			and eventually causing the product to fail. */
+	u8 battery_check_returnVaule = 0;
+	if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
+		battery_check_returnVaule = app_battery_power_check(alarm_vol_mv + 200);  //2.2 V
+		tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[BATTERY][CHECK] The battery voltage is lower than %dmV, shut down!!!\n", (alarm_vol_mv + 200));
+	}
+	else{
+		battery_check_returnVaule = app_battery_power_check(alarm_vol_mv);  //2.0 V
+		tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[BATTERY][CHECK] The battery voltage is lower than %dmV, shut down!!!\n", alarm_vol_mv);
+	}
+	if(battery_check_returnVaule)
+	{
+		analog_write(USED_DEEP_ANA_REG,  analog_read(USED_DEEP_ANA_REG) & (~LOW_BATT_FLG));  //clr
+	}
+	else
+	{
+		#if (UI_LED_ENABLE)  //led indicate
+			for(int k = 0; k < 3; k++){
+				gpio_write(GPIO_LED_BLUE, LED_ON_LEVAL);
+				sleep_us(200000);
+				gpio_write(GPIO_LED_BLUE, !LED_ON_LEVAL);
+				sleep_us(200000);
+			}
+		#endif
+		GPIO_WAKEUP_MODULE_LOW;
+
+		bls_pm_registerFuncBeforeSuspend( &app_suspend_enter_low_battery );
+
+		cpu_set_gpio_wakeup (GPIO_WAKEUP_MODULE, Level_High, 1);  //drive pin pad high wakeup deepsleep
+
+		cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepsleep
+	}
+}
+#endif
+
 
 /**
  * @brief		user initialization when MCU power on or wake_up from deepSleep mode
@@ -379,6 +448,16 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 	/*****************************************************************************************
 	 Note: battery check must do before any flash write/erase operation, cause flash write/erase
@@ -387,21 +466,32 @@ void user_init_normal(void)
 		   Some module initialization may involve flash write/erase, include: OTA initialization,
 				SMP initialization, ..
 				So these initialization must be done after  battery check
+
+	   Attention that this function must be called after "blc_app_loadCustomizedParameters_normal" !!!
+	   The reason is that the low battery check need the ADC calibration parameter, and this parameter
+	   is loaded in blc_app_loadCustomizedParameters_normal.
 	*****************************************************************************************/
-	#if (BATT_CHECK_ENABLE)  //battery check must do before OTA relative operation
-		u8 battery_check_returnVaule = 0;
-		if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
-			do{
-				battery_check_returnVaule = app_battery_power_check(VBAT_ALRAM_THRES_MV + 200);  //2.2 V
-			}while(battery_check_returnVaule);
-		}
-		else{
-			do{
-				battery_check_returnVaule = app_battery_power_check(VBAT_ALRAM_THRES_MV);  //2.0 V
-			}while(battery_check_returnVaule);
-		}
+	#if (BATT_CHECK_ENABLE)
+	/*The SDK must do a quick low battery detect during user initialization instead of waiting
+	  until the main_loop. The reason for this process is to avoid application errors that the device
+	  has already working at low power.
+	  Considering the working voltage of MCU and the working voltage of flash, if the Demo is set below 2.0V,
+	  the chip will alarm and deep sleep, and once the chip is detected to be lower than 2.0V, it needs to wait
+	  until the voltage rises to 2.2V,
+	  the chip will resume normal operation. Consider the following points in this design:
+		At 2.0V, when other modules are operated, the voltage may be pulled down and the flash will not
+		work normally. Therefore, it is necessary to enter deepsleep below 2.0V to ensure that the chip no
+		longer runs related modules;
+		When there is a low voltage situation, need to restore to 2.2V in order to make other functions normal,
+		this is to ensure that the power supply voltage is confirmed in the charge and has a certain amount of
+		power, then start to restore the function can be safer.*/
+		user_battery_power_check(VBAT_DEEP_THRES_MV);
 	#endif
 
+	#if (APP_FLASH_PROTECTION_ENABLE)
+		app_flash_protection_operation(FLASH_OP_EVT_APP_INITIALIZATION, 0, 0);
+		blc_appRegisterStackFlashOperationCallback(app_flash_protection_operation); //register flash operation callback for stack
+	#endif
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
@@ -409,6 +499,7 @@ void user_init_normal(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 	#if(BLE_DEVICE_ADDRESS_TYPE == BLE_DEVICE_ADDRESS_PUBLIC)
 		app_own_address_type = OWN_ADDRESS_PUBLIC;
@@ -437,6 +528,8 @@ void user_init_normal(void)
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
 	//   should re_stored) , so it must be done after battery check
 	#if (BLE_SECURITY_ENABLE)
+		/* attention: If this API is used, must be called before "blc smp_peripheral_init" when initialization !!! */
+		bls_smp_configPairingSecurityInfoStorageAddr(flash_sector_smp_storage);
 		//defalut smp4.0, just work
 		blc_smp_peripheral_init();
 
@@ -462,13 +555,17 @@ void user_init_normal(void)
 
 
 	////////////////// config adv packet /////////////////////
-	u8 status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+	u8 adv_param_status = BLE_SUCCESS;
+	adv_param_status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 								 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
 								 0,  NULL,
 								 MY_APP_ADV_CHANNEL,
 								 ADV_FP_NONE);
 
-	if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
+	if(adv_param_status != BLE_SUCCESS) {  //debug: adv setting err
+		tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+		while(1);
+	}
 
 
 	bls_ll_setAdvEnable(1);  //adv enable
@@ -546,15 +643,15 @@ void user_init_normal(void)
 
 #if (BLE_OTA_ENABLE)
 	// OTA init
-	bls_ota_clearNewFwDataArea(); //must
+	blc_ota_initOtaServer_module(); //must
 	bls_ota_registerStartCmdCb(entry_ota_mode);
 	bls_ota_registerResultIndicateCb(show_ota_result);
 #endif
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE module init done! \n");
 
 }
 
 
-#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 /**
  * @brief		user initialization when MCU wake_up from deepSleep_retention mode
  * @param[in]	none
@@ -562,10 +659,17 @@ void user_init_normal(void)
  */
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
+#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
+
+	#if (BATT_CHECK_ENABLE)
+		/* ADC settings will lost during deepsleep retention mode, so here need clear flag */
+		battery_clear_adc_setting_flag();
+	#endif
 
 	DBG_CHN0_HIGH;    //debug
 
@@ -613,7 +717,112 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 
 
 	DBG_CHN0_HIGH;   //debug
+#endif
 }
+
+#if (APP_FLASH_PROTECTION_ENABLE)
+/**
+ * @brief      flash protection operation, including all locking & unlocking for application
+ * 			   handle all flash write & erase action for this demo code. use should add more more if they have more flash operation.
+ * @param[in]  flash_op_evt - flash operation event, including application layer action and stack layer action event(OTA write & erase)
+ * 			   attention 1: if you have more flash write or erase action, you should should add more type and process them
+ * 			   attention 2: for "end" event, no need to pay attention on op_addr_begin & op_addr_end, we set them to 0 for
+ * 			   			    stack event, such as stack OTA write new firmware end event
+ * @param[in]  op_addr_begin - operating flash address range begin value
+ * @param[in]  op_addr_end - operating flash address range end value
+ * 			   attention that, we use: [op_addr_begin, op_addr_end)
+ * 			   e.g. if we write flash sector from 0x10000 to 0x20000, actual operating flash address is 0x10000 ~ 0x1FFFF
+ * 			   		but we use [0x10000, 0x20000):  op_addr_begin = 0x10000, op_addr_end = 0x20000
+ * @return     none
+ */
+_attribute_data_retention_ u16  flash_lockBlock_cmd = 0;
+void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_addr_end)
+{
+	if(flash_op_evt == FLASH_OP_EVT_APP_INITIALIZATION)
+	{
+		/* ignore "op addr_begin" and "op addr_end" for initialization event
+		 * must call "flash protection_init" first, will choose correct flash protection relative API according to current internal flash type in MCU */
+		flash_protection_init();
+
+		/* just sample code here, protect all flash area for old firmware and OTA new firmware.
+		 * user can change this design if have other consideration */
+		u32  app_lockBlock = 0;
+		#if (BLE_OTA_ENABLE)
+			u32 multiBootAddress = blc_ota_getCurrentUsedMultipleBootAddress();
+			if(multiBootAddress == MULTI_BOOT_ADDR_0x20000){
+				app_lockBlock = FLASH_LOCK_LOW_256K;
+			}
+			else if(multiBootAddress == MULTI_BOOT_ADDR_0x40000){
+				/* attention that 512K capacity flash can not lock all 512K area, should leave some upper sector
+				 * for system data(SMP storage data & calibration data & MAC address) and user data
+				 * will use a approximate value */
+				app_lockBlock = FLASH_LOCK_LOW_512K;
+			}
+			else if(multiBootAddress == MULTI_BOOT_ADDR_0x80000){
+				if(blc_flash_capacity < FLASH_SIZE_1M){ //for flash capacity smaller than 1M, OTA can not use 512K as multiple boot address
+					blc_flashProt.init_err = 1;
+				}
+				else{
+					/* attention that 1M capacity flash can not lock all 1M area, should leave some upper sector for
+					 * system data(SMP storage data & calibration data & MAC address) and user data
+					 * will use a approximate value */
+					app_lockBlock = FLASH_LOCK_LOW_1M;
+				}
+			}
+		#else
+			app_lockBlock = FLASH_LOCK_LOW_256K; //just demo value, user can change this value according to application
+		#endif
+
+
+		flash_lockBlock_cmd = flash_change_app_lock_block_to_flash_lock_block(app_lockBlock);
+
+		if(blc_flashProt.init_err){
+			tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash protection initialization error!!!\n"); //print log here, tell user initialization error
+		}
+
+		flash_lock(flash_lockBlock_cmd);
+	}
+#if (BLE_OTA_ENABLE)
+	else if(flash_op_evt == FLASH_OP_EVT_STACK_OTA_CLEAR_OLD_FW_BEGIN)
+	{
+		/* OTA clear old firmware begin event is triggered by stack, in "blc ota_initOtaServer_module", rebooting from a successful OTA.
+		 * Software will erase whole old firmware for potential next new OTA, need unlock flash if any part of flash address from
+		 * "op addr_begin" to "op addr_end" is in locking block area.
+		 * In this sample code, we protect whole flash area for old and new firmware, so here we do not need judge "op addr_begin" and "op addr_end",
+		 * must unlock flash */
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] OTA clear old FW begin, unlock flash\n");
+		flash_unlock();
+	}
+	else if(flash_op_evt == FLASH_OP_EVT_STACK_OTA_CLEAR_OLD_FW_END)
+	{
+		/* ignore "op addr_begin" and "op addr_end" for END event
+		 * OTA clear old firmware end event is triggered by stack, in "blc ota_initOtaServer_module", erasing old firmware data finished.
+		 * In this sample code, we need lock flash again, because we have unlocked it at the begin event of clear old firmware */
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] OTA clear old FW end, restore flash locking\n");
+		flash_lock(flash_lockBlock_cmd);
+	}
+	else if(flash_op_evt == FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_BEGIN)
+	{
+		/* OTA write new firmware begin event is triggered by stack, when receive first OTA data PDU.
+		 * Software will write data to flash on new firmware area,  need unlock flash if any part of flash address from
+		 * "op addr_begin" to "op addr_end" is in locking block area.
+		 * In this sample code, we protect whole flash area for old and new firmware, so here we do not need judge "op addr_begin" and "op addr_end",
+		 * must unlock flash */
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] OTA write new FW begin, unlock flash\n");
+		flash_unlock();
+	}
+	else if(flash_op_evt == FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_END)
+	{
+		/* ignore "op addr_begin" and "op addr_end" for END event
+		 * OTA write new firmware end event is triggered by stack, after OTA end or an OTA error happens, writing new firmware data finished.
+		 * In this sample code, we need lock flash again, because we have unlocked it at the begin event of write new firmware */
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] OTA write new FW end, restore flash locking\n");
+		flash_lock(flash_lockBlock_cmd);
+	}
+#endif
+	/* add more flash protection operation for your application if needed */
+}
+
 #endif
 
 /**
@@ -629,14 +838,11 @@ void main_loop (void)
 	////////////////////////////////////// UI entry /////////////////////////////////
 
 #if (BATT_CHECK_ENABLE)
+	/*The frequency of low battery detect is controlled by the variable lowBattDet_tick, which is executed every
+	 500ms in the demo. Users can modify this time according to their needs.*/
 	if(battery_get_detect_enable() && clock_time_exceed(lowBattDet_tick, 500000) ){
 		lowBattDet_tick = clock_time();
-		if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
-			app_battery_power_check(VBAT_ALRAM_THRES_MV + 200);  //2.2 V
-		}
-		else{
-			app_battery_power_check(VBAT_ALRAM_THRES_MV);  //2.0 V
-		}
+		user_battery_power_check(VBAT_DEEP_THRES_MV);
 	}
 #endif
 

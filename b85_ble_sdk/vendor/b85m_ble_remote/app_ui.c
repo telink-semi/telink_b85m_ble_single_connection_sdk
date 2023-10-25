@@ -110,7 +110,7 @@ static const u16 vk_consumer_map[16] = {
 
 
 /////////////////////////// led management /////////////////////
-#if (BLT_APP_LED_ENABLE)
+#if (UI_LED_ENABLE)
 
 	enum{
 		LED_POWER_ON = 0,
@@ -185,7 +185,7 @@ static const u16 vk_consumer_map[16] = {
 	void app_enter_ota_mode(void)
 	{
 		ota_is_working = 1;
-		#if (BLT_APP_LED_ENABLE)
+		#if (UI_LED_ENABLE)
 			device_led_setup(led_cfg[LED_SHINE_OTA]);
 		#endif
 		bls_ota_setTimeout(15 * 1000 * 1000); //set OTA timeout  15 seconds
@@ -201,7 +201,7 @@ static const u16 vk_consumer_map[16] = {
 	void app_debug_ota_result(int result)
 	{
 
-		#if(0 && BLT_APP_LED_ENABLE)  //this is only for debug
+		#if(0 && UI_LED_ENABLE)  //this is only for debug
 
 			gpio_set_output_en(GPIO_LED, 1);
 
@@ -361,7 +361,7 @@ void key_change_proc(void)
 				}
 			#endif
 
-			#if (BLT_APP_LED_ENABLE)
+			#if (UI_LED_ENABLE)
 				device_led_setup(led_cfg[LED_SHINE_SLOW + user_key_mode]);
 			#endif
 		}
@@ -627,7 +627,7 @@ void app_ui_init_normal(void)
 	#endif
 
 
-#if (BLT_APP_LED_ENABLE)
+#if (UI_LED_ENABLE)
 	device_led_init(GPIO_LED, LED_ON_LEVAL);  //LED initialization
 	device_led_setup(led_cfg[LED_POWER_ON]);
 #endif
@@ -668,7 +668,7 @@ void app_ui_init_deepRetn(void)
 		#endif
 	#endif
 
-#if (BLT_APP_LED_ENABLE)
+#if (UI_LED_ENABLE)
 	device_led_init(GPIO_LED, 1);  //LED initialization
 #endif
 

@@ -4,43 +4,21 @@
  * @brief	This is the source file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	06,2020
+ * @date	06,2022
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
@@ -66,7 +44,7 @@
 #define 	MY_ADV_INTERVAL_MAX					ADV_INTERVAL_35MS
 
 #define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
-#define		BLE_DEVICE_ADDRESS_TYPE 			BLE_DEVICE_ADDRESS_RESOLVABLE_PRIVATE
+#define		BLE_DEVICE_ADDRESS_TYPE 			BLE_DEVICE_ADDRESS_PUBLIC
 
 #define 	GATT_UUID_CENTRAL_ADDR_RES       	0x2AA6
 
@@ -107,16 +85,16 @@ _attribute_data_retention_	my_fifo_t	blt_txfifo = {
  * @brief	Adv Packet data
  */
 const u8	tbl_advData[] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
-	 0x02, 0x01, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
-	 0x03, 0x19, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
-	 0x05, 0x02, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x02, DT_FLAGS, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
+	 0x03, DT_APPEARANCE, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
+	 0x05, DT_INCOMPLT_LIST_16BIT_SERVICE_UUID, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
 };
 /**
  * @brief	Scan Response Packet data
  */
 const u8	tbl_scanRsp [] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+		 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
 };
 
 
@@ -224,7 +202,7 @@ void slave_cfgLegAdvParam(void);
 	 * @param[in]  n - data length of event
 	 * @return     none
 	 */
-	void  ble_remote_set_sleep_wakeup (u8 e, u8 *p, int n)
+	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
@@ -247,8 +225,7 @@ void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
 									 MY_APP_ADV_CHANNEL,
 									 ADV_FP_NONE);
 	if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
-	status = ll_resolvingList_setAddrResolutionEnable(0);
-	printf("LL add resolution disable status: 0x%x\n", status);
+	status = blc_ll_setAddressResolutionEnable(0);
 
 	bls_ll_setAdvEnable(1);  //must: set adv enable
 }
@@ -317,12 +294,12 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  * @param[in]  n - data length of event
  * @return     none
  */
-void	user_set_rf_power (u8 e, u8 *p, int n)
+void	task_suspend_exit (u8 e, u8 *p, int n)
 {
-	rf_set_power_level_index (RF_POWER_P3dBm);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
-#if (LL_FEATURE_ENABLE_LL_PRIVACY)
+
 _attribute_data_retention_ u32 bondingFlashAddr;
 _attribute_data_retention_ u16 centralAddrResHdlReq = 0;
 u8 * l2cap_matt_handler(u16 connHandle, u8 * p)
@@ -335,12 +312,6 @@ u8 * l2cap_matt_handler(u16 connHandle, u8 * p)
 				centralAddrResHdlReq = 0;
 				rf_pkt_att_readByTypeRsp_t *ptr = (rf_pkt_att_readByTypeRsp_t *)&req->type;
 				u16 centralAddrResHdl = ptr->data[0] | (u16)ptr->data[1]<<8;
-				printf("central addr res handle: 0x%x\n", centralAddrResHdl);
-
-				//set bonding flg's bit0 field
-				blc_smp_setPeerAddrResSupportFlg(bondingFlashAddr, ptr->data[2]);
-				printf("central addr res %s support\n", ptr->data[2] ? "" : "not");
-				DBG_CHN4_TOGGLE;
 			}
 		}
 		break;
@@ -349,10 +320,6 @@ u8 * l2cap_matt_handler(u16 connHandle, u8 * p)
 			if(centralAddrResHdlReq == 1){
 				centralAddrResHdlReq = 0;
 				rf_packet_att_errRsp_t * errRsp = (rf_packet_att_errRsp_t*)p;
-				//printf("errOpcode: 0x%\n", errRsp->errOpcode);
-				//printf("errHandle: 0x%\n", errRsp->errHandle);
-				printf("errReason: 0x%\n", errRsp->errReason);
-				printf("central addr res not support\n");
 			}
 		}
 		break;
@@ -375,7 +342,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-			gap_smp_paringSuccessEvt_t* p = (gap_smp_paringSuccessEvt_t*)para;
+			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
 			printf("Pairing success:bond flg %s\n", p->bonding ?"true":"false");
 
 			if(p->bonding_result){
@@ -405,7 +372,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-			gap_smp_paringFailEvt_t* p = (gap_smp_paringFailEvt_t*)para;
+			gap_smp_pairingFailEvt_t* p = (gap_smp_pairingFailEvt_t*)para;
 			printf("Pairing failed:rsn:0x%x\n", p->reason);
 		}
 		break;
@@ -415,7 +382,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
 			printf("Connection encryption done\n");
 
-			if(p->re_connect == SMP_STANDARD_PAIR){  //first paring
+			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
 			}
 			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect
@@ -473,7 +440,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 	return 0;
 
 }
-#endif
+
 /**
  * @brief      power management code for application
  * @param	   none
@@ -509,29 +476,30 @@ void slave_cfgLegAdvParam(void){
 		printf("smpAddr:0x%x\n", current_addr);
 		ble_sts_t status;
 
-	#if (LL_FEATURE_ENABLE_LL_PRIVACY)
-		printf("central addr res %s support\n", IS_PEER_ADDR_RES_SUPPORT(bondInfo.flag) ? "" : "not");
+		printf("central addr res %d support\n", bondInfo.flag);
 
-//		swapN(bondInfo.peer_irk, 16);
-//		swapN(bondInfo.local_irk, 16);
+		u8 own_use_rpa = 1;
 		u8 empty_16_ff[16] = {0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF};
 		if(!memcmp(bondInfo.peer_irk, empty_16_ff, 16)){ //all 0xff
 			memset(bondInfo.peer_irk, 0, 16);
 		}
 		if(!memcmp(bondInfo.local_irk, empty_16_ff, 16)){ //all 0xff
+			own_use_rpa = 0;
 			memset(bondInfo.local_irk, 0, 16);
 		}
 
-		status = ll_resolvingList_add(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, bondInfo.local_irk);
+		status = blc_ll_addDeviceToResolvingList(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, bondInfo.local_irk);
 		printf("LL resolving list add status: 0x%x\n", status);
 
-		status = ll_resolvingList_setAddrResolutionEnable(1);
+		status = blc_ll_setAddressResolutionEnable(1);
 		printf("LL add resolution enable status: 0x%x\n", status);
 
-		app_own_address_type = IS_PEER_ADDR_RES_SUPPORT(bondInfo.flag) ? OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC : OWN_ADDRESS_PUBLIC;
+		app_own_address_type = own_use_rpa ? OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC : OWN_ADDRESS_PUBLIC;
 		if(app_own_address_type == OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC){
-			DBG_CHN3_TOGGLE;;
+			printf("[APP][RPA] RPA\n");
+			DBG_CHN3_TOGGLE;
 		}else{
+			printf("[APP][RPA] PUB\n");
 			DBG_CHN4_TOGGLE;
 		}
 
@@ -547,10 +515,7 @@ void slave_cfgLegAdvParam(void){
 			peerAddrType = bondInfo.peer_id_adrType;
 			printf("AdvA: rpa\n");
 		}
-	#else
-		u8* peerAddr = bondInfo.peer_addr;
-		u8  peerAddrType = bondInfo.peer_addr_type;
-	#endif
+
 
 		status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 									ADV_TYPE_CONNECTABLE_DIRECTED_LOW_DUTY, app_own_address_type,
@@ -563,6 +528,7 @@ void slave_cfgLegAdvParam(void){
 		bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_indirect_adv);
 	}
 	else{
+#if	1
 		app_own_address_type = OWN_ADDRESS_PUBLIC;
 		u8 status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 										 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
@@ -570,11 +536,32 @@ void slave_cfgLegAdvParam(void){
 										 MY_APP_ADV_CHANNEL,
 										 ADV_FP_NONE);
 		if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
-		status = ll_resolvingList_setAddrResolutionEnable(0);
+		status = blc_ll_setAddressResolutionEnable(0);
 		printf("LL add resolution disable status: 0x%x\n", status);
+#else
+
+		u8	tmp_peer_irk[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		u8	tmp_local_irk[16] = {0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
+		u8	tmp_peer_addr[6] = {0x11,0x22,0x33,0x44,0x55,0x66};
+		u8	tmp_peer_addr_type = OWN_ADDRESS_PUBLIC;
+
+		u8 status =blc_ll_addDeviceToResolvingList(tmp_peer_addr_type,tmp_peer_addr,tmp_peer_irk,tmp_local_irk);
+
+		status = blc_ll_setAddressResolutionEnable(1);
+
+		status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC,
+									 tmp_peer_addr_type,  tmp_peer_addr,
+									 MY_APP_ADV_CHANNEL,
+									 ADV_FP_NONE);//  ADV_FP_NONE  ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL
+		if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
+
+
+
+#endif
 	}
 
-	bls_ll_setAdvEnable(1);  //adv enable
+		bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
 }
 
 
@@ -584,12 +571,16 @@ void slave_cfgLegAdvParam(void){
  * @param[in]	none
  * @return      none
  */
-void user_init_normal(void)
+_attribute_no_inline_ void user_init_normal(void)
 {
 	//random number generator must be initiated here( in the beginning of user_init_nromal)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
 
 ////////////////// BLE stack initialization ////////////////////////////////////
 	u8  mac_public[6];
@@ -630,9 +621,6 @@ void user_init_normal(void)
 						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
 						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE );
 
-	blc_ll_resolvListInit();
-	ll_resolvingList_setResolvablePrivateAddrTimer(15);
-
 	blc_hci_registerControllerEventHandler(controller_event_callback); //controller hci event to host all processed in this func
 
 	//bluetooth event
@@ -651,8 +639,8 @@ void user_init_normal(void)
 		blc_smp_peripheral_init();
 
 		//Hid device on android7.0/7.1 or later version
-		// New paring: send security_request immediately after connection complete
-		// reConnect:  send security_request 1000mS after connection complete. If master start paring or encryption before 1000mS timeout, slave do not send security_request.
+		// New pairing: send security_request immediately after connection complete
+		// reConnect:  send security_request 1000mS after connection complete. If master start pairing or encryption before 1000mS timeout, slave do not send security_request.
 		blc_smp_configSecurityRequestSending(SecReq_IMM_SEND, SecReq_PEND_SEND, 1000); //if not set, default is:  send "security request" immediately after link layer connection established(regardless of new connection or reconnection )
 	#else
 		blc_smp_setSecurityLevel(No_Security);
@@ -674,8 +662,7 @@ void user_init_normal(void)
 
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
-	user_set_rf_power(0, 0, 0);
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
 	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
@@ -684,7 +671,7 @@ void user_init_normal(void)
 	///////////////////// Power Management initialization///////////////////
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
 	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
@@ -710,7 +697,7 @@ void user_init_normal(void)
 		}
 
 		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &ble_remote_set_sleep_wakeup);
+		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
 	#endif
 
 #else
@@ -730,8 +717,9 @@ void user_init_normal(void)
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
 #if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
-	user_set_rf_power(0, 0, 0);
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 	blc_ll_recoverDeepRetention();
 
@@ -757,7 +745,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
  * @param[in]  none.
  * @return     none.
  */
-void main_loop (void)
+_attribute_no_inline_ void main_loop (void)
 {
 
 	////////////////////////////////////// BLE entry /////////////////////////////////

@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	putchar.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -79,7 +79,7 @@ int usb_putc(int c) {
 }
 
 static inline void swire_set_clock(unsigned char div){
-	reg_swire_clk_div = div;
+	reg_swire_ctl2 = div;
 }
 
 static int swire_is_init = 0;
@@ -118,21 +118,62 @@ int swire_putc(int c) {
 
 #if (UART_PRINT_DEBUG_ENABLE)
 
+#define UART_DEBUG_TX_PIN_REG	((0x583 + ((DEBUG_INFO_TX_PIN>>8)<<3)))
+/* system Timer for B85m: 16Mhz, Constant */
 #ifndef		BIT_INTERVAL
 #define		BIT_INTERVAL		(16000000/PRINT_BAUD_RATE)
 #endif
-
+volatile extern unsigned char sys_clock_print;
 _attribute_ram_code_
+void uart_putb(unsigned char *p)
+{
+	unsigned int  j = 0;
+#if(CLOCK_SYS_CLOCK_HZ == 16000000)
+	unsigned int i =0;
+	unsigned int  bit_nop = sys_clock_print * 125000/PRINT_BAUD_RATE-2;
+#elif(CLOCK_SYS_CLOCK_HZ == 24000000)
+	unsigned int i =0;
+	unsigned int  bit_nop = sys_clock_print * 125000/PRINT_BAUD_RATE-1;
+#elif(CLOCK_SYS_CLOCK_HZ == 32000000 || CLOCK_SYS_CLOCK_HZ == 48000000)
+	unsigned long t1 = read_reg32(0x740);
+	unsigned long t2 = 0;
+#endif
+	for(j=0;j<10;j++)
+	{
+		/*
+		 * according to nop to control UART period when mcu clock is 16M and 32M, the baud rate is 1M and the period is 1us, so we need 16 nop for a loop
+		 * bit_nop is determined by system clock, and control how many times the 'for loop' run, depending on the clock, decide how much nop to compensate
+		 */
+#if(CLOCK_SYS_CLOCK_HZ == 16000000 || CLOCK_SYS_CLOCK_HZ == 24000000)
+		/* system clock 16M and 24M*/
+		for(i=0; i<bit_nop;i++)
+		{
+			asm("tnop");
+		}
+		asm("tnop");
+		asm("tnop");
+		asm("tnop");
+		#if(CLOCK_SYS_CLOCK_HZ == 24000000)
+			asm("tnop");
+		#endif
+#elif(CLOCK_SYS_CLOCK_HZ == 32000000 || CLOCK_SYS_CLOCK_HZ == 48000000)
+		/*  system clock 32M and 48M  */
+		t2 = t1;
+		while(t1 - t2 < BIT_INTERVAL){
+			t1  = read_reg32(0x740);
+		}
+#endif
+		write_reg8(UART_DEBUG_TX_PIN_REG,p[j]);
+	}
+}
+
 int uart_putc(char byte) //GPIO simulate uart print func
 {
-	unsigned char  j = 0;
-	unsigned int t1 = 0,t2 = 0;
-
 	//REG_ADDR8(0x582+((DEBUG_INFO_TX_PIN>>8)<<3)) &= ~(DEBUG_INFO_TX_PIN & 0xff) ;//Enable output
 
-	unsigned int  pcTxReg = (0x583+((DEBUG_INFO_TX_PIN>>8)<<3));//register GPIO output
-	unsigned char tmp_bit0 = read_reg8(pcTxReg) & (~(DEBUG_INFO_TX_PIN & 0xff));
-	unsigned char tmp_bit1 = read_reg8(pcTxReg) | (DEBUG_INFO_TX_PIN & 0xff);
+//	unsigned int  pcTxReg = (0x583+((DEBUG_INFO_TX_PIN>>8)<<3));//register GPIO output
+	unsigned char tmp_bit0 = read_reg8(UART_DEBUG_TX_PIN_REG) & (~(DEBUG_INFO_TX_PIN & 0xff));
+	unsigned char tmp_bit1 = read_reg8(UART_DEBUG_TX_PIN_REG) | (DEBUG_INFO_TX_PIN & 0xff);
 	unsigned char bit[10] = {0};
 
 	bit[0] = tmp_bit0;
@@ -146,18 +187,9 @@ int uart_putc(char byte) //GPIO simulate uart print func
 	bit[8] = ((byte>>7) & 0x01)? tmp_bit1 : tmp_bit0;
 	bit[9] = tmp_bit1;
 
-	//unsigned char r = irq_disable();
-	t1 = read_reg32(0x740);
-	for(j = 0;j<10;j++)
-	{
-		t2 = t1;
-		while(t1 - t2 < BIT_INTERVAL){
-			t1  = read_reg32(0x740);
-		}
-		write_reg8(pcTxReg,bit[j]);        //send bit0
-	}
-	//irq_restore(r);
-
+	unsigned char r = irq_disable();
+	uart_putb(bit);
+	irq_restore(r);
 	return byte;
 }
 #endif

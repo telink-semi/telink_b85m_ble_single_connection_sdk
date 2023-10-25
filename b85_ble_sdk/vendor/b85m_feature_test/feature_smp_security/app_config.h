@@ -55,21 +55,22 @@
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
 
+
 // LE_Security_Mode_1_Level_1, no authentication and no encryption
 #define 	SMP_TEST_NO_SECURITY				1
 
 
-// LE_Security_Mode_1_Level_2, unauthenticated paring with encryption
+// LE_Security_Mode_1_Level_2, unauthenticated pairing with encryption
 #define 	SMP_TEST_LEGACY_PAIRING_JUST_WORKS	2 //JustWorks
 #define 	SMP_TEST_SC_PAIRING_JUST_WORKS		3 //JustWorks
 
-// LE_Security_Mode_1_Level_3, authenticated paring with encryption
+// LE_Security_Mode_1_Level_3, authenticated pairing with encryption
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_SDMI	4 //PK_Resp_Dsply_Init_Input
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI	5 //PK_Init_Dsply_Resp_Input
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI	6 //PK_BOTH_INPUT, not test
 #define 	SMP_TEST_LEGACY_PASSKEY_ENTRY_OOB	7 //OOB_Authentication
 
-// LE_Security_Mode_1_Level_4, authenticated paring with encryption
+// LE_Security_Mode_1_Level_4, authenticated pairing with encryption
 #define 	SMP_TEST_SC_NUMERIC_COMPARISON		8 //Numric_Comparison
 #define 	SMP_TEST_SC_PASSKEY_ENTRY_SDMI		9 //PK_Resp_Dsply_Init_Input
 #define 	SMP_TEST_SC_PASSKEY_ENTRY_MDSI		10//PK_Init_Dsply_Resp_Input
@@ -92,24 +93,26 @@
 #define DEBUG_GPIO_ENABLE								0
 #define UART_PRINT_DEBUG_ENABLE  						1
 
-#define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
-#define BOARD_825X_DONGLE_C1T139A3						2     //
-#define BOARD_827X_EVK_C1T197A30						3	  //TLSR8278DK48
-#define BOARD_827X_DONGLE_C1T201A3						4	  //
+#define APP_LOG_EN										1
+#define APP_FLASH_INIT_LOG_EN							0
+#define APP_KEYBOARD_LOG_EN								1
 
+/////////////////////// RCU Board Select Configuration ///////////////////////////////
+#define BOARD_825X_RCU_C1T139A5							1     //TLSR8258DK48
+#define BOARD_827X_RCU_C1T197A5							2     //
 
 #if (__PROJECT_8258_FEATURE_TEST__)
-	#define BOARD_SELECT								BOARD_825X_EVK_C1T139A30
+	#define BOARD_SELECT								BOARD_825X_RCU_C1T139A5
 #elif (__PROJECT_8278_FEATURE_TEST__)
-	#define BOARD_SELECT								BOARD_827X_EVK_C1T197A30
+	#define BOARD_SELECT								BOARD_827X_RCU_C1T197A5
 #endif
 
 
 #if (UI_KEYBOARD_ENABLE)   // if test pure power, kyeScan GPIO setting all disabled
 
-    #define	MATRIX_ROW_PULL					PM_PIN_PULLDOWN_100K
-	#define	MATRIX_COL_PULL					PM_PIN_PULLUP_10K
-	#define	KB_LINE_HIGH_VALID				0   //dirve pin output 0 when keyscan, scanpin read 0 is valid
+    #define	MATRIX_ROW_PULL							PM_PIN_PULLDOWN_100K
+	#define	MATRIX_COL_PULL							PM_PIN_PULLUP_10K
+	#define	KB_LINE_HIGH_VALID						0   //dirve pin output 0 when keyscan, scanpin read 0 is valid
 
 	//repeat key
 	#define 		KB_REPEAT_KEY_ENABLE			0
@@ -199,45 +202,10 @@
  *  @brief  LED Configuration
  */
 #if (UI_LED_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		/* 825X EVK and 827X EVK use same GPIO for LED: PD2/PD3/PD4/PD5 */
-		#define	GPIO_LED_BLUE			GPIO_PD2   // used by key
-		#define	GPIO_LED_GREEN			GPIO_PD3   // used by key
-		#define	GPIO_LED_WHITE			GPIO_PD4   // used by key
-		#define	GPIO_LED_RED			GPIO_PD5   // used by key
-
-		#define PD2_FUNC				AS_GPIO
-		#define PD3_FUNC				AS_GPIO
-		#define PD4_FUNC				AS_GPIO
-		#define PD5_FUNC				AS_GPIO
-
-		#define	PD2_OUTPUT_ENABLE		1
-		#define	PD3_OUTPUT_ENABLE		1
-		#define PD4_OUTPUT_ENABLE		1
-		#define	PD5_OUTPUT_ENABLE		1
-
-		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
-	#elif (BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3 || BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
-		/* 825X Dongle and 827X Dongle use same GPIO for LED: PA3/PB1/PA2/PB0/PA4 */
-		#define	GPIO_LED_RED			GPIO_PA3
-		#define	GPIO_LED_WHITE			GPIO_PB1
-		#define	GPIO_LED_GREEN			GPIO_PA2
-		#define	GPIO_LED_BLUE			GPIO_PB0
-		#define	GPIO_LED_YELLOW			GPIO_PA4
-
-		#define PA3_FUNC				AS_GPIO
-		#define PB1_FUNC				AS_GPIO
-		#define PA2_FUNC				AS_GPIO
-		#define PB0_FUNC				AS_GPIO
-		#define PA4_FUNC				AS_GPIO
-
-		#define	PA3_OUTPUT_ENABLE		1
-		#define	PB1_OUTPUT_ENABLE		1
-		#define PA2_OUTPUT_ENABLE		1
-		#define	PB0_OUTPUT_ENABLE		1
-		#define	PA4_OUTPUT_ENABLE		1
-
-		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
+	#if (BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
+		#define LED_ON_LEVAL 						1 			//gpio output high voltage to turn on led
+		#define	GPIO_LED							GPIO_PC6
+		#define PC6_FUNC							AS_GPIO
 	#endif
 #endif
 
@@ -264,56 +232,37 @@ enum{
 
 
 
-
+/**
+ *  @brief  DEBUG_GPIO Configuration
+ */
 #if(DEBUG_GPIO_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							0
+	#if(BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
+		//define debug GPIO here according to your hardware
+		#define GPIO_CHN0							GPIO_PB4
+		#define GPIO_CHN1							GPIO_PB5
+		#define GPIO_CHN2							GPIO_PB6
+		#define GPIO_CHN3							//GPIO_PC2  // PC2/PC3 may used for external crystal input
+		#define GPIO_CHN4							//GPIO_PC3  // PC2/PC3 may used for external crystal input
+		#define GPIO_CHN5							GPIO_PB0
+		#define GPIO_CHN6							GPIO_PB1
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-	#elif (BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							GPIO_PB0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
+		#define PB4_OUTPUT_ENABLE					1
+		#define PB5_OUTPUT_ENABLE					1
+		#define PB6_OUTPUT_ENABLE					1
+		//#define PC2_OUTPUT_ENABLE					1
+		//#define PC3_OUTPUT_ENABLE					1
 		#define PB0_OUTPUT_ENABLE					1
+		#define PB1_OUTPUT_ENABLE					1
 	#endif
 #endif  //end of DEBUG_GPIO_ENABLE
 
 /////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
 #if (UART_PRINT_DEBUG_ENABLE)
-		//the baud rate should not bigger than 1M(system timer clock is constant 16M)
-		#define PRINT_BAUD_RATE             					1000000
 		#define DEBUG_INFO_TX_PIN           					GPIO_PB1
 		#define PULL_WAKEUP_SRC_PB1         					PM_PIN_PULLUP_10K
 		#define PB1_OUTPUT_ENABLE         						1
         #define PB1_DATA_OUT                                    1 //must
-
-	    #include "application/print/u_printf.h"
 #endif
 
 #include "../common/default_config.h"

@@ -4,43 +4,21 @@
  * @brief	This is the header file for B85
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2018
  *
  * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef PWM_H_
@@ -86,6 +64,8 @@ typedef enum{
 	PWM_IRQ_PWM3_FRAME =				BIT(5),
 	PWM_IRQ_PWM4_FRAME =				BIT(6),
 	PWM_IRQ_PWM5_FRAME =				BIT(7),
+
+	PWM_IRQ_PWM0_IR_FIFO =              BIT(16)
 }PWM_IRQ;
 
 typedef enum{
@@ -95,7 +75,7 @@ typedef enum{
 
 
 /**
- * @brief     This fuction servers to set pwm mode.
+ * @brief     This function servers to set pwm mode.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @param[in] mode - variable of enum to indicates the pwm mode.
  * @return	  none.
@@ -108,7 +88,7 @@ static inline void pwm_set_mode(pwm_id id, pwm_mode mode){
 
 
 /**
- * @brief     This fuction servers to set pwm clock frequency
+ * @brief     This function servers to set pwm clock frequency
  * @param[in] system_clock_hz - variable to set system clock hz.
  * @param[in] pwm_clk - variable of the pwm clock.
  * @return	  none.
@@ -118,7 +98,7 @@ static inline void pwm_set_clk(int system_clock_hz, int pwm_clk){
 }
 
 /**
- * @brief     This fuction servers to set pwm count status(CMP) time.
+ * @brief     This function servers to set pwm count status(CMP) time.
  * @param[in] pwm_id  - variable of enum to select the pwm number.
  * @param[in] cmp_tick - variable of the CMP.
  * @return	  none.
@@ -129,7 +109,7 @@ static inline void pwm_set_cmp(pwm_id id, unsigned short cmp_tick)
 }
 
 /**
- * @brief     This fuction servers to set pwm cycle time.
+ * @brief     This function servers to set pwm cycle time.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @param[in] cycle_tick - variable of the cycle time.
  * @return	  none.
@@ -139,7 +119,7 @@ static inline void pwm_set_cycle(pwm_id id, unsigned short cycle_tick){
 }
 
 /**
- * @brief     This fuction servers to set pwm cycle time & count status.
+ * @brief     This function servers to set pwm cycle time & count status.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @param[in] cycle_tick - variable of the cycle time.
  * @param[in] cmp_tick - variable of the CMP.
@@ -151,7 +131,7 @@ static inline void pwm_set_cycle_and_duty(pwm_id id, unsigned short cycle_tick, 
 
 
 /**
- * @brief     This fuction servers to set pwm cycle time & count status.
+ * @brief     This function servers to set pwm cycle time & count status.
  * @param[in] cycle_tick - variable of the cycle time.
  * @param[in] cmp_tick - variable of the CMP.
  * @return	  none.
@@ -164,7 +144,7 @@ static inline void pwm_set_pwm0_shadow_cycle_and_duty(unsigned short cycle_tick,
 
 
 /**
- * @brief     This fuction servers to set the pwm phase.
+ * @brief     This function servers to set the pwm phase.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @param[in] phase - variable of the pwm phase.
  * @return	  none.
@@ -174,7 +154,7 @@ static inline void pwm_set_phase(pwm_id id, unsigned short phase){
 }
 
 /**
- * @brief     This fuction servers to set the pwm pulse number.
+ * @brief     This function servers to set the pwm pulse number.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @param[in] pulse_num - variable of the pwm pulse number.
  * @return	  none.
@@ -187,7 +167,7 @@ static inline void pwm_set_pulse_num(pwm_id id, unsigned short pulse_num){
 }
 
 /**
- * @brief     This fuction servers to start the pwm.
+ * @brief     This function servers to start the pwm.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @return	  none.
  */
@@ -204,7 +184,7 @@ static inline void pwm_start(pwm_id id)
 }
 
 /**
- * @brief     This fuction servers to stop the pwm.
+ * @brief     This function servers to stop the pwm.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @return	  none.
  */
@@ -220,7 +200,7 @@ static inline void pwm_stop(pwm_id id)
 }
 
 /**
- * @brief     This fuction servers to revert the PWMx.
+ * @brief     This function servers to revert the PWMx.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @return	  none.
  */
@@ -230,7 +210,7 @@ static inline void pwm_revert(pwm_id id)
 }
 
 /**
- * @brief     This fuction servers to revert the PWMx_N.
+ * @brief     This function servers to revert the PWMx_N.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @return	  none.
  */
@@ -240,7 +220,7 @@ static inline void pwm_n_revert(pwm_id id)
 }
 
 /**
- * @brief     This fuction servers to enable the pwm polarity.
+ * @brief     This function servers to enable the pwm polarity.
  * @param[in] pwm_id - variable of enum to select the pwm number.
  * @param[in] en: 1 enable. 0 disable.
  * @return	  none.
@@ -255,30 +235,51 @@ static inline void pwm_polo_enable(pwm_id id, int en)
 }
 
 /**
- * @brief     This fuction servers to enable the pwm interrupt.
+ * @brief     This function servers to mask the pwm interrupt.
  * @param[in] irq - variable of enum to select the pwm interrupt source.
  * @return	  none.
  */
 static inline void pwm_set_interrupt_enable(PWM_IRQ irq){
-	BM_SET(reg_pwm_irq_mask, irq);
+	if(irq==PWM_IRQ_PWM0_IR_FIFO){
+		BM_SET(reg_pwm0_fifo_mode_irq_mask,BIT(0));
+	}
+	else{
+	    BM_SET(reg_pwm_irq_mask, irq);
+	}
 }
-static inline void pwm_set_interrupt_disable(PWM_IRQ irq){
-	BM_CLR(reg_pwm_irq_mask, irq);
-}
-
 
 /**
- * @brief     This fuction servers to clear the pwm interrupt.
+ * @brief     This function servers to clear the pwm mask.
  * @param[in] irq  - variable of enum to select the pwm interrupt source.
  * @return	  none.
  */
-static inline void pwm_clear_interrupt_status( PWM_IRQ irq)
+static inline void pwm_set_interrupt_disable(PWM_IRQ irq){
+    if(irq==PWM_IRQ_PWM0_IR_FIFO){
+		BM_CLR(reg_pwm0_fifo_mode_irq_mask,BIT(0));
+	}
+	else{
+		BM_CLR(reg_pwm_irq_mask, irq);
+	}
+ }
+
+
+/**
+ * @brief     This function servers to clear the pwm interrupt status.
+ * @param[in] irq  - variable of enum to select the pwm interrupt source.
+ * @return	  none.
+ */
+static inline void pwm_clear_interrupt_status(PWM_IRQ status)
 {
-	reg_pwm_irq_sta = irq;
+	if(status==PWM_IRQ_PWM0_IR_FIFO){
+	 reg_pwm0_fifo_mode_irq_sta = BIT(0);
+	}
+	else{
+	 reg_pwm_irq_sta = status;
+	}
 }
 
 /**
- * @brief     This fuction serves to set trigger level of interrupt for IR FiFo mode
+ * @brief     This function serves to set trigger level of interrupt for IR FIFO mode
  * @param[in] trig_level - FIFO  num int trigger level
  * @return	  none
  */
@@ -288,7 +289,7 @@ static inline void pwm_ir_fifo_set_irq_trig_level(unsigned char trig_level)
 	reg_pwm_ir_fifo_irq_trig_level = trig_level;
 }
 /**
- * @brief     This fuction serves to clear data in fifo. Only when pwm is in not active mode,
+ * @brief     This function serves to clear data in fifo. Only when pwm is in not active mode,
  * 			  it is possible to clear data in fifo.
  * @param[in] none
  * @return	  none
@@ -298,7 +299,7 @@ static inline void pwm_ir_fifo_clr_data(void)
 	reg_pwm_ir_clr_fifo_data |= FLD_PWM0_IR_FIFO_CLR_DATA;
 }
 /**
- * @brief     This fuction serves to get the number of data in fifo.
+ * @brief     This function serves to get the number of data in fifo.
  * @param[in] none
  * @return	  the number of data in fifo
  */
@@ -307,7 +308,7 @@ static inline unsigned char pwm_ir_fifo_get_data_num(void)
 	return (reg_pwm_ir_fifo_data_status&FLD_PWM0_IR_FIFO_DATA_NUM);
 }
 /**
- * @brief     This fuction serves to determine whether data in fifo is empty.
+ * @brief     This function serves to determine whether data in fifo is empty.
  * @param[in] none
  * @return	  yes: 1 ,no: 0;
  */
@@ -317,7 +318,7 @@ static inline unsigned char pwm_ir_fifo_is_empty(void)
 }
 
 /**
- * @brief     This fuction serves to determine whether data in fifo is full.
+ * @brief     This function serves to determine whether data in fifo is full.
  * @param[in] none
  * @return	  yes: 1 ,no: 0;
  */
@@ -328,7 +329,7 @@ static inline unsigned char pwm_ir_fifo_is_full(void)
 }
 
 /**
- * @brief     This fuction serves to write data into FiFo
+ * @brief     This function serves to write data into FIFO
  * @param[in] pulse_num  - the number of pulse
  * @param[in] use_shadow - determine whether the configuration of shadow cmp and shadow max is used
  * 						   1: use shadow, 0: not use
@@ -346,7 +347,7 @@ static inline void pwm_ir_fifo_set_data_entry(unsigned short pulse_num, unsigned
 }
 
 /**
- * @brief     This fuction serves to config the pwm's dma wave form.
+ * @brief     This function serves to config the pwm's dma wave form.
  * @param[in] carrier_en - must 1 or 0.
  * @param[in] pulse_type - type of pwm0's pulse.
  * @param[in] pulse_num - the number of pulse.
@@ -359,23 +360,27 @@ static inline unsigned short pwm_config_dma_fifo_waveform(int carrier_en, Pwm0Pu
 }
 
 /**
- * @brief     This fuction servers to set the pwm's dma address.
+ * @brief     This function servers to set the pwm's dma address.
  * @param[in] pdat - variable of pointer to indicate the address.
  * @return	  none.
+ * @note	  The maximum length that the PWM can send is 511bytes
  */
 static inline void pwm_set_dma_address(void * pdat)
 {
 	reg_dma_pwm_addr = (unsigned short)((unsigned int)pdat);
 	reg_dma7_addrHi = 0x04;
 	reg_dma_pwm_mode  &= ~FLD_DMA_WR_MEM;
-	//In the PWM ir_dma_fifo model, the DMA length default is 320 bytes (160 group configuration), when the pwm_dma send byte length is greater than 320 bytes, can appear abnormal,
-    //abnormal phenomenon: when after sending the first 160 group configuration waveform, waveform will send 160th group configuration, and not interrupt,
-	//has modify the pwm_dma length of hardware support maximum 512 bytes.
-	reg_dma7_size = 0xff;
+	//In the PWM ir_dma_fifo model, the reg_dma7_size default is 0x14(20*16 = 320 bytes) (160 group configuration),
+	//when the pwm_dma send byte length is greater than 320 bytes, can appear abnormal,
+    //abnormal phenomenon: when after sending the first 160 group configuration waveform,
+	//waveform will send 160th group configuration, and not interrupt,
+	//so set reg_dma7_size to the maximum, it has been guaranteed that the maximum length supported by the hardware (511bytes) can be sent.
+	//The maximum length that dma hardware can send is limited to the setting range of the first four bytes in ram (the actual length of dma sent)
+	reg_dma7_size = 0xff;    
 }
 
 /**
- * @brief     This fuction servers to start the pwm's IRQ sending.
+ * @brief     This function servers to start the pwm's IRQ sending.
  * @param[in] none.
  * @return	  none.
  */
@@ -386,7 +391,7 @@ static inline void pwm_start_dma_ir_sending(void)
 }
 
 /**
- * @brief     This fuction servers to stop the pwm's IRQ sending.
+ * @brief     This function servers to stop the pwm's IRQ sending.
  * @param[in] none.
  * @return	  none.
  */
@@ -397,5 +402,25 @@ static inline void pwm_stop_dma_ir_sending(void)
 	sleep_us(20);  //1us <-> 4 byte
 	reg_rst0 = 0;
 }
+
+/**
+ * @brief     This function servers to get the pwm interrupt status.
+ * @param[in] status - variable of enum to select the pwm interrupt source.
+ * @return	  none.
+ */
+static inline unsigned char pwm_get_interrupt_status(PWM_IRQ status){
+
+	if(status==PWM_IRQ_PWM0_IR_FIFO)
+	{
+		return (reg_pwm0_fifo_mode_irq_sta & BIT(0));
+	}
+	else
+	{
+		return (reg_pwm_irq_sta & status);
+	}
+
+}
+
+
 #endif
  /* PWM_H_ */

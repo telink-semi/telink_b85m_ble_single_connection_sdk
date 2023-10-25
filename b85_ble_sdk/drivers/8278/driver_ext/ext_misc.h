@@ -27,102 +27,51 @@
  *******************************************************************************************************/
 #ifndef DRIVERS_8278_EXT_MISC_H_
 #define DRIVERS_8278_EXT_MISC_H_
-#include "../register_8278.h"
+#include "../register.h"
+
+
+/******************************* rf start **********************************************************************/
+/**
+ * @brief     This function serves to set BLE mode of RF.
+ * @return	  none.
+ */
+void rf_drv_ble_init(void);
+
+#define		RF_POWER_P3dBm					RF_POWER_P3p13dBm
+#define		RF_POWER_P0dBm					RF_POWER_N0p28dBm
+
+/******************************* rf end  **********************************************************************/
+
+
+/******************************* watchdog_start ***********************************************************************/
+
+#define WATCHDOG_TIMEOUT_COEFF	18		//  check register definition, 0x622
+
+#define WATCHDOG_DISABLE	( reg_tmr_ctrl &= ~FLD_TMR_WD_EN )
+
+/******************************** watchdog_end  **********************************************************************/
+
 
 /******************************* stimer_start ******************************************************************/
 //#define reg_system_tick_irq 		REG_ADDR32(0x744)//reg_system_tick_irq_level
-enum {
-	FLD_SYSTEM_TICK_IRQ_EN  = 		BIT(2),
-};
 
-
+/**
+ * @brief   system Timer : 16Mhz, Constant
+ */
 enum{
-	FLD_DMA_RPTR_MASK =			0x0F, // max 15
+	SYSTEM_TIMER_TICK_1US 		= 16,
+	SYSTEM_TIMER_TICK_1MS 		= 16000,
+	SYSTEM_TIMER_TICK_1S 		= 16000000,
+
+	SYSTEM_TIMER_TICK_625US  	= 10000,  //625*16
+	SYSTEM_TIMER_TICK_1250US 	= 20000,  //1250*16
 };
 
-#define	    sys_tick_per_us   				16
 
-/**
- * @brief    This function serves to set system timer capture tick.
- * @return  none
- */
-void systimer_set_irq_capture(unsigned int sys_timer_tick);
 
-/**
- * @brief    This function serves to get system timer capture tick.
- * @return  none
- */
-static inline unsigned int systimer_get_irq_capture(void)
-{
-	return reg_system_tick_irq;
-}
-
-/**
- * @brief    This function serves to set system timer interrupt mask.
- * @return  none
- */
-static inline void systimer_set_irq_mask(void)
-{
-	reg_system_irq_mask |= FLD_SYSTEM_TICK_IRQ_EN;
-}
-
-/**
- * @brief    This function serves to enable system timer interrupt.
- * @return  none
- */
-static inline void systimer_irq_enable(void)
-{
-	reg_irq_mask |= FLD_IRQ_SYSTEM_TIMER;
-}
-
-/**
- * @brief    This function serves to disable system timer interrupt.
- * @return  none
- */
-static inline void systimer_irq_disable(void)
-{
-	reg_irq_mask &= ~FLD_IRQ_SYSTEM_TIMER;
-}
-
-/**
- * @brief    This function serves to clear system timer interrupt status.
- * @return  none
- */
-static inline void systimer_clr_irq_status(void)
-{
-	reg_irq_src = FLD_IRQ_SYSTEM_TIMER;
-}
-
-/**
- * @brief    This function serves to get system timer interrupt status.
- * @return  none
- */
-static inline unsigned int systimer_get_irq_status(void)
-{
-	return reg_irq_src & FLD_IRQ_SYSTEM_TIMER;
-}
-
-static inline int tick1_exceed_tick2(unsigned int tick1, unsigned int tick2)
-{
-	return (unsigned int)(tick1 - tick2) < BIT(30);
-}
-
-/*
- * @brief     This function performs to get system timer tick.
- * @param[in] none.
- * @return    system timer tick value.
-**/
-static inline unsigned int sys_get_stimer_tick(void)
-{
-	return reg_system_tick; //same as API: clock_time()
-}
 
 /******************************* stimer_end ********************************************************************/
 
-
-#include "../analog.h"
-#define  analog_write_reg8  analog_write
-#define  analog_read_reg8   analog_read
 
 #endif
 

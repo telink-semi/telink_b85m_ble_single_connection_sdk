@@ -1,7 +1,7 @@
 /********************************************************************************************************
  * @file	tl_audio.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief	This is the source file for B85
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -201,6 +201,7 @@ _attribute_ram_code_ void voice_iir(signed short * ps, signed short *pd, int* co
 
 void Audio_VolumeSet(unsigned char input_output_select,unsigned char volume_set_value)
 {
+#if (MCU_CORE_TYPE == MCU_CORE_827x)
 #if (BLE_DMIC_ENABLE)
 	reg_mic_ctrl =    MASK_VAL( FLD_AUD_MIC_VOL_CONTROL,      	(volume_set_value & 0x3f),\
 			                    FLD_AUD_MIC_MONO_EN, 	        1, \
@@ -210,7 +211,10 @@ void Audio_VolumeSet(unsigned char input_output_select,unsigned char volume_set_
 			                    FLD_AUD_MIC_MONO_EN, 	        1, \
 			                    FLD_AUD_AMIC_DMIC_SELECT,    	0 );
 #endif
-
+#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+	reg_aud_alc_vol_l_chn = MASK_VAL( FLD_AUD_ALC_MIN_VOLUME_IN_DIGITAL_MODE,  0x28, \
+										  FLD_AUD_ALC_DIGITAL_MODE_AUTO_REGULATE_EN, 0);
+#endif
 }
 #define  IIR_FILTER_ADR  0x71000
 #define  CBUFFER_SIZE    20
@@ -311,13 +315,26 @@ void filter_setting()
 
 	//PGA_POST_GAIN setting .position 0x710A1
 #if (!BLE_DMIC_ENABLE)
-	pga_post_gain_tmp = p_start_iir[0xA1];
-	if(pga_post_gain_tmp != 0xff){
-		if(pga_post_gain_tmp > 0x0f){//0x0f: PGA_GAIN_VOL_0_0DB
-			return;
+	#if (MCU_CORE_TYPE == MCU_CORE_827x)
+		pga_post_gain_tmp = p_start_iir[0xA1];
+		if(pga_post_gain_tmp != 0xff){
+			if(pga_post_gain_tmp > 0x0f){//0x0f: PGA_GAIN_VOL_0_0DB
+				return;
+			}
+			analog_write(codec_ana_cfg4,(analog_read(codec_ana_cfg4) & 0x00) | pga_post_gain_tmp);
 		}
-		analog_write(codec_ana_cfg4,(analog_read(codec_ana_cfg4) & 0x00) | pga_post_gain_tmp);
-	}
+	#elif(MCU_CORE_TYPE == MCU_CORE_825x)
+		pga_post_gain_tmp = p_start_iir[0xA1];
+		if(pga_post_gain_tmp != 0xff){
+			if(pga_post_gain_tmp > 20){//2: PGA_GAIN_VOL_0_0DB
+				return;
+			}
+			reg_pga_fix_value = MASK_VAL(	FLD_PGA_POST_AMPLIFIER_GAIN,0x14,\
+											FLD_PGA_PRE_AMPLIFIER_GAIN, 0,\
+											FLD_PGA_GAIN_FIX_EN, 1);
+		}
+
+	#endif
 #endif
 	return ;
 }
@@ -756,6 +773,7 @@ void mic_encoder_data_read_ok (void)
 }
 
 #elif (TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_GOOGLE)						//RCU,GATT GOOGLE
+
 void	proc_mic_encoder (void)
 {
 	static u16	buffer_mic_rptr;
@@ -825,19 +843,26 @@ void	proc_mic_encoder (void)
 
 		// step4: Soft HPF, NONE need
 #endif
+
+#if GOOGLE_AUDIO_VERSION == GOOGLE_AUDIO_V0P4
 		mic_to_adpcm_split (	ps,	TL_MIC_ADPCM_UNIT_SIZE,
 						(s16 *)(buffer_mic_enc + (ADPCM_PACKET_LEN>>2) *
-						(buffer_mic_pkt_wptr & (TL_MIC_PACKET_BUFFER_NUM - 1))), 1);
-
+						(buffer_mic_pkt_wptr & (TL_MIC_PACKET_BUFFER_NUM - 1))), GOOGLE_AUDIO_V0P4);
+#elif GOOGLE_AUDIO_VERSION == GOOGLE_AUDIO_V1P0
+		mic_to_adpcm_split (	ps,	TL_MIC_ADPCM_UNIT_SIZE,
+						(s16 *)(buffer_mic_enc + (ADPCM_PACKET_LEN>>2) *
+						(buffer_mic_pkt_wptr & (TL_MIC_PACKET_BUFFER_NUM - 1))), GOOGLE_AUDIO_V1P0);
+#endif
 		buffer_mic_rptr = buffer_mic_rptr ? 0 : (TL_MIC_BUFFER_SIZE>>2);
 		buffer_mic_pkt_wptr++;
 		int pkts = (buffer_mic_pkt_wptr - buffer_mic_pkt_rptr) & (TL_MIC_PACKET_BUFFER_NUM*2-1);
 		if (pkts > TL_MIC_PACKET_BUFFER_NUM) {
 			buffer_mic_pkt_rptr++;
 		}
-
 	}
 }
+
+
 
 int	*	mic_encoder_data_buffer ()
 {
@@ -848,9 +873,9 @@ int	*	mic_encoder_data_buffer ()
 	int *ps = buffer_mic_enc + (ADPCM_PACKET_LEN>>2) *
 			(buffer_mic_pkt_rptr & (TL_MIC_PACKET_BUFFER_NUM - 1));
 
-
 	return ps;
 }
+
 
 void mic_encoder_data_read_ok (void)
 {

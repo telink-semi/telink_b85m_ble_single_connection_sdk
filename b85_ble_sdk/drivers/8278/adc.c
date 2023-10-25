@@ -1,46 +1,24 @@
 /********************************************************************************************************
  * @file	adc.c
  *
- * @brief	This is the source file for B85
+ * @brief	This is the source file for B87
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2019
  *
- * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2019, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "adc.h"
@@ -48,16 +26,26 @@
 #include "clock.h"
 #include "dfifo.h"
 #include "timer.h"
-
+#include "flash.h"
+#include "lib/include/pm.h"
+/**
+ * Note: When the reference voltage is configured to 1.2V, the calculated ADC voltage value is closest to the actual voltage value using 1175 as the coefficient default.
+ * 1175 is the value obtained by ATE through big data statistics, which is more in line with most chips than 1200.
+ */
 _attribute_data_retention_
-adc_vref_ctr_t adc_vref_cfg = {
-	.adc_vref 		= 1175, //default ADC ref voltage (unit:mV)
-	.adc_calib_en	= 1, 	//default disable
-};
+volatile unsigned short adc_vref = 1175;//ADC calibration value voltage (unit:mV).
+_attribute_data_retention_
+volatile signed char adc_vref_offset = 0;//ADC calibration value voltage offset (unit:mV).
+_attribute_data_retention_
+unsigned short adc_gpio_calib_vref = 1175;//ADC gpio calibration value voltage (unit:mV)(used for gpio voltage sample).
+_attribute_data_retention_
+signed char adc_gpio_calib_vref_offset = 0;//ADC gpio calibration value voltage offset (unit:mV)(used for gpio voltage sample).
+_attribute_data_retention_
+unsigned short adc_vbat_calib_vref = 1175;//ADC vbat calibration value voltage (unit:mV)(used for internal voltage sample).
 
 volatile unsigned short	adc_code;
 unsigned char   adc_pre_scale;
-
+unsigned char   adc_vbat_divider;
 GPIO_PinTypeDef ADC_GPIO_tab[10] = {
 		GPIO_PB0,GPIO_PB1,
 		GPIO_PB2,GPIO_PB3,
@@ -68,29 +56,55 @@ GPIO_PinTypeDef ADC_GPIO_tab[10] = {
 
 /**
  * @brief This function is used for IO port configuration of ADC IO port voltage sampling.
+ *        This interface can be used to switch sampling IO without reinitializing the ADC.
  * @param[in]  pin - GPIO_PinTypeDef
  * @return none
  */
 void adc_base_pin_init(GPIO_PinTypeDef pin)
 {
+	unsigned char i;
+	unsigned char gpio_num=0;
 	//ADC GPIO Init
 	gpio_set_func(pin, AS_GPIO);
 	gpio_set_input_en(pin,0);
 	gpio_set_output_en(pin,0);
 	gpio_write(pin,0);
+
+	for(i=0;i<10;i++)
+	{
+		if(pin == ADC_GPIO_tab[i])
+		{
+			gpio_num = i+1;
+			break;
+		}
+	}
+	adc_set_ain_channel_differential_mode(gpio_num, GND);
 }
 
 /**
- * @brief This function is used for IO port configuration of ADC supply voltage sampling.
+ * @brief This function is used for IO port configuration of ADC IO port voltage sampling.
+ *        This interface can be used to switch sampling IO without reinitializing the ADC.
  * @param[in]  pin - GPIO_PinTypeDef
  * @return none
  */
 void adc_vbat_pin_init(GPIO_PinTypeDef pin)
 {
+	unsigned char i;
+	unsigned char gpio_no=0;
 	gpio_set_func(pin, AS_GPIO);
 	gpio_set_input_en(pin,0);
 	gpio_set_output_en(pin,1);
 	gpio_write(pin,1);
+
+	for(i=0;i<10;i++)
+	{
+		if(pin == ADC_GPIO_tab[i])
+		{
+			gpio_no = i+1;
+			break;
+		}
+	}
+	adc_set_ain_channel_differential_mode(gpio_no, GND);
 }
 
 /**
@@ -115,7 +129,7 @@ void adc_set_ref_voltage(ADC_RefVolTypeDef v_ref)
 		//Vref buffer bias current trimming: 		100%
 		//Comparator preamp bias current trimming:  100%
 		analog_write( areg_ain_scale  , (analog_read( areg_ain_scale  )&(0xC0)) | 0x15 );
-		adc_vref_cfg.adc_vref=900;// v_ref=ADC_VREF_0P9V,
+		adc_vref=900;// v_ref=ADC_VREF_0P9V,
 	}
 }
 
@@ -211,8 +225,33 @@ void adc_init(void){
 	dfifo_disable_dfifo2();//disable misc channel data dfifo
 
 }
-
-
+/**
+ * @brief This function is used to calib ADC 1.2V vref for GPIO.
+ * @param[in] data - GPIO sampling calibration value.
+ * @return none
+ */
+void adc_set_gpio_calib_vref(unsigned short data)
+{
+	adc_gpio_calib_vref = data;
+}
+/**
+ * @brief This function is used to calib ADC 1.2V vref offset for GPIO two-point.
+ * @param[in] offset - GPIO sampling two-point calibration value offset.
+ * @return none
+ */
+void adc_set_gpio_two_point_calib_offset(signed char offset)
+{
+	adc_gpio_calib_vref_offset = offset;
+}
+/**
+ * @brief This function is used to calib ADC 1.2V vref for VBAT.
+ * @param[in] data - VBAT sampling calibration value
+ * @return none
+ */
+void adc_set_vbat_calib_vref(unsigned short data)
+{
+	adc_vbat_calib_vref = data;
+}
 
 /**
  * @brief This function is used for ADC configuration of ADC IO voltage sampling.
@@ -221,24 +260,18 @@ void adc_init(void){
  */
 void adc_base_init(GPIO_PinTypeDef pin)
 {
-	unsigned char i;
-	unsigned char gpio_num=0;
 	adc_set_chn_enable_and_max_state_cnt(ADC_MISC_CHN, 2);//enable the mic channel and set max_state_cnt
 	adc_set_state_length(240, 10);  	//set R_max_mc=240,R_max_s=10
+	/**
+		 * Add Vref calibrate operation.
+		 * add by chaofan.20201029.
+	*/
+	adc_vref = adc_gpio_calib_vref;//set adc_vref as adc_gpio_calib_vref
+	adc_vref_offset = adc_gpio_calib_vref_offset;//set adc_vref_offset as adc_gpio_calib_vref_offset
 	adc_set_ref_voltage(ADC_VREF_1P2V);//set channel Vref,
 	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_OFF);//set Vbat divider select,
 
-	adc_base_pin_init(pin);		//ADC GPIO Init
-
-	for(i=0;i<10;i++)
-	{
-		if(pin == ADC_GPIO_tab[i])
-		{
-			gpio_num = i+1;
-			break;
-		}
-	}
-	adc_set_ain_channel_differential_mode(gpio_num, GND);
+	adc_base_pin_init(pin);
 	adc_set_resolution(RES14);
 	adc_set_tsample_cycle(SAMPLING_CYCLES_6);
 	adc_set_ain_pre_scaler(ADC_PRESCALER_1F8);//adc scaling factor is 1/8
@@ -257,10 +290,16 @@ void adc_old_temp_init(void)
 
 	adc_set_chn_enable_and_max_state_cnt(ADC_MISC_CHN, 2);//enable the mic channel and set max_state_cnt
 	adc_set_state_length(240, 10);  	//set R_max_mc=240,R_max_s=10
+	/**
+		 * Add Vref calibrate operation.
+		 * add by chaofan.20201029.
+	*/
+	adc_vref = adc_vbat_calib_vref;//set adc_vref as adc_vbat_calib_vref
+	adc_vref_offset = 0;//Vbat has no two-point calibration, offset must be set to 0.
 	adc_set_ref_voltage(ADC_VREF_1P2V);//set channel Vref,
 	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_OFF);//set Vbat divider select,
 
-	adc_set_ain_channel_differential_mode(TEMSENSORP, TEMSENSORN);
+	adc_set_ain_channel_differential_mode(TEMPERATURE_SENSOR_P, TEMPERATURE_SENSOR_N);
 	adc_set_resolution(RES14);
 	adc_set_tsample_cycle(SAMPLING_CYCLES_6);
 	adc_set_ain_pre_scaler(ADC_PRESCALER_1);//adc scaling factor is 1 or 1/8
@@ -283,10 +322,16 @@ void adc_temp_init(void)
 
 	adc_set_chn_enable_and_max_state_cnt(ADC_MISC_CHN, 2);//enable the mic channel and set max_state_cnt
 	adc_set_state_length(240, 10);  	//set R_max_mc=240,R_max_s=10
+	/**
+		 * Add Vref calibrate operation.
+		 * add by chaofan.20201029.
+	*/
+	adc_vref = adc_vbat_calib_vref;//set adc_vref as adc_vbat_calib_vref
+	adc_vref_offset = 0;//Vbat has no two-point calibration, offset must be set to 0.
 	adc_set_ref_voltage(ADC_VREF_1P2V);//set channel Vref,
 	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_OFF);//set Vbat divider select,
 
-	adc_set_ain_channel_differential_mode(TEMSENSORP_EE, TEMSENSORN_EE);
+	adc_set_ain_channel_differential_mode(TEMPERATURE_SENSOR_P_EE, TEMPERATURE_SENSOR_N_EE);
 	adc_set_resolution(RES14);
 	adc_set_tsample_cycle(SAMPLING_CYCLES_6);
 	adc_set_ain_pre_scaler(ADC_PRESCALER_1);//adc scaling factor is 1 or 1/8
@@ -303,24 +348,18 @@ void adc_temp_init(void)
  */
 void adc_vbat_init(GPIO_PinTypeDef pin)
 {
-	unsigned char i;
-	unsigned char gpio_no=0;
 	adc_set_chn_enable_and_max_state_cnt(ADC_MISC_CHN, 2);
 	adc_set_state_length(240, 10);  	//set R_max_mc,R_max_c,R_max_s
-
+	/**
+		 * Add Vref calibrate operation.
+		 * add by chaofan.20201029.
+	*/
+	adc_vref = adc_gpio_calib_vref;//set adc_vref as adc_gpio_calib_vref
+	adc_vref_offset = adc_gpio_calib_vref_offset;//set adc_vref_offset as adc_gpio_calib_vref_offset
 	//set Vbat divider select,
 	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_OFF);
-	//set channel mode and channel
+
 	adc_vbat_pin_init(pin);
-	for(i=0;i<10;i++)
-	{
-		if(pin == ADC_GPIO_tab[i])
-		{
-			gpio_no = i+1;
-			break;
-		}
-	}
-	adc_set_ain_channel_differential_mode(gpio_no, GND);
 	adc_set_ref_voltage(ADC_VREF_1P2V);//set channel Vref
 	adc_set_resolution(RES14);//set resolution
 	//Number of ADC clock cycles in sampling phase
@@ -340,9 +379,20 @@ void adc_vbat_channel_init(void)
 {
 	adc_set_chn_enable_and_max_state_cnt(ADC_MISC_CHN, 2);
 	adc_set_state_length(240, 10);  	//set R_max_mc,R_max_c,R_max_s
-
+	/**
+		 * Add Vref calibrate operation.
+		 * add by chaofan. 20201029.
+	 */
+	adc_vref = adc_vbat_calib_vref;//set adc_vref as adc_vbat_calib_vref
+	adc_vref_offset = 0;//Vbat has no two-point calibration, offset must be set to 0.
 	//set Vbat divider select,
-	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_OFF);
+	/**
+		 * Change the ADC_VBAT_DIVIDER as 1F3 and ADC_PRESCALER as 1.
+		 * Because ATE calibrate the Vbat Vref with ADC_VBAT_DIVIDER_1F3 and ADC_PRESCALER_1.
+		 * It may be inaccurate if you use other parameters
+		 * changed by chaofan. confirmed by zhengting. 20201029.
+	 */
+	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_1F3);
 
 	adc_set_ain_channel_differential_mode(VBAT, GND);
 	adc_set_ref_voltage(ADC_VREF_1P2V);//set channel Vref
@@ -351,8 +401,8 @@ void adc_vbat_channel_init(void)
 	//Number of ADC clock cycles in sampling phase
 	adc_set_tsample_cycle(SAMPLING_CYCLES_6);
 
-	//set Analog input pre-scaling and
-	adc_set_ain_pre_scaler(ADC_PRESCALER_1F8);
+	//set Analog input pre-scaling
+	adc_set_ain_pre_scaler(ADC_PRESCALER_1);
 
 }
 
@@ -375,15 +425,20 @@ unsigned int adc_sample_and_get_result(void)
 	unsigned short  adc_result=0;
 
 	adc_reset_adc_module();
-	unsigned int t0 = clock_time();
 
 	for(i=0;i<ADC_SAMPLE_NUM;i++){   	//dfifo data clear
 		adc_data_buf[i] = 0;
 	}
-	while(!clock_time_exceed(t0, 25));  //wait at least 2 sample cycle(f = 96K, T = 10.4us)
 	//dfifo setting will lose in suspend/deep, so we need config it every time
 	adc_config_misc_channel_buf((unsigned short *)adc_data_buf, ADC_SAMPLE_NUM<<2);  //size: ADC_SAMPLE_NUM*4
 	dfifo_enable_dfifo2();
+	/**
+		 * move the "2 sample cycle" wait operation after adc dfifo enable,
+		 * otherwise may have data lose due to the adc and dfifo mechanism.
+		 * changed by chaofan.20201029.
+	 */
+	unsigned int t0 = clock_time();
+	while(!clock_time_exceed(t0, 25));  //wait at least 2 sample cycle(f = 96K, T = 10.4us)
 //////////////// get adc sample data and sort these data ////////////////
 	for(i=0;i<ADC_SAMPLE_NUM;i++){
 		/*wait for new adc sample data, When the data is not zero and more than 1.5 sampling times (when the data is zero),
@@ -419,11 +474,17 @@ unsigned int adc_sample_and_get_result(void)
 #endif
 	adc_code=adc_result = adc_average;
 
-	 //////////////// adc sample data convert to voltage(mv) ////////////////
-	//                          (Vref, adc_pre_scale)   (BIT<12~0> valid data)
-	//			 =  adc_result * Vref * adc_pre_scale / 0x2000
-	//           =  adc_result * Vref*adc_pre_scale >>13
-	adc_vol_mv  = (adc_result*adc_pre_scale*adc_vref_cfg.adc_vref)>>13;
+	//When the code value is 0, the returned voltage value should be 0.
+	if(adc_result == 0){
+		return 0;
+	}
+	else{
+		//////////////// adc sample data convert to voltage(mv) ////////////////
+		//                          (Vref, adc_pre_scale)   (BIT<12~0> valid data)
+		//			 =  adc_result * Vref * adc_pre_scale / 0x2000 + offset
+		//           =  adc_result * Vref*adc_pre_scale >>13 + offset
+		adc_vol_mv  = ((adc_vbat_divider*adc_result*adc_pre_scale*adc_vref)>>13) + adc_vref_offset;
+	}
 
 	return adc_vol_mv;
 }
@@ -452,8 +513,12 @@ unsigned short adc_sample_and_get_result_manual_mode(void)
 		adc_misc_data=0;
 	}
 	else{
-		adc_misc_data  = (adc_misc_data * adc_vref_cfg.adc_vref)>>10;
+		adc_misc_data &= 0x1FFF;
 	}
+	/**
+		 * move the return value adc_misc_data to the function end.Otherwise may don't do the return operation.
+		 * changed by chaofan.20201029.
+	 */
 	return adc_misc_data;
 }
 
@@ -471,13 +536,13 @@ unsigned short adc_sample_and_get_result_manual_mode(void)
 			   = 619 - (adc_result * 840)>>13)-40;
 			   = 579 - (adc_result * 840)>>13);
  ********************************************************************************************/
-unsigned short adc_temp_result(void)
+signed short adc_temp_result(void)
 {
-	unsigned short  adc_temp_value = 0;
+	signed short  adc_temp_value = 0;
 
 	adc_sample_and_get_result();
 
-	adc_temp_value = 579-((adc_code * 840)>>13);
+	adc_temp_value = (signed short)(579-((adc_code * 840)>>13));
 
 	return adc_temp_value;
 }

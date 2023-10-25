@@ -1,53 +1,31 @@
 /********************************************************************************************************
  * @file	adc.h
  *
- * @brief	This is the header file for B85
+ * @brief	This is the header file for B87
  *
  * @author	Driver Group
- * @date	May 8,2018
+ * @date	2019
  *
- * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2019, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #pragma once
 #include "bsp.h"
 #include "analog.h"
 #include "register.h"
-#include "gpio_8278.h"
+#include "gpio.h"
 
 #define ADC_OLD_TEMP_TEST  0
 
@@ -59,16 +37,9 @@
  *  4:input mode,just has differential
  */
 
-//ADC reference voltage cfg
-typedef struct {
-	unsigned short adc_vref;     //default: 1175 mV,this value just for Vref=1.2V & Prescal=1/8,For Vulture this data has not been analyzed yet.
-	unsigned short adc_calib_en;
-}adc_vref_ctr_t;
-
-extern adc_vref_ctr_t adc_vref_cfg;
 
 extern GPIO_PinTypeDef ADC_GPIO_tab[10];
-
+extern unsigned char   adc_vbat_divider;
 /**
  *  ADC reference voltage
  */
@@ -82,9 +53,11 @@ typedef enum{
  */
 typedef enum{
 	ADC_VBAT_DIVIDER_OFF = 0,
-	ADC_VBAT_DIVIDER_1F4,
-	ADC_VBAT_DIVIDER_1F3,
-	ADC_VBAT_DIVIDER_1F2
+	ADC_VBAT_DIVIDER_1F3=2,
+	/**
+	 * Delete the ADC_VBAT_DIVIDER_1F2 enum due to it can't make sense.
+	 * changed by chaofan. confirmed by lingyu.20201029.
+	 */
 }ADC_VbatDivTypeDef;
 
 /**
@@ -104,8 +77,8 @@ typedef enum {
 	C5N,
 	PGA0N,
 	PGA1N,
-	TEMSENSORN,
-	TEMSENSORN_EE,
+	TEMPERATURE_SENSOR_N,
+	TEMPERATURE_SENSOR_N_EE,
 	GND,
 }ADC_InputNchTypeDef;
 
@@ -126,8 +99,8 @@ typedef enum {
 	C5P,
 	PGA0P,
 	PGA1P,
-	TEMSENSORP,
-	TEMSENSORP_EE,
+	TEMPERATURE_SENSOR_P,
+	TEMPERATURE_SENSOR_P_EE,
 	VBAT,
 }ADC_InputPchTypeDef;
 
@@ -195,15 +168,6 @@ typedef enum{
 
 
 
-/**
- * @brief       This function enable adc reference voltage calibration
- * @param[in] en - 1 enable  0 disable
- * @return     none.
- */
-static inline void	adc_calib_vref_enable(unsigned char en)
-{
-	adc_vref_cfg.adc_calib_en = en;
-}
 
 
 /**
@@ -301,6 +265,15 @@ enum{
 static inline void adc_set_vref_vbat_divider(ADC_VbatDivTypeDef vbat_div)
 {
 	analog_write (areg_adc_vref_vbat_div, (analog_read(areg_adc_vref_vbat_div)&(~FLD_ADC_VREF_VBAT_DIV)) | (vbat_div<<2) );
+	if(vbat_div)
+	{
+		adc_vbat_divider=5-vbat_div	;
+	}
+	else
+	{
+		adc_vbat_divider=1;
+	}
+
 }
 
 
@@ -351,6 +324,7 @@ enum{
  * @return none
  */
 static inline void adc_set_ain_chn_misc(ADC_InputPchTypeDef p_ain, ADC_InputNchTypeDef n_ain)
+
 {
 	analog_write (areg_adc_ain_chn_misc	, n_ain | p_ain<<4 );
 }
@@ -451,8 +425,8 @@ afe_0xF1
 		<5:4>   rsvd
 		<7:6>   r_max_mc[9:8]
 
-	r_max_mc[9:0]: serves to set length of ��capture�� state for Misc channel.
-	r_max_s:       serves to set length of ��set�� state for Misc channel.
+	r_max_mc[9:0]: serves to set length of capture state for Misc channel.
+	r_max_s:       serves to set length of set state for Misc channel.
 
 	Note: State length indicates number of 24M clock cycles occupied by the state.
  *************************************************************************************/
@@ -468,7 +442,7 @@ enum{
 };
 
 /**
- * @brief      This function sets length of each ��set�� state
+ * @brief      This function sets length of each set state
  * @param[in]  r_max_s - variable of length of "set" state
  * @return     none
  */
@@ -624,14 +598,35 @@ void adc_set_ain_pre_scaler(ADC_PreScalingTypeDef v_scl);
 void adc_init(void );
 
 /**
+ * @brief This function is used to calib ADC 1.2V vref for GPIO.
+ * @param[in] data - GPIO sampling calibration value.
+ * @return none
+ */
+void adc_set_gpio_calib_vref(unsigned short data);
+/**
+ * @brief This function is used to calib ADC 1.2V vref offset for GPIO two-point.
+ * @param[in] offset - GPIO sampling two-point calibration value offset.
+ * @return none
+ */
+void adc_set_gpio_two_point_calib_offset(signed char offset);
+/**
+ * @brief This function is used to calib ADC 1.2V vref for VBAT.
+ * @param[in] data - VBAT sampling calibration value
+ * @return none
+ */
+void adc_set_vbat_calib_vref(unsigned short data);
+
+/**
  * @brief This function is used for IO port configuration of ADC IO port voltage sampling.
+ *        This interface can be used to switch sampling IO without reinitializing the ADC.
  * @param[in]  pin - GPIO_PinTypeDef
  * @return none
  */
 void adc_base_pin_init(GPIO_PinTypeDef pin);
 
 /**
- * @brief This function is used for IO port configuration of ADC supply voltage sampling.
+ * @brief This function is used for IO port configuration of ADC IO port voltage sampling.
+ *        This interface can be used to switch sampling IO without reinitializing the ADC.
  * @param[in]  pin - GPIO_PinTypeDef
  * @return none
  */
@@ -699,8 +694,7 @@ unsigned short adc_sample_and_get_result_manual_mode(void);
  * @param[in]  none.
  * @return the result of temperature.
  */
-unsigned short adc_temp_result(void);
-
+signed short adc_temp_result(void);
 
 
 

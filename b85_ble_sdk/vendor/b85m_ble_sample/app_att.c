@@ -69,7 +69,9 @@ static const u16 reportRefUUID = GATT_UUID_REPORT_REF;
 
 static const u16 characterPresentFormatUUID = GATT_UUID_CHAR_PRESENT_FORMAT;
 
+#if (BLE_OTA_SERVER_ENABLE)
 static const u16 userdesc_UUID	= GATT_UUID_CHAR_USER_DESC;
+#endif
 
 static const u16 serviceChangeUUID = GATT_UUID_SERVICE_CHANGE;
 
@@ -234,15 +236,16 @@ static const u8 reportMap[] =
 static u16 extServiceUUID;
 
 
+#if (BLE_OTA_SERVER_ENABLE)
 /////////////////////////////////////////////////////////
 static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
 static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 static u8 my_OtaData 						        = 0x00;
 static u8 otaDataCCC[2] 							= {0,0};
 
-static const u8  my_MicName[] = {'M', 'i', 'c'};
-static const u8  my_SpeakerName[] = {'S', 'p', 'e', 'a', 'k', 'e', 'r'};
+
 static const u8  my_OtaName[] = {'O', 'T', 'A'};
+#endif
 
 
 // Include attribute (Battery service)
@@ -251,7 +254,7 @@ static const u16 include[3] = {BATT_PS_H, BATT_LEVEL_INPUT_CCB_H, SERVICE_UUID_B
 
 //// GAP attribute values
 static const u8 my_devNameCharVal[5] = {
-	CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ,
 	U16_LO(GenericAccess_DeviceName_DP_H), U16_HI(GenericAccess_DeviceName_DP_H),
 	U16_LO(GATT_UUID_DEVICE_NAME), U16_HI(GATT_UUID_DEVICE_NAME)
 };
@@ -338,13 +341,14 @@ static const u8 my_batCharVal[5] = {
 	U16_LO(CHARACTERISTIC_UUID_BATTERY_LEVEL), U16_HI(CHARACTERISTIC_UUID_BATTERY_LEVEL)
 };
 
-
+#if (BLE_OTA_SERVER_ENABLE)
 //// OTA attribute values
 static const u8 my_OtaCharVal[19] = {
-	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
+	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY | CHAR_PROP_WRITE,
 	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
 	TELINK_SPP_DATA_OTA,
 };
+#endif
 
 
 // TM : to modify
@@ -436,6 +440,7 @@ static const attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batVal),(u8*)(&my_batCharUUID), 	(u8*)(my_batVal), 0},	//value
 	{0,ATT_PERMISSIONS_RDWR,2,sizeof(batteryValueInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(batteryValueInCCC), 0},	//value
 
+#if (BLE_OTA_SERVER_ENABLE)
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////
 	// 002e - 0032
 	{5,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
@@ -443,7 +448,7 @@ static const attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
 	{0,ATT_PERMISSIONS_RDWR,2,sizeof(otaDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(otaDataCCC), 0},				//value
 	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
-
+#endif
 };
 
 

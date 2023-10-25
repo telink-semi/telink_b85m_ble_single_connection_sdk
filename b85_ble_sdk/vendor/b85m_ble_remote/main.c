@@ -107,15 +107,13 @@ _attribute_ram_code_ int main (void)    //must run in ramcode
 
 	int deepRetWakeUp = pm_is_MCU_deepRetentionWakeup();  //MCU deep retention wakeUp
 
-	rf_drv_init(RF_MODE_BLE_1M);
+	rf_drv_ble_init();
 
 	gpio_init( !deepRetWakeUp );  //analog resistance will keep available in deepSleep mode, so no need initialize again
 
 	clock_init(SYS_CLK_TYPE);
 
 	if(!deepRetWakeUp){//read flash size
-		user_init_battery_power_check(); //battery check must do before flash code
-		blc_readFlashSize_autoConfigCustomFlashSector();
 		#if FIRMWARE_CHECK_ENABLE
 			//Execution time is in ms.such as:48k fw,16M crystal clock,need about 290ms.
 			if(flash_fw_check(0xffffffff)){ //retrun 0, flash fw crc check ok. retrun 1, flash fw crc check fail
@@ -124,12 +122,13 @@ _attribute_ram_code_ int main (void)    //must run in ramcode
 		#endif
 	}
 
-	blc_app_loadCustomizedParameters();  //load customized freq_offset cap value
-
 	if( deepRetWakeUp ){
 		user_init_deepRetn ();
 	}
 	else{
+		#if DEEPBACK_FAST_KEYSCAN_ENABLE
+			deep_wakeup_proc();
+		#endif
 		#if FIRMWARES_SIGNATURE_ENABLE
 			blt_firmware_signature_check();
 		#endif
