@@ -95,6 +95,7 @@ typedef int (*blc_main_loop_phyTest_callback_t)(void);
 #define			BLT_EV_FLAG_SUSPEND_EXIT						15
 #define			BLT_EV_FLAG_VERSION_IND_REV						16
 #define			BLT_EV_FLAG_SCAN_REQ							17
+#define			BLT_EV_FLAG_ADV_TX_EACH_CHANNEL					18  //event triggers before transmitting ADV packet for all ADV channel (37/38/39)
 
 
 
@@ -326,6 +327,44 @@ u8* 	blc_ll_get_macAddrPublic(void);
 * 			  		    other: error code
  */
 init_err_t	blc_contr_checkControllerInitialization(void);
+
+
+/**
+ *  @brief  Event Parameters for "BLT_EV_FLAG_ADV_TX_EACH_CHANNEL"
+ */
+typedef struct{
+	u8 *	pAdvData;					//point to first ADV data
+	u32 	advPacketHeader_tick; //ADV packet header Stimer tick
+} blt_evt_advTxEachChn_t;
+
+
+
+/**
+ *  @brief  Event Parameters for TLK defined special adv report event
+			if user enable RX packet header Stimer tick, should this data structure to analyze ADV report event
+ */
+typedef struct{
+	u8		subcode;
+	u8		nreport;
+	u8		event_type;
+	u8		adr_type;
+	u8		mac[6];
+	u32 	rxPktHeader_tick;	//RX packet header Stimer tick
+	u8		len;
+	u8		data[1];
+}hci_tlk_advReportWithRxTickEvt_t;
+
+
+/**
+ *  @brief  this function is used to set
+ */
+/**
+ * @brief      this function is used to enable or disable RX packet header Stimer tick in ADV report event
+ * @param[in]  *randomAddr -  Random Device Address
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
+void  blc_ll_advReport_setRxPacketTickEnable(int en);
 
 
 #endif /* LL__H_ */

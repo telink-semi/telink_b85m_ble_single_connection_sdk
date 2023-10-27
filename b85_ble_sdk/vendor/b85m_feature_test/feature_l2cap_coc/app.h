@@ -1,5 +1,5 @@
 /********************************************************************************************************
- * @file	app_config.h
+ * @file	app.h
  *
  * @brief	This is the header file for BLE SDK
  *
@@ -43,51 +43,79 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-#pragma once
+#ifndef APP_H_
+#define APP_H_
+
+#include "../feature_config.h"
+
+#if (FEATURE_TEST_MODE == TEST_L2CAP_COC)
 
 
-#include "feature_config.h"
+/**
+ * @brief		user initialization when MCU power on or wake_up from deepSleep mode
+ * @param[in]	none
+ * @return      none
+ */
+
+void user_init_normal(void);
+
+/**
+ * @brief		user initialization when MCU wake_up from deepSleep_retention mode
+ * @param[in]	none
+ * @return      none
+ */
+void user_init_deepRetn(void);
 
 
-#if(FEATURE_TEST_MODE == TEST_ADVERTISING_ONLY || FEATURE_TEST_MODE == TEST_SCANNING_ONLY || FEATURE_TEST_MODE == TEST_ADVERTISING_IN_CONN_SLAVE_ROLE || \
-	FEATURE_TEST_MODE == TEST_SCANNING_IN_ADV_AND_CONN_SLAVE_ROLE || FEATURE_TEST_MODE == TEST_ADVERTISING_SCANNING_IN_CONN_SLAVE_ROLE)
-	#include "feature_ll_state/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_POWER_ADV)
-	#include "feature_adv_power/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_SMP_SECURITY)
-	#include "feature_smp_security/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_GATT_SECURITY)
-	#include "feature_gatt_security/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_SDATA_LENGTH_EXTENSION)
-	#include "feature_slave_dle/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_MDATA_LENGTH_EXTENSION)
-	#include "feature_master_dle/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_BLE_PHY)
-	#include "feature_PHY_test/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_LL_PRIVACY_SLAVE)
-	#include "feature_privacy_slave/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
-	#include "feature_privacy_master/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_EXTENDED_ADVERTISING)
-	#include "feature_extend_adv/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_2M_CODED_PHY_EXT_ADV)
-	#include "feature_phy_extend_adv/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_2M_CODED_PHY_CONNECTION)
-	#include "feature_phy_conn/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_OTA_BIG_PDU)
-	#include "feature_ota_big_pdu/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_OTA_HID)
-	#include "feature_ota_hid/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_TIMER || FEATURE_TEST_MODE == TEST_WHITELIST || FEATURE_TEST_MODE == TEST_CSA2)
-	#include "feature_misc/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_UART)
-	#include "feature_soft_uart/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_MULTIPLE_LOCAL_DEVICE)
-	#include "feature_multi_local_dev/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_FEATURE_BACKUP)
-	#include "feature_backup/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_L2CAP_COC)
-	#include "feature_l2cap_coc/app_config.h"
-#endif
+/**
+ * @brief     BLE main loop
+ * @param[in]  none.
+ * @return     none.
+ */
+void main_loop (void);
+
+/**
+ * @brief	Initialize the L2CAP CoC channel, configure parameters such as MTU and SPSM.
+ * @param[in]  none.
+ * @return     none.
+ */
+
+void app_l2cap_coc_init(void);
+
+/**
+ * @brief      Handle  events related to CoC channel such as connection and disconnection.
+ * @param[in]  h       event type
+ * @param[in]  para    Pointer point to event parameter buffer.
+ * @param[in]  n       the length of event parameter.
+ * @return
+ */
+
+int app_host_coc_event_callback (u32 h, u8 *para, int n);
+
+/**
+ * @brief	Establish a connection for the CoC channel.
+ * @param[in]  none.
+ * @return     none.
+ */
+void app_createLeCreditBasedConnect(void);
+void app_createCreditBasedConnect(void);
+
+/**
+ * @brief	Send data to all connections on the CoC channel.
+ * @param[in]  none.
+ * @return     none.
+ */
+
+void app_sendCocData(void);
+
+/**
+ * @brief	Disconnect the CoC channel connection.
+ * @param[in]  none.
+ * @return     none.
+ */
+
+void app_disconnCocConnect(void);
 
 
+#endif  //end of (FEATURE_TEST_MODE == ...)
+#endif /* APP_H_ */

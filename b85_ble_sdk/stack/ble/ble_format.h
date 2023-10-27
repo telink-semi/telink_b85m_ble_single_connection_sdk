@@ -531,10 +531,8 @@ typedef struct{
 	u16	l2capLen;
 	u16	chanId;
 	u8  opcode;
-	u8	startingHandle;
-	u8	startingHandle1;
-	u8	endingHandle;
-	u8	endingHandle1;
+	u16 startingHandle;
+	u16 endingHandle;
 	u8	attType[2];				//
 }rf_packet_att_readByType_t;
 
@@ -545,10 +543,8 @@ typedef struct{
 	u16	l2capLen;
 	u16	chanId;
 	u8  opcode;
-	u8	startingHandle;
-	u8	startingHandle1;
-	u8	endingHandle;
-	u8	endingHandle1;
+	u16 startingHandle;
+	u16 endingHandle;
 	u8	attType[2];
 	u8  attValue[2];
 }rf_packet_att_findByTypeReq_t;
@@ -569,8 +565,7 @@ typedef struct{
 	u16	l2capLen;
 	u16	chanId;
 	u8  opcode;
-	u8 handle;
-	u8 handle1;
+	u16 handle;
 }rf_packet_att_read_t;
 
 typedef struct{
@@ -579,10 +574,8 @@ typedef struct{
 	u16	l2capLen;
 	u16	chanId;
 	u8  opcode;
-	u8 handle;
-	u8 handle1;
-	u8 offset0;
-	u8 offset1;
+	u16 handle;
+	u16 offset;
 }rf_packet_att_readBlob_t;
 
 typedef struct{
@@ -659,8 +652,7 @@ typedef struct{
 	u16	l2capLen;
 	u16	chanId;
 	u8  opcode;
-	u8 handle;
-	u8 handle1;
+	u16 handle;
 	u8 value;
 }rf_packet_att_write_t;
 

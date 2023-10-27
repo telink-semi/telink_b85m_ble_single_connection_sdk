@@ -98,7 +98,7 @@
 #define	TEST_MULTIPLE_LOCAL_DEVICE						125
 
 #define TEST_USER_BLT_SOFT_UART							130
-
+#define TEST_L2CAP_COC								    140
 #define TEST_FEATURE_BACKUP								200
 
 

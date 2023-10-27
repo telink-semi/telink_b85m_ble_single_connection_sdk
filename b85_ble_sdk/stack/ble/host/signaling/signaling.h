@@ -94,11 +94,80 @@ typedef struct{
 #endif
 }blc_coc_initParam_t;
 
+/**
+ * @brief	This function is used to register CoC module
+ * @param	param - CoC initialized parameters
+ * @param	pBuffer - CoC buffer
+ * @param	buffLen - CoC buffer length
+ * @return	state - 0: command succeeded; others: failed
+ */
+
 int blc_l2cap_registerCocModule(blc_coc_initParam_t* param, u8 *pBuffer, u16 buffLen);
+
+/**
+ * @brief	This function is used to disconnect CoC channel
+ * @param	connHandle - connection handle
+ * @param	srcCID - source channel identifier
+ * @return	BLE_SUCCESS
+ */
+
 ble_sts_t blc_l2cap_disconnectCocChannel(u16 connHandle, u16 srcCID);
+
+/**
+ * @brief	This function is used to create LE credit based connection
+ * @param	connHandle - connection handle
+ * @return	BLE_SUCCESS
+ */
+
 ble_sts_t blc_l2cap_createLeCreditBasedConnect(u16 connHandle);
+
+/**
+ * @brief	This function is used to create credit based connection
+ * @param	connHandle - connection handle
+ * @param	srcCnt - source channel count
+ * @return	BLE_SUCCESS
+ */
+
 ble_sts_t blc_l2cap_createCreditBasedConnect(u16 connHandle, u8 srcCnt);
+
+/**
+ * @brief	This function is used to send CoC data
+ * @param	connHandle - connection handle
+ * @param	srcCID - source channel identifier
+ * @param	data - data to be sent
+ * @param	dataLen - data length
+ * @return	BLE_SUCCESS
+ */
+
 ble_sts_t blc_l2cap_sendCocData(u16 connHandle, u16 srcCID, u8* data, u16 dataLen);
+
+/**
+ * @brief	CoC main loop
+ * @param	none
+ * @return	none
+ */
+
 void blc_l2cap_cocMainLoop(void);
+
+
+/**
+ * @brief	This function is used to send connection parameter update request
+ * @param	connHandle - connection handle
+ * @param	min_interval - minimum connection interval
+ * @param	max_interval - maximum connection interval
+ * @param	latency - connection latency
+ * @param	timeout - connection timeout
+ * @return	BLE_SUCCESS
+ */
+
 ble_sts_t blc_signal_sendConnectParameterUpdateReq(u16 connHandle, u16 min_interval, u16 max_interval, u16 latency, u16 timeout);
+
+/**
+ * @brief	This function is used to send connection parameter update response
+ * @param	connHandle - connection handle
+ * @param	identifier - request packet identifier
+ * @param	result - connection parameter update result
+ * @return	BLE_SUCCESS
+ */
+
 ble_sts_t blc_signal_sendConnectParameterUpdateRsp(u16 connHandle, u8 identifier, conn_para_up_rsp result);

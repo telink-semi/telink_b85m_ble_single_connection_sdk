@@ -1,7 +1,7 @@
 /********************************************************************************************************
- * @file	app_config.h
+ * @file	main.c
  *
- * @brief	This is the header file for BLE SDK
+ * @brief	This is the source file for BLE SDK
  *
  * @author	BLE GROUP
  * @date	06,2020
@@ -43,51 +43,61 @@
  *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************************************************/
-#pragma once
+#include "tl_common.h"
+#include "drivers.h"
+#include "stack/ble/ble.h"
+#include "app.h"
 
 
-#include "feature_config.h"
+
+#if (FEATURE_TEST_MODE == TEST_L2CAP_COC)
+
+/**
+ * @brief   IRQ handler
+ * @param   none.
+ * @return  none.
+ */
+_attribute_ram_code_ void irq_handler(void)
+{
+	irq_blt_sdk_handler ();
+}
 
 
-#if(FEATURE_TEST_MODE == TEST_ADVERTISING_ONLY || FEATURE_TEST_MODE == TEST_SCANNING_ONLY || FEATURE_TEST_MODE == TEST_ADVERTISING_IN_CONN_SLAVE_ROLE || \
-	FEATURE_TEST_MODE == TEST_SCANNING_IN_ADV_AND_CONN_SLAVE_ROLE || FEATURE_TEST_MODE == TEST_ADVERTISING_SCANNING_IN_CONN_SLAVE_ROLE)
-	#include "feature_ll_state/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_POWER_ADV)
-	#include "feature_adv_power/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_SMP_SECURITY)
-	#include "feature_smp_security/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_GATT_SECURITY)
-	#include "feature_gatt_security/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_SDATA_LENGTH_EXTENSION)
-	#include "feature_slave_dle/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_MDATA_LENGTH_EXTENSION)
-	#include "feature_master_dle/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_BLE_PHY)
-	#include "feature_PHY_test/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_LL_PRIVACY_SLAVE)
-	#include "feature_privacy_slave/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
-	#include "feature_privacy_master/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_EXTENDED_ADVERTISING)
-	#include "feature_extend_adv/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_2M_CODED_PHY_EXT_ADV)
-	#include "feature_phy_extend_adv/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_2M_CODED_PHY_CONNECTION)
-	#include "feature_phy_conn/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_OTA_BIG_PDU)
-	#include "feature_ota_big_pdu/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_OTA_HID)
-	#include "feature_ota_hid/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_TIMER || FEATURE_TEST_MODE == TEST_WHITELIST || FEATURE_TEST_MODE == TEST_CSA2)
-	#include "feature_misc/app_config.h"
-#elif(FEATURE_TEST_MODE == TEST_USER_BLT_SOFT_UART)
-	#include "feature_soft_uart/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_MULTIPLE_LOCAL_DEVICE)
-	#include "feature_multi_local_dev/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_FEATURE_BACKUP)
-	#include "feature_backup/app_config.h"
-#elif (FEATURE_TEST_MODE == TEST_L2CAP_COC)
-	#include "feature_l2cap_coc/app_config.h"
-#endif
+/**
+ * @brief		This is main function
+ * @param[in]	none
+ * @return      none
+ */
+_attribute_ram_code_ int main (void)    //must run in ramcode
+{
+	blc_pm_select_internal_32k_crystal();
 
+	#if(MCU_CORE_TYPE == MCU_CORE_825x)
+		cpu_wakeup_init();
+	#elif(MCU_CORE_TYPE == MCU_CORE_827x)
+		cpu_wakeup_init(LDO_MODE,EXTERNAL_XTAL_24M);
+	#endif
 
+	int deepRetWakeUp = pm_is_MCU_deepRetentionWakeup();  //MCU deep retention wakeUp
+
+	rf_drv_ble_init();
+
+	gpio_init( !deepRetWakeUp );  //analog resistance will keep available in deepSleep mode, so no need initialize again
+
+	clock_init(SYS_CLK_TYPE);
+
+	if( deepRetWakeUp ){
+		user_init_deepRetn ();
+	}
+	else{
+		user_init_normal ();
+	}
+
+    irq_enable();
+
+	while (1) {
+		main_loop ();
+	}
+}
+
+#endif  //end of (FEATURE_TEST_MODE == ...)

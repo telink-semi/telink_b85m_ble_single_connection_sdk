@@ -371,6 +371,21 @@ void 	att_req_write_cmd (u8 *dat, u16 attHandle, u8 *buf, int len);
  */
 void    att_req_read_multiple_variable (u8 *p, u16 *h ,u8 n);
 
+/**
+ * @brief      set HID Report Map
+ * @param[in]  p - the point of report map
+ * @param[in]  len - the length of report map
+ * @return     BLE_SUCCESS
+ */
+ble_sts_t bls_att_setHIDReportMap(u8* p,u32 len);
+
+/**
+ * @brief      reset HID Report Map
+ * @param[in]  none
+ * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t bls_att_resetHIDReportMap();
+
 #endif
 
 
