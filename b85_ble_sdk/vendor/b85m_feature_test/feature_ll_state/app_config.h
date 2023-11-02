@@ -53,10 +53,10 @@
 ///////////////////////// Feature Configuration////////////////////////////////////////////////
 #if (FEATURE_TEST_MODE == TEST_ADVERTISING_ONLY || FEATURE_TEST_MODE == TEST_ADVERTISING_IN_CONN_SLAVE_ROLE)
 	#define FEATURE_PM_ENABLE							1
-	#define FEATURE_DEEPSLEEP_RETENTION_ENABLE			1
+	#define PM_DEEPSLEEP_RETENTION_ENABLE			1
 #else
 	#define FEATURE_PM_ENABLE							0
-	#define FEATURE_DEEPSLEEP_RETENTION_ENABLE			0
+	#define PM_DEEPSLEEP_RETENTION_ENABLE			0
 #endif
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1

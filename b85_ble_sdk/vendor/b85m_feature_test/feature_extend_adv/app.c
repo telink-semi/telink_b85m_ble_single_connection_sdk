@@ -312,7 +312,7 @@ _attribute_ram_code_
 void blt_pm_proc(void)
 {
 #if(FEATURE_PM_ENABLE)
-	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 	#else
 		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
@@ -574,7 +574,7 @@ void user_init_normal(void)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
-	#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
@@ -617,7 +617,7 @@ void user_init_normal(void)
  */
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
-#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
 	rf_set_power_level_index (MY_RF_POWER_INDEX);

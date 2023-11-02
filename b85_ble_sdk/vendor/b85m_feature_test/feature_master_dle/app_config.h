@@ -51,7 +51,7 @@
 
 ///////////////////////// Feature Configuration////////////////////////////////////////////////
 #define FEATURE_PM_ENABLE								0
-#define FEATURE_DEEPSLEEP_RETENTION_ENABLE				0
+#define PM_DEEPSLEEP_RETENTION_ENABLE				0
 #define UART_PRINT_DEBUG_ENABLE							1
 
 #if (UART_PRINT_DEBUG_ENABLE)

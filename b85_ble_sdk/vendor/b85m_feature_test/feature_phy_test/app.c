@@ -195,7 +195,7 @@ void app_phytest_irq_proc(void)
  */
 _attribute_ram_code_ void user_init_deepRetn(void)
 {
-#if (FEATURE_DEEPSLEEP_RETENTION_ENABLE)
+#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 	blc_app_loadCustomizedParameters_deepRetn();
 	blc_ll_initBasicMCU();   //mandatory
 	rf_set_power_level_index (MY_RF_POWER_INDEX);

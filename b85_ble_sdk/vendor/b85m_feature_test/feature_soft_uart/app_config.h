@@ -70,7 +70,7 @@
 
 ///////////////////////// Feature Configuration////////////////////////////////////////////////
 #define FEATURE_PM_ENABLE								0
-#define FEATURE_DEEPSLEEP_RETENTION_ENABLE				0
+#define PM_DEEPSLEEP_RETENTION_ENABLE				0
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
 #define APP_FLASH_INIT_LOG_EN							0
