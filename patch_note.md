@@ -26,8 +26,8 @@
 * 增加API blc_ll_setBluetoothVersion，用于更改默认蓝牙版本，以满足一些客户的特殊要求。
 
 ### Bug Fixes
-*修复:Central设备发送一个特殊的CONNECT_IND包 (WinOffset为0,Interval - WinSize = 1)，并且在WinSize指定时间范围的开始发送数据包，将有很低概率导致peripheral设备连接建立失败。
-*修复:一些特殊的Central设备在加密过程中发送“LL_PAUSE_ENC_REQ”请求，极低的概率可能会触发Peripheral设备工作错误，导致断开连接。
+* 修复:Central设备发送一个特殊的CONNECT_IND包 (WinOffset为0,Interval - WinSize = 1)，并且在WinSize指定时间范围的开始发送数据包，将有很低概率导致peripheral设备连接建立失败。
+* 修复:一些特殊的Central设备在加密过程中发送“LL_PAUSE_ENC_REQ”请求，极低的概率可能会触发Peripheral设备工作错误，导致断开连接。
 
 
 ### BREAKING CHANGES
