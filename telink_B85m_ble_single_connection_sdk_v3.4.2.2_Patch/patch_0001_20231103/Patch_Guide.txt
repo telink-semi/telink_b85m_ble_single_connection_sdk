@@ -14,4 +14,4 @@
 	replace file "B85_ble_sdk/stack/ble/host/smp/smp.h" with "patch_0001_20231103/stack/ble/host/smp/smp.h",
 	replace file "B85_ble_sdk/stack/ble/host/ble_host.h" with "patch_0001_20231103/stack/ble/host/ble_host.h",
 	replace file "B85_ble_sdk/stack/ble/ble_common.h" with "patch_0001_20231103/stack/ble/ble_common.h",
-	add file "patch_0001_20231103/stack/ble/host/signaling/signaling.h" to "B85_ble_sdk/stack/ble/host/signaling/"
+	create a new folder "B85_ble_sdk/stack/ble/host/signaling/", add file "patch_0001_20231103/stack/ble/host/signaling/signaling.h" into this folder
