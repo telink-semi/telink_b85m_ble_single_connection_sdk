@@ -6,6 +6,7 @@
 **************************************************************************
 
 1. 0001_20230818
+	replace file "B85_ble_sdk/sdk_version.txt" with "patch_0001_20231103/sdk_version.txt",
 	replace file "B85_ble_sdk/proj_lib/liblt_825x.a" with "patch_0001_20231103/proj_lib/liblt_825x.a",
 	replace file "B85_ble_sdk/proj_lib/liblt_827x.a" with "patch_0001_20231103/proj_lib/liblt_827x.a",
 	replace file "B85_ble_sdk/stack/ble/controller/ll/ll.h" with "patch_0001_20231103/stack/ble/controller/ll/ll.h",
