@@ -46,7 +46,7 @@
 #pragma once
 #include "tl_common.h"
 #include "usbdesc.h"
-
+extern unsigned char usb_g_config;
 /* Enable C linkage for C++ Compilers: */
 #if defined(__cplusplus)
 extern "C" {
@@ -92,6 +92,11 @@ void usb_handle_irq(void);
 #define STRING_MSFT              L"MSFT100T"
 
 #define MS_OS_DESCRIPTOR_ENABLE        0
+
+extern void usb_init_interrupt(void);
+
+
+void usb_cdc_irq_data_process(void);
 
 /* Disable C linkage for C++ Compilers: */
 #if defined(__cplusplus)

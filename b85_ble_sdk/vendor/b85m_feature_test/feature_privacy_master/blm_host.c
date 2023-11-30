@@ -65,8 +65,6 @@ main_service_t		main_service = 0;
 int	app_host_smp_sdp_pending = 0; 		//security & service discovery
 
 
-extern u8 read_by_type_req_uuidLen;
-extern u8 read_by_type_req_uuid[16];
 extern bool		blm_push_fifo (int connHandle, u8 *dat);
 
 
@@ -245,12 +243,12 @@ int blm_le_adv_report_event_handle(u8 *p)
 		return 1;
 	}
 
-	/****************** Button press or Adv pair packet triggers pair ***********************/
+	/****************** key press or Adv pair packet triggers pair ***********************/
 	int master_auto_connect = 0;
 	int user_manual_pairing = 0;
 
-	//manual pairing methods 1: button triggers
-	user_manual_pairing = dongle_pairing_enable && (rssi > -56);  //button trigger pairing(rssi threshold, short distance)
+	//manual pairing methods 1: key press triggers
+	user_manual_pairing = pairing_enable && (rssi > -56);  //key press trigger pairing(rssi threshold, short distance)
 
 	//manual pairing methods 2: special pairing adv data
 	if(!user_manual_pairing){  //special adv pair data can also trigger pairing
@@ -315,22 +313,22 @@ int blm_le_adv_report_event_handle(u8 *p)
 int blm_le_connection_establish_event_handle(u8 *p)
 {
 
-	event_connection_complete_t *pCon = (event_connection_complete_t *)p;
+	hci_le_connectionCompleteEvt_t *pCon = (hci_le_connectionCompleteEvt_t *)p;
 	if (pCon->status == BLE_SUCCESS)	// status OK
 	{
 		#if (UI_LED_ENABLE)
 			//led show connection state
 			master_connected_led_on = 1;
-			gpio_write(GPIO_LED_RED, LED_ON_LEVAL);     //red on
-			gpio_write(GPIO_LED_WHITE, !LED_ON_LEVAL);  //white off
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);     //red on
+			gpio_write(GPIO_LED_WHITE, !LED_ON_LEVEL);  //white off
 		#endif
 
 
-		cur_conn_device.conn_handle = pCon->handle;   //mark conn handle, in fact this equals to BLM_CONN_HANDLE
+		cur_conn_device.conn_handle = pCon->connHandle;   //mark conn handle, in fact this equals to BLM_CONN_HANDLE
 
 		//save current connect address type and address
-		cur_conn_device.mac_adrType = pCon->peer_adr_type;
-		memcpy(cur_conn_device.mac_addr, pCon->mac, 6);
+		cur_conn_device.mac_adrType = pCon->peerAddrType;
+		memcpy(cur_conn_device.mac_addr, pCon->peerAddr, 6);
 
 
 		app_host_smp_sdp_pending = SMP_PENDING; //pair & security first
@@ -352,7 +350,7 @@ int blm_le_connection_establish_event_handle(u8 *p)
  */
 int 	blm_disconnect_event_handle(u8 *p)
 {
-	event_disconnection_t	*pd = (event_disconnection_t *)p;
+	hci_disconnectionCompleteEvt_t	*pd = (hci_disconnectionCompleteEvt_t *)p;
 
 	//terminate reason
 	//connection timeout
@@ -363,7 +361,7 @@ int 	blm_disconnect_event_handle(u8 *p)
 	else if(pd->reason == HCI_ERR_REMOTE_USER_TERM_CONN){
 
 	}
-	//master host disconnect( blm_ll_disconnect(current_connHandle, HCI_ERR_REMOTE_USER_TERM_CONN) )
+	//master host disconnect( blm_ll_disconnect(BLM_CONN_HANDLE, HCI_ERR_REMOTE_USER_TERM_CONN) )
 	else if(pd->reason == HCI_ERR_CONN_TERM_BY_LOCAL_HOST){
 
 	}
@@ -385,8 +383,8 @@ int 	blm_disconnect_event_handle(u8 *p)
 		//led show none connection state
 		if(master_connected_led_on){
 			master_connected_led_on = 0;
-			gpio_write(GPIO_LED_WHITE, LED_ON_LEVAL);   //white on
-			gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);    //red off
+			gpio_write(GPIO_LED_WHITE, LED_ON_LEVEL);   //white on
+			gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);    //red off
 		}
 	#endif
 
@@ -401,11 +399,11 @@ int 	blm_disconnect_event_handle(u8 *p)
 
 	host_update_conn_param_req = 0; //when disconnect, clear update conn flag
 
-	host_att_data_clear();
+//	host_att_data_clear();
 
 
 	//MTU size reset to default 23 bytes when connection terminated
-	blt_att_resetEffectiveMtuSize(BLM_CONN_HANDLE);  //stack API, user can not change
+	blc_att_resetEffectiveMtuSize(BLM_CONN_HANDLE);  //important
 
 	final_MTU_size = 23;
 
@@ -426,9 +424,7 @@ int 	blm_disconnect_event_handle(u8 *p)
  */
 int blm_le_conn_update_event_proc(u8 *p)
 {
-//	event_connection_update_t *pCon = (event_connection_update_t *)p;
-
-
+	(void)p;
 
 	return 0;
 }
@@ -442,7 +438,7 @@ int blm_le_phy_update_complete_event_proc(u8 *p)
 {
 //	hci_le_phyUpdateCompleteEvt_t *pPhyUpt = (hci_le_phyUpdateCompleteEvt_t *)p;
 
-
+	(void)p;
 
 	return 0;
 }
@@ -461,7 +457,7 @@ int blm_le_phy_update_complete_event_proc(u8 *p)
  */
 int controller_event_callback (u32 h, u8 *p, int n)
 {
-
+	(void)h;(void)p;(void)n;
 
 	static u32 event_cb_num;
 	event_cb_num++;
@@ -616,13 +612,13 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			rf_packet_att_mtu_exchange_t *pMtu = (rf_packet_att_mtu_exchange_t*)ptrL2cap;
 
 			if(pAtt->opcode ==  ATT_OP_EXCHANGE_MTU_REQ){
-				blc_att_responseMtuSizeExchange(conn_handle, ATT_RX_MTU_SIZE_MAX);
+				blc_att_responseMtuSizeExchange(conn_handle, ATT_MTU_MAX_SDK_DFT_BUF);
 			}
 
 			u16 peer_mtu_size = (pMtu->mtu[0] | pMtu->mtu[1]<<8);
-			final_MTU_size = min(ATT_RX_MTU_SIZE_MAX, peer_mtu_size);
+			final_MTU_size = min(ATT_MTU_MAX_SDK_DFT_BUF, peer_mtu_size);
 
-			blt_att_setEffectiveMtuSize(conn_handle , final_MTU_size); //stack API, user can not change
+			blc_att_setEffectiveMtuSize(conn_handle , final_MTU_size);	//important
 		}
 		else if(pAtt->opcode == ATT_OP_READ_BY_TYPE_RSP)  //slave ack ATT_OP_READ_BY_TYPE_REQ data
 		{
@@ -631,29 +627,10 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 		else if(pAtt->opcode == ATT_OP_HANDLE_VALUE_NOTI)  //slave handle notify
 		{
 
-			if(attHandle == HID_HANDLE_CONSUME_REPORT)
-			{
-				static u32 app_key;
-				app_key++;
-
-				att_keyboard_media (conn_handle, pAtt->dat);
-			}
-			else if(attHandle == HID_HANDLE_KEYBOARD_REPORT)
-			{
-				static u32 app_key;
-				app_key++;
-				att_keyboard (conn_handle, pAtt->dat);
-
-			}
-			else
-			{
-
-			}
 		}
 		else if (pAtt->opcode == ATT_OP_HANDLE_VALUE_IND)
 		{
-			u8 format =  ATT_OP_HANDLE_VALUE_CFM;
-			blc_l2cap_pushData_2_controller(conn_handle, L2CAP_CID_ATTR_PROTOCOL, &format, 1, NULL, 0);
+			blc_gatt_pushConfirm(conn_handle);
 		}
 
 	}
@@ -673,7 +650,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			if( interval_us < 200000 && long_suspend_us < 20000000 && (long_suspend_us*2<=timeout_us) )
 			{
 				//when master host accept slave's conn param update req, should send a conn param update response on l2cap
-				//with CONN_PARAM_UPDATE_ACCEPT; if not accpet,should send  CONN_PARAM_UPDATE_REJECT
+				//with CONN_PARAM_UPDATE_ACCEPT; if not accept,should send  CONN_PARAM_UPDATE_REJECT
 				blc_l2cap_SendConnParamUpdateResponse(conn_handle, req->id, CONN_PARAM_UPDATE_ACCEPT);  //send SIG Connection Param Update Response
 
 

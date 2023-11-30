@@ -57,7 +57,6 @@
 extern "C" {
 #endif
 
-
 #define DAT_TYPE_KB			1
 #define DAT_TYPE_MOUSE		2
 
@@ -73,7 +72,7 @@ extern u8 usb_ff_wptr;
 #define KEYBOARD_REPORT_KEY_MAX     6
 typedef struct {
     u8 Modifier; /**< Keyboard modifier byte, indicating pressed modifier keys (a combination of
-                       *   \c HID_KEYBOARD_MODIFER_* masks).
+                       *   \c HID_KEYBOARD_MODIFIER_* masks).
                        */
     u8 Reserved; /**< Reserved for OEM use, always set to 0. */
     u8 KeyCode[KEYBOARD_REPORT_KEY_MAX]; /**< Key codes of the currently pressed keys. */

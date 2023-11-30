@@ -84,17 +84,8 @@ void main_loop (void);
 void proc_keyboard (u8 e, u8 *p, int n);
 
 
-/**
- * @brief		this function is used to detect if button pressed or released.
- * @param[in]	e - event type when this function is triggered by LinkLayer event
- * @param[in]	p - event callback data pointer for when this function is triggered by LinkLayer event
- * @param[in]	n - event callback data length when this function is triggered by LinkLayer event
- * @return      none
- */
-void proc_button (u8 e, u8 *p, int n);
 
 
-extern int button_not_released;
 
 #endif /* APP_H_ */
 

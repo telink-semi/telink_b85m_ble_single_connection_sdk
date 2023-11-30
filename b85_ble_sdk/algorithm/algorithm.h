@@ -54,10 +54,10 @@
 #include "algorithm/ecc/ecc_ll.h"
 #include "algorithm/ecc/hw_ecc.h"
 
-#if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	#include "algorithm/ecc/sw_ecc.h"
-	#include "algorithm/ecc/sw_ecc.h"
-#endif
+
+#include "algorithm/ecc/sw_ecc.h"
+#include "algorithm/ecc/sw_ecc.h"
+
 
 
 

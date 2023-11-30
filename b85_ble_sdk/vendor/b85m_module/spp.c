@@ -72,7 +72,7 @@ _attribute_data_retention_	u32 spp_cmd_restart_flag;
  */
 int controller_event_handler(u32 h, u8 *para, int n)
 {
-
+    (void)h;(void)para;(void)n;
 	if((h&HCI_FLAG_EVENT_TLK_MODULE)!= 0)			//module event
 	{
 
@@ -177,7 +177,7 @@ int controller_event_handler(u32 h, u8 *para, int n)
 int app_host_event_callback (u32 h, u8 *para, int n)
 {
 	u8 event = h & 0xFF;
-
+    (void)h;(void)para;(void)n;
 	switch(event)
 	{
 		case GAP_EVT_SMP_PAIRING_BEGIN:
@@ -218,7 +218,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		}
 		break;
 
-		case GAP_EVT_SMP_TK_DISPALY:
+		case GAP_EVT_SMP_TK_DISPLAY:
 		{
 //			char pc[7];
 //			u32 pinCode = *(u32*)para;
@@ -265,7 +265,7 @@ int rx_from_uart_cb (void)//UART data send to Master,we will handler the data as
 	}
 
 	u8* p = my_fifo_get(&spp_rx_fifo);
-	u32 rx_len = p[0]; //usually <= 255 so 1 byte should be sufficient
+	u32 rx_len = p[1]<<8 | p[0]; //usually <= 65536 so 2 byte should be sufficient
 
 	if (rx_len)
 	{
@@ -285,7 +285,7 @@ int rx_from_uart_cb (void)//UART data send to Master,we will handler the data as
 ///////////////////////////////////////////the default bls_uart_handler///////////////////////////////
 int bls_uart_handler (u8 *p, int n)
 {
-
+    (void)p;(void)n;
 	spp_cmd_t *pCmd =  (spp_cmd_t *)p;
 	u16 spp_cmd = pCmd->cmdId;
 	u8 *cmdPara = pCmd->param;
@@ -476,14 +476,14 @@ int spp_send_data (u32 header, spp_event_t * pEvt)
 #endif
 
 
-	int sppEvt_len = pEvt->paramLen + 2;
+	int sppEvt_len = pEvt->paramLen + 3;
 	if (header & HCI_FLAG_EVENT_TLK_MODULE)
 	{
 		*p++ = sppEvt_len;
 		*p++ = sppEvt_len >> 8;
 		#if 1
-			memcpy (p, (u8 *)pEvt, pEvt->paramLen + 2);
-			p += pEvt->paramLen + 2;
+			memcpy (p, (u8 *)pEvt, pEvt->paramLen + 3);
+			p += pEvt->paramLen + 3;
 		#else
 			*p++ = pEvt->token;
 			*p++ = pEvt->paramLen;
@@ -543,7 +543,7 @@ int tx_to_uart_cb (void)
  */
 void spp_restart_proc(void)
 {
-	//when received SPP_CMD_RESTART_MOD, leave 500ms(you can change this time) for moudle to send uart ack to host, then restart.
+	//when received SPP_CMD_RESTART_MOD, leave 500ms(you can change this time) for module to send uart ack to host, then restart.
 	if(spp_cmd_restart_flag && clock_time_exceed(spp_cmd_restart_flag, 500000)){
 		cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_TIMER, clock_time() + 10000 * SYSTEM_TIMER_TICK_1US);
 	}

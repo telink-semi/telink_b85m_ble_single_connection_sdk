@@ -53,7 +53,8 @@
 #include "blm_host.h"
 #include "application/audio/tl_audio.h"
 #include "application/audio/audio_config.h"
-#include "application/usbstd/usb.h"
+#include "application/keyboard/keyboard.h"
+#include "application/usbstd/usbkeycode.h"
 
 #if (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
 
@@ -62,13 +63,110 @@
 MYFIFO_INIT(blt_rxfifo, 64, 16);
 MYFIFO_INIT(blt_txfifo, 40, 8);
 
+#if (UI_KEYBOARD_ENABLE)
+	#define CONSUMER_KEY   	   		1
+	#define KEYBOARD_KEY   	   		2
+	_attribute_data_retention_	int 	key_not_released;
+	_attribute_data_retention_	u8 		key_type;
+	_attribute_data_retention_		static u32 keyScanTick = 0;
+	extern u32	scan_pin_need;
+
+	#define KEY_PAIR				VK_1
+	#define KEY_UNPAIR				VK_2
+
+
+	/**
+	 * @brief   Check changed key value.
+	 * @param   none.
+	 * @return  none.
+	 */
+	void key_change_proc(void)
+	{
+		u8 key0 = kb_event.keycode[0];
+
+		key_not_released = 1;
+		if (kb_event.cnt == 2)   //two key press, do  not process
+		{
+
+		}
+		else if(kb_event.cnt == 1)
+		{
+			if(key0 == KEY_PAIR)
+			{
+				pairing_enable = 1;
+
+			}
+			else if(key0 == KEY_UNPAIR)
+			{
+				unpair_enable = 1;
+
+			}
+
+		}
+		else   //kb_event.cnt == 0,  key release
+		{
+			key_not_released = 0;
+			if(pairing_enable)
+			{
+				pairing_enable = 0;
+			}
+
+			if(unpair_enable)
+			{
+				unpair_enable = 0;
+			}
+		}
+
+
+	}
+
+
+
+
+
+	/**
+	 * @brief      keyboard task handler
+	 * @param[in]  e    - event type
+	 * @param[in]  p    - Pointer point to event parameter.
+	 * @param[in]  n    - the length of event parameter.
+	 * @return     none.
+	 */
+	void proc_keyboard (u8 e, u8 *p, int n)
+	{
+	    (void)e;(void)p;(void)n;
+		if(clock_time_exceed(keyScanTick, 8000)){
+			keyScanTick = clock_time();
+		}
+		else{
+			return;
+		}
+
+		kb_event.keycode[0] = 0;
+		int det_key = kb_scan_key (0, 1);
+
+
+
+		if (det_key){
+			key_change_proc();
+		}
+
+	}
+
+
+#endif
+
+
+
+
+
+
 
 
 u8	local_addr_type = OWN_ADDRESS_PUBLIC;
 
 #if	LL_FEATURE_ENABLE_PRIVACY
 
-	smp_master_param_save_t  dev_msg;
+	smp_param_master_t  dev_msg;
 	/**
 	 * @brief      callback function of Host Event
 	 * @param[in]  h - Host Event type
@@ -78,6 +176,7 @@ u8	local_addr_type = OWN_ADDRESS_PUBLIC;
 	 */
 	int app_host_event_callback (u32 h, u8 *para, int n)
 	{
+	    (void)h;(void)para;(void)n;
 		u8 event = h & 0xFF;
 
 		switch(event)
@@ -111,24 +210,17 @@ void user_init(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
 	blc_app_loadCustomizedParameters_normal();
 
-	//set USB ID
-	REG_ADDR8(0x74) = 0x62;
-	REG_ADDR16(0x7e) = 0x08d0;
-	REG_ADDR8(0x74) = 0x00;
 
-	//////////////// config USB ISO IN/OUT interrupt /////////////////
-	reg_usb_mask = BIT(7);			//audio in interrupt enable
-	reg_irq_mask |= FLD_IRQ_IRQ4_EN;
-	reg_usb_ep6_buf_addr = 0x80;
-	reg_usb_ep7_buf_addr = 0x60;
-	reg_usb_ep_max_size = (256 >> 3);
-
-	usb_dp_pullup_en (1);  //open USB enum
 
 
 
@@ -139,7 +231,7 @@ void user_init(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
-
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 	////// Controller Initialization  //////////
 	blc_ll_initBasicMCU();
@@ -168,7 +260,7 @@ void user_init(void)
 
 
 
-	blm_smp_configPairingSecurityInfoStorageAddr(FLASH_ADR_PARING);
+	blm_smp_configPairingSecurityInfoStorageAddr(flash_sector_master_pairing);
 	blm_smp_registerSmpFinishCb(app_host_smp_finish);
 
 	blc_smp_central_init();
@@ -187,16 +279,15 @@ void user_init(void)
 	u8	bond_number = tbl_get_bond_slave_num();
 	if(bond_number != 0)	//No bondind device
 	{
-		extern bond_slave_t  tbl_bondSlave;  //slave mac bond table
-		u32 device_add = tbl_bondSlave.bond_flash_idx[bond_number-1];
+		u32 device_add = tbl_get_bond_msg_by_index(bond_number-1);
 
-		printf("bond number addr not 0 , is %x\n",device_add);
+		tlkapi_printf(APP_LOG_EN,"bond number addr not 0 , is %x\n",device_add);
 
 		//read bonding device
-		flash_read_page(device_add,sizeof(smp_master_param_save_t),(unsigned char *)(&dev_msg) );
+		flash_read_page(device_add,sizeof(smp_param_master_t),(unsigned char *)(&dev_msg) );
 
 		//add bonding message to resolve list
-		blc_ll_addDeviceToResolvingList(dev_msg.adr_type,dev_msg.address,dev_msg.peer_irk,dev_msg.local_irk);
+		blc_ll_addDeviceToResolvingList(dev_msg.peer_id_adrType,dev_msg.peer_id_addr,dev_msg.peer_irk,dev_msg.local_irk);
 
 		local_addr_type = OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC;
 
@@ -209,13 +300,25 @@ void user_init(void)
 											local_addr_type, SCAN_FP_ALLOW_ADV_ANY);
 	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
 
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
 
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_privacy_master init \n");
 }
 
 
 
-extern u8 send_scan_flag;
-extern void usb_handle_irq(void);
 
 int main_idle_loop (void)
 {
@@ -223,23 +326,12 @@ int main_idle_loop (void)
 	////////////////////////////////////// BLE entry /////////////////////////////////
 	blt_sdk_main_loop();
 
-	///////////////////////////////////// proc usb cmd from host /////////////////////
-	usb_handle_irq();
 
 	/////////////////////////////////////// HCI ///////////////////////////////////////
 	blc_hci_proc ();
 
-#if (UI_BUTTON_ENABLE)
-	static u8 button_detect_en = 0;
-	if(!button_detect_en && clock_time_exceed(0, 1000000)){// proc button 1 second later after power on
-		button_detect_en = 1;
-	}
-	static u32 button_detect_tick = 0;
-	if(button_detect_en && clock_time_exceed(button_detect_tick, 5000))
-	{
-		button_detect_tick = clock_time();
-		proc_button();  //button triggers pair & unpair  and OTA
-	}
+#if (UI_KEYBOARD_ENABLE)
+	proc_keyboard (0,0, 0);
 #endif
 	host_pair_unpair_proc();
 

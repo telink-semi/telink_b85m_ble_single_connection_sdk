@@ -173,7 +173,6 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
 
 #if(TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)
 		#if (GOOGLE_VOICE_OVER_BLE_SPCE_VERSION == GOOGLE_VERSION_1_0)
- 			u8 dat[32]={0};
  			u8 caps_data[6]={0};
  			caps_data[0] = 0x0A; //get caps
  			caps_data[1] = 0x00;
@@ -181,22 +180,18 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
  			caps_data[3] = 0x00;
  			caps_data[4] = 0x03; // legacy 0x0003;
 			caps_data[5] = GOOGLE_VOICE_MODE;
- 			att_req_write_cmd(dat, conn_char_handler[8], caps_data, 6);/*AUDIO_GOOGLE_TX_DP_H*/
-			blm_push_fifo(BLM_CONN_HANDLE, dat);
+			blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,conn_char_handler[8],caps_data,6);
 
 			u8 rx_ccc[2] = {0x00, 0x01};		//Write Rx CCC value for PTV use case
-			att_req_write_cmd(dat, conn_char_handler[9]+1, rx_ccc, 2);
-			blm_push_fifo(BLM_CONN_HANDLE, dat);
+			blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,conn_char_handler[9]+1,rx_ccc,2);
 		#else
-			u8 dat[32]={0};
 			u8 caps_data[5]={0};
 			caps_data[0] = 0x0A; //get caps
 			caps_data[1] = 0x00;
 			caps_data[2] = 0x04; // version 0x0004;
 			caps_data[3] = 0x00;
 			caps_data[4] = 0x03; // legacy 0x0003;
-			att_req_write_cmd(dat, conn_char_handler[8], caps_data, 5);/*AUDIO_GOOGLE_TX_DP_H*/
-			blm_push_fifo(BLM_CONN_HANDLE, dat);
+			blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,conn_char_handler[8],caps_data,5);
 		#endif
 #endif
 		}
@@ -273,12 +268,10 @@ int app_host_smp_finish (void)  //smp finish callback
 				caps_data[3] = 0x00;
 				caps_data[4] = 0x03; // legacy 0x0003;
 				caps_data[5] = GOOGLE_VOICE_MODE;
-				att_req_write_cmd(dat, conn_char_handler[8], caps_data, 6);/*AUDIO_GOOGLE_TX_DP_H*/
-				blm_push_fifo(BLM_CONN_HANDLE, dat);
+				blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,conn_char_handler[8],caps_data,6);
 
 				u8 rx_ccc[2] = {0x00, 0x01};		//Write Rx CCC value for PTV use case
-				att_req_write_cmd(dat, conn_char_handler[9]+1, rx_ccc, 2);
-				blm_push_fifo(BLM_CONN_HANDLE, dat);
+				blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,conn_char_handler[9]+1,rx_ccc,2);
 			#else
 				u8 dat[32]={0};
 				u8 caps_data[5]={0};
@@ -287,8 +280,7 @@ int app_host_smp_finish (void)  //smp finish callback
 				caps_data[2] = 0x04; // version 0x0004;
 				caps_data[3] = 0x00;
 				caps_data[4] = 0x03; // legacy 0x0003;
-				att_req_write_cmd(dat, conn_char_handler[8], caps_data, 5);/*AUDIO_GOOGLE_TX_DP_H*/
-				blm_push_fifo(BLM_CONN_HANDLE, dat);
+				blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,conn_char_handler[8],caps_data,5);
 			#endif
 #endif
 			}
@@ -402,22 +394,22 @@ int blm_le_adv_report_event_handle(u8 *p)
 int blm_le_connection_establish_event_handle(u8 *p)
 {
 
-	event_connection_complete_t *pCon = (event_connection_complete_t *)p;
+	hci_le_connectionCompleteEvt_t *pCon = (hci_le_connectionCompleteEvt_t *)p;
 	if (pCon->status == BLE_SUCCESS)	// status OK
 	{
 		#if (UI_LED_ENABLE)
 			//led show connection state
 			master_connected_led_on = 1;
-			gpio_write(GPIO_LED_RED, LED_ON_LEVAL);     //red on
-			gpio_write(GPIO_LED_WHITE, !LED_ON_LEVAL);  //white off
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);     //red on
+			gpio_write(GPIO_LED_WHITE, !LED_ON_LEVEL);  //white off
 		#endif
 
 
-		cur_conn_device.conn_handle = pCon->handle;   //mark conn handle, in fact this equals to BLM_CONN_HANDLE
+		cur_conn_device.conn_handle = pCon->connHandle;   //mark conn handle, in fact this equals to BLM_CONN_HANDLE
 
 		//save current connect address type and address
-		cur_conn_device.mac_adrType = pCon->peer_adr_type;
-		memcpy(cur_conn_device.mac_addr, pCon->mac, 6);
+		cur_conn_device.mac_adrType = pCon->peerAddrType;
+		memcpy(cur_conn_device.mac_addr, pCon->peerAddr, 6);
 
 
 		#if (BLE_HOST_SMP_ENABLE)
@@ -426,16 +418,16 @@ int blm_le_connection_establish_event_handle(u8 *p)
 
 
 			//manual pairing, device match, add this device to slave mac table
-			if(blm_manPair.manual_pair && blm_manPair.mac_type == pCon->peer_adr_type && !memcmp(blm_manPair.mac, pCon->mac, 6)){
+			if(blm_manPair.manual_pair && blm_manPair.mac_type == pCon->peerAddrType && !memcmp(blm_manPair.mac, pCon->peerAddr, 6)){
 				blm_manPair.manual_pair = 0;
 
-				user_tbl_slave_mac_add(pCon->peer_adr_type, pCon->mac);
+				user_tbl_slave_mac_add(pCon->peerAddrType, pCon->peerAddr);
 			}
 
 
 				#if (BLE_HOST_SIMPLE_SDP_ENABLE)
 						//new slave device, should do service discovery again
-						if (pCon->peer_adr_type != serviceDiscovery_adr_type || memcmp(pCon->mac, serviceDiscovery_address, 6)){
+						if (pCon->peerAddrType != serviceDiscovery_adr_type || memcmp(pCon->peerAddr, serviceDiscovery_address, 6)){
 							app_register_service(&app_service_discovery);
 							app_host_smp_sdp_pending = SDP_PENDING;  //service discovery busy
 						}
@@ -461,7 +453,7 @@ int blm_le_connection_establish_event_handle(u8 *p)
  */
 int 	blm_disconnect_event_handle(u8 *p)
 {
-	event_disconnection_t	*pd = (event_disconnection_t *)p;
+	hci_disconnectionCompleteEvt_t	*pd = (hci_disconnectionCompleteEvt_t *)p;
 
 	//terminate reason
 	//connection timeout
@@ -472,7 +464,7 @@ int 	blm_disconnect_event_handle(u8 *p)
 	else if(pd->reason == HCI_ERR_REMOTE_USER_TERM_CONN){
 
 	}
-	//master host disconnect( blm_ll_disconnect(current_connHandle, HCI_ERR_REMOTE_USER_TERM_CONN) )
+	//master host disconnect( blm_ll_disconnect(BLM_CONN_HANDLE, HCI_ERR_REMOTE_USER_TERM_CONN) )
 	else if(pd->reason == HCI_ERR_CONN_TERM_BY_LOCAL_HOST){
 
 	}
@@ -494,8 +486,8 @@ int 	blm_disconnect_event_handle(u8 *p)
 		//led show none connection state
 		if(master_connected_led_on){
 			master_connected_led_on = 0;
-			gpio_write(GPIO_LED_WHITE, LED_ON_LEVAL);   //white on
-			gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);    //red off
+			gpio_write(GPIO_LED_WHITE, LED_ON_LEVEL);   //white on
+			gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);    //red off
 		}
 	#endif
 
@@ -514,7 +506,7 @@ int 	blm_disconnect_event_handle(u8 *p)
 
 
 	//MTU size reset to default 23 bytes when connection terminated
-	blt_att_resetEffectiveMtuSize(BLM_CONN_HANDLE);  //stack API, user can not change
+	blc_att_resetEffectiveMtuSize(BLM_CONN_HANDLE);	 //important
 
 	final_MTU_size = 23;
 
@@ -535,16 +527,13 @@ int 	blm_disconnect_event_handle(u8 *p)
  */
 int blm_le_conn_update_event_proc(u8 *p)
 {
-//	event_connection_update_t *pCon = (event_connection_update_t *)p;
-
 
 	#if (BLE_MASTER_OTA_ENABLE)
-		event_connection_update_t *pCon = (event_connection_update_t *)p;
+		hci_le_connectionUpdateCompleteEvt_t *pCon = (hci_le_connectionUpdateCompleteEvt_t *)p;
 
 		extern void host_ota_update_conn_complete(u16, u16, u16);
-		host_ota_update_conn_complete( pCon->interval, pCon->latency, pCon->timeout );
+		host_ota_update_conn_complete( pCon->connInterval, pCon->connLatency, pCon->supervisionTimeout );
 	#endif
-
 
 	return 0;
 }
@@ -556,6 +545,7 @@ int blm_le_conn_update_event_proc(u8 *p)
  */
 int blm_le_phy_update_complete_event_proc(u8 *p)
 {
+	(void)p;
 //	hci_le_phyUpdateCompleteEvt_t *pPhyUpt = (hci_le_phyUpdateCompleteEvt_t *)p;
 
 
@@ -578,7 +568,7 @@ int blm_le_phy_update_complete_event_proc(u8 *p)
 int controller_event_callback (u32 h, u8 *p, int n)
 {
 
-
+	(void)n;
 	static u32 event_cb_num;
 	event_cb_num++;
 
@@ -741,12 +731,12 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			rf_packet_att_mtu_exchange_t *pMtu = (rf_packet_att_mtu_exchange_t*)ptrL2cap;
 
 			if(pAtt->opcode ==  ATT_OP_EXCHANGE_MTU_REQ){
-				blc_att_responseMtuSizeExchange(conn_handle, ATT_RX_MTU_SIZE_MAX);
+				blc_att_responseMtuSizeExchange(conn_handle, ATT_MTU_MAX_SDK_DFT_BUF);
 			}
 
 			u16 peer_mtu_size = (pMtu->mtu[0] | pMtu->mtu[1]<<8);
-			final_MTU_size = min(ATT_RX_MTU_SIZE_MAX, peer_mtu_size);
-			blt_att_setEffectiveMtuSize(conn_handle , final_MTU_size); //stack API, user can not change
+			final_MTU_size = min(ATT_MTU_MAX_SDK_DFT_BUF, peer_mtu_size);
+			blc_att_setEffectiveMtuSize(conn_handle , final_MTU_size);  //important
 		}
 		else if(pAtt->opcode == ATT_OP_READ_BY_TYPE_RSP)  //slave ack ATT_OP_READ_BY_TYPE_REQ data
 		{
@@ -770,11 +760,9 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 					rcu_cmd = (pAtt->dat[3]<<24)|(pAtt->dat[2]<<16) | (pAtt->dat[1]<<8)|(pAtt->dat[0]);
 
 					if(rcu_cmd == MIC_OPEN_FROM_RCU){//open mic
-
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_start, 1);
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
-//							while(1);
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&audio_start, 1)){
+							// fail
+							// while(1);
 						}
 						u8 key[20] = {0};
 						u32 mic_open_to_stb = MIC_OPEN_TO_STB;
@@ -784,10 +772,9 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 					}
 					else if(rcu_cmd == MIC_CLOSE_FROM_RCU){ //close mic
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
-//							while(1);
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&adpcm_hid_audio_stop, 1)){
+							// fail
+							// while(1);
 						}
 						u8 key[20] = {0};
 						u32 mic_close_to_stb = MIC_CLOSE_TO_STB;
@@ -805,18 +792,16 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 
 					if(tem_data == 0x21){
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_start, 1);  //open mic
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
-							while(1);
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&audio_start, 1)){  //open mic
+							// fail
+							 while(1);
 						}
 						abuf_init ();
 					}
 					else if(tem_data == 0x24){
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);   //close mic
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
-							while(1);
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&adpcm_hid_audio_stop, 1)){  //close mic
+							// fail
+							 while(1);
 						}
 					}
 					else{
@@ -828,10 +813,9 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 
 					if(rcu_cmd == MIC_OPEN_FROM_RCU){//open mic
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_start, 1);
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
-//							while(1);
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&audio_start, 1)){
+							// fail
+							// while(1);
 						}
 						u8 key[20] = {0};
 						u32 mic_open_to_stb = MIC_OPEN_TO_STB;
@@ -841,10 +825,9 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 					}
 					else if(rcu_cmd == MIC_CLOSE_FROM_RCU){ //close mic
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
-//							while(1);
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&adpcm_hid_audio_stop, 1)){
+							// fail
+							// while(1);
 						}
 						u8 key[20] = {0};
 						u32 mic_close_to_stb = MIC_CLOSE_TO_STB;
@@ -862,16 +845,14 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 
 					if(tem_data == 0x31){
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_start, 1);  //open mic
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&audio_start, 1)){
+							// fail
 							while(1);
 						}
 					}
 					else if(tem_data == 0x34){
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);   //close mic
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&adpcm_hid_audio_stop, 1)){
+							// fail
 							while(1);
 						}
 					}
@@ -884,16 +865,15 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 
 					if(tem_data == 0x31){
 
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&audio_start, 1);  //open mic
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&audio_start, 1)){
+							// fail
 							while(1);
 						}
 					}
 					else if(tem_data == 0x34){
-						att_req_write_cmd (host_write_dat, HID_HANDLE_KEYBOARD_REPORT_OUT, (u8 *)&adpcm_hid_audio_stop, 1);   //close mic
-						if( !blm_push_fifo (BLM_CONN_HANDLE, host_write_dat) ){
-							//fail
+
+						if(blc_gatt_pushWriteComand(BLM_CONN_HANDLE,HID_HANDLE_KEYBOARD_REPORT_OUT,(u8 *)&adpcm_hid_audio_stop, 1)){
+							// fail
 							while(1);
 						}
 					}
@@ -977,18 +957,16 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 				//if(pAtt->dat[0] == (google_voice_model ? 0x04 : 0x08))
 				if(pAtt->dat[0] == 0x08) //google voice 0.4
 				{
-					u8 dat[32]={0};
 					#if (MIC_SAMPLE_RATE == 16000)
 					u8 data[10] = {0x0C, 0x00, 0x02, 0x00, 0x03};//16000
 					#else
 					u8 data[10] = {0x0C, 0x00, 0x01, 0x00, 0x01};//8000
 					#endif
 
-					att_req_write(dat, GOOGLE_AUDIO_HANDLE_MIC_CMD, data, 5);
-
-					if(blm_push_fifo(BLM_CONN_HANDLE, dat)){
+					if(BLE_SUCCESS == blc_gatt_pushWriteRequest(BLM_CONN_HANDLE,GOOGLE_AUDIO_HANDLE_MIC_CMD,data,5)){
 
 					}
+
 					//printf("audio start");
 					google_audio_start = true;//app_audio_start();
 
@@ -1016,8 +994,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 		}
 		else if (pAtt->opcode == ATT_OP_HANDLE_VALUE_IND)
 		{
-			u8 format =  ATT_OP_HANDLE_VALUE_CFM;
-			blc_l2cap_pushData_2_controller(conn_handle, L2CAP_CID_ATTR_PROTOCOL, &format, 1, NULL, 0);
+			blc_gatt_pushConfirm(conn_handle);
 		}
 
 	}
@@ -1037,7 +1014,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			if( interval_us < 200000 && long_suspend_us < 20000000 && (long_suspend_us*2<=timeout_us) )
 			{
 				//when master host accept slave's conn param update req, should send a conn param update response on l2cap
-				//with CONN_PARAM_UPDATE_ACCEPT; if not accpet,should send  CONN_PARAM_UPDATE_REJECT
+				//with CONN_PARAM_UPDATE_ACCEPT; if not accept,should send  CONN_PARAM_UPDATE_REJECT
 				blc_l2cap_SendConnParamUpdateResponse(conn_handle, req->id, CONN_PARAM_UPDATE_ACCEPT);  //send SIG Connection Param Update Response
 
 

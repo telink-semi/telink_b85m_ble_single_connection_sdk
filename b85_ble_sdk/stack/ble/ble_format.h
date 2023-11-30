@@ -666,14 +666,7 @@ typedef struct{
 	u8 data;
 }rf_packet_att_notification_t;
 
-typedef struct{
-	u8	type;
-	u8  rf_len;
-	u16	l2capLen;
-	u16	chanId;
-	u8  opcode;
-	u8  mtu[2];
-}rf_packet_att_mtu_t;
+
 
 typedef struct{
 	u8	type;

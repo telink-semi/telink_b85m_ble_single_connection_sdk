@@ -319,7 +319,7 @@ unsigned char uart_RxIndex = 0;
  * @param[in] none.
  * @return    data received.
  */
-volatile unsigned char uart_ndma_read_byte(void)
+unsigned char uart_ndma_read_byte(void)
 {
 	unsigned char rx_data = reg_uart_data_buf(uart_RxIndex);
 	uart_RxIndex++;
@@ -367,7 +367,7 @@ void uart_send_dma(unsigned char* Addr)
  * @note      DMA can only send (4079-4) bytes one time at most.
  *			  
  */
-volatile unsigned char uart_dma_send(unsigned char* Addr)
+unsigned char uart_dma_send(unsigned char* Addr)
 {
 	if(reg_uart_status1 & FLD_UART_TX_DONE)
 	{
@@ -387,7 +387,7 @@ volatile unsigned char uart_dma_send(unsigned char* Addr)
  * @return    1: send success ;
  *            0: DMA busy
  */
-volatile unsigned char uart_send_byte(unsigned char byte)
+unsigned char uart_send_byte(unsigned char byte)
 {
 	unsigned int addr;
 

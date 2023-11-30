@@ -123,7 +123,7 @@ int swire_putc(int c) {
 #ifndef		BIT_INTERVAL
 #define		BIT_INTERVAL		(16000000/PRINT_BAUD_RATE)
 #endif
-volatile extern unsigned char sys_clock_print;
+extern volatile unsigned char sys_clock_print;
 _attribute_ram_code_
 void uart_putb(unsigned char *p)
 {

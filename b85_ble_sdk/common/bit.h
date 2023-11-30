@@ -110,7 +110,7 @@
 #define BIT_PROPAGATE_1(x) ((x) |= ((x)-1))
 #define BIT_ISOLATE_0(x)   ((x) = ~(x) & ((x)+1))
 #define BIT_TURNON_0(x)    ((x) |= ((x)+1))
-#define CLAMP_TO_ONE(x)    (!!(x))				// compiler defined, not stardard.    0 --> 0,   1 --> 0xffffffff
+#define CLAMP_TO_ONE(x)    (!!(x))				// compiler defined, not standard.    0 --> 0,   1 --> 0xffffffff
 
 #define ONES(x)				BIT_MASK_LEN(x)
 #define ONES_32				0xffffffff

@@ -47,7 +47,25 @@
 #define BATTERY_CHECK_H_
 
 
-#if (BATT_CHECK_ENABLE)
+/**
+ * @brief	Application battery check enable control. Default disable, use can enable it in app_conifg.h.
+ */
+#ifndef APP_BATT_CHECK_ENABLE
+#define APP_BATT_CHECK_ENABLE								0
+#endif
+
+
+#if (APP_BATT_CHECK_ENABLE)
+
+
+
+/**
+ * @brief	Battery Voltage log enable
+ */
+#ifndef		APP_BATT_CHECK_LOG_EN
+#define		APP_BATT_CHECK_LOG_EN								0
+#endif
+
 
 
 #define VBAT_DEEP_THRES_MV				2000   // 2000 mV low battery alarm
@@ -78,7 +96,7 @@ int  battery_get_detect_enable (void);
 
 /**
  * @brief		This is battery check function
- * @param[in]	alram_vol_mv - input battery calue
+ * @param[in]	alram_vol_mv - input battery value
  * @return      0 fail 1 success
  */
 int app_battery_power_check(u16 alram_vol_mv);

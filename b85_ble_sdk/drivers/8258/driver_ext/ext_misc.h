@@ -22,7 +22,7 @@
  *          or alteration(s).
  *
  *          Licensees are granted free, non-transferable use of the information in this
- *          file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *          file under Mutual Non-Disclosure Agreement. NO WARRANTY of ANY KIND is provided.
  *
  *******************************************************************************************************/
 #ifndef DRIVERS_8258_EXT_MISC_H_
@@ -74,12 +74,36 @@ enum{
 
 /******************************* stimer_end ********************************************************************/
 
+
+
+
+
+
+/******************************* dma_start ******************************************************************/
+
+/**
+ * @brief	ACL RX Data buffer length = maxRxOct + 21, then 16 Byte align
+ *			maxRxOct + 21 = 4(DMA_len) + 2(BLE header) + maxRxOct + 4(MIC) + 3(CRC) + 8(ExtraInfo)
+			RX buffer size must be be 16*n, due to MCU design
+ */
+//actually +21.The purpose of +22 is to deal with extreme situations. Due to DMA design,at least one byte buffer can not be unusable.
+
+#define		TLK_RF_RX_EXT_LEN		(22)	//4(DMA_len) + 2(BLE header) + ISORxOct + 4(MIC) + 3(CRC) + 8(ExtraInfo)
+#define 	CAL_LL_ACL_RX_FIFO_SIZE(maxRxOct)	(((maxRxOct + TLK_RF_RX_EXT_LEN) + 15) / 16 *16)
+
+
+/**
+ * @brief	ACL TX Data buffer length = maxTxOct + 10, then 4 Byte align
+ *			maxTxOct + 10 = 4(DMA_len) + 2(BLE header) + maxTxOct + 4(MIC)
+			TX buffer size must be be 4*n, due to MCU design
+ */
+
+#define     TLK_RF_TX_EXT_LEN		(10)	//10 = 4(DMA_len) + 2(BLE header) + 4(MIC)
+#define 	CAL_LL_ACL_TX_FIFO_SIZE(maxTxOct)	(((maxTxOct + TLK_RF_TX_EXT_LEN) + 3) / 4 *4)
+
+/******************************* dma_end ******************************************************************/
+
+
+
+
 #endif
-
-
-
-
-
-
-
-

@@ -25,7 +25,7 @@
 #define __MID1360C8_H__
 
 /*
- * @brief     MID = 0x1360c8 Flash include GD25LD40C.
+ * @brief     MID = 0x1360c8 Flash include GD25LD40C/GD25LD40E.
  */
 
 

@@ -81,10 +81,15 @@ _attribute_data_retention_	own_addr_type_t 	app_own_address_type = OWN_ADDRESS_P
 
 
 
+/* CAL_LL_ACL_RX_FIFO_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
 #define RX_FIFO_SIZE	64
+/* must be: 2^n, (power of 2);at least 4; recommended value: 4, 8, 16 */
 #define RX_FIFO_NUM		8
 
+
+/* CAL_LL_ACL_TX_FIFO_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
 #define TX_FIFO_SIZE	40
+/* must be: (2^n), (power of 2); at least 8; recommended value: 8, 16, 32, other value not allowed. */
 #define TX_FIFO_NUM		16
 
 
@@ -160,20 +165,21 @@ _attribute_data_retention_	u32	lowBattDet_tick   = 0;
  */
 void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
 {
-
+    (void)e;(void)p;(void)n;
 	bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 						ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
 						0,  NULL,
 						MY_APP_ADV_CHANNEL,
 						ADV_FP_NONE);
 
-	bls_ll_setAdvEnable(1);  //must: set adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set adv enable
 }
 
 
 
 void 	ble_remote_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
+    (void)e;(void)p;(void)n;
 	tlkapi_printf(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] remote terminate, reason 0x%x\n", *p);
 	device_in_connection_state = 0;
 
@@ -222,6 +228,7 @@ void 	ble_remote_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  */
 _attribute_ram_code_ void	task_suspend_exit (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
@@ -235,6 +242,7 @@ _attribute_ram_code_ void	task_suspend_exit (u8 e, u8 *p, int n)
  */
 void	task_connect (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);
 	bls_l2cap_setMinimalUpdateReqSendingTime_after_connCreate(1000);
 
@@ -251,17 +259,18 @@ void	task_connect (u8 e, u8 *p, int n)
 
 void	task_conn_update_req (u8 e, u8 *p, int n)
 {
-
+    (void)e;(void)p;(void)n;
 }
 
 void	task_conn_update_done (u8 e, u8 *p, int n)
 {
-
+    (void)e;(void)p;(void)n;
 }
 
 
 int app_conn_param_update_response(u8 id, u16  result)
 {
+    (void)id;(void)result;
 	if(result == CONN_PARAM_UPDATE_ACCEPT){
 
 	}
@@ -383,7 +392,7 @@ void blt_pm_proc(void)
 				if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN)
 				{
 					//DEBUG("Disable adv\n");
-					bls_ll_setAdvEnable(0);   //disable adv
+					bls_ll_setAdvEnable(BLC_ADV_DISABLE);   //disable adv
 					advertise_begin_tick = 0;
 					/*
 					 * when RCU connected state, if press key during 1 minute, RCU transmit release code.
@@ -417,7 +426,7 @@ void blt_pm_proc(void)
 		if(sendTerminate_before_enterDeep == 1){ //sending Terminate and wait for ack before enter deepsleep
 			if(user_task_flg){  //detect key Press again,  can not enter deep now
 				sendTerminate_before_enterDeep = 0;
-				bls_ll_setAdvEnable(1);   //enable adv again
+				bls_ll_setAdvEnable(BLC_ADV_ENABLE);   //enable adv again
 			}
 		}
 		else if(sendTerminate_before_enterDeep == 2){  //Terminate OK
@@ -439,7 +448,7 @@ void blt_pm_proc(void)
 			{
 
 				bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN); //push terminate cmd into ble TX buffer
-				bls_ll_setAdvEnable(0);   //disable adv
+				bls_ll_setAdvEnable(BLC_ADV_DISABLE);   //disable adv
 				sendTerminate_before_enterDeep = 1;
 			}
 		}
@@ -461,12 +470,13 @@ void blt_pm_proc(void)
  */
 void  task_suspend_enter (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 		bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 	}
 }
 
-#if (BATT_CHECK_ENABLE)
+#if (APP_BATT_CHECK_ENABLE)
 
 /**
  * @brief		this function is used to process battery power.
@@ -488,11 +498,9 @@ _attribute_ram_code_ void user_battery_power_check(u16 alarm_vol_mv)
 	u8 battery_check_returnValue = 0;
 	if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
 		battery_check_returnValue = app_battery_power_check(alarm_vol_mv + 200);
-		tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[BATTERY][CHECK] The battery voltage is lower than %dmV, shut down!!!\n", (alarm_vol_mv + 200));
 	}
 	else{
 		battery_check_returnValue = app_battery_power_check(alarm_vol_mv);
-		tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[BATTERY][CHECK] The battery voltage is lower than %dmV, shut down!!!\n", alarm_vol_mv);
 	}
 
 	if (battery_check_returnValue)
@@ -504,16 +512,23 @@ _attribute_ram_code_ void user_battery_power_check(u16 alarm_vol_mv)
 		#if (UI_LED_ENABLE)  //led indicate
 			gpio_set_output_en(GPIO_LED, 1);  //output enable
 			for(int k = 0; k < 3; k++){
-				gpio_write(GPIO_LED, LED_ON_LEVAL);
+				gpio_write(GPIO_LED, LED_ON_LEVEL);
 				sleep_us(200000);
-				gpio_write(GPIO_LED, !LED_ON_LEVAL);
+				gpio_write(GPIO_LED, !LED_ON_LEVEL);
 				sleep_us(200000);
 			}
 		#endif
+
+		if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
+			tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[APP][BAT] The battery voltage is lower than %dmV, shut down!!!\n", (alarm_vol_mv + 200));
+		} else {
+			tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[APP][BAT] The battery voltage is lower than %dmV, shut down!!!\n", alarm_vol_mv);
+		}
+
 		analog_write(USED_DEEP_ANA_REG,  analog_read(USED_DEEP_ANA_REG) | LOW_BATT_FLG);  //mark
 
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High, 1);  //drive pin pad high wakeup deepsleep
 		}
@@ -550,7 +565,7 @@ void user_init_normal(void)
 	   The reason is that the low battery check need the ADC calibration parameter, and this parameter
 	   is loaded in blc_app_loadCustomizedParameters_normal.
 	 */
-	#if (BATT_CHECK_ENABLE)
+	#if (APP_BATT_CHECK_ENABLE)
 	/*The SDK must do a quick low battery detect during user initialization instead of waiting
 	  until the main_loop. The reason for this process is to avoid application errors that the device
 	  has already working at low power.
@@ -603,8 +618,9 @@ void user_init_normal(void)
 
 	////// Host Initialization  //////////
 	blc_gap_peripheral_init();    //gap initialization
-	my_att_init (); //gatt initialization
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
+	my_att_init (); //gatt initialization
+	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //set MTU size, default MTU is 23 if not call this API
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -676,7 +692,7 @@ void user_init_normal(void)
 		}
 	}
 
-	bls_ll_setAdvEnable(1);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
 
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
@@ -755,8 +771,25 @@ void user_init_normal(void)
 
 	app_ui_init_normal();
 
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+
 
 	advertise_begin_tick = clock_time();
+
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE Remote init \n");
 }
 
 
@@ -776,7 +809,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 
 	blc_ll_recoverDeepRetention();
 
-	#if (BATT_CHECK_ENABLE)
+	#if (APP_BATT_CHECK_ENABLE)
 		/* ADC settings will lost during deepsleep retention mode, so here need clear flag */
 		battery_clear_adc_setting_flag();
 	#endif
@@ -845,7 +878,7 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
 
 
 		flash_lockBlock_cmd = flash_change_app_lock_block_to_flash_lock_block(app_lockBlock);
-
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] initialization, lock flash\n");
 		if(blc_flashProt.init_err){
 			tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash protection initialization error!!!\n"); //print log here, tell user initialization error
 		}
@@ -923,7 +956,7 @@ void main_loop (void)
 		proc_audio();
 	#endif
 
-	#if (BATT_CHECK_ENABLE)
+	#if (APP_BATT_CHECK_ENABLE)
 		/*The frequency of low battery detect is controlled by the variable lowBattDet_tick, which is executed every
 		 500ms in the demo. Users can modify this time according to their needs.*/
 		if(battery_get_detect_enable() && clock_time_exceed(lowBattDet_tick, 500000) ){

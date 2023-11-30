@@ -31,16 +31,18 @@
 
 
 
-
+/**
+ * @brief      data structure of index update method.
+ */
 typedef enum {
 	Index_Update_by_Pairing_Order = 0,     //default value
 	Index_Update_by_Connect_Order = 1,
 } index_updateMethod_t;
 
 
-/*
- * smp parameter need save to flash.
- * */
+/**
+ * @brief	smp parameter need save to flash.
+ */
 
 #define DEVICE_IDX_MASK				0x03
 
@@ -53,7 +55,10 @@ typedef union {
 }comb_flg_t;  //combine flag type
 
 
-typedef struct __attribute__((packed))          {  //82
+/**
+ * @brief      data structure of ACL slave role saving SMP parameter.
+ */
+typedef struct __attribute__((packed)){
 	u8		flag;
 	u8		peer_addr_type;  //address used in link layer connection
 	u8		peer_addr[6];
@@ -69,25 +74,31 @@ typedef struct __attribute__((packed))          {  //82
 
 }smp_param_save_t;
 
-#if	LL_FEATURE_ENABLE_PRIVACY
+
+
 /*
- * smp parameter need save to flash.
- * */
-typedef struct {  //82
-	u8 bond_mark;
-	u8 adr_type;
-	u8 address[6];
+ * @brief      data structure of ACL master role saving SMP parameter.
+ */
+typedef struct __attribute__((packed)){
+	u8 		flag;
+	u8		peer_addr_type;  //address used in link layer connection
+	u8		peer_addr[6];
 
-	u8 rand[8];
+	u8 		stack_data_1[10]; //data for task, user can not use !!!
 
-	u16 ediv;
-	u8 rsv[14];
+//18
+	u8		peer_id_adrType;  //peer identity address information in key distribution, used to identify
+	u8		peer_id_addr[6];
 
-	u8 ltk[16];
-	u8 peer_irk[16];
-	u8 local_irk[16];
-}smp_master_param_save_t;
-#endif
+//25
+	u8 		local_irk[16];
+//41
+	u8 		stack_data_2[7];  //data for task, user can not use !!!
+
+//48
+	u8 		peer_irk[16]; 	   //data for task, user can not use !!!
+}smp_param_master_t;
+
 
 /**
  * @brief      This function is used to get the number of currently bound devices.

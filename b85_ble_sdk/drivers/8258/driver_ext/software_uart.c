@@ -230,7 +230,7 @@ void soft_uart_SoftUartisRfState_handler(void *prx)
 }
 
 /**
- * @brief      This function serves to foramt string.
+ * @brief      This function serves to format string.
  * @param[in]  byte  -  a byte need to print
  * @return     none.
  */

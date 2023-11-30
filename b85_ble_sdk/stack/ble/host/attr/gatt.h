@@ -1,48 +1,26 @@
 /********************************************************************************************************
- * @file	gatt.h
+ * @file     gatt.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief    This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author	 BLE GROUP
+ * @date         12,2021
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *******************************************************************************************************/
+
 #ifndef GATT_H_
 #define GATT_H_
 
@@ -55,7 +33,7 @@
  * @brief	   This function is used to notify a client of the value of a Characteristic Value from a server.
  * @param[in]  connHandle -  connection handle
  * @param[in]  attHandle  -  attribute handle.
- * @param[in]  *p -  data buffer pointer
+ * @param[in]  p -  data buffer pointer
  * @param[in]  len - data byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -65,9 +43,6 @@ ble_sts_t	blc_gatt_pushHandleValueNotify  (u16 connHandle, u16 attHandle, u8 *p,
  * @brief	   This function is used to notify a client of the Handle-Length-Value Tuple of a Characteristic Value from a server
  * @param[in]  connHandle - connection handle
  * @param[in]  lists - Handle Length Value Tuple
- * 				Handle    | Length    | Value
- * 				----------|-----------|---------------
- * 				2 octets  | 2 octets  | (Length)octets
  * @param[in]  listNum - number of handle value length tuple list
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -77,7 +52,7 @@ ble_sts_t	blc_gatt_pushMultiHandleValueNotify  (u16 connHandle, atts_mulHandleNt
  * @brief	   This function is used to indicate the Characteristic Value from a server to a client.
  * @param[in]  connHandle -  connection handle
  * @param[in]  attHandle - attribute handle.
- * @param[in]  *p -  data buffer pointer
+ * @param[in]  p -  data buffer pointer
  * @param[in]  len - data byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -88,18 +63,18 @@ ble_sts_t	blc_gatt_pushHandleValueIndicate(u16 connHandle, u16 attHandle, u8 *p,
  * @brief	   This function is used to This function is used to request the server to write the value of an attribute without response.
  * @param[in]  connHandle -  connection handle
  * @param[in]  attHandle - attribute handle.
- * @param[in]  *p -  data buffer pointer
+ * @param[in]  p -  data buffer pointer
  * @param[in]  len - data byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_gatt_pushWriteComand (u16 connHandle, u16 attHandle, u8 *p, int len);
+ble_sts_t 	blc_gatt_pushWriteCommand (u16 connHandle, u16 attHandle, u8 *p, int len);
 
 
 /**
  * @brief	   This function is used to request the server to write the value of an attribute.
  * @param[in]  connHandle -  connection handle
  * @param[in]  attHandle - attribute handle.
- * @param[in]  *p -  data buffer pointer
+ * @param[in]  p -  data buffer pointer
  * @param[in]  len - data byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -124,7 +99,7 @@ ble_sts_t 	blc_gatt_pushFindInformationRequest(u16 connHandle, u16 start_attHand
  * @param[in]  connHandle -  connection handle
  * @param[in]  start_attHandle - start attribute handle.
  * @param[in]  end_attHandle   - end attribute handle.
- * @param[in]  uuid
+ * @param[in]  uuid - universally unique identifier.
  * @param[in]  attr_value - attribute value
  * @param[in]  len - data byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
@@ -137,7 +112,7 @@ ble_sts_t 	blc_gatt_pushFindByTypeValueRequest (u16 connHandle, u16 start_attHan
  * @param[in]  connHandle -  connection handle
  * @param[in]  start_attHandle - start attribute handle.
  * @param[in]  end_attHandle   - end attribute handle.
- * @param[in]  uuid
+ * @param[in]  uuid - universally unique identifier.
  * @param[in]  uuid_len -uuid byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -157,7 +132,7 @@ ble_sts_t 	blc_gatt_pushReadRequest (u16 connHandle, u16 attHandle);
  * @brief	   This function is used to request the server to read part of the value of an attribute at a given offset
  * @param[in]  connHandle -  connection handle
  * @param[in]  attHandle - attribute handle.
- * @param[in]  offset
+ * @param[in]  offset - the data offset.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t 	blc_gatt_pushReadBlobRequest (u16 connHandle, u16 attHandle, u16 offset);
@@ -168,7 +143,7 @@ ble_sts_t 	blc_gatt_pushReadBlobRequest (u16 connHandle, u16 attHandle, u16 offs
  * @param[in]  connHandle -  connection handle
  * @param[in]  start_attHandle - start attribute handle.
  * @param[in]  end_attHandle   - end attribute handle.
- * @param[in]  uuid -
+ * @param[in]  uuid - universally unique identifier.
  * @param[in]  uuid_len - uuid byte number
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -184,7 +159,7 @@ ble_sts_t 	blc_gatt_pushReadByGroupTypeRequest (u16 connHandle, u16 start_attHan
  * @param[in]  data_len - transmit data len.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t blc_gatt_pushPrepareWriteRequest (u16 connHandle, u16 attHandle, u16 valOffset,u8 *data, int data_len);
+ble_sts_t	blc_gatt_pushPrepareWriteRequest (u16 connHandle, u16 attHandle, u16 valOffset,u8 *data, int data_len);
 
 
 /**
@@ -194,13 +169,41 @@ ble_sts_t blc_gatt_pushPrepareWriteRequest (u16 connHandle, u16 attHandle, u16 v
  * 					   0x01:Immediately write all pending prepared values
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t blc_gatt_pushExecuteWriteRequest(u16 connHandle,u8 value);
+ble_sts_t	blc_gatt_pushExecuteWriteRequest(u16 connHandle,u8 value);
 
 
 /**
- * @brief       Send ATT handle value confirm.
- * @param[in]   connHandle         - connection handle.
- * @return      ble_sts_t.
+ * @brief       This function is used to send ATT handle value confirm.
+ * @param[in]   connHandle - connection handle.
+ * @return      Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t blc_gatt_pushConfirm(u16 connHandle);
+ble_sts_t	blc_gatt_pushConfirm(u16 connHandle);
+
+/**
+ * @brief		This function is used to send read multiple request
+ * @param[in]	connHandle - connection handle
+ * @param[in]	numHandles - number of ATT handle to send
+ * @param[in]	pHandle - ATT handles of read multiple request
+ * @return		Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t	blc_gatt_pushReadMultiRequest(u16 connHandle, u8 numHandles, u16 *pHandle);
+
+/**
+ * @brief		This function is used to send read multiple variable request
+ * @param[in]	connHandle - connection handle
+ * @param[in]	numHandles - number of ATT handle to send
+ * @param[in]	pHandle - ATT handles of read multiple request
+ * @return		Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t	blc_gatt_pushReadMultiVariableRequest(u16 connHandle, u8 numHandles, u16 *pHandle);
+
+/**
+ * @brief       This function is used to send ATT Err Response.
+ * @param[in]   connHandle - connection handle.
+ * @param[in]   reqOpcode - request option code.
+ * @param[in]   attHdlInErr - ATT handle in error.
+ * @param[in]   ErrorCode - error code.
+ * @return      Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ */
+ble_sts_t	blc_gatt_pushErrResponse(u16 connHandle, u8 reqOpcode, u16 attHdlInErr, u8 ErrorCode);
 #endif /* GATT_H_ */

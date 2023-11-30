@@ -150,18 +150,18 @@ typedef struct
 
 
 /**
- * @brief      this function is used to initialize extended advertising module
- * @param[in]  *pAdvCtrl - advertising set control buffer address
- * @param[in]  *pPriAdv - Primary channel advertising packet data buffer address
- * @param[in]	num_sets - number of advertising set
+ * @brief      This function is used to initialize extended advertising module
+ * @param[in]  pAdvCtrl - advertising set control buffer address
+ * @param[in]  pPriAdv - Primary channel advertising packet data buffer address
+ * @param[in]  num_sets - number of advertising set
  * @return     none
  */
 void 		blc_ll_initExtendedAdvertising_module(	u8 *pAdvCtrl, u8 *pPriAdv,int num_sets);
 
 
 /**
- * @brief      this function is used to initialize secondary channel advertising packet buffer
- * @param[in]  *pSecAdv - secondary channel advertising packet buffer address
+ * @brief      This function is used to initialize secondary channel advertising packet buffer
+ * @param[in]  pSecAdv - secondary channel advertising packet buffer address
  * @param[in]  sec_adv_buf_len - secondary channel advertising packet buffer length
  * @return     none
  */
@@ -169,7 +169,7 @@ void 		blc_ll_initExtSecondaryAdvPacketBuffer(u8 *pSecAdv, int sec_adv_buf_len);
 
 
 /**
- * @brief      initialize Advertising Data buffer for all adv_set
+ * @brief      This function is used to initialize Advertising Data buffer for all adv_set
  * @param[in]  pExtAdvData - extended advertising data buffer address
  * @param[in]  max_len_advData - extended advertising data buffer maximum length
  * @return     none
@@ -178,7 +178,7 @@ void 		blc_ll_initExtAdvDataBuffer(u8 *pExtAdvData, int max_len_advData);
 
 
 /**
- * @brief      initialize Scan Response Data Buffer for all adv_set
+ * @brief      This function is used toinitialize Scan Response Data Buffer for all adv_set
  * @param[in]  pScanRspData - extended scan response data buffer address
  * @param[in]  max_len_scanRspData - extended scan response data buffer maximum length
  * @return     none
@@ -196,7 +196,7 @@ void 		blc_ll_initExtScanRspDataBuffer(u8 *pScanRspData, int max_len_scanRspData
  * @param[in]  pri_advChnMap -  primary advertising channel map
  * @param[in]  ownAddrType - own address type
  * @param[in]  peerAddrType - peer address type
- * @param[in]  *peerAddr - peer address
+ * @param[in]  peerAddr - peer address
  * @param[in]  advFilterPolicy - advertising filter policy
  * @param[in]  adv_tx_pow - advertising TX power
  * @param[in]  pri_adv_phy - primary advertising channel PHY type
@@ -220,10 +220,10 @@ ble_sts_t 	blc_ll_setExtAdvParam(  adv_handle_t advHandle, 		advEvtProp_type_t a
  * @param[in]  operation - Operation type
  * @param[in]  fragment_prefer -Fragment_Preference
  * @param[in]  advData_len - advertising data length
- * @param[in]  *advData - advertising data buffer address
+ * @param[in]  advData - advertising data buffer address
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t	blc_ll_setExtAdvData	(u8 advHandle, data_oper_t operation, data_fragm_t fragment_prefer, u8 adv_dataLen, 	u8 *advdata);
+ble_sts_t	blc_ll_setExtAdvData	(u8 advHandle, data_oper_t operation, data_fragment_t fragment_prefer, u8 adv_dataLen, 	u8 *advdata);
 
 
 
@@ -234,10 +234,10 @@ ble_sts_t	blc_ll_setExtAdvData	(u8 advHandle, data_oper_t operation, data_fragm_
  * @param[in]  operation - Operation type
  * @param[in]  fragment_prefer -Fragment_Preference
  * @param[in]  scanRsp_dataLen - advertising scan response data length
- * @param[in]  *scanRspData - advertising scan response data buffer address
+ * @param[in]  scanRspData - advertising scan response data buffer address
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_ll_setExtScanRspData(u8 advHandle, data_oper_t operation, data_fragm_t fragment_prefer, u8 scanRsp_dataLen, u8 *scanRspData);
+ble_sts_t 	blc_ll_setExtScanRspData(u8 advHandle, data_oper_t operation, data_fragment_t fragment_prefer, u8 scanRsp_dataLen, u8 *scanRspData);
 
 
 /**
@@ -258,7 +258,7 @@ ble_sts_t 	blc_ll_setExtAdvEnable_1(u32 extAdv_en, u8 sets_num, u8 advHandle, 	 
 
 
 /**
- * @brief      used to set default S2/S8 mode for Extended advertising if Coded PHY is used, this
+ * @brief      This function is used to set default S2/S8 mode for Extended advertising if Coded PHY is used, this
  * @param[in]  advHandle - advertising handle
  * @param[in]  prefer_CI - LE coding indication prefer
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
@@ -268,7 +268,7 @@ ble_sts_t	blc_ll_setDefaultExtAdvCodingIndication(u8 advHandle, le_ci_prefer_t p
 
 
 /**
- * @brief      this API is used to debug, setting one auxiliary data channel
+ * @brief      This function is used to debug, setting one auxiliary data channel
  * @param[in]  aux_chn - auxiliary data channel, must be range of 0~36
  * @return     none
  */
@@ -277,7 +277,7 @@ void        blc_ll_setAuxAdvChnIdxByCustomers(u8 aux_chn);
 
 
 /**
- * @brief      this API is used to debug, setting maximum advertising random delay
+ * @brief      This function is used to debug, setting maximum advertising random delay
  * @param[in]  max_delay_ms - maximum advertising random delay, unit :mS, only  8/4/2/1/0  available
  * @return     none
  */

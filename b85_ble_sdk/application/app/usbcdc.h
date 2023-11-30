@@ -57,31 +57,42 @@
 #endif
 
 
-typedef void ( *cdc_handlerFn_t)( u8* pData);
+/** Endpoint number of the CDC device-to-host notification IN endpoint. */
+#define CDC_NOTIFICATION_EPNUM         2
 
-typedef struct {
-    u8 len;
-    u8 data[1];
-} usbcdc_txBuf_t;
+/** Endpoint number of the CDC device-to-host data IN endpoint. */
+#ifndef		CDC_TX_EPNUM
+#define     CDC_TX_EPNUM               4
+#endif
 
+/** Endpoint number of the CDC host-to-device data OUT endpoint. */
+#define CDC_RX_EPNUM                   5
 
-typedef enum usbcdc_sts_e {
-    // success = 0
-    USB_BUSY = 1,
-    USB_MULTIBLOCK,
-} usbcdc_sts_t;
+/** Size in bytes of the CDC device-to-host notification IN endpoint. */
+#define CDC_NOTIFICATION_EPSIZE        8
 
+/** Size in bytes of the CDC data IN and OUT endpoints.*/
+#define CDC_TXRX_EPSIZE                64
 
-void CDC_Device_ProcessControlRequest(u8 bRequest, u16 wValue, u16 wIndex, u16 wLength);
+extern unsigned char  usb_cdc_data[CDC_TXRX_EPSIZE];
+extern unsigned short usb_cdc_data_len;
 
-usbcdc_sts_t usbcdc_sendData(u8* buf, u8 len);
-u8   usbcdc_sendBulkData(void);
+extern unsigned int usb_cdc_tx_cnt;
+extern unsigned char LineCoding[7];
 
-u8   usbcdc_isAvailable(void);
-u8*  usbcdc_getData(void);
-void usbcdc_init(void);
-void usbcdc_setCB(cdc_handlerFn_t rxFunc, cdc_handlerFn_t txCb);
-void usbcdc_setRxBuf(u8 *buf);
+/**
+ * @brief		This function serves to send data to USB host in CDC device
+ * @param[in] 	data_ptr -  the pointer of data, which need to be sent.
+ * @param[in] 	data_len -  the length of data, which need to be sent.
+ * @return 		none
+ */
+ void usb_cdc_tx_data_to_host(unsigned char * data_ptr, unsigned short data_len);
+ /**
+  * @brief		This function serves to receive data from
+  * @param[in] 	rx_buff -  the pointer of data, which need to receive.
+  * @return 		none
+  */
+void usb_cdc_rx_data_from_host(unsigned char* rx_buff);
 
 
 

@@ -47,7 +47,6 @@
 #include "drivers.h"
 #include "stack/ble/ble.h"
 #include "app.h"
-#include "application/usbstd/usb.h"
 
 #if (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
 
@@ -82,7 +81,6 @@ int main (void)
 
 	rf_drv_ble_init();
 
-	usb_init ();
 
 	user_init ();
 

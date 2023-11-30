@@ -286,7 +286,7 @@ extern void uart_ndma_send_byte(unsigned char uartData);
  * @param[in] none.
  * @return    data received.
  */
-extern volatile unsigned char uart_ndma_read_byte(void);
+extern unsigned char uart_ndma_read_byte(void);
 //use this index to cycle the four register of uart. this index should be reset to 0,when send data after system wakeup.
 extern unsigned char uart_RxIndex;
 /**
@@ -345,7 +345,7 @@ extern void uart_send_dma(unsigned char* Addr);
  * @note      DMA can only send (4079-4) bytes one time at most.
  *			  
  */
-extern volatile unsigned char uart_dma_send(unsigned char* Addr);
+extern unsigned char uart_dma_send(unsigned char* Addr);
 
 /**
  * @brief     uart send data function, this  function tell the DMA to get data from the RAM and start
@@ -354,7 +354,7 @@ extern volatile unsigned char uart_dma_send(unsigned char* Addr);
  * @return    1: send success ;
  *            0: DMA busy
  */
-extern volatile unsigned char uart_send_byte(unsigned char byte);
+extern unsigned char uart_send_byte(unsigned char byte);
 /**
  * @brief     Receive an amount of data in DMA mode.
  * @param[in] RecvAddr - Pointer to data buffer, it must be 4-bytes aligned.

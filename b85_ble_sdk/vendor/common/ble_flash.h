@@ -49,9 +49,12 @@
 #include "drivers.h"
 
 
-#define			BLMS_STATE_SCAN									BIT(2)
-#define			BLMS_STATE_SCAN_POST							BIT(3)
-
+/**
+ * @brief	Flash initialization log enable. Default disable, user can enable it in app_confog.h
+ */
+#ifndef		APP_FLASH_INIT_LOG_EN
+#define		APP_FLASH_INIT_LOG_EN								0
+#endif
 
 
 //////////////////////////// Flash  Address Configuration ///////////////////////////////
@@ -83,6 +86,23 @@
 #define 	FLASH_ADR_SMP_PAIRING_1M_FLASH         				0xFC000	//FC000 & FD000
 #endif
 
+
+
+/********************** Master pairing flash address *******************/
+#ifndef 	FLASH_ADR_MASTER_PAIRING_512K
+#define 	FLASH_ADR_MASTER_PAIRING_512K         				0x78000
+#endif
+
+#ifndef 	FLASH_ADR_MASTER_PAIRING_1M
+#define 	FLASH_ADR_MASTER_PAIRING_1M         				0xFC000
+#endif
+
+
+
+
+
+
+
 /** Calibration Information FLash Address Offset of  CFG_ADR_CALIBRATION_xx_FLASH ***/
 #define		CALIB_OFFSET_CAP_INFO								0x0
 
@@ -100,10 +120,10 @@ extern	unsigned int  blc_flash_mid;
 extern	unsigned int  blc_flash_vendor;
 extern	unsigned char blc_flash_capacity;
 
-extern u32 flash_sector_mac_address;
-extern u32 flash_sector_calibration;
+extern unsigned int flash_sector_mac_address;
+extern unsigned int flash_sector_calibration;
 extern unsigned int flash_sector_smp_storage;
-
+extern unsigned int flash_sector_master_pairing;
 
 /**
  * @brief		This function is used to enable the external crystal capacitor,only 1 can be set

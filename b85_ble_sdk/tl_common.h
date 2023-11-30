@@ -69,3 +69,4 @@
 #include "vendor/common/flash_fw_check.h"
 #include "vendor/common/flash_prot.h"
 #include "vendor/common/tlkapi_debug.h"
+#include "vendor/common/app_buffer.h"

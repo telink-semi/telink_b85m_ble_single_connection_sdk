@@ -79,10 +79,15 @@ _attribute_data_retention_	my_fifo_t	spp_tx_fifo = {
 //MYFIFO_INIT(blt_txfifo, 40, 16);
 
 
+/* CAL_LL_ACL_RX_FIFO_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
 #define RX_FIFO_SIZE	64
+/* must be: 2^n, (power of 2);at least 4; recommended value: 4, 8, 16 */
 #define RX_FIFO_NUM		8
 
+
+/* CAL_LL_ACL_TX_FIFO_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
 #define TX_FIFO_SIZE	40
+/* must be: (2^n), (power of 2); at least 8; recommended value: 8, 16, 32, other value not allowed. */
 #define TX_FIFO_NUM		16
 
 
@@ -165,6 +170,7 @@ _attribute_data_retention_ u8 conn_update_cnt;
  */
 int app_conn_param_update_response(u8 id, u16  result)
 {
+    (void)id;(void)result;
 #if 0
 	if(result == CONN_PARAM_UPDATE_ACCEPT){
 		tlkapi_printf("SIG: the LE master Host has accepted the connection parameters.\n");
@@ -349,7 +355,16 @@ void app_power_management ()
 	if (!app_module_busy() && !tick_wakeup)
 	{
 		#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
+			extern u32 _retention_use_size_div_16_;
+			if (((u32)&_retention_use_size_div_16_) < 0x400)
+				blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
+			else if (((u32)&_retention_use_size_div_16_) < 0x800)
+				blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
+			else
+			{
+				//retention size > 32k, overflow
+				//debug: deep retention size setting err
+			}
 			bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		#else
 			bls_pm_setSuspendMask(SUSPEND_ADV | SUSPEND_CONN);
@@ -367,7 +382,7 @@ void app_power_management ()
 #endif
 }
 
-#if (BATT_CHECK_ENABLE)  //battery check must do before OTA relative operation
+#if (APP_BATT_CHECK_ENABLE)  //battery check must do before OTA relative operation
 /**
  * @brief		callback function of adjust whether allow enter to pm or not
  * @param[in]	none
@@ -401,16 +416,14 @@ _attribute_ram_code_ void user_battery_power_check(u16 alarm_vol_mv)
 		b) When the battery voltage is low, due to the unstable power supply, the write and erase operations
 			of Flash may have the risk of error, causing the program firmware and user data to be modified abnormally,
 			and eventually causing the product to fail. */
-	u8 battery_check_returnVaule = 0;
+	u8 battery_check_returnValue = 0;
 	if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
-		battery_check_returnVaule = app_battery_power_check(alarm_vol_mv + 200);  //2.2 V
-		tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[BATTERY][CHECK] The battery voltage is lower than %dmV, shut down!!!\n", (alarm_vol_mv + 200));
+		battery_check_returnValue = app_battery_power_check(alarm_vol_mv + 200);  //2.2 V
 	}
 	else{
-		battery_check_returnVaule = app_battery_power_check(alarm_vol_mv);  //2.0 V
-		tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[BATTERY][CHECK] The battery voltage is lower than %dmV, shut down!!!\n", alarm_vol_mv);
+		battery_check_returnValue = app_battery_power_check(alarm_vol_mv);  //2.0 V
 	}
-	if(battery_check_returnVaule)
+	if(battery_check_returnValue)
 	{
 		analog_write(USED_DEEP_ANA_REG,  analog_read(USED_DEEP_ANA_REG) & (~LOW_BATT_FLG));  //clr
 	}
@@ -418,12 +431,19 @@ _attribute_ram_code_ void user_battery_power_check(u16 alarm_vol_mv)
 	{
 		#if (UI_LED_ENABLE)  //led indicate
 			for(int k = 0; k < 3; k++){
-				gpio_write(GPIO_LED_BLUE, LED_ON_LEVAL);
+				gpio_write(GPIO_LED_BLUE, LED_ON_LEVEL);
 				sleep_us(200000);
-				gpio_write(GPIO_LED_BLUE, !LED_ON_LEVAL);
+				gpio_write(GPIO_LED_BLUE, !LED_ON_LEVEL);
 				sleep_us(200000);
 			}
 		#endif
+
+		if(analog_read(USED_DEEP_ANA_REG) & LOW_BATT_FLG){
+			tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[APP][BAT] The battery voltage is lower than %dmV, shut down!!!\n", (alarm_vol_mv + 200));
+		} else {
+			tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[APP][BAT] The battery voltage is lower than %dmV, shut down!!!\n", alarm_vol_mv);
+		}
+
 		GPIO_WAKEUP_MODULE_LOW;
 
 		bls_pm_registerFuncBeforeSuspend( &app_suspend_enter_low_battery );
@@ -471,7 +491,7 @@ void user_init_normal(void)
 	   The reason is that the low battery check need the ADC calibration parameter, and this parameter
 	   is loaded in blc_app_loadCustomizedParameters_normal.
 	*****************************************************************************************/
-	#if (BATT_CHECK_ENABLE)
+	#if (APP_BATT_CHECK_ENABLE)
 	/*The SDK must do a quick low battery detect during user initialization instead of waiting
 	  until the main_loop. The reason for this process is to avoid application errors that the device
 	  has already working at low power.
@@ -520,9 +540,10 @@ void user_init_normal(void)
 
 	////// Host Initialization  //////////
 	blc_gap_peripheral_init();    //gap initialization
-	my_att_init (); //gatt initialization
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
 	blc_l2cap_registerConnUpdateRspCb(app_conn_param_update_response);         //register sig process handler
+	my_att_init (); //gatt initialization
+	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //set MTU size, default MTU is 23 if not call this API
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
@@ -530,7 +551,7 @@ void user_init_normal(void)
 	#if (BLE_SECURITY_ENABLE)
 		/* attention: If this API is used, must be called before "blc smp_peripheral_init" when initialization !!! */
 		bls_smp_configPairingSecurityInfoStorageAddr(flash_sector_smp_storage);
-		//defalut smp4.0, just work
+		//default smp4.0, just work
 		blc_smp_peripheral_init();
 
 		#if (0) //default close
@@ -568,7 +589,7 @@ void user_init_normal(void)
 	}
 
 
-	bls_ll_setAdvEnable(1);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 
@@ -656,6 +677,22 @@ void user_init_normal(void)
 	bls_ota_registerStartCmdCb(entry_ota_mode);
 	bls_ota_registerResultIndicateCb(show_ota_result);
 #endif
+
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE module init done! \n");
 
 }
@@ -675,7 +712,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 
 	blc_ll_recoverDeepRetention();
 
-	#if (BATT_CHECK_ENABLE)
+	#if (APP_BATT_CHECK_ENABLE)
 		/* ADC settings will lost during deepsleep retention mode, so here need clear flag */
 		battery_clear_adc_setting_flag();
 	#endif
@@ -846,7 +883,7 @@ void main_loop (void)
 
 	////////////////////////////////////// UI entry /////////////////////////////////
 
-#if (BATT_CHECK_ENABLE)
+#if (APP_BATT_CHECK_ENABLE)
 	/*The frequency of low battery detect is controlled by the variable lowBattDet_tick, which is executed every
 	 500ms in the demo. Users can modify this time according to their needs.*/
 	if(battery_get_detect_enable() && clock_time_exceed(lowBattDet_tick, 500000) ){

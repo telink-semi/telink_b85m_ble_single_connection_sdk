@@ -47,10 +47,17 @@
 #define VENDOR_COMMON_FLASH_PROT_H_
 
 
+/**
+ * @brief	Application Flash protection enable control. Default disable, use can enable it in app_conifg.h.
+ */
 #ifndef APP_FLASH_PROTECTION_ENABLE
 #define APP_FLASH_PROTECTION_ENABLE					0   //enable or disable
 #endif
 
+
+/**
+ * @brief	Application Flash protection log enable or not. Default disable, use can enable it in app_conifg.h.
+ */
 #ifndef APP_FLASH_PROT_LOG_EN
 #define APP_FLASH_PROT_LOG_EN						0
 #endif

@@ -88,6 +88,10 @@
 	#include "feature_backup/app_config.h"
 #elif (FEATURE_TEST_MODE == TEST_L2CAP_COC)
 	#include "feature_l2cap_coc/app_config.h"
+#elif (FEATURE_TEST_MODE == TEST_USB_CDC)
+	#include "feature_usb_cdc/app_config.h"
+#elif (FEATURE_TEST_MODE == TEST_EMI)
+	#include "feature_emi_test/app_config.h"
 #endif
 
 

@@ -101,19 +101,30 @@ _attribute_data_retention_	u8	app_test_data[TEST_DATA_LEN];
 
 _attribute_data_retention_	u32 app_test_data_tick = 0;
 
+typedef struct{
+	u16 connHandle;
+	u16 mtu;
+	u16 srcCid;
+	u16 dstCid;
+} app_cocCid_t;
+
+app_cocCid_t app_cocCid[COC_CID_COUNT];
+
+static u8 cocBuffer[COC_MODULE_BUFFER_SIZE(CREATE_COC_CONNECT_ACL_COUNT, COC_CID_COUNT, COC_MTU_SIZE)];
+
 //////////////////////////////////////////////////////////////////////////////
 //	 Adv Packet, Response Packet
 //////////////////////////////////////////////////////////////////////////////
 
 const u8	tbl_advData[] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
-	 0x02, 0x01, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
-	 0x03, 0x19, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
-	 0x05, 0x02, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+	 0x08,  DT_COMPLETE_LOCAL_NAME, 				'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x02,	DT_FLAGS, 								0x05, 					// BLE limited discoverable mode and BR/EDR not supported
+	 0x03,  DT_APPEARANCE, 							0x80, 0x01, 			// 384, Generic Remote Control, Generic category
+	 0x05,  DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID,	0x12, 0x18, 0x0F, 0x18,	// incomplete list of service class UUIDs (0x1812, 0x180F)
 };
 
 const u8	tbl_scanRsp [] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x08,  DT_COMPLETE_LOCAL_NAME, 				 'f', 'e', 'a', 't', 'u', 'r', 'e',
 };
 
 
@@ -202,6 +213,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 */
 	void proc_keyboard (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;(void)n;
 		if(clock_time_exceed(keyScanTick, 8000)){
 			keyScanTick = clock_time();
 		}
@@ -229,6 +241,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 */
 	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;(void)n;
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 		}
@@ -252,6 +265,7 @@ _attribute_data_retention_	int device_in_connection_state;
  */
 void	task_connect (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	tlkapi_printf(APP_COC_LOG_EN,"----- connected -----\n");
 	connect_event_occurTick = clock_time()|1;
 
@@ -263,7 +277,7 @@ void	task_connect (u8 e, u8 *p, int n)
 	final_MTU_size = 23;
 
 	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, LED_ON_LEVAL);  // light on
+		gpio_write(GPIO_LED_RED, LED_ON_LEVEL);  // light on
 	#endif
 }
 
@@ -278,6 +292,7 @@ void	task_connect (u8 e, u8 *p, int n)
  */
 void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
+    (void)e;(void)p;(void)n;
 	tlkapi_printf(APP_COC_LOG_EN,"----- terminate rsn: 0x%x -----\n", *p);
 	connect_event_occurTick = 0;
 	mtuExchange_check_tick = 0;
@@ -308,7 +323,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 
 
 #if (UI_LED_ENABLE)
-	gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);  // light off
+	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  // light off
 #endif
 
 
@@ -323,6 +338,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  */
 void	task_dle_exchange (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	ll_data_extension_t* dle_param = (ll_data_extension_t*)p;
 	tlkapi_printf(APP_COC_LOG_EN,"----- DLE exchange: -----\n");
 	tlkapi_printf(APP_COC_LOG_EN,"connEffectiveMaxRxOctets: %d\n", dle_param->connEffectiveMaxRxOctets);
@@ -346,6 +362,7 @@ void	task_dle_exchange (u8 e, u8 *p, int n)
  */
 int app_host_event_callback (u32 h, u8 *para, int n)
 {
+	(void)h;(void)para;(void)n;
 	app_host_coc_event_callback(h, para, n);
 	u8 event = h & 0xFF;
 
@@ -433,6 +450,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
  */
 void	task_suspend_exit (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
@@ -461,206 +479,12 @@ void blt_pm_proc(void)
 }
 
 
-
-
-
-
-/**
- * @brief		user initialization when MCU power on or wake_up from deepSleep mode
- * @param[in]	none
- * @return      none
- */
-void user_init_normal(void)
-{
-	//random number generator must be initiated here( in the beginning of user_init_nromal)
-	//when deepSleep retention wakeUp, no need initialize again
-	random_generator_init();  //this is must
-
-	blc_readFlashSize_autoConfigCustomFlashSector();
-
-	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
-	blc_app_loadCustomizedParameters_normal();
-
-////////////////// BLE stack initialization ////////////////////////////////////
-	u8  mac_public[6];
-	u8  mac_random_static[6];
-	//for 512K Flash, flash_sector_mac_address equals to 0x76000
-	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
-	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
-
-
-	////// Controller Initialization  //////////
-	blc_ll_initBasicMCU();                      //mandatory
-	blc_ll_initStandby_module(mac_public);				//mandatory
-	blc_ll_initAdvertising_module(mac_public); 	//adv module: 		 mandatory for BLE slave,
-	blc_ll_initConnection_module();				//connection module  mandatory for BLE slave/master
-	blc_ll_initSlaveRole_module();				//slave module: 	 mandatory for BLE slave,
-
-
-
-	////// Host Initialization  //////////
-	blc_gap_peripheral_init();    //gap initialization
-	my_att_init (); //gatt initialization
-
-	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
-
-	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
-	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
-	//   should re_stored) , so it must be done after battery check
-	blc_smp_peripheral_init();
-
-	blc_smp_configSecurityRequestSending(SecReq_NOT_SEND, SecReq_NOT_SEND, 1000);  //if not set, default is:  send "security request" immediately after link layer connection established(regardless of new connection or reconnection )
-
-	//host(GAP/SMP/GATT/ATT) event process: register host event callback and set event mask
-	blc_gap_registerHostEventHandler( app_host_event_callback );
-	blc_gap_setEventMask( GAP_EVT_MASK_SMP_PARING_BEAGIN 			|  \
-						  GAP_EVT_MASK_SMP_PARING_SUCCESS   		|  \
-						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
-						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE 	|  \
-						  GAP_EVT_MASK_SMP_SECURITY_PROCESS_DONE    |  \
-						  GAP_EVT_MASK_ATT_EXCHANGE_MTU				|  \
-						  GAP_EVT_MASK_L2CAP_COC_CONNECT			|  \
-						  GAP_EVT_MASK_L2CAP_COC_DISCONNECT			|  \
-						  GAP_EVT_MASK_L2CAP_COC_RECONFIGURE		|  \
-						  GAP_EVT_MASK_L2CAP_COC_RECV_DATA			|  \
-						  GAP_EVT_MASK_L2CAP_COC_SEND_DATA_FINISH	|  \
-						  GAP_EVT_MASK_L2CAP_COC_CREATE_CONNECT_FINISH
-						  );
-//	blc_gap_setEventMask( -1 );
-///////////////////// USER application initialization ///////////////////
-	bls_ll_setAdvData( (u8 *)tbl_advData, sizeof(tbl_advData) );
-	bls_ll_setScanRspData( (u8 *)tbl_scanRsp, sizeof(tbl_scanRsp));
-
-
-
-
-	////////////////// config adv packet /////////////////////
-	u8 status = bls_ll_setAdvParam(  ADV_INTERVAL_30MS, ADV_INTERVAL_35MS,
-									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
-									 0,  NULL,
-									 BLT_ENABLE_ADV_ALL,
-									 ADV_FP_NONE);
-	if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
-
-	bls_ll_setAdvEnable(1);  //adv enable
-
-
-
-	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
-	rf_set_power_level_index (MY_RF_POWER_INDEX);
-
-	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
-	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
-
-
-	///////////////////// Power Management initialization///////////////////
-#if(FEATURE_PM_ENABLE)
-	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); //default use 16k deep retention
-	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
-
-	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
-		blc_pm_setDeepsleepRetentionThreshold(95, 95);
-
-		#if(MCU_CORE_TYPE == MCU_CORE_825x)
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(260);
-		#elif((MCU_CORE_TYPE == MCU_CORE_827x))
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(350);
-		#endif
-	#else
-		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
-	#endif
-
-
-	#if (UI_KEYBOARD_ENABLE)
-		/////////// keyboard gpio wakeup init ////////
-		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
-		{
-			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
-		}
-
-		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
-	#endif
-
-#else
-	bls_pm_setSuspendMask (SUSPEND_DISABLE);
-#endif
-
-	app_l2cap_coc_init();
-}
-
-
-
-/**
- * @brief		user initialization when MCU wake_up from deepSleep_retention mode
- * @param[in]	none
- * @return      none
- */
-_attribute_ram_code_ void user_init_deepRetn(void)
-{
-#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-	blc_app_loadCustomizedParameters_deepRetn();
-	blc_ll_initBasicMCU();   //mandatory
-	rf_set_power_level_index (MY_RF_POWER_INDEX);
-
-	blc_ll_recoverDeepRetention();
-
-	irq_enable();
-
-	#if (UI_KEYBOARD_ENABLE)
-		/////////// keyboard gpio wakeup init ////////
-		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
-		{
-			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
-		}
-	#endif
-
-#endif
-}
-
-
-/**
- * @brief     BLE main loop
- * @param[in]  none.
- * @return     none.
- */
-void main_loop (void)
-{
-
-	////////////////////////////////////// BLE entry /////////////////////////////////
-	blt_sdk_main_loop();
-
-	////////////////////////////////////// UI entry /////////////////////////////////
-	#if (UI_KEYBOARD_ENABLE)
-		proc_keyboard (0,0, 0);
-	#endif
-
-	////////////////////////////////////// PM Process /////////////////////////////////
-	blt_pm_proc();
-}
-
+//////////////////////////////// COC /////////////////////////
 int myC2SWrite(void * p)
 {
+    (void)p;
 	return 0;
 }
-
-
-
-
-typedef struct{
-	u16 connHandle;
-	u16 mtu;
-	u16 srcCid;
-	u16 dstCid;
-} app_cocCid_t;
-
-app_cocCid_t app_cocCid[COC_CID_COUNT];
-
-static u8 cocBuffer[COC_MODULE_BUFFER_SIZE(CREATE_COC_CONNECT_ACL_COUNT, COC_CID_COUNT, COC_MTU_SIZE)];
 
 /**
  * @brief	Initialize the L2CAP CoC channel, configure parameters such as MTU and SPSM.
@@ -690,6 +514,7 @@ void app_l2cap_coc_init(void)
 
 int app_host_coc_event_callback (u32 h, u8 *para, int n)
 {
+    (void)h;(void)para;(void)n;
 	u8 event = h & 0xFF;
 
 	switch(event)
@@ -697,7 +522,7 @@ int app_host_coc_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_L2CAP_COC_CONNECT:
 		{
 			gap_l2cap_cocConnectEvt_t* cocConnEvt = (gap_l2cap_cocConnectEvt_t*)para;
-			for(int i=0; i<ARRAY_SIZE(app_cocCid); i++)
+			for(unsigned int i=0; i<ARRAY_SIZE(app_cocCid); i++)
 			{
 				if(!app_cocCid[i].connHandle)
 				{
@@ -714,7 +539,7 @@ int app_host_coc_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_L2CAP_COC_DISCONNECT:
 		{
 			gap_l2cap_cocDisconnectEvt_t* cocDisconnEvt = (gap_l2cap_cocDisconnectEvt_t*)para;
-			for(int i=0; i<ARRAY_SIZE(app_cocCid); i++)
+			for(unsigned int i=0; i<ARRAY_SIZE(app_cocCid); i++)
 			{
 				if(app_cocCid[i].connHandle == cocDisconnEvt->connHandle &&
 						app_cocCid[i].srcCid == cocDisconnEvt->srcCid &&
@@ -791,7 +616,7 @@ _attribute_data_retention_	u8 	coc_test_Data[] = {0x00, 0x01, 0x02, 0x03, 0x04, 
  */
 void app_sendCocData(void)
 {
-	for(int i=0; i<ARRAY_SIZE(app_cocCid); i++)
+	for(unsigned int i=0; i<ARRAY_SIZE(app_cocCid); i++)
 	{
 		if(app_cocCid[i].connHandle)
 		{
@@ -808,7 +633,7 @@ void app_sendCocData(void)
  */
 void app_disconnCocConnect(void)
 {
-	for(int i=0; i<ARRAY_SIZE(app_cocCid); i++)
+	for(unsigned int i=0; i<ARRAY_SIZE(app_cocCid); i++)
 	{
 		if(app_cocCid[i].connHandle)
 		{
@@ -816,6 +641,223 @@ void app_disconnCocConnect(void)
 			if(state){}
 		}
 	}
+}
+
+
+
+/**
+ * @brief		user initialization when MCU power on or wake_up from deepSleep mode
+ * @param[in]	none
+ * @return      none
+ */
+void user_init_normal(void)
+{
+	//random number generator must be initiated here( in the beginning of user_init_nromal)
+	//when deepSleep retention wakeUp, no need initialize again
+	random_generator_init();  //this is must
+
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
+
+////////////////// BLE stack initialization ////////////////////////////////////
+	u8  mac_public[6];
+	u8  mac_random_static[6];
+	//for 512K Flash, flash_sector_mac_address equals to 0x76000
+	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
+	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
+
+
+	////// Controller Initialization  //////////
+	blc_ll_initBasicMCU();                      //mandatory
+	blc_ll_initStandby_module(mac_public);				//mandatory
+	blc_ll_initAdvertising_module(mac_public); 	//adv module: 		 mandatory for BLE slave,
+	blc_ll_initConnection_module();				//connection module  mandatory for BLE slave/master
+	blc_ll_initSlaveRole_module();				//slave module: 	 mandatory for BLE slave,
+
+
+
+	////// Host Initialization  //////////
+	blc_gap_peripheral_init();    //gap initialization
+	my_att_init (); //gatt initialization
+
+	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
+
+	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
+	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
+	//   should re_stored) , so it must be done after battery check
+	blc_smp_peripheral_init();
+
+	blc_smp_configSecurityRequestSending(SecReq_NOT_SEND, SecReq_NOT_SEND, 1000);  //if not set, default is:  send "security request" immediately after link layer connection established(regardless of new connection or reconnection )
+
+	//host(GAP/SMP/GATT/ATT) event process: register host event callback and set event mask
+	blc_gap_registerHostEventHandler( app_host_event_callback );
+	blc_gap_setEventMask( GAP_EVT_MASK_SMP_PARING_BEAGIN 			|  \
+						  GAP_EVT_MASK_SMP_PARING_SUCCESS   		|  \
+						  GAP_EVT_MASK_SMP_PARING_FAIL				|  \
+						  GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE 	|  \
+						  GAP_EVT_MASK_SMP_SECURITY_PROCESS_DONE    |  \
+						  GAP_EVT_MASK_ATT_EXCHANGE_MTU				|  \
+						  GAP_EVT_MASK_L2CAP_COC_CONNECT			|  \
+						  GAP_EVT_MASK_L2CAP_COC_DISCONNECT			|  \
+						  GAP_EVT_MASK_L2CAP_COC_RECONFIGURE		|  \
+						  GAP_EVT_MASK_L2CAP_COC_RECV_DATA			|  \
+						  GAP_EVT_MASK_L2CAP_COC_SEND_DATA_FINISH	|  \
+						  GAP_EVT_MASK_L2CAP_COC_CREATE_CONNECT_FINISH
+						  );
+//	blc_gap_setEventMask( -1 );
+///////////////////// USER application initialization ///////////////////
+	bls_ll_setAdvData( (u8 *)tbl_advData, sizeof(tbl_advData) );
+	bls_ll_setScanRspData( (u8 *)tbl_scanRsp, sizeof(tbl_scanRsp));
+
+
+
+
+	////////////////// config adv packet /////////////////////
+	u8 adv_param_status = BLE_SUCCESS;
+	adv_param_status = bls_ll_setAdvParam(  ADV_INTERVAL_30MS, ADV_INTERVAL_35MS,
+									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
+									 0,  NULL,
+									 BLT_ENABLE_ADV_ALL,
+									 ADV_FP_NONE);
+	if(adv_param_status != BLE_SUCCESS) {  	//debug: adv setting err
+		tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+		while(1);
+	}
+
+
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
+
+
+
+	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
+
+	bls_app_registerEventCallback (BLT_EV_FLAG_CONNECT, &task_connect);
+	bls_app_registerEventCallback (BLT_EV_FLAG_TERMINATE, &task_terminate);
+
+
+	///////////////////// Power Management initialization///////////////////
+#if(FEATURE_PM_ENABLE)
+	blc_ll_initPowerManagement_module();        //pm module:      	 optional
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
+
+	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+		extern u32 _retention_use_size_div_16_;
+		if (((u32)&_retention_use_size_div_16_) < 0x400)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
+		else if (((u32)&_retention_use_size_div_16_) < 0x800)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
+		else
+		{
+			//retention size > 32k, overflow
+			//debug: deep retention size setting err
+		}
+		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
+		blc_pm_setDeepsleepRetentionThreshold(95, 95);
+
+		#if(MCU_CORE_TYPE == MCU_CORE_825x)
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(260);
+		#elif((MCU_CORE_TYPE == MCU_CORE_827x))
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(350);
+		#endif
+	#else
+		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
+	#endif
+
+
+	#if (UI_KEYBOARD_ENABLE)
+		/////////// keyboard gpio wakeup init ////////
+		u32 pin[] = KB_DRIVE_PINS;
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		{
+			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
+		}
+
+		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
+		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
+	#endif
+
+#else
+	bls_pm_setSuspendMask (SUSPEND_DISABLE);
+#endif
+
+	app_l2cap_coc_init();
+
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_l2cap_coc init \n");
+}
+
+
+
+/**
+ * @brief		user initialization when MCU wake_up from deepSleep_retention mode
+ * @param[in]	none
+ * @return      none
+ */
+_attribute_ram_code_ void user_init_deepRetn(void)
+{
+#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
+	blc_ll_initBasicMCU();   //mandatory
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
+
+	blc_ll_recoverDeepRetention();
+
+	irq_enable();
+
+	#if (UI_KEYBOARD_ENABLE)
+		/////////// keyboard gpio wakeup init ////////
+		u32 pin[] = KB_DRIVE_PINS;
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		{
+			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
+		}
+	#endif
+
+#endif
+}
+
+
+/**
+ * @brief     BLE main loop
+ * @param[in]  none.
+ * @return     none.
+ */
+void main_loop (void)
+{
+
+	////////////////////////////////////// BLE entry /////////////////////////////////
+	blt_sdk_main_loop();
+
+	////////////////////////////////////// UI entry /////////////////////////////////
+	#if (UI_KEYBOARD_ENABLE)
+		proc_keyboard (0,0, 0);
+	#endif
+
+	////////////////////////////////////// PM Process /////////////////////////////////
+	blt_pm_proc();
 }
 
 

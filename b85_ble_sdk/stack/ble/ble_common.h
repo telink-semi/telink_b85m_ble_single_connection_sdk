@@ -144,8 +144,6 @@ typedef enum {
 
 	//L2CAP status
     L2CAP_ERR_INVALID_PARAMETER 								   = 0x90,
-    L2CAP_ERR_INVALID_HANDLE,
-    L2CAP_ERR_INSUFFICIENT_RESOURCES,
     L2CAP_ERR_PSM_NOT_REGISTER,
     L2CAP_ERR_CONTROL_NOT_READY,
     L2CAP_ERR_COC_CREATING,
@@ -158,21 +156,25 @@ typedef enum {
 	SMP_ERR_INVALID_PARAMETER 									   = 0xA0,
 	SMP_ERR_PAIRING_BUSY,
 
+
+	//ATT status
+	ATT_ERR_INVALID_PARAMETER 									   = 0xB0,
+
+
+
 	//GATT status
-	GATT_ERR_INVALID_PARAMETER 									   = 0xB0,
+	GATT_ERR_INVALID_PARAMETER 									   = 0xC0,
 	GATT_ERR_PREVIOUS_INDICATE_DATA_HAS_NOT_CONFIRMED,
-	GATT_ERR_SERVICE_DISCOVERY_TIEMOUT,
+	GATT_ERR_SERVICE_DISCOVERY_TIMEOUT,
 	GATT_ERR_NOTIFY_INDICATION_NOT_PERMITTED,
 	GATT_ERR_DATA_PENDING_DUE_TO_SERVICE_DISCOVERY_BUSY,
 	GATT_ERR_DATA_LENGTH_EXCEED_MTU_SIZE,
 
+
+
+
 	//GAP status
 	GAP_ERR_INVALID_PARAMETER 								   	   = 0xC0,
-	//IAL
-	IAL_ERR_SDU_LEN_EXCEED_SDU_MAX,
-	IAL_ERR_LOSS_SDU_INTRVEL,
-	IAL_ERR_ISO_TX_FIFO_NOT_ENOUGH,
-	IAL_ERR_SDU_BUFF_INVALID,
 
 	//Service status
 	SERVICE_ERR_INVALID_PARAMETER 								   = 0xD0,
@@ -189,32 +191,47 @@ typedef enum {
 typedef enum {
     INIT_SUCCESS = 0,
 
-	///////// Controller ///////////
+	////////////////////////// Controller //////////////////////////////
 
-	LL_ACL_RX_BUF_NO_INIT 							   	  		   = 0x0010,
-	LL_ACL_RX_BUF_PARAM_INVALID,
-	LL_ACL_RX_BUF_SIZE_NOT_MEET_MAX_RX_OCT,
-	LL_ACL_TX_BUF_NO_INIT,
-	LL_ACL_TX_BUF_PARAM_INVALID,
-	LL_ACL_TX_BUF_SIZE_NOT_MEET_MAX_TX_OCT,
-
-
-	////////////////// Host /////////////////////
-	//GAP
-
-
-	//L2CAP
-
-
-	//ATT
+    INIT_ERR_LL_ACL_RX_BUF_NO_INIT 						 = 0x1000,
+    INIT_ERR_LL_ACL_RX_BUF_PARAM_INVALID,
+    INIT_ERR_LL_ACL_RX_BUF_SIZE_NOT_MEET_MAX_RX_OCT,
+    INIT_ERR_LL_ACL_TX_BUF_NO_INIT,
+    INIT_ERR_LL_ACL_TX_BUF_PARAM_INVALID,
+    INIT_ERR_LL_ACL_TX_BUF_SIZE_NOT_MEET_MAX_TX_OCT,
 
 
 
-	//GATT
+
+	///////////////////////////// Host ///////////////////////////////
+
+	////////////// GAP /////////////
+    INIT_ERR_GAP_PARAM_INVALID				= 0x2000,
+
+	//
+	////////////// L2CAP /////////////
+    INIT_ERR_L2CAP_PARAM_INVALID			= 0x2100,
 
 
-	//SMP
-	INIT_ERR_SMP_BONDING_MAX_NUMBER_EXCEED						   	= 0x1600,
+	////////////// ATT /////////////
+    INIT_ERR_ATT_PARAM_INVALID				= 0x2200,
+	INIT_ERR_ATT_MTU_SIZE_INVALID,
+	/* MTU buffer is not enough for MTU size, user need register new buffer with API "blc l2cap_initMtuBuffer" */
+	INIT_ERR_ATT_MTU_BUFF_NOT_MATCH_MTU_SIZE,
+
+
+
+
+
+
+	////////////// GATT /////////////
+
+	////////////// SMP /////////////
+
+	/* user set bonding maximum number exceed stack design limitation. If default maximum number can not meet user's requirement,
+	 * they should contact Telink for support */
+	INIT_ERR_SMP_BONDING_MAX_NUMBER_EXCEED						   	= 0x2400,
+	INIT_ERR_SMP_MTU_SIZE_NOT_MATCH_SC						   		= 0x2401, //MTU should equal to or greater than 65 for secure connection
 
 
 	////////////////// Service/Profile /////////////////////
@@ -322,6 +339,14 @@ typedef enum{
 	L2CAP_CID_SMP				= 0x0006,
 }l2cap_cid_type;
 
+
+
+/**
+ * @brief	6 = header(2)+l2cap_len(2)+CID(2)
+ */
+#define		CAL_L2CAP_BUFF_SIZE(n)				(((n + 6) + 3)/4 * 4)
+
+
 /**
  *  @brief  Definition for L2CAP signal packet formats
  */
@@ -414,7 +439,7 @@ typedef enum{
 
 typedef enum {
 	DT_FLAGS								= 0x01,		//	Flag
-	DT_INCOMPLT_LIST_16BIT_SERVICE_UUID		= 0x02,		//	Incomplete List of 16-bit Service Class UUIDs
+	DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID		= 0x02,		//	Incomplete List of 16-bit Service Class UUIDs
 	DT_COMPLETE_LIST_16BIT_SERVICE_UUID	    = 0x03,		//	Complete List of 16-bit Service Class UUIDs
 	DT_INCOMPLT_LIST_32BIT_SERVICE_UUID    	= 0x04,		//	Incomplete List of 32-bit Service Class UUIDs
 	DT_COMPLETE_LIST_32BIT_SERVICE_UUID		= 0x05,		//	Complete List of 32-bit Service Class UUIDs

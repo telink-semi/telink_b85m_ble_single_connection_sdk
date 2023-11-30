@@ -78,13 +78,14 @@ enum CDC_Descriptor_ClassSubclass_Protocol_t
 {
 	CDC_CSCP_NoSpecific_Subclass = 0x00,
 	CDC_CSCP_NoSpecific_Protocol = 0x00,
-	CDC_CSCP_NoData_Subclass = 0x00,
-	CDC_CSCP_NoData_Protocol = 0x00,
-	CDC_CSCP_ATCmd_Protocol = 0x01,
-	CDC_CSCP_CDC_Class = 0x02,
-	CDC_CSCP_ACM_Subclass = 0x02,
-	CDC_CSCP_CDCData_Class = 0x0A,
+	CDC_CSCP_NoDataSubclass = 0x00,
+	CDC_CSCP_NoDataProtocol = 0x00,
+	CDC_CSCP_ATCmdProtocol = 0x01,
+	CDC_CSCP_CDCClass = 0x02,
+	CDC_CSCP_ACMSubclass = 0x02,
+	CDC_CSCP_CDCDataClass = 0x0A,
 	CDC_CSCP_VendorSpecific_Protocol = 0xFF,
+	CDC_CSCP_ATCommandProtocol = 0x01,
 };
 
 enum CDC_Class_Requestions_t

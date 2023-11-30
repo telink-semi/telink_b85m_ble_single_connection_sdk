@@ -45,13 +45,8 @@
  *******************************************************************************************************/
 #pragma once
 
-/* Enable C linkage for C++ Compilers: */
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-
 #include "config.h"
+#include "boards/boards_config.h"
 
 //////////// product  Information  //////////////////////////////
 #ifndef ID_VENDOR
@@ -95,10 +90,6 @@ extern "C" {
 
 
 
-
-
-
-
 #if(APPLICATION_DONGLE)
 	#ifndef MODULE_MOUSE_ENABLE
 	#define MODULE_MOUSE_ENABLE		0
@@ -136,12 +127,6 @@ extern "C" {
 #endif
 
 
-
-
-
-
-
-
 ///////////////////  USB   /////////////////////////////////
 #ifndef IRQ_USB_PWDN_ENABLE
 #define	IRQ_USB_PWDN_ENABLE  	0
@@ -172,45 +157,77 @@ extern "C" {
 #ifndef USB_AUDIO_441K_ENABLE
 #define USB_AUDIO_441K_ENABLE  	0
 #endif
-#ifndef USB_MASS_STORAGE_ENABLE
-#define USB_MASS_STORAGE_ENABLE  	0
-#endif
-#ifndef MIC_CHANNLE_COUNT
-#define MIC_CHANNLE_COUNT  			2
+
+#ifndef MIC_CHANNEL_COUNT
+#define MIC_CHANNEL_COUNT  			2
 #endif
 
-#ifndef USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE
-#define USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE  			0
+
+
+#ifndef USB_KEYBOARD_POLL_INTERVAL
+#define USB_KEYBOARD_POLL_INTERVAL		10		// in ms
 #endif
 
-#ifndef USB_ID_AND_STRING_CUSTOM
-#define USB_ID_AND_STRING_CUSTOM  								0
-#endif
-
-#define KEYBOARD_RESENT_MAX_CNT			3
-#define KEYBOARD_REPEAT_CHECK_TIME		300000	// in us	
-#define KEYBOARD_REPEAT_INTERVAL		100000	// in us	
-#define KEYBOARD_SCAN_INTERVAL			16000	// in us
-#define MOUSE_SCAN_INTERVAL				8000	// in us	
-#define SOMATIC_SCAN_INTERVAL     		8000
-
-#define USB_KEYBOARD_POLL_INTERVAL		10		// in ms	USB_KEYBOARD_POLL_INTERVAL < KEYBOARD_SCAN_INTERVAL to ensure PC no missing key
+#ifndef USB_MOUSE_POLL_INTERVAL
 #define USB_MOUSE_POLL_INTERVAL			4		// in ms
+#endif
+
+#ifndef USB_SOMATIC_POLL_INTERVAL
 #define USB_SOMATIC_POLL_INTERVAL     	8		// in ms
+#endif
 
 #define USB_KEYBOARD_RELEASE_TIMEOUT    (450000) // in us
 #define USB_MOUSE_RELEASE_TIMEOUT       (200000) // in us
-#define USB_SOMATIC_RELEASE_TIMEOUT     (200000) // in us
 
+///////////////////  Board configuration   /////////////////////////////////
+#if ( BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
+	#include "boards/C1T139A30.h"
+#elif ( BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3)
+	#define UI_BUTTON_ENABLE	1
+	#include "boards/C1T139A3.h"
+#elif ( BOARD_SELECT == BOARD_825X_RCU_C1T139A5)
+	#include "boards/C1T139A5.h"
+#elif ( BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
+	#include "boards/C1T197A30.h"
+#elif ( BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
+	#define UI_BUTTON_ENABLE	1
+	#include "boards/C1T201A3.h"
+#elif ( BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
+	#include "boards/C1T197A5.h"
+#endif
 
+#ifndef BOARD_SELECT
 
+	#if (MCU_CORE_TYPE == MCU_CORE_825x)
+	/* can only choose BOARD_825X_EVK_C1T139A30 or BOARD_825X_DONGLE_C1T139A3 or BOARD_825X_RCU_C1T139A5,
+	 * default use EVK, user can change */
+		#define BOARD_SELECT								BOARD_825X_EVK_C1T139A30
+	#elif (MCU_CORE_TYPE == MCU_CORE_827x)
+	/* can only choose BOARD_827X_EVK_C1T197A30 or BOARD_827X_DONGLE_C1T201A3 or BOARD_827X_RCU_C1T197A5,
+	 * default use EVK, user can change */
+		#define BOARD_SELECT								BOARD_827X_EVK_C1T197A30
+	#else
+		#error "SDK do not support this MCU!"
+	#endif
+#endif
 
+///////////////////  UI configuration   /////////////////////////////////
+#ifndef UI_KEYBOARD_ENABLE
+#define UI_KEYBOARD_ENABLE		0
+#endif
 
+#ifndef UI_BUTTON_ENABLE
+#define UI_BUTTON_ENABLE		0
+#endif
+
+#ifndef UI_LED_ENABLE
+#define UI_LED_ENABLE			0
+#endif
+
+///////////////////  DEBUG configuration   /////////////////////////////////
 #ifndef DEBUG_GPIO_ENABLE
 #define DEBUG_GPIO_ENABLE  								0
 #endif
-
-
 
 #if (DEBUG_GPIO_ENABLE)
 	#ifdef GPIO_CHN0
@@ -422,19 +439,3 @@ extern "C" {
 	#define DBG_CHN15_HIGH
 	#define DBG_CHN15_TOGGLE
 #endif
-
-
-#if PM_DEEPSLEEP_RETENTION_ENABLE
-asm(".equ __PM_DEEPSLEEP_RETENTION_ENABLE,	1");
-#else
-asm(".equ __PM_DEEPSLEEP_RETENTION_ENABLE,	0");
-#endif
-asm(".global __PM_DEEPSLEEP_RETENTION_ENABLE");
-
-
-
-/* Disable C linkage for C++ Compilers: */
-#if defined(__cplusplus)
-}
-#endif
-

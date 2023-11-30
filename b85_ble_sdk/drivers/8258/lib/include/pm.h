@@ -36,14 +36,14 @@ volatile unsigned int ana_32k_tick;
 #define PM_LONG_SUSPEND_EN					1
 
 #ifndef PM_TIM_RECOVER_MODE
-#define PM_TIM_RECOVER_MODE			    	1
+#define PM_TIM_RECOVER_MODE			    	1 //this function only support for interface of cpu_sleep_wakeup_32k_rc and cpu_sleep_wakeup_32k_xtal
 #endif
 
 
 
 #define PM_XTAL_DELAY_DURATION      		500
-#define EARLYWAKEUP_TIME_US_DEEP    		1100
-#define EARLYWAKEUP_TIME_US_SUSPEND 		1250
+#define EARLYWAKEUP_TIME_US_DEEP    		1240
+#define EARLYWAKEUP_TIME_US_SUSPEND 		1190
 #define EMPTYRUN_TIME_US       	    		1500
 
 #define PM_DCDC_DELAY_DURATION      		1000
@@ -122,7 +122,13 @@ typedef enum {
 	 PM_WAKEUP_PAD   		= BIT(4),
 	 PM_WAKEUP_CORE  		= BIT(5),
 	 PM_WAKEUP_TIMER 		= BIT(6),
-	 PM_WAKEUP_COMPARATOR 	= BIT(7),
+	 PM_WAKEUP_COMPARATOR 	= BIT(7), /**<
+	 	 	 	 	 	 	 	 	 	There are two things to note when using LPC wake up:
+										1.After the LPC is configured, you need to wait 100 microseconds before you can go to sleep because the LPC need 1-2 32k tick to calculate the result.
+										  If you enter the sleep function at this time, you may not be able to sleep normally because the data in the result register is abnormal.
+
+										2.When entering sleep, keep the input voltage and reference voltage difference must be greater than 30mV, otherwise can not enter sleep normally, crash occurs.
+	  	  	  	  	  	  	  	  	  	 */
 	 //not available wake-up source for customer
 	 PM_TIM_RECOVER_START   = BIT(14),
 	 PM_TIM_RECOVER_END     = BIT(15),
@@ -139,18 +145,18 @@ enum {
 	 WAKEUP_STATUS_PAD    			= BIT(3),
 
 	 WAKEUP_STATUS_WD    			= BIT(6),
-	 STATUS_GPIO_ERR_NO_ENTER_PM  	= BIT(7),
-
+	 STATUS_GPIO_ERR_NO_ENTER_PM  	= BIT(8),/**<Bit8 is used to determine whether the wake source is normal.*/
+	 
 	 STATUS_ENTER_SUSPEND  			= BIT(30),
 };
 
 /**
- * @brief	pm power weather to power down definition
+ * @brief	pm power whether to power down definition
  */
 typedef enum {
-	 PM_POWER_BASEBAND  	= BIT(0),	//weather to power on the BASEBAND before suspend.
-	 PM_POWER_USB  			= BIT(1),	//weather to power on the USB before suspend.
-	 PM_POWER_AUDIO  		= BIT(2),	//weather to power on the AUDIO before suspend.
+	 PM_POWER_BASEBAND  	= BIT(0),	//whether to power on the BASEBAND before suspend.
+	 PM_POWER_USB  			= BIT(1),	//whether to power on the USB before suspend.
+	 PM_POWER_AUDIO  		= BIT(2),	//whether to power on the AUDIO before suspend.
 }pm_suspend_power_cfg_e;
 
 /**
@@ -241,7 +247,7 @@ static inline int pm_get_wakeup_src(void)
  * 				on this module,the suspend current will increase;power down this module will save current,
  * 				but you need to re-init this module after suspend wakeup.All power down default to save
  * 				current.
- * @param[in]	value - weather to power on/off the baseband/usb/audio.
+ * @param[in]	value - whether to power on/off the baseband/usb/audio.
  * @param[in]	on_off - select power on or off. 0 - power off, other value - power on; .
  * @return		none.
  */
@@ -348,6 +354,25 @@ int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeD
  */
 int  cpu_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
 
+/**
+ * @brief      This function servers to wake up the cpu from sleep mode.
+ * @param[in]  sleep_mode - sleep mode type select.
+ * @param[in]  wakeup_src - wake up source select.
+ * @param[in]  wakeup_tick - the 32k tick which you want to sleep.(32*1000 -> 1s)
+ * @return     indicate whether the cpu is wake up successful.
+ */
+int cpu_long_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
+
+/**
+ * @brief      This function servers to wake up the cpu from sleep mode.
+ * @param[in]  sleep_mode - sleep mode type select.
+ * @param[in]  wakeup_src - wake up source select.
+ * @param[in]  wakeup_tick - the 32k tick which you want to sleep.(32768 -> 1s)
+ * 							 Note that the frequency of the external 32k crystal is 32768, not 32000. The sleep tick value is calculated based on 32768 ticks being 1s.
+ * @return     indicate whether the cpu is wake up successful.
+ */
+int cpu_long_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
+
 typedef int (*cpu_pm_handler_t)(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
 
 extern 	cpu_pm_handler_t  		 cpu_sleep_wakeup;
@@ -400,29 +425,8 @@ unsigned int  pm_get_info1(void);
  */
 unsigned short efuse_get_adc_calib_value(void);
 
-unsigned int cpu_get_32k_tick(void);
-
 void soft_reboot_dly13ms_use24mRC(void);
 
-
-/**
- * @brief      This function servers to wake up the cpu from sleep mode.
- * @param[in]  sleep_mode - sleep mode type select.
- * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the 32k tick which you want to sleep.(32*1000 -> 1s)
- * @return     indicate whether the cpu is wake up successful.
- */
-int cpu_long_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
-
-/**
- * @brief      This function servers to wake up the cpu from sleep mode.
- * @param[in]  sleep_mode - sleep mode type select.
- * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the 32k tick which you want to sleep.(32768 -> 1s)
- * 							 Note that the frequency of the external 32k crystal is 32768, not 32000. The sleep tick value is calculated based on 32768 ticks being 1s.
- * @return     indicate whether the cpu is wake up successful.
- */
-int cpu_long_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
 
 /**
  * @brief		This function serves to set flash voltage vdd_f.TO ensure the vdd_f is enough to supply the flash,need to calibration the vdd_f.

@@ -22,7 +22,7 @@
  *          or alteration(s).
  *
  *          Licensees are granted free, non-transferable use of the information in this
- *          file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
+ *          file under Mutual Non-Disclosure Agreement. NO WARRANTY of ANY KIND is provided.
  *
  *******************************************************************************************************/
 #include 	"tl_common.h"
@@ -223,7 +223,7 @@ int app_auido_google_callback(void* p)
 	{
 		if(htt_audio_model_enable_flags)
 		{
-			//when htt model ongoing mic open comes send mic allready open error (0x0f01) and continue
+			//when htt model ongoing mic open comes send mic already open error (0x0f01) and continue
 			sendBuff[0] = ATV_MIC_CHAR_RSP_MIC_OPEN_ERROR;
 			sendBuff[1] = MIC_ALREADY_OPEN_HIGH;
 			sendBuff[2] = MIC_ALREADY_OPEN_LOW;
@@ -313,7 +313,7 @@ int app_auido_google_callback(void* p)
 			sendBuff[0] = ATV_MIC_CHAR_RSP_CAP;
 			sendBuff[1] = VERSION_10_HIGH; // version high
 			sendBuff[2] = VERSION_10_LOW; // version low 1.0
-			sendBuff[3] = CS_16K16B; //codecs_supproted 16Khz(ADPCM,16bits)
+			sendBuff[3] = CS_16K16B; //codecs_supported 16Khz(ADPCM,16bits)
 			if(htt_audio_model_enable_flags)
 			{
 				sendBuff[4] = HTT; //assistant interaction model ON_Request(0x00)HTT(0x03)
@@ -334,8 +334,8 @@ int app_auido_google_callback(void* p)
 			sendBuff[0] = ATV_MIC_CHAR_RSP_CAP;
 			sendBuff[1] = VERSION_10_HIGH; //major version
 			sendBuff[2] = VERSION_10_LOW; //minor version
-			sendBuff[3] = v4CS_BOTH_HIGH; //codecs_supproted high
-			sendBuff[4] = v4CS_BOTH_LOW; //codecs_supproted low:  0x0001-8Khz(ADPCM,16bits), 0x0003-8K/16Khz(ADPCM,16bits)
+			sendBuff[3] = v4CS_BOTH_HIGH; //codecs_supported high
+			sendBuff[4] = v4CS_BOTH_LOW; //codecs_supported low:  0x0001-8Khz(ADPCM,16bits), 0x0003-8K/16Khz(ADPCM,16bits)
 			sendBuff[5] = v4BF_HIGH; //frame lengths high
 			sendBuff[6] = v4BF_LOW; //frame lengths low -- 134Byts
 			sendBuff[7] = BYTE_20_HIGH; //packet lengths high

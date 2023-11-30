@@ -52,6 +52,10 @@
 #include <application/usbstd/USBController.h>
 #include "../../common/config/user_config.h"
 
+// need to check
+#include <application/usbstd/stdDescriptors.h>
+#include <application/usbstd/StdRequestType.h>
+
 /* Enable C linkage for C++ Compilers: */
 #if defined(__cplusplus)
 extern "C" {
@@ -82,7 +86,7 @@ typedef enum {
 	USB_INTF_MIC,
 #endif
 #if(0)
-	USB_INTF_AUDIO_HID,		//  use for volumn control, mute, next, prev track,  move to mouse hid
+	USB_INTF_AUDIO_HID,		//  use for volume control, mute, next, prev track,  move to mouse hid
 #endif
 #if USB_KEYBOARD_ENABLE
 	USB_INTF_KEYBOARD,
@@ -118,7 +122,7 @@ enum {
 };
 
 #if(USB_MIC_ENABLE)
-#define USB_MIC_CHANNELS_LEN   (MIC_CHANNLE_COUNT*(MIC_SAMPLE_RATE*MIC_RESOLUTION_BIT/1000/8))
+#define USB_MIC_CHANNELS_LEN   (MIC_CHANNEL_COUNT*(MIC_SAMPLE_RATE*MIC_RESOLUTION_BIT/1000/8))
 #endif
 
 enum {
@@ -242,24 +246,6 @@ enum {
 	USB_STRING_MS_OS =0xee,
 };
 
-#if (USB_CDC_ENABLE)
-/** Endpoint number of the CDC device-to-host notification IN endpoint. */
-#define CDC_NOTIFICATION_EPNUM         2
-
-/** Endpoint number of the CDC device-to-host data IN endpoint. */
-#ifndef		CDC_TX_EPNUM
-#define CDC_TX_EPNUM                   4 ///3
-#endif
-
-/** Endpoint number of the CDC host-to-device data OUT endpoint. */
-#define CDC_RX_EPNUM                   5///4
-
-/** Size in bytes of the CDC device-to-host notification IN endpoint. */
-#define CDC_NOTIFICATION_EPSIZE        8
-
-/** Size in bytes of the CDC data IN and OUT endpoints. */
-#define CDC_TXRX_EPSIZE                64
-#endif  /* USB_CDC_ENABLE */
 
 typedef struct {
 	USB_HID_Descriptor_HID_t audio_hid;
@@ -434,6 +420,10 @@ u8* usbdesc_get_somatic(void);
 
 #if (USB_CRC_ENABLE)
 u8 *usbdesc_get_cdc(void);
+#endif
+
+#if (AUDIO_HOGP)
+u8* usbdesc_get_audio_hogp(void);
 #endif
 
 /* Disable C linkage for C++ Compilers: */

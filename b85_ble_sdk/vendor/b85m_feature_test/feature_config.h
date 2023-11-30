@@ -99,12 +99,15 @@
 
 #define TEST_USER_BLT_SOFT_UART							130
 #define TEST_L2CAP_COC								    140
+#define TEST_USB_CDC									150
+#define TEST_EMI										160
+
 #define TEST_FEATURE_BACKUP								200
 
 
 
 
-#define FEATURE_TEST_MODE								TEST_FEATURE_BACKUP
+#define FEATURE_TEST_MODE								TEST_EXTENDED_ADVERTISING
 
 
 

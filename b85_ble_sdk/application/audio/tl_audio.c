@@ -71,7 +71,7 @@ u8		buffer_mic_pkt_wptr;
 u8		buffer_mic_pkt_rptr;
 
 
-#if  TL_NOISE_SUPRESSION_ENABLE
+#if  TL_NOISE_SUPPRESSION_ENABLE
 
 	int md_long =0;
 	int md_short =0;
@@ -244,7 +244,7 @@ u8 filter_cmp[20];
   | PGA_POST_GAIN(1B)(0~49): 0x710A1
  +----------------0x710A2
 */
-#define MANUAL_VOLUMN_SETTINGS			0x1C
+#define MANUAL_VOLUME_SETTINGS			0x1C
 void filter_setting()
 {
 	//get the configuration data in the flash
@@ -299,18 +299,18 @@ void filter_setting()
 	vol_gain_tmp = p_start_iir[0xA0];
 	if(vol_gain_tmp!=0xff){
 		if(vol_gain_tmp&0x80){
-			if(MANUAL_VOLUMN_SETTINGS<(vol_gain_tmp&0x7f)){
+			if(MANUAL_VOLUME_SETTINGS<(vol_gain_tmp&0x7f)){
 				return;
 			}
-			Audio_VolumeSet(1,MANUAL_VOLUMN_SETTINGS-(vol_gain_tmp&0x7f));
+			Audio_VolumeSet(1,MANUAL_VOLUME_SETTINGS-(vol_gain_tmp&0x7f));
 		}else{
-			if(MANUAL_VOLUMN_SETTINGS+vol_gain_tmp>0x3f){
+			if(MANUAL_VOLUME_SETTINGS+vol_gain_tmp>0x3f){
 				return;
 			}
-			Audio_VolumeSet(1,MANUAL_VOLUMN_SETTINGS+vol_gain_tmp);
+			Audio_VolumeSet(1,MANUAL_VOLUME_SETTINGS+vol_gain_tmp);
 		}
 	}else{
-		Audio_VolumeSet(1,MANUAL_VOLUMN_SETTINGS);
+		Audio_VolumeSet(1,MANUAL_VOLUME_SETTINGS);
 	}
 
 	//PGA_POST_GAIN setting .position 0x710A1
@@ -366,10 +366,10 @@ void	proc_mic_encoder (void)
 	if ((l >=(TL_MIC_BUFFER_SIZE>>2)) && (((u8)(buffer_mic_pkt_wptr - buffer_mic_pkt_rptr) & (TL_MIC_PACKET_BUFFER_NUM * 2 - 1)) < TL_MIC_PACKET_BUFFER_NUM)) {
 
 		s16 *ps = buffer_mic + buffer_mic_rptr;
-#if 	TL_NOISE_SUPRESSION_ENABLE
+#if 	TL_NOISE_SUPPRESSION_ENABLE
         // for FIR adc sample data, only half part data are effective
 		for (int i=0; i<TL_MIC_ADPCM_UNIT_SIZE*2; i++) {
-			ps[i] = noise_supression (ps[i]);
+			ps[i] = noise_suppression (ps[i]);
         }
 #endif
 
@@ -474,10 +474,10 @@ _attribute_ram_code_ void	proc_mic_encoder (void)
 		s16 *ps = buffer_mic + buffer_mic_rptr;
 		u8 *out = (u8 *)(buffer_mic_enc + (ADPCM_PACKET_LEN+3) * (buffer_mic_pkt_wptr & (TL_MIC_PACKET_BUFFER_NUM - 1)));
 
-#if 	TL_NOISE_SUPRESSION_ENABLE
+#if 	TL_NOISE_SUPPRESSION_ENABLE
         // for FIR adc sample data, only half part data are effective
 		for (int i=0; i<TL_MIC_ADPCM_UNIT_SIZE*2; i++) {
-			ps[i] = noise_supression (ps[i]);
+			ps[i] = noise_suppression (ps[i]);
         }
 #endif
 
@@ -582,10 +582,10 @@ void	proc_mic_encoder (void)
 		s16 *ps = buffer_mic + buffer_mic_rptr;
 		s16 *out = (s16 *)(buffer_mic_enc + (ADPCM_PACKET_LEN+3) * (buffer_mic_pkt_wptr & (TL_MIC_PACKET_BUFFER_NUM - 1)));
 
-#if 	TL_NOISE_SUPRESSION_ENABLE
+#if 	TL_NOISE_SUPPRESSION_ENABLE
         // for FIR adc sample data, only half part data are effective
 		for (int i=0; i<TL_MIC_ADPCM_UNIT_SIZE*2; i++) {
-			ps[i] = noise_supression (ps[i]);
+			ps[i] = noise_suppression (ps[i]);
         }
 #endif
 
@@ -680,10 +680,10 @@ void	proc_mic_encoder (void)
 	if (l >=(TL_MIC_BUFFER_SIZE>>2)) {
 
 		s16 *ps = buffer_mic + buffer_mic_rptr;
-#if 	TL_NOISE_SUPRESSION_ENABLE
+#if 	TL_NOISE_SUPPRESSION_ENABLE
         // for FIR adc sample data, only half part data are effective
 		for (int i=0; i<TL_MIC_ADPCM_UNIT_SIZE*2; i++) {
-			ps[i] = noise_supression (ps[i]);
+			ps[i] = noise_suppression (ps[i]);
         }
 #endif
 
@@ -783,10 +783,10 @@ void	proc_mic_encoder (void)
 	if (l >=(TL_MIC_BUFFER_SIZE>>2)) {
 
 		s16 *ps = buffer_mic + buffer_mic_rptr;
-#if 	TL_NOISE_SUPRESSION_ENABLE
+#if 	TL_NOISE_SUPPRESSION_ENABLE
         // for FIR adc sample data, only half part data are effective
 		for (int i=0; i<TL_MIC_ADPCM_UNIT_SIZE*2; i++) {
-			ps[i] = noise_supression (ps[i]);
+			ps[i] = noise_suppression (ps[i]);
         }
 #endif
 
@@ -1070,6 +1070,7 @@ void abuf_mic_dec ()
 	static int start = 1;
 	static int abuf_reset_no;
 	static u32 smbc_decode_len = 0;
+	(void)smbc_decode_len;
 	if (abuf_reset)
 	{
 		abuf_dec_wptr = abuf_mic_wptr;

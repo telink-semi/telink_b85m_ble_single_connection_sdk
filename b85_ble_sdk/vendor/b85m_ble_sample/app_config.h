@@ -49,35 +49,15 @@
 ///////////////////////// Feature Configuration////////////////////////////////////////////////
 #define BLE_APP_PM_ENABLE								1
 #define PM_DEEPSLEEP_RETENTION_ENABLE					1
-#define TEST_CONN_CURRENT_ENABLE            			1 	//test connection current, disable UI to have a pure power
-#define BLE_REMOTE_SECURITY_ENABLE      				1
+#define TEST_CONN_CURRENT_ENABLE            			0 	//test connection current, disable UI to have a pure power
+#define BLE_APP_SECURITY_ENABLE      				1
 #define BLE_OTA_SERVER_ENABLE							1
 #define APP_FLASH_PROTECTION_ENABLE						0
-#define BATT_CHECK_ENABLE								0
-
-/////////////////////// Sample Test Board Select Configuration ///////////////////////////////
-#define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
-#define BOARD_825X_DONGLE_C1T139A3						2     //
-#define BOARD_827X_EVK_C1T197A30						3	  //TLSR8278DK48
-#define BOARD_827X_DONGLE_C1T201A3						4	  //
-
-
-
-#if (__PROJECT_8258_BLE_SAMPLE__)
-	/* can only choose BOARD_825X_EVK_C1T139A30 or BOARD_825X_DONGLE_C1T139A3,
-	 * default use EVK, user can select Dongle */
-	#define BOARD_SELECT							BOARD_825X_EVK_C1T139A30
-#elif (__PROJECT_8278_BLE_SAMPLE__)
-	/* can only choose BOARD_827X_EVK_C1T197A30 or BOARD_827X_DONGLE_C1T201A3,
-	 * default use EVK, user can select Dongle */
-	#define BOARD_SELECT							BOARD_827X_EVK_C1T197A30
-#endif
-
+#define APP_BATT_CHECK_ENABLE							0
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE					0
 #define UART_PRINT_DEBUG_ENABLE				1
-
 #define APP_LOG_EN							1
 #define APP_SMP_LOG_EN						0
 #define APP_KEY_LOG_EN						1
@@ -87,172 +67,36 @@
 #define APP_FLASH_INIT_LOG_EN				1
 #define APP_FLASH_PROT_LOG_EN				1
 #define APP_BATT_CHECK_LOG_EN				1
-#define APP_BATT_VOL_LOG_EN					0
 
-
-#if (UART_PRINT_DEBUG_ENABLE)
-	#define DEBUG_INFO_TX_PIN           	GPIO_PB1
-	#define PULL_WAKEUP_SRC_PB1         	PM_PIN_PULLUP_10K
-	#define PB1_OUTPUT_ENABLE         		1
-	#define PB1_DATA_OUT                    1
+/////////////////////// Sample Board Select Configuration ///////////////////////////////
+#if (__PROJECT_8258_BLE_SAMPLE__)
+	//Only support BOARD_825X_EVK_C1T139A30 & BOARD_825X_DONGLE_C1T139A3
+	#define BOARD_SELECT							BOARD_825X_EVK_C1T139A30
+#elif (__PROJECT_8278_BLE_SAMPLE__)
+	//Only support BOARD_827X_EVK_C1T197A30 & BOARD_827X_DONGLE_C1T201A3
+	#define BOARD_SELECT							BOARD_827X_EVK_C1T197A30
 #endif
+
+
 
 ///////////////////////// UI Configuration ////////////////////////////////////////////////////
-#if (TEST_CONN_CURRENT_ENABLE)
-	#define	UI_KEYBOARD_ENABLE							0
-	#define	UI_BUTTON_ENABLE							0
-	#define	UI_LED_ENABLE								1
-#else
-	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		/* EVK use keyboard matrix */
-		#define	UI_KEYBOARD_ENABLE						1
-	#elif(BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3 || BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
-		/* Dongle use button */
-		#define	UI_BUTTON_ENABLE						1
-	#endif
+#define	UI_KEYBOARD_ENABLE							1
+#define	UI_LED_ENABLE									1
+#define	UI_BUTTON_ENABLE								0
 
-	//#define UI_LED_ENABLE								1  //enable LED if you want
-#endif
-
-
-#ifndef	UI_KEYBOARD_ENABLE
-#define UI_KEYBOARD_ENABLE								0
-#endif
-
-#ifndef	UI_BUTTON_ENABLE
-#define UI_BUTTON_ENABLE								0
-#endif
-
-#ifndef	UI_LED_ENABLE
-#define UI_LED_ENABLE									0
-#endif
-
-
-
-/**
- *  @brief  Keyboard Configuration
- */
-#if (UI_KEYBOARD_ENABLE)   // if test pure power, kyeScan GPIO setting all disabled
-	#define	MATRIX_ROW_PULL					PM_PIN_PULLDOWN_100K
-	#define	MATRIX_COL_PULL					PM_PIN_PULLUP_10K
-	#define	KB_LINE_HIGH_VALID				0   //dirve pin output 0 when keyscan, scanpin read 0 is valid
-
-	#define			CR_VOL_UP				0xf0  ////
+#if (UI_KEYBOARD_ENABLE)
+	#define			CR_VOL_UP				0xf0
 	#define			CR_VOL_DN				0xf1
 
+	/**
+	 *  @brief  Normal keyboard map
+	 */
 	#define		KB_MAP_NORMAL	{	{CR_VOL_DN,		VK_1},	 \
 									{CR_VOL_UP,		VK_2}, }
-
-
-	//////////////////// KEY CONFIG (EVK board) ///////////////////////////
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		/* 825X EVK and 827X EVK use same GPIO for KeyMatrix: PB2/PB3/PB4/PB5 */
-		#define  KB_DRIVE_PINS  {GPIO_PB4, GPIO_PB5}
-		#define  KB_SCAN_PINS   {GPIO_PB2, GPIO_PB3}
-
-		//drive pin as gpio
-		#define	PB4_FUNC				AS_GPIO
-		#define	PB5_FUNC				AS_GPIO
-
-		//drive pin need 100K pulldown
-		#define	PULL_WAKEUP_SRC_PB4		MATRIX_ROW_PULL
-		#define	PULL_WAKEUP_SRC_PB5		MATRIX_ROW_PULL
-
-		//drive pin open input to read gpio wakeup level
-		#define PB4_INPUT_ENABLE		1
-		#define PB5_INPUT_ENABLE		1
-
-		//scan pin as gpio
-		#define	PB2_FUNC				AS_GPIO
-		#define	PB3_FUNC				AS_GPIO
-
-		//scan  pin need 10K pullup
-		#define	PULL_WAKEUP_SRC_PB2		MATRIX_COL_PULL
-		#define	PULL_WAKEUP_SRC_PB3		MATRIX_COL_PULL
-
-		//scan pin open input to read gpio level
-		#define PB2_INPUT_ENABLE		1
-		#define PB3_INPUT_ENABLE		1
-	#else
-		#error "Current board do not support keyboard !"
-	#endif
-
 
 	#define		KB_MAP_NUM		KB_MAP_NORMAL
 	#define		KB_MAP_FN		KB_MAP_NORMAL
 #endif
-
-
-
-/**
- *  @brief  Button Configuration
- */
-#if (UI_BUTTON_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3 || BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
-		/* 825X Dongle and 827X Dongle use same GPIO for Button: PD5/PD6 */
-		#define	SW1_GPIO				GPIO_PD5
-		#define	SW2_GPIO				GPIO_PD6
-		#define PD5_FUNC				AS_GPIO
-		#define PD6_FUNC				AS_GPIO
-		#define PD5_INPUT_ENABLE		1
-		#define PD6_INPUT_ENABLE		1
-		#define PULL_WAKEUP_SRC_PD5     PM_PIN_PULLUP_10K
-		#define PULL_WAKEUP_SRC_PD6     PM_PIN_PULLUP_10K
-	#else
-		#error "Current board do not support button !"
-	#endif
-#endif
-
-
-/**
- *  @brief  LED Configuration
- */
-#if (UI_LED_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		/* 825X EVK and 827X EVK use same GPIO for LED: PD2/PD3/PD4/PD5 */
-		#define	GPIO_LED_BLUE			GPIO_PD2
-		#define	GPIO_LED_GREEN			GPIO_PD3
-		#define	GPIO_LED_WHITE			GPIO_PD4
-		#define	GPIO_LED_RED			GPIO_PD5
-
-		#define PD2_FUNC				AS_GPIO
-		#define PD3_FUNC				AS_GPIO
-		#define PD4_FUNC				AS_GPIO
-		#define PD5_FUNC				AS_GPIO
-
-		#define	PD2_OUTPUT_ENABLE		1
-		#define	PD3_OUTPUT_ENABLE		1
-		#define PD4_OUTPUT_ENABLE		1
-		#define	PD5_OUTPUT_ENABLE		1
-
-		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
-	#elif (BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3 || BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
-		/* 825X Dongle and 827X Dongle use same GPIO for LED: PA3/PB1/PA2/PB0/PA4 */
-		#define	GPIO_LED_RED			GPIO_PA3
-		#define	GPIO_LED_WHITE			GPIO_PB1
-		#define	GPIO_LED_GREEN			GPIO_PA2
-		#define	GPIO_LED_BLUE			GPIO_PB0
-		#define	GPIO_LED_YELLOW			GPIO_PA4
-
-		#define PA3_FUNC				AS_GPIO
-		#define PB1_FUNC				AS_GPIO
-		#define PA2_FUNC				AS_GPIO
-		#define PB0_FUNC				AS_GPIO
-		#define PA4_FUNC				AS_GPIO
-
-		#define	PA3_OUTPUT_ENABLE		1
-		#define	PB1_OUTPUT_ENABLE		1
-		#define PA2_OUTPUT_ENABLE		1
-		#define	PB0_OUTPUT_ENABLE		1
-		#define	PA4_OUTPUT_ENABLE		1
-
-		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
-	#endif
-#endif
-
-
-
-
 
 /////////////////// DEEP SAVE FLG //////////////////////////////////
 #define USED_DEEP_ANA_REG                   DEEP_ANA_REG0 //u8,can save 8 bit info when deep
@@ -292,65 +136,17 @@ enum{
 #define WATCHDOG_INIT_TIMEOUT		500  //ms
 
 
+/////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           	GPIO_PB1
+	#define PULL_WAKEUP_SRC_PB1         	PM_PIN_PULLUP_10K
+	#define PB1_OUTPUT_ENABLE         		1
+	#define PB1_DATA_OUT                    1
+#endif
 
-
-#if(DEBUG_GPIO_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							0
-
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-	#elif (BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							GPIO_PB0
-
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-		#define PB0_OUTPUT_ENABLE					1
-	#else
-		#error "add debug GPIO definition by yourself !"
-	#endif
-#endif  //end of DEBUG_GPIO_ENABLE
-
-/**
- *  @brief  Battery_check Configuration
- */
-#if (BATT_CHECK_ENABLE)
-	#if(BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#if 0//(__PROJECT_8278_BLE_REMOTE__)
-			//use VBAT(8278) , then adc measure this VBAT voltage
-			#define ADC_INPUT_PCHN					VBAT    //corresponding  ADC_InputPchTypeDef in adc.h
-		#else
-			//telink device: you must choose one gpio with adc function to output high level(voltage will equal to vbat), then use adc to measure high level voltage
-			//use PB7(8258) output high level, then adc measure this high level voltage
-			#define GPIO_VBAT_DETECT				GPIO_PB7
-			#define PB7_FUNC						AS_GPIO
-			#define PB7_INPUT_ENABLE				0
-			#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
-		#endif
+#if TEST_CONN_CURRENT_ENABLE
+	#if DEBUG_GPIO_ENABLE || UART_PRINT_DEBUG_ENABLE || UI_KEYBOARD_ENABLE || UI_LED_ENABLE || UI_BUTTON_ENABLE
+		#error "If testing current, the above definitions must be disable!!!"
 	#endif
 #endif
 

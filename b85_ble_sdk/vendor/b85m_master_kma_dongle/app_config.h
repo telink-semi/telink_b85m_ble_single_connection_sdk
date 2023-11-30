@@ -52,13 +52,6 @@
 #define	FLOW_NO_OS						1
 
 
-
-//If Flash size is 512K, Recommend "FLASH_ADR_PARING" as 0x78000
-//If Flash size is 1M,   Recommend "FLASH_ADR_PARING" as 0xFC000
-#define FLASH_ADR_PARING   							0x78000
-
-
-
 /////////////////// MODULE /////////////////////////////////
 #define BLE_HOST_SMP_ENABLE							1  //1 for standard security management,  0 for telink referenced pairing&bonding(no security)
 #define BLE_HOST_SIMPLE_SDP_ENABLE					1  //simple service discovery
@@ -67,21 +60,43 @@
 #define BLE_MASTER_OTA_ENABLE						1  //slave ota test
 #define AUDIO_SDM_ENBALE							0  //if using sdm playback, should better disable USB MIC
 
-#define UI_AUDIO_ENABLE								1
-#define UI_BUTTON_ENABLE							1
-#define UI_LED_ENABLE								1
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
-#define USB_PRINT_DEBUG_ENABLE  					1
 #define DEBUG_GPIO_ENABLE							0
+
+/* debug channel select */
+#define TLKAPI_DEBUG_CHANNEL_USB   			1 //USB debug
+#define TLKAPI_DEBUG_CHANNEL_UART  			2 //GPIO simulate UART debug
+#define TLKAPI_DEBUG_CHANNEL				TLKAPI_DEBUG_CHANNEL_UART
+
+#if(TLKAPI_DEBUG_CHANNEL == TLKAPI_DEBUG_CHANNEL_UART)
+	#define UART_PRINT_DEBUG_ENABLE               1   //GPIO simulate uart print func
+#elif(TLKAPI_DEBUG_CHANNEL == TLKAPI_DEBUG_CHANNEL_USB)
+	#define USB_PRINT_DEBUG_ENABLE   			  1   //USB print func
+#endif
 
 #define APP_LOG_EN									1
 #define APP_FLASH_INIT_LOG_EN						1
+
+/////////////////////// Master Dongle Board Select Configuration ///////////////////////////////
+#if(__PROJECT_8258_MASTER_KMA_DONGLE__ )
+	#define BOARD_SELECT								BOARD_825X_DONGLE_C1T139A3
+#elif(__PROJECT_8278_MASTER_KMA_DONGLE__ )
+	#define BOARD_SELECT								BOARD_827X_DONGLE_C1T201A3
+#endif
+
+
+
+///////////////////////// UI Configuration ////////////////////////////////////////////////////
+#define UI_BUTTON_ENABLE							1
+#define UI_LED_ENABLE								1
+#define UI_AUDIO_ENABLE								1
+
 //////////////////// Audio /////////////////////////////////////
 #define MIC_RESOLUTION_BIT		16
 #define MIC_SAMPLE_RATE			16000
-#define MIC_CHANNLE_COUNT		1
-#define	MIC_ENOCDER_ENABLE		0
+#define MIC_CHANNEL_COUNT		1
+#define	MIC_ENCODER_ENABLE		0
 
 #if (UI_AUDIO_ENABLE)//Audio enable
 
@@ -133,6 +148,8 @@
 	#define	USB_KEYBOARD_ENABLE 	1
 	#define	USB_SOMATIC_ENABLE      0   //  when USB_SOMATIC_ENABLE, USB_EDP_PRINTER_OUT disable
 	#define USB_CUSTOM_HID_REPORT	1
+
+	#define USB_CDC_ENABLE			0
 #endif
 
 
@@ -154,42 +171,9 @@
 #endif
 
 
-//----------------------- GPIO for UI --------------------------------
-#if (UI_BUTTON_ENABLE)//kite(C1T139A3)/vulture(C1T201A3) dongle board has the same button gpio
-	//---------------  Button ----------------------------------
-	#define	SW1_GPIO				GPIO_PD5
-	#define	SW2_GPIO				GPIO_PD6
-	#define PD5_FUNC				AS_GPIO
-	#define PD6_FUNC				AS_GPIO
-	#define PD5_INPUT_ENABLE		1
-	#define PD6_INPUT_ENABLE		1
-	#define PULL_WAKEUP_SRC_PD5     PM_PIN_PULLUP_10K
-	#define PULL_WAKEUP_SRC_PD6     PM_PIN_PULLUP_10K
-#endif
 
 
 
-#if (UI_LED_ENABLE)//kite(C1T139A3)/vulture(C1T201A3) dongle board has the same led gpio
-	#define	GPIO_LED_RED			GPIO_PA3
-	#define	GPIO_LED_WHITE			GPIO_PB1
-	#define	GPIO_LED_GREEN			GPIO_PA2
-	#define	GPIO_LED_BLUE			GPIO_PB0
-    #define	GPIO_LED_YELLOW			GPIO_PA4
-
-	#define PA3_FUNC				AS_GPIO
-	#define PB1_FUNC				AS_GPIO
-	#define PA2_FUNC				AS_GPIO
-	#define PB0_FUNC				AS_GPIO
-	#define PA4_FUNC				AS_GPIO
-
-	#define	PA3_OUTPUT_ENABLE		1
-	#define	PB1_OUTPUT_ENABLE		1
-	#define PA2_OUTPUT_ENABLE		1
-	#define	PB0_OUTPUT_ENABLE		1
-	#define	PA4_OUTPUT_ENABLE		1
-
-	#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
-#endif
 
 
 
@@ -227,42 +211,7 @@ enum{
 
 
 
-
-
-
-
-
-#if(DEBUG_GPIO_ENABLE)
-//define debug GPIO here according to your hardware
-	#define GPIO_CHN0							GPIO_PB2
-	#define GPIO_CHN1							GPIO_PB3
-	#define GPIO_CHN2							GPIO_PB4
-	#define GPIO_CHN3							GPIO_PB5
-	#define GPIO_CHN4							GPIO_PC2
-	#define GPIO_CHN5							GPIO_PC3
-
-	#define PB2_OUTPUT_ENABLE					1
-	#define PB3_OUTPUT_ENABLE					1
-	#define PB4_OUTPUT_ENABLE					1
-	#define PB5_OUTPUT_ENABLE					1
-	#define PC2_OUTPUT_ENABLE					1
-	#define PC3_OUTPUT_ENABLE					1
-#endif  //end of DEBUG_GPIO_ENABLE
-
-
 /////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
-
-/* debug channel select */
-#define TLKAPI_DEBUG_CHANNEL_USB   			1 //USB debug
-#define TLKAPI_DEBUG_CHANNEL_UART  			2 //GPIO simulate UART debug
-#define TLKAPI_DEBUG_CHANNEL				TLKAPI_DEBUG_CHANNEL_USB
-
-#if(TLKAPI_DEBUG_CHANNEL == TLKAPI_DEBUG_CHANNEL_UART)
-	#define UART_PRINT_DEBUG_ENABLE               1   //GPIO simulate uart print func
-#elif(TLKAPI_DEBUG_CHANNEL == TLKAPI_DEBUG_CHANNEL_USB)
-	#define USB_PRINT_DEBUG_ENABLE   			  1   //USB print func
-#endif
-
 #if (UART_PRINT_DEBUG_ENABLE)
 	#define DEBUG_INFO_TX_PIN           					GPIO_PB5
 	#define PULL_WAKEUP_SRC_PB5         					PM_PIN_PULLUP_10K

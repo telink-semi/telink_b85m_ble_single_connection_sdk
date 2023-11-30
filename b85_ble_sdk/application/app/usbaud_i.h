@@ -117,7 +117,7 @@ static const USB_Descriptor_HIDReport_Datatype_t usbaud_report_desc[] = {
 
 #endif
 
-//USB HIDĶ
+
 static const USB_Descriptor_HIDReport_Datatype_t usbaud_report_desc[] = {
 		0x05, 0x0c, 0x09, 0x01, 0xa1, 0x01,
 		0x85, 0x01, 0x15, 0x00, 0x25, 0x01, 0x09, 0xcd, 0x09, 0xb5, 0x09, 0xb6,
@@ -136,5 +136,4 @@ static inline u8* usbaud_get_report_desc(void) {
 static inline u16 usbaud_get_report_desc_size(void) {
 	return sizeof(usbaud_report_desc);
 }
-
 

@@ -116,7 +116,7 @@ _attribute_ram_code_ int main (void)    //must run in ramcode
 	if(!deepRetWakeUp){//read flash size
 		#if FIRMWARE_CHECK_ENABLE
 			//Execution time is in ms.such as:48k fw,16M crystal clock,need about 290ms.
-			if(flash_fw_check(0xffffffff)){ //retrun 0, flash fw crc check ok. retrun 1, flash fw crc check fail
+			if(flash_fw_check(0xffffffff)){ //return 0, flash fw crc check ok. return 1, flash fw crc check fail
 				while(1);				    //Users can process according to the actual application.
 			}
 		#endif

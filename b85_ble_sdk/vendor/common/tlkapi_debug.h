@@ -48,9 +48,9 @@
 #define VENDOR_COMMON_TLKAPI_DEBUG_H_
 
 
-
-
-/* GPIO simulate UART, support 1000000 baud rate only, user don not change !!!*/
+/**
+ * @brief	GPIO simulate UART, support 1000000 baud rate only, user don not change !!!
+ */
 #ifndef PRINT_BAUD_RATE
 #define PRINT_BAUD_RATE       	1000000
 #endif
@@ -65,7 +65,7 @@
  */
 typedef struct{
 	u8	dbg_en;
-
+	u8 rsdv[3];
 }tlk_dbg_t;
 extern tlk_dbg_t tlkDbgCtl;
 

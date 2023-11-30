@@ -30,6 +30,10 @@
 
 /**
  *  @brief  Define GPIO types. 
+ *  @note	If want to use PA5/PA6<dp/dm> as the suspend wakeup pad,
+ * 			and the polarity is low wakeup,need to set this IO as GPIO or call API pm_set_suspend_power_cfg() to power
+ * 			on the USB power, power on USB will increase the suspend current about 0.1uA;In deep/deep_ret and low polarity
+ * 			wakeup mode,you need call API pm_set_suspend_power_cfg() to power on USB,power on USB will not increase deep current.
  */
 
 typedef enum{

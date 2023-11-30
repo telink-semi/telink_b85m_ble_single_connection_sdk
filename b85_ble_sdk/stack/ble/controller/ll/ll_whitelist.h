@@ -52,10 +52,5 @@ ble_sts_t		blc_ll_addDeviceToWhiteList(u8 adr_type, u8 *addr);
 ble_sts_t		blc_ll_removeDeviceFromWhiteList(u8 adr_type, u8 *addr);
 
 
-//This is to be compatible in older versions. If you don't use them, you can delete them.
-#define	ll_whiteList_reset		blc_ll_clearWhiteList
-#define	ll_whiteList_add		blc_ll_addDeviceToWhiteList
-#define	ll_whiteList_delete		blc_ll_removeDeviceFromWhiteList
-
 
 #endif /* LL_WHITELIST_H_ */

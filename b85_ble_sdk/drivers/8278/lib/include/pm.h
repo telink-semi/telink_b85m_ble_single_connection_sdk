@@ -37,7 +37,7 @@ volatile unsigned int ana_32k_tick;
 #define PM_LONG_SUSPEND_EN					1
 
 #ifndef PM_TIM_RECOVER_MODE
-#define PM_TIM_RECOVER_MODE			    	1
+#define PM_TIM_RECOVER_MODE			    	1 //this function only support for interface of cpu_sleep_wakeup_32k_rc and cpu_sleep_wakeup_32k_xtal
 #endif
 
 #define RAM_CRC_EN							0 //if use RAM_CRC func, retention ldo will turn down to 0.6V in A1, A0 is 0.8V.
@@ -90,7 +90,8 @@ volatile unsigned int ana_32k_tick;
 #define	USB_POWER_DOWN						1 //weather to power down the USB before suspend  //PA5/PA6 pad low wakeup need USB power on
 
 /* to compatible with some old API name */
-#define cpu_long_sleep_wakeup				cpu_long_sleep_wakeup_32k_rc
+#define cpu_long_sleep_wakeup								cpu_long_sleep_wakeup_32k_rc
+
 /**
  * @brief sleep mode.
  * @note	After entering suspend mode,the registers of linklayer and modem return to default values,so the
@@ -121,7 +122,13 @@ typedef enum {
 	 PM_WAKEUP_PAD   		= BIT(3),
 	 PM_WAKEUP_CORE  		= BIT(4),
 	 PM_WAKEUP_TIMER 		= BIT(5),
-	 PM_WAKEUP_COMPARATOR 	= BIT(6),
+	 PM_WAKEUP_COMPARATOR 	= BIT(6), /**<
+	 	 	 	 	 	 	 	 	 	There are two things to note when using LPC wake up:
+										1.After the LPC is configured, you need to wait 100 microseconds before you can go to sleep because the LPC need 1-2 32k tick to calculate the result.
+										  If you enter the sleep function at this time, you may not be able to sleep normally because the data in the result register is abnormal.
+
+										2.When entering sleep, keep the input voltage and reference voltage difference must be greater than 30mV, otherwise can not enter sleep normally, crash occurs.
+	  	  	  	  	  	  	  	  	  	 */
 	 PM_WAKEUP_MDEC		 	= BIT(7),
 	 //not available wake-up source for customer
 	 PM_TIM_RECOVER_START   = BIT(14),
@@ -139,7 +146,7 @@ enum {
 	 WAKEUP_STATUS_PAD    			= BIT(3),
 	 WAKEUP_STATUS_MDEC    			= BIT(4),
 
-	 STATUS_GPIO_ERR_NO_ENTER_PM  	= BIT(7),
+	 STATUS_GPIO_ERR_NO_ENTER_PM  	= BIT(8),/**<Bit8 is used to determine whether the wake source is normal.*/
 	 STATUS_ENTER_SUSPEND  			= BIT(30),
 };
 
@@ -457,8 +464,6 @@ unsigned int  pm_get_info1(void);
  * @return    data - calibration value.If data is 0, there is no calibration value in efuse.
  */
 unsigned short efuse_get_adc_calib_value(void);
-
-unsigned int cpu_get_32k_tick(void);
 
 void cpu_set_32k_tick(unsigned int tick);
 

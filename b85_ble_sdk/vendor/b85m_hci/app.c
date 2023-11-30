@@ -98,10 +98,15 @@ _attribute_data_retention_	my_fifo_t	hci_tx_fifo = {
 												hci_tx_fifo_b,};
 
 //RF Tx / Rx fifo
+/* CAL_LL_ACL_RX_FIFO_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
 #define RX_FIFO_SIZE	64
+/* must be: 2^n, (power of 2);at least 4; recommended value: 4, 8, 16 */
 #define RX_FIFO_NUM		8
 
+
+/* CAL_LL_ACL_TX_FIFO_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
 #define TX_FIFO_SIZE	40
+/* must be: (2^n), (power of 2); at least 8; recommended value: 8, 16, 32, other value not allowed. */
 #define TX_FIFO_NUM		16
 
 _attribute_data_retention_  u8 		 	blt_rxfifo_b[RX_FIFO_SIZE * RX_FIFO_NUM] = {0};
@@ -277,6 +282,12 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
@@ -309,7 +320,7 @@ void user_init_normal(void)
 
 
 	///////////////////// USER application initialization ///////////////////
-	bls_ll_setAdvEnable(0);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_DISABLE);  //adv enable
 
 
 	//blc_ll_initChannelSelectionAlgorithm_2_feature();
@@ -368,6 +379,20 @@ void user_init_normal(void)
 #else
 	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 #endif
+
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	if(error_code1 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x", error_code1);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
 }
 
 

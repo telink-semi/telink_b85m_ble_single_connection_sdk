@@ -58,9 +58,7 @@
 #define			SUSPEND_CONN				BIT(1)
 #define			DEEPSLEEP_RETENTION_ADV		BIT(2)
 #define			DEEPSLEEP_RETENTION_CONN	BIT(3)
-#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 #define			MCU_STALL					BIT(6)
-#endif
 
 
 

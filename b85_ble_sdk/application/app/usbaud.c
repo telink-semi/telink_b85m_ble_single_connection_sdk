@@ -62,11 +62,27 @@
  * 		0x12: microphone mute change
  *************************************************/
 
+unsigned char usb_audio_mic_cnt=0;
+unsigned char usb_audio_speaker_cnt=0;
+
 static speaker_setting_t speaker_setting;
 static mic_setting_t mic_setting;
-void usbaud_set_audio_mode(int iso_en, int mono_en) {
-    assert(USB_EDP_MIC < 8);
-	SET_FLD(reg_usb_ep_ctrl(USB_EDP_MIC), FLD_USB_EP_EOF_ISO | FLD_USB_EP_MONO);
+
+/**
+ * @brief      This function servers to set the mic Endpoint mono function.
+ * @param[in]  en- 1 enable, 0 disable.
+ * @attention  b85 and b85 do not support iso mode.
+ * @return     none.
+ */
+void usbaud_set_audio_mode(int mono_en) {
+	if(mono_en==1)
+	{
+		BM_SET(reg_usb_ep_ctrl(USB_EDP_MIC), FLD_USB_EP_MONO);
+	}
+	else
+	{
+		BM_CLR(reg_usb_ep_ctrl(USB_EDP_MIC), FLD_USB_EP_MONO);
+	}
 }
 
 #if 0
@@ -92,7 +108,7 @@ void usbaud_hid_report(char format, char volume) {
 #endif
 
 
-#if(USB_SPEAKER_ENABLE || USB_MIC_ENABLE)	//  use for volumn control, mute, next, prev track,  move to mouse hid
+#if(USB_SPEAKER_ENABLE || USB_MIC_ENABLE)	//  use for volume control, mute, next, prev track,  move to mouse hid
 int usbaud_hid_report(u8 cmd, u8 vol){
 	if (usbhw_is_ep_busy(USB_EDP_AUDIO_IN))
 		return 0;
@@ -252,16 +268,16 @@ int usbaud_handle_get_speaker_cmd(int req, int type) {
 		usbhw_write_ctrl_ep_data(speaker_setting.mute);
 	}else if(type == AUDIO_FEATURE_VOLUME){
 		switch (req) {
-			case AUDIO_REQ_GetCurrent:
+			case AUDIO_REQ_GetCurrent://Current volume
 				usbhw_write_ctrl_ep_u16(speaker_setting.vol_cur);
 				break;
-			case AUDIO_REQ_GetMinimum:
+			case AUDIO_REQ_GetMinimum://Minimum volumes
 				usbhw_write_ctrl_ep_u16(SPEAKER_VOL_MIN);
 				break;
-			case AUDIO_REQ_GetMaximum:
+			case AUDIO_REQ_GetMaximum://Maximum volume
 				usbhw_write_ctrl_ep_u16(SPEAKER_VOL_MAX);
 				break;
-			case AUDIO_REQ_GetResolution:
+			case AUDIO_REQ_GetResolution://volume resolution
 				usbhw_write_ctrl_ep_u16(SPEAKER_VOL_RES);
 				break;
 			default:
@@ -300,8 +316,8 @@ int usbaud_handle_get_mic_cmd(int req, int type) {
 	return 0;
 }
 void usbaud_init(void) {
-	if (USB_MIC_ENABLE && 1 == MIC_CHANNLE_COUNT) {
-		usbaud_set_audio_mode(1, 1);
+	if (USB_MIC_ENABLE && 1 == MIC_CHANNEL_COUNT) {
+		usbaud_set_audio_mode(1);
 	}
 #if (USB_SPEAKER_ENABLE)
 	usbaud_set_speaker_vol(SPEAKER_VOL_MAX);
@@ -310,4 +326,152 @@ void usbaud_init(void) {
 	mic_setting.vol_cur = MIC_VOL_DEF;
 #endif
 }
+/**
+ * @brief     This function serves to send data to USB.
+ * @param[in] Input_Type - audio input type.
+ * @param[in] Audio_Rate - audio rate. This value is matched with usb_desc.c :USB_RATE.
+ * @return    none.
+ */
+void audio_tx_data_to_usb(AudioInput_Typedef Input_Type,AudioRate_Typedef Audio_Rate)
+{
 
+    int i=0;
+    unsigned short data_h=0;
+    unsigned short data_l=0;
+
+    unsigned char length = 0;
+
+    usbhw_reset_ep_ptr(USB_EDP_MIC);
+
+    switch(Audio_Rate)
+    {
+    case 	AUDIO_8K:		length = 8;break;
+    case	AUDIO_16K:		length = 16;break;
+    case	AUDIO_32K:		length = 32;break;
+//    case	AUDIO_48K:		length = 48;break;
+    default:				length = 32;break;
+    }
+	if(Input_Type==DMIC)
+    {
+		for (i=0; i<length; i++) {
+			if(reg_dfifo_irq_status & FLD_AUD_DFIFO0_L_IRQ)
+				break;
+			if(i%2)
+			{
+				data_h = reg_usb_mic_dat1;
+				reg_usb_ep7_dat = data_h;
+				reg_usb_ep7_dat = data_h>>8;
+			}
+			else{
+				data_l = reg_usb_mic_dat0;
+				reg_usb_ep7_dat = data_l;
+				reg_usb_ep7_dat = data_l>>8;
+			}
+		}
+    }
+    else
+    {
+		for (i=0;i<length; i++)
+		{
+			if(reg_dfifo_irq_status & FLD_AUD_DFIFO0_L_IRQ)
+			{
+			    if(Input_Type==I2S_IN)
+			    {
+					data_l = reg_usb_mic_dat1;
+					reg_usb_ep7_dat = data_l;
+				    reg_usb_ep7_dat = data_l>>8;
+			    }
+			    else
+			    {
+				   if(i%2) {
+					   reg_usb_ep7_dat = data_l;
+					   reg_usb_ep7_dat = data_l>>8;
+				   }
+				   else{
+					   reg_usb_ep7_dat = data_h;
+					   reg_usb_ep7_dat = data_h>>8;
+				   }
+			    }
+			}
+			else
+			{
+			    if(Input_Type==I2S_IN)
+			    {
+				    data_l = reg_usb_mic_dat1;
+					reg_usb_ep7_dat = data_l;
+					reg_usb_ep7_dat = data_l>>8;
+			    }
+			    else
+			    {
+				   if(i%2)
+				   {
+					   data_l = reg_usb_mic_dat1;
+					   reg_usb_ep7_dat = data_l;
+					   reg_usb_ep7_dat = data_l>>8;
+				   }
+				   else
+				   {
+					   data_h = reg_usb_mic_dat0;
+					   reg_usb_ep7_dat = data_h;
+					   reg_usb_ep7_dat = data_h>>8;
+				   }
+			    }
+			}
+		}
+    }
+	reg_usb_ep7_ctrl = FLD_USB_EP_BUSY;//ACK iso in
+}
+
+/**
+ * @brief     This function servers to set USB Input.
+ * @param[in] none
+ * @return    none.
+ */
+
+void audio_rx_data_from_usb(void)
+{
+
+	unsigned char len = reg_usb_ep6_ptr;
+	usbhw_reset_ep_ptr(USB_EDP_SPEAKER);
+
+	signed short data;
+
+	for (int i=0; i<len; i+=2)
+	{
+		if(i%4)
+		{
+			data = reg_usb_ep6_dat & 0xff;
+			data |= reg_usb_ep6_dat << 8;
+			reg_usb_mic_dat0 = data;
+		}
+		else
+		{
+			data = reg_usb_ep6_dat & 0xff;
+			data |= reg_usb_ep6_dat << 8;
+			reg_usb_mic_dat1 = data;
+		}
+	}
+	reg_usb_ep6_ctrl = FLD_USB_EP_BUSY;
+}
+
+
+
+/**
+ * @brief		This function serves to send data to USB Host or receive data from USB Host
+ * @param[in] 	none
+ * @return 		none
+ */
+void usb_audio_irq_data_process(void)
+{
+	unsigned char irq = usbhw_get_eps_irq();
+	if(irq & FLD_USB_EDP7_IRQ)
+	{
+		usbhw_clr_eps_irq(FLD_USB_EDP7_IRQ);
+		usb_audio_mic_cnt++;
+	}
+	if(irq & FLD_USB_EDP6_IRQ)
+	{
+		usbhw_clr_eps_irq(FLD_USB_EDP6_IRQ);
+		usb_audio_speaker_cnt++;
+	}
+}

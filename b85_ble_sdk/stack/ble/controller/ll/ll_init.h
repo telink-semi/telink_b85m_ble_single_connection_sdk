@@ -64,7 +64,7 @@ void	 	blc_ll_initInitiating_module(void);
  * @param[in]  scan_window - recommendations from the Host on how long (LE_Scan_Window) the Controller should scan.
  * @param[in]  filter_policy - used to determine whether the White List is used.
  * @param[in]  adr_type - indicates the type of address used in the connectable advertisement sent by the peer.
- * @param[in]  *mac - indicates the Peer's Public Device Address.
+ * @param[in]  mac - indicates the Peer's Public Device Address.
  * @param[in]  own_adr_type - indicates the type of address being used in the connection request packets.
  * @param[in]  conn_min - the minimum allowed connection interval.
  * @param[in]  conn_max - the maximum allowed connection interval.
@@ -79,7 +79,7 @@ ble_sts_t 	blc_ll_createConnection( scan_inter_t scanInter, scan_wind_t scanWind
 
 
 /**
- * @brief      this function is used to to cancel create connection process .
+ * @brief      This function is used to cancel create connection process .
  * @param	   none
  * @return     status, 0x00:  succeed
  * 					   other: failed
@@ -88,7 +88,7 @@ ble_sts_t 	blc_ll_createConnectionCancel (void);
 
 
 /**
- * @brief      this function is used to set create connection process timeout.
+ * @brief      This function is used to set create connection process timeout.
  * @param	   timeout_ms - timeout threshold
  * @return     status, 0x00:  succeed
  * 					   other: failed

@@ -54,26 +54,30 @@
 #define PM_DEEPSLEEP_RETENTION_ENABLE				1
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
-#define APP_FLASH_INIT_LOG_EN							0
-
-///////////////////////// UI Configuration ////////////////////////////////////////////////////
-
 
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE								0
+#define UART_PRINT_DEBUG_ENABLE							0
+#define APP_FLASH_INIT_LOG_EN							0
+#define APP_LOG_EN										0
 
 /////////////////////// Feature Test Board Select Configuration ///////////////////////////////
-#define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
-#define BOARD_825X_DONGLE_C1T139A3						2     //
-#define BOARD_827X_EVK_C1T197A30						3	  //TLSR8278DK48
-#define BOARD_827X_DONGLE_C1T201A3						4	  //
-
 #if (__PROJECT_8258_FEATURE_TEST__)
 	#define BOARD_SELECT								BOARD_825X_EVK_C1T139A30
 #elif (__PROJECT_8278_FEATURE_TEST__)
 	#define BOARD_SELECT								BOARD_827X_EVK_C1T197A30
 #endif
+
+
+
+///////////////////////// UI Configuration ////////////////////////////////////////////////////
+#define	UI_KEYBOARD_ENABLE								0
+#define	UI_LED_ENABLE									0
+
+
+
+
 
 
 
@@ -101,45 +105,16 @@ enum{
 
 
 
-#if(DEBUG_GPIO_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-	#elif (BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							GPIO_PB0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-		#define PB0_OUTPUT_ENABLE					1
-	#endif
-#endif  //end of DEBUG_GPIO_ENABLE
 
+/////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           	GPIO_PB1
+	#define PULL_WAKEUP_SRC_PB1         	PM_PIN_PULLUP_10K
+	#define PB1_OUTPUT_ENABLE         		1
+	#define PB1_DATA_OUT                    1
+#endif
 
 #include "../common/default_config.h"
 

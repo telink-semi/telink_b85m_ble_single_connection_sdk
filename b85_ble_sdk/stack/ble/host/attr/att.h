@@ -1,56 +1,34 @@
 /********************************************************************************************************
- * @file	att.h
+ * @file     att.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief    This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author	 BLE GROUP
+ * @date         12,2021
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *******************************************************************************************************/
+
 #pragma once
 
 #include "tl_common.h"
 
 
-/** @defgroup ATT_PERMISSIONS_BITMAPS GAP ATT Attribute Access Permissions Bit Fields
- * @{
- * (refer to BLE SPEC: Vol 3, Part C, "10.3.1 Responding to a Service Request" for more information.)
+/**
+ * @brief		ATT_PERMISSIONS_BITMAPS GAP ATT Attribute Access Permissions Bit Fields
+ * See the Core_v5.0(Vol 3/Part C/10.3.1/Table 10.2) for more information
  */
 #define ATT_PERMISSIONS_AUTHOR				 0x10 //Attribute access(Read & Write) requires Authorization
 #define ATT_PERMISSIONS_ENCRYPT				 0x20 //Attribute access(Read & Write) requires Encryption
@@ -83,12 +61,13 @@
 #define ATT_PERMISSIONS_AUTHOR_WRITE         (ATT_PERMISSIONS_WRITE | ATT_PERMISSIONS_AUTHEN) 		//!< Write requires Authorization
 #define ATT_PERMISSIONS_AUTHOR_RDWR          (ATT_PERMISSIONS_RDWR | ATT_PERMISSIONS_AUTHOR) 		//!< Read & Write requires Authorization
 
+/** @End GAP_ATT_PERMISSIONS_BITMAPS */
 
-/** @} End GAP_ATT_PERMISSIONS_BITMAPS */
 
 
-/** @ add to group GATT_Characteristic_Property GATT characteristic properties
- * @{
+
+/**
+ * @brief		GATT_Characteristic_Property GATT characteristic properties
  */
 #define CHAR_PROP_BROADCAST              0x01 //!< permit broadcasts of the Characteristic Value
 #define CHAR_PROP_READ                   0x02 //!< permit reads of the Characteristic Value
@@ -98,16 +77,12 @@
 #define CHAR_PROP_INDICATE               0x20 //!< Permit indications of a Characteristic Value with acknowledgement
 #define CHAR_PROP_AUTHEN                 0x40 //!< permit signed writes to the Characteristic Value
 #define CHAR_PROP_EXTENDED               0x80 //!< additional characteristic properties are defined
-/** @} end of group GATT_Characteristic_Property */
+/** end of group GATT_Characteristic_Property */
 
 
 
+typedef int (*att_readwrite_callback_t)(void* p);
 
-#if (MCU_CORE_TYPE == MCU_CORE_9518)
-	typedef int (*att_readwrite_callback_t)(u16 connHandle, void* p);
-#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	typedef int (*att_readwrite_callback_t)(void* p);
-#endif
 
 typedef struct attribute
 {
@@ -126,6 +101,9 @@ typedef struct {
 	unsigned char data[0];
 } attr_pkt_t;
 
+/**
+ * @brief	ATT multiple handle value notify structure
+ */
 typedef struct {
 	u16 handle;
 	u16 length;
@@ -156,30 +134,24 @@ typedef struct att_convert_t{
 
 /**
  * @brief	This function is used to set ATT table
- * @param	*p - the pointer of attribute table
+ * @param	p - the pointer of attribute table
  * @return	none.
  */
 void		bls_att_setAttributeTable (u8 *p);
 
 
-//mtu size
+
+
+
 /**
  * @brief	This function is used to set RX MTU size
- * @param	mtu_size - ATT MTU size
+ * 			if not call this API, default MTU size is 23; if user want use greater MTU, this API must be called.
+ * @param	mtu_size - ATT MTU size, in range of 23 ~ 512
  * @return	0: success
  * 			other: fail
  */
 ble_sts_t	blc_att_setRxMtuSize(u16 mtu_size);
 
-
-
-/**
- * @brief	This function is used to set prepare write buffer
- * @param	*p - the pointer of buffer
- * @param	len - the length of buffer
- * @return	none.
- */
-void  		blc_att_setPrepareWriteBuffer(u8 *p, u16 len);
 
 /**
  * @brief	This function is used to request MTU size exchange
@@ -188,38 +160,57 @@ void  		blc_att_setPrepareWriteBuffer(u8 *p, u16 len);
  * @return	0: success
  * 			other: fail
  */
-//Attention: this API hide in stack, user no need use !!!
 ble_sts_t	 blc_att_requestMtuSizeExchange (u16 connHandle, u16 mtu_size);
+
+
+
 
 /**
  * @brief	This function is used to set effective ATT MTU size
+ * 			attention: only ACL Master use this API !!!
+ * 					   ACL Slave no need use this API(SDK already do it in stack inside)
  * @param	connHandle - connect handle
  * @param	effective_mtu - bltAtt.effective_MTU
  * @return	none.
  */
-void  		blt_att_setEffectiveMtuSize(u16 connHandle, u8 effective_mtu);
+void  		blc_att_setEffectiveMtuSize(u16 connHandle, u8 effective_mtu);
 
 /**
- * @brief	This function is used to reset effective ATT MTU size
- * @param	connHandle - connect handle
- * @return	none.
+ * @brief	   This function is used to reset effective ATT MTU size
+ * 			   attention: only ACL Master use this API !!!
+ * 					   ACL Slave no need use this API(SDK already do it in stack inside)
+ * @param[in]  connHandle - connect handle
+ * @return	   none.
  */
-void  		blt_att_resetEffectiveMtuSize(u16 connHandle);
-
-/**
- * @brief	This function is used to reset RX MTU size
- * @param	mtu_size - ATT MTU size
- * @return	0: success
- * 			other: fail
- */
-void  		blt_att_resetRxMtuSize(u16 connHandle);
+void  		blc_att_resetEffectiveMtuSize(u16 connHandle);
 
 /**
  * @brief   This function is used to get effective MTU size.
+ * 			attention: only ACL Master use this API !!!
  * @param	connHandle - connect handle
  * @return  effective MTU value.
  */
-u16  blc_att_getEffectiveMtuSize(u16 connHandle);
+u16  		blc_att_getEffectiveMtuSize(u16 connHandle);
+
+/**
+ * @brief      This function is used to response to MTU size exchange.
+ * 			   attention: only ACL Master use this API !!!
+ * 					   ACL Slave no need use this API(SDK already do it in stack inside)
+ * @param[in]  connHandle - connect handle
+ * @param[in]  mtu_size - MTU size
+ * @return     success or fail
+ */
+ble_sts_t	blc_att_responseMtuSizeExchange (u16 connHandle, u16 mtu_size);
+
+
+
+/**
+ * @brief	This function is used to set prepare write buffer
+ * @param	p - the pointer of buffer
+ * @param	len - the length of buffer
+ * @return	none.
+ */
+void  		blc_att_setPrepareWriteBuffer(u8 *p, u16 len);
 
 
 /**
@@ -239,10 +230,8 @@ void 		blc_att_enableWriteReqReject (u8 WriteReqReject_en);
 void 		blc_att_enableReadReqReject (u8 ReadReqReject_en);
 
 
-
-#if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 /**
- * @brief      set device name
+ * @brief      This function is used to set device name
  * @param[in]  p - the point of name
  * @param[in]  len - the length of name
  * @return     BLE_SUCCESS
@@ -250,129 +239,10 @@ void 		blc_att_enableReadReqReject (u8 ReadReqReject_en);
 ble_sts_t 	bls_att_setDeviceName(u8* pName,u8 len);  //only module/mesh/hci use
 
 
-/**
- * @brief      This function is used to response to MTU size exchcange.
- * @param[in]  connHandle - connect handle
- * @param[in]  mtu_size - mtu size
- * @return     BLE_SUCCESS
- */
-ble_sts_t	blc_att_responseMtuSizeExchange (u16 connHandle, u16 mtu_size);
 
 
 /**
- * @brief      This function is used to push notify.
- * @param[in]  connHandle - connect handle
- * @param[in]  len - data length
- * @return     BLE_SUCCESS
- */
-ble_sts_t	bls_att_pushNotifyData (u16 attHandle, u8 *p, int len);
-
-
-/**
- * @brief      This function is used to push indication.
- * @param[in]  connHandle - connect handle
- * @param[in]  len - data length
- * @return     BLE_SUCCESS
- */
-ble_sts_t	bls_att_pushIndicateData (u16 attHandle, u8 *p, int len);
-
-
-/**
- * @brief      This function is used to send req 0x04: ATT_OP_FIND_INFO_REQ.
- * @param[in]  dat - send buffer
- * @param[in]  start_attHandle - start att handle
- * @param[in]  end_attHandle -  end att handle
- * @return     none
- */
-void 	att_req_find_info(u8 *dat, u16 start_attHandle, u16 end_attHandle);
-
-
-/**
- * @brief      This function is used to send send req 0x06: ATT_OP_FIND_BY_TYPE_VALUE_REQ
- * @param[in]  start_attHandle - start att handle
- * @param[in]  end_attHandle -  end att handle
- * @param[in]  uuid - uuid that user want to find
- * @param[in]  attr_value - attribute value
- * @param[in]  len - data length
- * @return     none
- */
-void 	att_req_find_by_type (u8 *dat, u16 start_attHandle, u16 end_attHandle, u8 *uuid, u8* attr_value, int len);
-
-
-/**
- * @brief      This function is used to send send req 0x08: ATT_OP_READ_BY_TYPE_REQ
- * @param[in]  dat - send buffer
- * @param[in]  start_attHandle - start att handle
- * @param[in]  end_attHandle -  end att handle
- * @param[in]  uuid - uuid that user want to find
- * @param[in]  len - data length
- * @return     none
- */
-void 	att_req_read_by_type (u8 *dat, u16 start_attHandle, u16 end_attHandle, u8 *uuid, int uuid_len);
-
-
-/**
- * @brief      This function is used to send send req 0x0a: ATT_OP_READ_REQ
- * @param[in]  dat - send buffer
- * @param[in]  attHandle -  attribute handle
- * @return     none
- */
-void 	att_req_read (u8 *dat, u16 attHandle);
-
-/**
- * @brief      This function is used to send send req 0x0c: ATT_OP_READ_BLOB_REQ
- * @param[in]  dat - send buffer
- * @param[in]  attHandle -  attribute handle
- * @param[in]  offset -  handler offset
- * @return     none
- */
-void 	att_req_read_blob (u8 *dat, u16 attHandle, u16 offset);
-
-
-/**
- * @brief      This function is used to send send req 0x10: ATT_OP_READ_BY_GROUP_TYPE_REQ
- * @param[in]  dat - send buffer
- * @param[in]  start_attHandle - start att handle
- * @param[in]  end_attHandle -  end att handle
- * @param[in]  uuid - uuid that user want to find
- * @param[in]  uuid_len - attribute length
- * @return     none
- */
-void 	att_req_read_by_group_type (u8 *dat, u16 start_attHandle, u16 end_attHandle, u8 *uuid, int uuid_len);
-
-
-/**
- * @brief      This function is used to write, 0x12: ATT_OP_WRITE_REQ
- * @param[in]  dat - send buffer
- * @param[in]  attHandle -  attribute handle
- * @param[in]  buf - buffer to restore data that user want to send
- * @param[in]  len - data length
- * @return     none
- */
-void 	att_req_write (u8 *dat, u16 attHandle, u8 *buf, int len);
-
-
-/**
- * @brief      This function is used to send command, 0x52: ATT_OP_WRITE_CMD
- * @param[in]  dat - send buffer
- * @param[in]  attHandle -  attribute handle
- * @param[in]  buf - buffer to restore data that user want to send
- * @param[in]  len - data length
- * @return     none
- */
-void 	att_req_write_cmd (u8 *dat, u16 attHandle, u8 *buf, int len);
-
-/**
- * @brief      This function is used to send command, 0x20: ATT_OP_READ_MULTIPLE_VARIABLE_REQ
- * @param[in]  p - send buffer
- * @param[in]  h - attribute handle
- * @param[in]  n - handles number
- * @return     none
- */
-void    att_req_read_multiple_variable (u8 *p, u16 *h ,u8 n);
-
-/**
- * @brief      set HID Report Map
+ * @brief      This function is used to set HID Report Map
  * @param[in]  p - the point of report map
  * @param[in]  len - the length of report map
  * @return     BLE_SUCCESS
@@ -380,14 +250,17 @@ void    att_req_read_multiple_variable (u8 *p, u16 *h ,u8 n);
 ble_sts_t bls_att_setHIDReportMap(u8* p,u32 len);
 
 /**
- * @brief      reset HID Report Map
+ * @brief      This function is used to reset HID Report Map
  * @param[in]  none
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t bls_att_resetHIDReportMap();
 
-#endif
 
-
-
-
+/**
+ * @brief      This function is used to set whether to hold the ATT Response PDU during the pairing phase 3.
+ * @param[in]  enable - 1: enable, holding ATT Response PDU during in pairing phase
+ *                      0: disable, allowing ATT Response PDU during in pairing phase
+ * @return     none.
+ */
+void         blc_att_holdAttributeResponsePayloadDuringPairingPhase(u8 hold_enable);

@@ -165,9 +165,6 @@ int host_att_service_wait_event (u16 handle, u8 *p, u32 timeout)
 	host_att_req_busy = handle | (p[6] << 16);
 	p_att_response = p;
 
-	extern bool		blm_push_fifo (int connHandle, u8 *dat);
-	blm_push_fifo (handle, p);
-
 	u32 t = clock_time ();
 	while (!clock_time_exceed (t, timeout))
 	{
@@ -225,6 +222,26 @@ u16 blm_att_findHandleOfUuid128 (att_db_uuid128_t *p, const u8 * uuid)
 	return 0;
 }
 
+int app_char_discovery(u8* result, u16 connHandle, u16 startAttHandle, u16 endAttHandle, u8*uuid, u8 uuidLen)
+{
+	blc_gatt_pushReadByTypeRequest(connHandle, startAttHandle, endAttHandle, uuid, uuidLen);
+	return host_att_service_wait_event(connHandle,result,1000000);
+}
+
+int app_find_char_info(u8* result, u16 connHandle, u16 startAttHandle, u16 endAttHandle)
+{
+	blc_gatt_pushFindInformationRequest(connHandle, startAttHandle, endAttHandle);
+
+	return host_att_service_wait_event(connHandle, result, 1000000);
+}
+
+int app_read_char_value(u8* result, u16 connHandle, u16 attHandle)
+{
+	blc_gatt_pushReadRequest(connHandle, attHandle);
+
+	return host_att_service_wait_event(connHandle, result, 1000000);
+}
+
 /**
  * @brief       host layer discovery service
  * @param[in]	handle - connect handle
@@ -251,11 +268,13 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 	u16 uuid = GATT_UUID_CHARACTER;
 	do {
 
-		att_req_read_by_type (dat, s, 0xffff, (u8 *)&uuid, 2);
-		if (host_att_service_wait_event(handle, dat, 1000000))
+		dat[6] = ATT_OP_READ_BY_TYPE_REQ;
+		if(app_char_discovery(dat, handle, s, 0xffff, (u8 *)&uuid, 2))
 		{
-			return  GATT_ERR_SERVICE_DISCOVERY_TIEMOUT;			//timeout
+			return GATT_ERR_SERVICE_DISCOVERY_TIMEOUT;
 		}
+
+
 
 		// process response data
 		att_readByTypeRsp_t *p_rsp = (att_readByTypeRsp_t *) dat;
@@ -312,11 +331,10 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 	{
 		if (p16->uuid == CHARACTERISTIC_UUID_HID_REPORT)		//find reference
 		{
-
-			att_req_find_info (dat, p16->handle, 0xffff);
-			if (host_att_service_wait_event(handle, dat, 1000000))
+			dat[6] = ATT_OP_FIND_INFO_REQ;
+			if (app_find_char_info(dat, handle, p16->handle, 0xffff))
 			{
-				return  GATT_ERR_SERVICE_DISCOVERY_TIEMOUT;			//timeout
+				return  GATT_ERR_SERVICE_DISCOVERY_TIMEOUT;			//timeout
 			}
 
 			att_findInfoRsp_t *p_rsp = (att_findInfoRsp_t *) dat;
@@ -336,10 +354,10 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 					{
 					//-----------		read attribute ----------------
 
-						att_req_read (dat, pd[0]);
-						if (host_att_service_wait_event(handle, dat, 1000000))
+						dat[6] = ATT_OP_READ_REQ;
+						if (app_read_char_value(dat, handle, pd[0]))
 						{
-								return  GATT_ERR_SERVICE_DISCOVERY_TIEMOUT;			//timeout
+							return  GATT_ERR_SERVICE_DISCOVERY_TIMEOUT;			//timeout
 						}
 
 						att_readRsp_t *pr = (att_readRsp_t *) dat;
@@ -382,6 +400,7 @@ rf_packet_mouse_t	pkt_mouse = {
 		0,					// per
 		0,					// seq_no
 		1,					// number of frame
+		{0},
 };
 
 
@@ -395,6 +414,7 @@ extern void usbmouse_add_frame (rf_packet_mouse_t *packet_mouse);
  */
 void	att_mouse (u16 conn, u8 *p)
 {
+	(void)conn;(void)p;
 	memcpy (pkt_mouse.data, p, 4);
 	pkt_mouse.seq_no++;
     usbmouse_add_frame(&pkt_mouse);
@@ -416,6 +436,7 @@ extern void report_media_key_to_KeySimTool(u16);
  */
 void	att_keyboard_media (u16 conn, u8 *p)
 {
+	(void)conn;(void)p;
 	u16 media_key = p[0] | p[1]<<8;
 
 	usbkb_report_consumer_key(media_key);
@@ -428,13 +449,14 @@ int keyboard_not_release = 0;
 extern int 	dongle_unpair_enable;
 
 /**
- * @brief       call this function when report keyborad
+ * @brief       call this function when report keyboard
  * @param[in]	conn - connect handle
  * @param[in]	p - pointer of l2cap data packet
  * @return      none
  */
 void	att_keyboard (u16 conn, u8 *p)
 {
+	(void)conn;(void)p;
 	Adbg_att_kb_cnt ++;
 
 	memcpy(&kb_dat_report, p, sizeof(kb_data_t));

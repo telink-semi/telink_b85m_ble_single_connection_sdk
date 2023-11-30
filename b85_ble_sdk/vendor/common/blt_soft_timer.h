@@ -81,7 +81,7 @@
  * @return		0 - The current time isn't what the timer expects
  * 				1 - The current time is what the timer expects
  */
-static int inline blt_is_timer_expired(u32 t, u32 now) {
+static inline int blt_is_timer_expired(u32 t, u32 now) {
 	return ((u32)(now + BLT_TIMER_SAFE_MARGIN_PRE - t) < BLT_TIMER_SAFE_MARGIN_POST);
 }
 

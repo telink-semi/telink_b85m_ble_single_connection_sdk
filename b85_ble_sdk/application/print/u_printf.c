@@ -149,7 +149,7 @@ static int printi(char **out, int i, int b, int sg, int width, int pad,
 		if (t >= 10)
 			t += letbase - '0' - 10;
 		*--s = t + '0';
-		u /= b;
+		u /= (unsigned int)b;
 	}
 
 	if (neg) {
@@ -258,7 +258,7 @@ int u_sprintf(char *out, const char *format, ...) {
 
 void u_array_printf(unsigned char*data, unsigned int len) {
 	u_printf("{");
-	for(int i = 0; i < len; ++i){
+	for(unsigned int i = 0; i < len; ++i){
 		u_printf("%X%s", data[i], i<(len)-1? ":":" ");
 	}
 	u_printf("}\n");
@@ -267,7 +267,7 @@ void u_array_printf(unsigned char*data, unsigned int len) {
 void tl_array_printf(const char *fmt, unsigned char*data, unsigned int len){
 	u_printf(fmt);
 	u_printf("{");
-	for(int i = 0; i < len; ++i){
+	for(unsigned int i = 0; i < len; ++i){
 		u_printf("0x%X%s", data[i], i<(len)-1? ":":" ");
 	}
 	u_printf("}\n");

@@ -58,8 +58,8 @@ void host_pair_unpair_proc(void);
 
 
 
-extern int	dongle_pairing_enable;
-extern int dongle_unpair_enable;
+extern int	pairing_enable;
+extern int unpair_enable;
 
 
 

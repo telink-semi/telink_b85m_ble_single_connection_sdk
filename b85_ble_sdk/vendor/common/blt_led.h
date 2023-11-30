@@ -118,11 +118,11 @@ int device_led_setup(led_cfg_t led_cfg);
  */
 static inline void device_led_process(void)
 {
-#if (BLT_APP_LED_ENABLE)
-	if(DEVICE_LED_BUSY){
-		led_proc();
-	}
-#endif
+	#if (BLT_APP_LED_ENABLE)
+		if(DEVICE_LED_BUSY){
+			led_proc();
+		}
+	#endif
 }
 
 

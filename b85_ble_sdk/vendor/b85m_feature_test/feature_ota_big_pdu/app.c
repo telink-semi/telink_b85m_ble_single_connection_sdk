@@ -59,34 +59,26 @@
 #define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
 
 
-/*RX MAX data Length: 247 Bytes, 247 = 240(biggest OTA PDU) + 7(l2capLen:2, CID:2, opcode:1, attHandle:2 for ATT Write Command ) */
-#define RX_FIFO_SIZE	288  //rx-24   max:247+24 = 271  16 align-> 272
-#define RX_FIFO_NUM		8
-
-#define TX_FIFO_SIZE	40
-#define TX_FIFO_NUM		8
-
-#define MTU_SIZE_SETTING   			 247 //
-#define DLE_TX_SUPPORTED_DATA_LEN    247 //240(biggest OTA PDU) + 7(l2capLen:2, CID:2, opcode:1, attHandle:2)
 
 
-
-_attribute_data_retention_  u8 		 	blt_rxfifo_b[RX_FIFO_SIZE * RX_FIFO_NUM] = {0};
+_attribute_data_retention_  u8 		 	blt_rxfifo_b[ACL_RX_FIFO_SIZE * ACL_RX_FIFO_NUM] = {0};
 _attribute_data_retention_	my_fifo_t	blt_rxfifo = {
-												RX_FIFO_SIZE,
-												RX_FIFO_NUM,
+												ACL_RX_FIFO_SIZE,
+												ACL_RX_FIFO_NUM,
 												0,
 												0,
 												blt_rxfifo_b,};
 
 
-_attribute_data_retention_  u8 		 	blt_txfifo_b[TX_FIFO_SIZE * TX_FIFO_NUM] = {0};
+_attribute_data_retention_  u8 		 	blt_txfifo_b[ACL_TX_FIFO_SIZE * ACL_TX_FIFO_NUM] = {0};
 _attribute_data_retention_	my_fifo_t	blt_txfifo = {
-												TX_FIFO_SIZE,
-												TX_FIFO_NUM,
+												ACL_TX_FIFO_SIZE,
+												ACL_TX_FIFO_NUM,
 												0,
 												0,
 												blt_txfifo_b,};
+
+
 
 _attribute_data_retention_	u32 connect_event_occurTick = 0;
 _attribute_data_retention_  u32 mtuExchange_check_tick = 0;
@@ -100,16 +92,16 @@ _attribute_data_retention_	u16  final_MTU_size = 23;
  * @brief	Adv Packet data
  */
 const u8	tbl_advData[] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
-	 0x02, 0x01, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
-	 0x03, 0x19, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
-	 0x05, 0x02, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x02, DT_FLAGS, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
+	 0x03, DT_APPEARANCE, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
+	 0x05, DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
 };
 /**
  * @brief	Scan Response Packet data
  */
 const u8	tbl_scanRsp [] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
 };
 
 
@@ -192,6 +184,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 */
 	void proc_keyboard (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;(void)n;
 		if(clock_time_exceed(keyScanTick, 8000)){
 			keyScanTick = clock_time();
 		}
@@ -219,6 +212,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 */
 	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;(void)n;
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 		}
@@ -235,9 +229,12 @@ _attribute_data_retention_	int device_in_connection_state;
  */
 void	task_connect (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
+	rf_packet_connect_t *pConnEvt = (rf_packet_connect_t *)p;
+	tlkapi_send_string_data(APP_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 
-	blc_ll_exchangeDataLength(LL_LENGTH_REQ,DLE_TX_SUPPORTED_DATA_LEN);
+	blc_ll_exchangeDataLength(LL_LENGTH_REQ, ACL_CONN_MAX_TX_OCTETS);
 
 	device_in_connection_state = 1;//
 
@@ -245,7 +242,7 @@ void	task_connect (u8 e, u8 *p, int n)
 	final_MTU_size = 23;
 
 	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, LED_ON_LEVAL);  // light on
+		gpio_write(GPIO_LED_RED, LED_ON_LEVEL);  // light on
 	#endif
 }
 
@@ -260,6 +257,8 @@ void	task_connect (u8 e, u8 *p, int n)
  */
 void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
+    (void)e;(void)p;(void)n;
+    tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", *p);
 	device_in_connection_state = 0;
 
 	connect_event_occurTick = 0;
@@ -274,7 +273,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 	final_MTU_size = 23;
 
 #if (UI_LED_ENABLE)
-	gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);  // light off
+	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  // light off
 #endif
 
 
@@ -289,6 +288,17 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  */
 void	task_dle_exchange (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
+
+	ll_data_extension_t* dle_param = (ll_data_extension_t*)p;
+	tlkapi_printf(APP_LOG_EN, "----- DLE exchange: -----\n");
+	tlkapi_printf(APP_LOG_EN, "connEffectiveMaxRxOctets: %d\n", dle_param->connEffectiveMaxRxOctets);
+	tlkapi_printf(APP_LOG_EN, "connEffectiveMaxTxOctets: %d\n", dle_param->connEffectiveMaxTxOctets);
+	tlkapi_printf(APP_LOG_EN, "connMaxRxOctets: %d\n", dle_param->connMaxRxOctets);
+	tlkapi_printf(APP_LOG_EN, "connMaxTxOctets: %d\n", dle_param->connMaxTxOctets);
+	tlkapi_printf(APP_LOG_EN, "connRemoteMaxRxOctets: %d\n", dle_param->connRemoteMaxRxOctets);
+	tlkapi_printf(APP_LOG_EN, "connRemoteMaxTxOctets: %d\n", dle_param->connRemoteMaxTxOctets);
+
 	dle_started_flg = 1;
 
 	dle_started_tick = clock_time();
@@ -304,6 +314,7 @@ void	task_dle_exchange (u8 e, u8 *p, int n)
  */
 void	task_suspend_exit (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
@@ -316,37 +327,41 @@ void	task_suspend_exit (u8 e, u8 *p, int n)
  */
 int app_host_event_callback (u32 h, u8 *para, int n)
 {
-
+    (void)h;(void)para;(void)n;
 	u8 event = h & 0xFF;
 
 	switch(event)
 	{
 		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
-
+			gap_smp_pairingBeginEvt_t *pEvt = (gap_smp_pairingBeginEvt_t *)para;
+			tlkapi_send_string_data(APP_HOST_EVENT_LOG_EN, "[APP][SMP] paring begin:", pEvt, sizeof(gap_smp_pairingBeginEvt_t));
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-
+			gap_smp_pairingSuccessEvt_t *pEvt = (gap_smp_pairingSuccessEvt_t *)para;
+			tlkapi_send_string_data(APP_HOST_EVENT_LOG_EN, "[APP][SMP] paring success:", pEvt, sizeof(gap_smp_pairingSuccessEvt_t));
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
-
+			gap_smp_pairingFailEvt_t *pEvt = (gap_smp_pairingFailEvt_t *)para;
+			tlkapi_send_string_data(APP_HOST_EVENT_LOG_EN, "[APP][SMP] paring fail:", pEvt, sizeof(gap_smp_pairingFailEvt_t));
 		}
 		break;
 
 		case GAP_EVT_SMP_CONN_ENCRYPTION_DONE:
 		{
-			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
+			gap_smp_connEncDoneEvt_t* pEvt = (gap_smp_connEncDoneEvt_t*)para;
+			tlkapi_send_string_data(APP_HOST_EVENT_LOG_EN, "[APP][SMP] paring fail:", pEvt, sizeof(gap_smp_pairingFailEvt_t));
 
-			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
+			if(pEvt->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
 			}
-			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect
+			else if(pEvt->re_connect == SMP_FAST_CONNECT){  //auto connect
 
 			}
 		}
@@ -354,13 +369,15 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 
 		case GAP_EVT_SMP_SECURITY_PROCESS_DONE:
 		{
-
+			gap_smp_securityProcessDoneEvt_t *pEvt = (gap_smp_securityProcessDoneEvt_t *)para;
+			tlkapi_send_string_data(APP_HOST_EVENT_LOG_EN, "[APP][SMP] security process done:", pEvt, sizeof(gap_smp_securityProcessDoneEvt_t));
 		}
 		break;
 
 		case GAP_EVT_ATT_EXCHANGE_MTU:
 		{
 			gap_gatt_mtuSizeExchangeEvt_t *pEvt = (gap_gatt_mtuSizeExchangeEvt_t *)para;
+			tlkapi_send_string_data(APP_HOST_EVENT_LOG_EN, "[APP][MTU] mtu exchange", pEvt, sizeof(gap_gatt_mtuSizeExchangeEvt_t));
 			final_MTU_size = pEvt->effective_MTU;
 			mtuExchange_started_flg = 1;   //set MTU size exchange flag here
 		}
@@ -414,6 +431,12 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
@@ -425,6 +448,7 @@ void user_init_normal(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 
 	////// Controller Initialization  //////////
@@ -439,12 +463,7 @@ void user_init_normal(void)
 	////// Host Initialization  //////////
 	blc_gap_peripheral_init();    //gap initialization
 	my_att_init (); //gatt initialization
-
-	//ATT initialization
-	//If not set RX MTU size, default is: 23 bytes.  In this situation, if master send MtuSize Request before slave send MTU size request,
-	//slave will response default RX MTU size 23 bytes, then master will not send long packet on host l2cap layer, link layer data length
-	//extension feature can not be used.  So in data length extension application, RX MTU size must be enlarged when initialization.
-	blc_att_setRxMtuSize(MTU_SIZE_SETTING);
+	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //set MTU size, default MTU is 23 if not call this API
 
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
 
@@ -476,14 +495,18 @@ void user_init_normal(void)
 
 
 	////////////////// config adv packet /////////////////////
-	u8 status = bls_ll_setAdvParam(  ADV_INTERVAL_30MS, ADV_INTERVAL_35MS,
+	u8 adv_param_status = BLE_SUCCESS;
+	adv_param_status = bls_ll_setAdvParam(  ADV_INTERVAL_30MS, ADV_INTERVAL_35MS,
 									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
 									 0,  NULL,
 									 BLT_ENABLE_ADV_ALL,
 									 ADV_FP_NONE);
-	if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
+	if(adv_param_status != BLE_SUCCESS) {  	//debug: adv setting err
+		tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+		while(1);
+	}
 
-	bls_ll_setAdvEnable(1);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
 
 
 
@@ -500,7 +523,16 @@ void user_init_normal(void)
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
+		extern u32 _retention_use_size_div_16_;
+		if (((u32)&_retention_use_size_div_16_) < 0x400)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
+		else if (((u32)&_retention_use_size_div_16_) < 0x800)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
+		else
+		{
+			//retention size > 32k, overflow
+			//debug: deep retention size setting err
+		}
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 
@@ -516,7 +548,7 @@ void user_init_normal(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}
@@ -532,6 +564,22 @@ void user_init_normal(void)
 
 	/* OTA module initialization must be called after "bls_ota_set_fwSize_and_fwBootAddr"(if used), and before any other OTA API.*/
 	blc_ota_initOtaServer_module();
+
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_ota_big_pdu init \n");
 }
 
 
@@ -555,7 +603,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}

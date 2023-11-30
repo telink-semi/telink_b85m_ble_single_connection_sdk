@@ -154,7 +154,7 @@ void user_init(void)
 
 
 	#if (BLE_HOST_SMP_ENABLE)
-		blm_smp_configPairingSecurityInfoStorageAddr(FLASH_ADR_PARING);
+		blm_smp_configPairingSecurityInfoStorageAddr(flash_sector_master_pairing);
 		blm_smp_registerSmpFinishCb(app_host_smp_finish);
 
 		blc_smp_central_init();
@@ -177,6 +177,21 @@ void user_init(void)
 	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS,	\
 							OWN_ADDRESS_PUBLIC, SCAN_FP_ALLOW_ADV_ANY);
 	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
+
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE || USB_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
 
 
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE kma dongle init \n");

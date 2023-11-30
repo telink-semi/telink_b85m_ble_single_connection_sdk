@@ -59,8 +59,8 @@
 **********************************************************************************/
 
 
-int	dongle_pairing_enable = 0;
-int dongle_unpair_enable = 0;
+int	pairing_enable = 0;
+int unpair_enable = 0;
 
 
 /**
@@ -74,11 +74,11 @@ void host_pair_unpair_proc(void)
 
 	//terminate and unpair proc
 	static int master_disconnect_flag;
-	if(dongle_unpair_enable){
+	if(unpair_enable){
 		if(!master_disconnect_flag && blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){
 			if( blm_ll_disconnect(cur_conn_device.conn_handle, HCI_ERR_REMOTE_USER_TERM_CONN) == BLE_SUCCESS){
 				master_disconnect_flag = 1;
-				dongle_unpair_enable = 0;
+				unpair_enable = 0;
 
 				tbl_bond_slave_unpair_proc(cur_conn_device.mac_adrType, cur_conn_device.mac_addr); //by telink stack host smp
 

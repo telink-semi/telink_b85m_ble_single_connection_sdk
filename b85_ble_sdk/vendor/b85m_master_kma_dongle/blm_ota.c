@@ -126,7 +126,7 @@ void ota_set_result(int success)
 	}
 
 #if (UI_LED_ENABLE)
-	gpio_write(led_indicate_gpio,!LED_ON_LEVAL);  //ota fail
+	gpio_write(led_indicate_gpio,!LED_ON_LEVEL);  //ota fail
 #endif
 
 	host_ota_update_pending = 0;
@@ -241,33 +241,33 @@ void proc_ota (void)
     {
 #if (UI_LED_ENABLE)
     	if(led_step==0 && clock_time_exceed(ota_mode_begin_tick, OTA_INTERVAL_US)){
-    		gpio_write(GPIO_LED_BLUE, LED_ON_LEVAL);
-    		gpio_write(GPIO_LED_GREEN, LED_ON_LEVAL);
+    		gpio_write(GPIO_LED_BLUE, LED_ON_LEVEL);
+    		gpio_write(GPIO_LED_GREEN, LED_ON_LEVEL);
     		led_step = 1;
     	}
     	else if(led_step==1 && clock_time_exceed(ota_mode_begin_tick, OTA_INTERVAL_US*2)){
-    		gpio_write(GPIO_LED_BLUE, !LED_ON_LEVAL);
-    		gpio_write(GPIO_LED_GREEN, !LED_ON_LEVAL);
+    		gpio_write(GPIO_LED_BLUE, !LED_ON_LEVEL);
+    		gpio_write(GPIO_LED_GREEN, !LED_ON_LEVEL);
     		led_step = 2;
     	}
     	else if(led_step==2 && clock_time_exceed(ota_mode_begin_tick, OTA_INTERVAL_US*3)){
-    		gpio_write(GPIO_LED_BLUE, LED_ON_LEVAL);
-    		gpio_write(GPIO_LED_GREEN, LED_ON_LEVAL);
+    		gpio_write(GPIO_LED_BLUE, LED_ON_LEVEL);
+    		gpio_write(GPIO_LED_GREEN, LED_ON_LEVEL);
     		led_step = 3;
     	}
     	else if(led_step==3 && clock_time_exceed(ota_mode_begin_tick, OTA_INTERVAL_US*4)){
-    		gpio_write(GPIO_LED_BLUE, !LED_ON_LEVAL);
-    		gpio_write(GPIO_LED_GREEN, !LED_ON_LEVAL);
+    		gpio_write(GPIO_LED_BLUE, !LED_ON_LEVEL);
+    		gpio_write(GPIO_LED_GREEN, !LED_ON_LEVEL);
     		led_step = 4;
     	}
     	else if(led_step==4 && clock_time_exceed(ota_mode_begin_tick, OTA_INTERVAL_US*5)){
-    		gpio_write(GPIO_LED_BLUE, LED_ON_LEVAL);
-    		gpio_write(GPIO_LED_GREEN, LED_ON_LEVAL);
+    		gpio_write(GPIO_LED_BLUE, LED_ON_LEVEL);
+    		gpio_write(GPIO_LED_GREEN, LED_ON_LEVEL);
     		led_step = 5;
     	}
     	else if(led_step==5 && clock_time_exceed(ota_mode_begin_tick, OTA_INTERVAL_US*6)){
-    		gpio_write(GPIO_LED_BLUE, !LED_ON_LEVAL);
-    		gpio_write(GPIO_LED_GREEN, !LED_ON_LEVAL);
+    		gpio_write(GPIO_LED_BLUE, !LED_ON_LEVEL);
+    		gpio_write(GPIO_LED_GREEN, !LED_ON_LEVEL);
     		led_step = 0;
 
 
@@ -284,27 +284,27 @@ void proc_ota (void)
     if(led_indicate_begin_tick){
 #if (UI_LED_ENABLE)
     	if(led_step==0 && clock_time_exceed(led_indicate_begin_tick, LED_INTERVAL_US)){
-    		gpio_write(led_indicate_gpio,LED_ON_LEVAL);
+    		gpio_write(led_indicate_gpio,LED_ON_LEVEL);
     		led_step = 1;
     	}
     	else if(led_step==1 && clock_time_exceed(led_indicate_begin_tick, LED_INTERVAL_US*2)){
-    		gpio_write(led_indicate_gpio,!LED_ON_LEVAL);
+    		gpio_write(led_indicate_gpio,!LED_ON_LEVEL);
     		led_step = 2;
     	}
     	else if(led_step==2 && clock_time_exceed(led_indicate_begin_tick, LED_INTERVAL_US*3)){
-    		gpio_write(led_indicate_gpio,LED_ON_LEVAL);
+    		gpio_write(led_indicate_gpio,LED_ON_LEVEL);
     		led_step = 3;
     	}
     	else if(led_step==3 && clock_time_exceed(led_indicate_begin_tick, LED_INTERVAL_US*4)){
-    		gpio_write(led_indicate_gpio,!LED_ON_LEVAL);
+    		gpio_write(led_indicate_gpio,!LED_ON_LEVEL);
     		led_step = 4;
     	}
     	else if(led_step==4 && clock_time_exceed(led_indicate_begin_tick, LED_INTERVAL_US*5)){
-    		gpio_write(led_indicate_gpio,LED_ON_LEVAL);
+    		gpio_write(led_indicate_gpio,LED_ON_LEVEL);
     		led_step = 5;
     	}
     	else if(led_step==5 && clock_time_exceed(led_indicate_begin_tick, LED_INTERVAL_US*6)){
-    		gpio_write(led_indicate_gpio,!LED_ON_LEVAL);
+    		gpio_write(led_indicate_gpio,!LED_ON_LEVEL);
     		led_indicate_begin_tick = 0;
     		led_step = 0;
     	}
@@ -325,21 +325,19 @@ void proc_ota (void)
     }
 
 
-    u8  dat[32] = {0};
-
 	if(host_ota_start == 0)
 	{
 		if(master_ota_cmd){  //UI: pc tool trig OTA mode
 
 			if(master_ota_cmd == 1){
 				#if (UI_LED_ENABLE)
-					gpio_write(GPIO_LED_BLUE,LED_ON_LEVAL);  //ota begin
+					gpio_write(GPIO_LED_BLUE,LED_ON_LEVEL);  //ota begin
 				#endif
 			    flash_adr_ota_master = 0x20000;
 			}
 			else {
 				#if (UI_LED_ENABLE)
-					gpio_write(GPIO_LED_GREEN,LED_ON_LEVAL);  //ota begin
+					gpio_write(GPIO_LED_GREEN,LED_ON_LEVEL);  //ota begin
 				#endif
 			    flash_adr_ota_master = 0x40000;
 			}
@@ -366,8 +364,7 @@ void proc_ota (void)
 	     * will be called to get the handle and set host_ota_start to 2*/
 		host_att_set_current_readByTypeReq_uuid((u8 *)my_OtaUUID, 16);
 
-
-	    if(BLE_SUCCESS==blc_gatt_pushReadByTypeRequest (BLM_CONN_HANDLE, 0, 0xffff, read_by_type_req_uuid, 16)){
+	    if(BLE_SUCCESS==blc_gatt_pushReadByTypeRequest (BLM_CONN_HANDLE, 1, 0xffff, read_by_type_req_uuid, 16)){
 	    	host_ota_start = 3;
 	    }
 
@@ -379,9 +376,7 @@ void proc_ota (void)
 
 
 		u16 ota_start = CMD_OTA_START;
-		att_req_write_cmd (dat, slave_ota_handle, (u8 *)&ota_start, 2);
-
-		if( blm_push_fifo (BLM_CONN_HANDLE, dat) ){
+		if(BLE_SUCCESS == blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,slave_ota_handle,(u8 *)&ota_start, 2)){
 			host_ota_start = 5;
 			otaStart_cmd_tick = clock_time();
 		}
@@ -409,10 +404,7 @@ void proc_ota (void)
 
 					p->crc_16 = crc16((u8 *)&(p->adr_index), 18);
 
-					att_req_write_cmd (dat, slave_ota_handle, (u8 *)p, 20);
-
-
-					if( blm_push_fifo (BLM_CONN_HANDLE, dat) ){  //current data push TX fifo OK
+					if(BLE_SUCCESS == blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,slave_ota_handle,(u8 *)p, 20)){ // send write command OK
 						ota_adr += 16;  //next data index
 					}
 
@@ -446,12 +438,11 @@ void proc_ota (void)
 
 			memset(p->data + 4, 0, 12);
 
-			att_req_write_cmd (dat, slave_ota_handle, (u8 *)p, 6);
-
-
-			if( blm_push_fifo (BLM_CONN_HANDLE, dat) ){
-					host_ota_start = 9;
+			if(BLE_SUCCESS == blc_gatt_pushWriteCommand(BLM_CONN_HANDLE,slave_ota_handle,(u8 *)p, 6)){ // send write command OK
+				host_ota_start = 9;
 			}
+
+
 		}
 
 	}

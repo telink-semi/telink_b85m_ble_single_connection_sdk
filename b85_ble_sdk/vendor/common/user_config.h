@@ -45,9 +45,8 @@
  *******************************************************************************************************/
 #pragma once
 
-#if (__PROJECT_8255_BLE_REMOTE__)
-	#include "../b85m_ble_remote/app_config.h"
-#elif (__PROJECT_8258_BLE_REMOTE__ || __PROJECT_8278_BLE_REMOTE__)
+
+#if (__PROJECT_8258_BLE_REMOTE__ || __PROJECT_8278_BLE_REMOTE__)
 	#include "../b85m_ble_remote/app_config.h"
 #elif (__PROJECT_8258_BLE_SAMPLE__ || __PROJECT_8278_BLE_SAMPLE__)
 	#include "../b85m_ble_sample/app_config.h"
@@ -59,15 +58,10 @@
 	#include "../b85m_feature_test/app_config.h"
 #elif(__PROJECT_8258_MASTER_KMA_DONGLE__ || __PROJECT_8278_MASTER_KMA_DONGLE__ )
 	#include "../b85m_master_kma_dongle/app_config.h"
-#elif(__PROJECT_8258_MASTER_SLAVE__ )
-	#include "../b85m_master_slave/app_config.h"
-#elif(__PROJECT_8258_BQB_LOWER_TESTER__ )
-	#include "../b85m_bqb_lowertester/app_config.h"
 #elif(__PROJECT_8258_INTERNAL_TEST__ ||  __PROJECT_8278_INTERNAL_TEST__)
 	#include "../b85m_internal_test/app_config.h"
-#elif(__PROJECT_8258_DRIVER_TEST__ ||  __PROJECT_8278_DRIVER_TEST__)
-	#include "../b85m_driver_test/app_config.h"
 #else
 	#include "../common/default_config.h"
 #endif
+
 

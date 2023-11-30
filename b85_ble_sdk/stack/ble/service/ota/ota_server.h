@@ -201,12 +201,5 @@ int			otaWrite(void * p);
 void 		bls_ota_clearNewFwDataArea(void);
 
 
-/* to compatible with some old API name */
-#define bls_ota_set_fwSize_and_fwBootAddr	blc_ota_setFirmwareSizeAndBootAddress
-#define	bls_ota_registerStartCmdCb			blc_ota_registerOtaStartCmdCb
-#define	bls_ota_registerVersionReqCb		blc_ota_registerOtaFirmwareVersionReqCb
-#define	bls_ota_registerResultIndicateCb	blc_ota_registerOtaResultIndicationCb
-#define bls_ota_setTimeout(tm_us)			blc_ota_setOtaProcessTimeout( (tm_us)/1000000 )
-
 
 #endif /* STACK_BLE_SERVICE_OTA_OTA_SERVER_H_ */

@@ -51,6 +51,7 @@
 
 _attribute_data_retention_ device_led_t device_led;
 
+#if (BLT_APP_LED_ENABLE)
 /**
  * @brief		This function is used to control device led on or off
  * @param[in]	on - the status of led
@@ -70,13 +71,11 @@ void device_led_on_off(u8 on)
  * @param[in]	polarity - 1 for high led on, 0 for low led on
  * @return      none
  */
-void device_led_init(u32 gpio,u8 polarity){  //polarity: 1 for high led on, 0 for low led on
-
-#if (BLT_APP_LED_ENABLE)
+void device_led_init(u32 gpio,u8 polarity)
+{  //polarity: 1 for high led on, 0 for low led on
 	device_led.gpio_led = gpio;
 	device_led.polar = !polarity;
 	gpio_write( gpio, !polarity );
-#endif
 }
 
 /**
@@ -87,7 +86,6 @@ void device_led_init(u32 gpio,u8 polarity){  //polarity: 1 for high led on, 0 fo
  */
 int device_led_setup(led_cfg_t led_cfg)
 {
-#if (BLT_APP_LED_ENABLE)
 	if( device_led.repeatCount &&  device_led.priority >= led_cfg.priority){
 		return 0; //new led event priority not higher than the not ongoing one
 	}
@@ -116,9 +114,6 @@ int device_led_setup(led_cfg_t led_cfg)
 
 		return 1;
 	}
-#else
-	return 0;
-#endif
 }
 
 /**
@@ -128,7 +123,6 @@ int device_led_setup(led_cfg_t led_cfg)
  */
 void led_proc(void)
 {
-#if (BLT_APP_LED_ENABLE)
 	if(device_led.isOn){
 		if(clock_time_exceed(device_led.startTick,device_led.onTime_ms*1000)){
 			device_led_on_off(0);
@@ -148,5 +142,5 @@ void led_proc(void)
 			}
 		}
 	}
-#endif
 }
+#endif

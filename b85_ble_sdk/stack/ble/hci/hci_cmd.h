@@ -4,43 +4,21 @@
  * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	06,2020
+ * @date	06,2022
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef HCI_CMD_H_
@@ -48,6 +26,153 @@
 
 
 #include "stack/ble/ble_format.h"
+
+
+/**
+ *  @brief  Bluetooth Core Specification version
+ */
+typedef enum{
+	BLUETOOTH_CORE_4_0			=	0x06,
+	BLUETOOTH_CORE_4_1			=	0x07,
+	BLUETOOTH_CORE_4_2			=	0x08,
+	BLUETOOTH_CORE_5_0			=	0x09,
+	BLUETOOTH_CORE_5_1			=	0x0A,
+	BLUETOOTH_CORE_5_2			=	0x0B,
+	BLUETOOTH_CORE_5_3			=	0x0C,
+}core_version_t;
+
+
+/**
+ *  @brief  Command Parameters for "7.1.6 Disconnect command"
+ */
+typedef struct {
+	u16	connHandle;
+	u8	reason;
+} hci_disconnect_cmdParam_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.3.39 Host Buffer Size command"
+ */
+typedef struct
+{
+	u16 aclDataPktLen;
+	u8  scoDataPktLen;
+	u16 aclDataPktTotalNum; //total
+	u16 scoDataPktTotalNum;
+} hci_hostBufferSize_cmdParam_t;
+
+/**
+ *  @brief  Return Parameters for "7.3.40 Host Number Of Completed Packets command"
+ */
+typedef struct
+{
+	u16 ConHandle; //The actual usage is 12bit
+	u16 numPktCompleted;
+} hostNumOfCompletedPkt_cfg_t;
+
+
+
+/**
+ *  @brief  Return Parameters for "7.3.93 Read Authenticated Payload Timeout command"
+ */
+typedef struct{
+	u8		status;
+	u16		connHandle;
+	u16		auth_pdu_timeout;
+} hci_readAuthPduTimeout_retParam_t;
+/**
+ *  @brief  Command & Return Parameters for "7.3.94 HCI write authenticated payload timeout"
+ */
+typedef struct
+{
+	u16 connHandle; //The actual usage is 12bit
+	u16 timeout;   // unit: 10ms
+} hci_writeAuthPayloadTimeout_cmdParam_t;
+
+typedef struct
+{
+	u8 status;
+	u16 connHandle; //The actual usage is 12bit
+} hci_writeAuthPayloadTimeout_retParam_t;
+
+typedef struct
+{
+	u8	num_sets;
+	hostNumOfCompletedPkt_cfg_t completePktCfg[4];
+} hci_hostNumOfCompletedPkt_cmdParam_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.4.2 Read Local Supported Commands command"
+ */
+typedef struct {
+	u8	status;
+	u8	Supported_Commands[64];
+} hci_readLocSupCmds_retParam_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.4.3 Read Local Supported Features command"
+ */
+typedef struct {
+	u8	status;
+	u8	LMP_features[8];
+} hci_readLocSupFeatures_retParam_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.4.6 Read BD_ADDR command"
+ */
+typedef struct {
+	u8	status;
+	u8	bd_addr[6];
+} hci_readBdAddr_retParam_t;
+
+
+/**
+ * @brief Command & Return Parameters for "7.5.4 Read RSSI command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+}hci_readRssi_cmdParam_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+	s8 		rssi;
+}hci_readRssi_retParam_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.8.2 LE Read Buffer Size command"
+ */
+typedef struct {
+	u8	status;
+	u16	acl_data_pkt_len;  // LE_ACL_Data_Packet_Length
+	u8	num_le_data_pkt;   // Total_Num_LE_ACL_Data_Packets
+} hci_le_readBufSize_v1_retParam_t;
+
+
+typedef struct {
+	u8	status;
+	u16	acl_data_pkt_len;  // LE_ACL_Data_Packet_Length
+	u8	num_le_data_pkt;   // Total_Num_LE_ACL_Data_Packets
+	u16	iso_data_pkt_len;  // LE_ACL_Data_Packet_Length
+	u8	num_le_iso_pkt;    // Total_Num_LE_ACL_Data_Packets
+} hci_le_readBufSize_v2_retParam_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.8.3 LE Read Local Supported Features command"
+ */
+typedef struct {
+	u8	status;
+	u8	le_features[8];
+} hci_le_readLocSupFeature_retParam_t;
+
 
 /**
  *  @brief  Command Parameters for "7.8.5 LE Set Advertising Parameters command"
@@ -64,7 +189,6 @@ typedef struct {
 	u8  advFilterPolicy;
 } hci_le_setAdvParam_cmdParam_t;
 
-#define adv_para_t hci_le_setAdvParam_cmdParam_t
 
 /* Advertising_Interval, Time = N * 0.625 ms,
  * Notice that these are just part of but not all Advertising_Interval value */
@@ -86,8 +210,9 @@ typedef enum{
 	ADV_INTERVAL_80MS        =                   128,
 	ADV_INTERVAL_90MS		 =					 144,
 	ADV_INTERVAL_100MS       =                   160,
+	ADV_INTERVAL_105MS       =                   168,
 	ADV_INTERVAL_150MS       =                   240,
-	ADV_INTERVAL_105MS 		 =                   168,
+	ADV_INTERVAL_195MS       =                   312,
 	ADV_INTERVAL_200MS       =                   320,
 	ADV_INTERVAL_205MS		 =                   328,
 	ADV_INTERVAL_250MS       =                   400,
@@ -110,66 +235,6 @@ typedef enum{
 	ADV_INTERVAL_10_24S      =                 16384,
 }adv_inter_t;
 
-/* Periodic_adv_Interval, Time = N * 1.25 ms,
- * Notice that these are just part of but not all Periodic_adv_Interval value */
-typedef enum{
-	PERADV_INTERVAL_7P5MS              =            6,
-	PERADV_INTERVAL_8P75MS             =            7,
-	PERADV_INTERVAL_10MS               =            8,
-	PERADV_INTERVAL_11P25MS            =            9,
-	PERADV_INTERVAL_12P5MS             =            10,
-	PERADV_INTERVAL_13P75MS            =            11,
-	PERADV_INTERVAL_15MS               =            12,
-	PERADV_INTERVAL_16P25MS            =            13,
-	PERADV_INTERVAL_17P5MS             =            14,
-	PERADV_INTERVAL_18P75MS            =            15,
-	PERADV_INTERVAL_20MS               =            16,
-	PERADV_INTERVAL_21P25MS            =            17,
-	PERADV_INTERVAL_22P5MS             =            18,
-	PERADV_INTERVAL_23P75MS            =            19,
-	PERADV_INTERVAL_25MS               =            20,
-	PERADV_INTERVAL_26P25MS            =            21,
-	PERADV_INTERVAL_27P5MS             =            22,
-	PERADV_INTERVAL_28P75MS            =            23,
-	PERADV_INTERVAL_30MS               =            24,
-	PERADV_INTERVAL_31P25MS            =            25,
-	PERADV_INTERVAL_32P5MS             =            26,
-	PERADV_INTERVAL_33P75MS            =            27,
-	PERADV_INTERVAL_35MS             	 =            28,
-	PERADV_INTERVAL_36P25MS            =            29,
-	PERADV_INTERVAL_37P5MS             =            30,
-	PERADV_INTERVAL_38P75MS            =            31,
-	PERADV_INTERVAL_40MS               =            32,
-	PERADV_INTERVAL_41P25MS            =            33,
-	PERADV_INTERVAL_42P5MS             =            34,
-	PERADV_INTERVAL_43P75MS            =            35,
-	PERADV_INTERVAL_45MS               =            36,
-	PERADV_INTERVAL_46P25MS            =            37,
-	PERADV_INTERVAL_47P5MS             =            38,
-	PERADV_INTERVAL_48P75MS            =            39,
-	PERADV_INTERVAL_50MS               =            40,
-	PERADV_INTERVAL_55MS               =            44,
-	PERADV_INTERVAL_60MS               =            48,
-	PERADV_INTERVAL_62P5MS			 =            50,
-	PERADV_INTERVAL_65MS               =            52,
-	PERADV_INTERVAL_70MS               =            56,
-	PERADV_INTERVAL_75MS               =            60,
-	PERADV_INTERVAL_80MS               =            64,
-	PERADV_INTERVAL_85MS               =            68,
-	PERADV_INTERVAL_90MS               =            72,
-	PERADV_INTERVAL_95MS               =            78,
-	PERADV_INTERVAL_100MS              =            80,
-	PERADV_INTERVAL_110MS              =            88,
-	PERADV_INTERVAL_120MS              =            96,
-	PERADV_INTERVAL_130MS              =            104,
-	PERADV_INTERVAL_140MS              =            112,
-	PERADV_INTERVAL_150MS              =            120,
-	PERADV_INTERVAL_180MS              =            144,
-	PERADV_INTERVAL_200MS              =            160,
-	PERADV_INTERVAL_250MS              =            200,
-	PERADV_INTERVAL_300MS              =            240,
-	PERADV_INTERVAL_320MS              =            256,
-}periodic_adv_inter_t;
 
 /* Advertisement Type */
 typedef enum{
@@ -222,7 +287,7 @@ typedef enum {
 typedef enum {
 	BLC_ADV_DISABLE = 0x00,
 	BLC_ADV_ENABLE  = 0x01,
-} ll_adv_en_t;
+} adv_en_t;
 
 
 
@@ -230,14 +295,25 @@ typedef enum {
 /**
  *  @brief  Command Parameters for "7.8.10 LE Set Scan Parameters command"
  */
+/* Scan Parameters structure */
+typedef struct {
+	u8		le_scanType;
+	u16		le_scanInterval;
+	u16		le_scanWindow;
+	u8		ownAddrType;
+	u8		scanFilterPolicy;
+} hci_le_setScanParam_cmdParam_t;
+
+
+/* LE_Scan_Type */
 typedef enum {
 	SCAN_TYPE_PASSIVE = 0x00,
 	SCAN_TYPE_ACTIVE  = 0x01,
 } scan_type_t;
 
 
-/* Scannning_Interval, Time = N * 0.625 ms,
- * Notice that these are just part of but not all Scannning_Interval value */
+/* Scanning_Interval, Time = N * 0.625 ms,
+ * Notice that these are just part of but not all Scanning_Interval value */
 typedef enum{
 	SCAN_INTERVAL_10MS              =            16,
 	SCAN_INTERVAL_20MS              =            32,
@@ -264,8 +340,8 @@ typedef enum{
 	SCAN_INTERVAL_1000MS            =            1600,
 }scan_inter_t;
 
-/* Scannning_Window, Time = N * 0.625 ms,
- * Notice that these are just part of but not all Scannning_Window value */
+/* Scanning_Window, Time = N * 0.625 ms,
+ * Notice that these are just part of but not all Scanning_Window value */
 typedef enum{
 	SCAN_WINDOW_10MS                =            16,
 	SCAN_WINDOW_20MS                =            32,
@@ -323,10 +399,15 @@ typedef enum {
 #define SCAN_FP_DIRECT_RPA_PASS_MASK					BIT(1)
 
 
-
 /**
  *  @brief  Command Parameters for "7.8.11 LE Set Scan Enable command"
  */
+typedef struct{
+	u8		le_scan_enable;
+	u8		filter_duplicate;
+} hci_le_setScanEnable_cmdParam_t;
+
+
 /* LE_Scan_Enable */
 typedef enum {
 	BLC_SCAN_DISABLE = 0x00,
@@ -345,7 +426,7 @@ typedef enum {
 /**
  *  @brief  Command Parameters for "7.8.12 LE Create Connection command"
  */
-typedef struct __attribute__((packed)) {
+typedef struct{
 	u16		scan_inter;
 	u16		scan_wind;
 	u8		fp; //init_filter_policy
@@ -387,6 +468,7 @@ typedef enum {
 
 #define	PEERATYPE_RANDOM_MASK			BIT(0)
 #define	PEERATYPE_IDENTITY_MASK			BIT(1)
+
 
 /* Connection_Interval, Time = N * 1.25 ms,
  * Notice that these are just part of but not all Connection_Interval value */
@@ -442,8 +524,12 @@ typedef enum{
 	CONN_INTERVAL_130MS              =            104,
 	CONN_INTERVAL_140MS              =            112,
 	CONN_INTERVAL_150MS              =            120,
+	CONN_INTERVAL_160MS              =            128,
+	CONN_INTERVAL_170MS              =            136,
 	CONN_INTERVAL_180MS              =            144,
+	CONN_INTERVAL_190MS              =            152,
 	CONN_INTERVAL_200MS              =            160,
+	CONN_INTERVAL_240MS              =            192,
 	CONN_INTERVAL_250MS              =            200,
 	CONN_INTERVAL_300MS              =            240,
 	CONN_INTERVAL_320MS              =            256,
@@ -472,10 +558,6 @@ typedef enum{
 	CONN_TIMEOUT_20S				 =			  2000,
 }conn_tm_t;
 
-typedef struct{
-	u8		peer_identity_address_type;
-	u8		peer_identity_address[6];
-} le_identityAddress_t;
 
 /**
  *  @brief  Return Parameters for "7.8.14 LE Read White List Size command"
@@ -484,6 +566,7 @@ typedef struct {
 	u8		status;
 	u8		wl_size;
 } hci_le_readWhiteListSizeCmd_retParam_t;
+
 
 /**
  *  @brief  Command Parameters for "7.8.16 LE Add Device To Filter Accept List command"
@@ -494,6 +577,35 @@ typedef struct{
 } hci_le_addDeviceAcceptlist_cmdParam_t;
 
 /**
+ *  @brief  Command Parameters for "7.8.17 LE Remove Device From White List command"
+ */
+typedef struct{
+	u8		adr_type;
+	u8		addr[6];
+} hci_le_removeDeviceWhitelist_cmdParam_t;
+
+
+
+typedef struct{
+	u8		peer_identity_address_type;
+	u8		peer_identity_address[6];
+} le_identityAddress_t;
+
+
+/**
+ *  @brief  Command Parameters for "7.8.24 LE Enable Encryption command"
+ *  core_5.1 and previous version :  LE Start Encryption command
+ *  core_5.2 and later    version :  LE Enable Encryption command
+ */
+typedef struct{
+	u16		connHandle;
+	u8		random_number[8];
+	u8		enc_div[2];
+	u8		long_term_key[16];
+} hci_le_enableEncryption_cmdParam_t;
+
+
+/**
  *  @brief  Command Parameters for "7.8.38 LE Add Device To Resolving List command"
  */
 typedef struct{
@@ -502,6 +614,8 @@ typedef struct{
 	u8		peer_IRK[16];
 	u8		local_IRK[16];
 } hci_le_addDeviceResolvinglist_cmdParam_t;
+
+
 /**
  *  @brief  Identity_Address_Type
  */
@@ -518,6 +632,7 @@ typedef struct{
 	u8		rl_size;	//resolving list size
 } hci_le_readResolvingListSizeCmd_retParam_t;
 
+
 /**
  *  @brief  Return Parameters for "7.8.42 LE Read Peer Resolvable Address command"
  */
@@ -526,32 +641,6 @@ typedef struct{
 	u8		peer_res_addr[6];
 } hci_le_readPeerResolvableAddress_retParam_t;
 
-/**
- *  @brief  Command Parameters for "7.8.77 LE Set Privacy Mode command"
- */
-typedef struct{
-	u8		peer_identity_address_type;
-	u8		peer_identity_address[6];
-	u8		privacy_mode;
-} hci_le_setPrivacyMode_cmdParam_t;
-
-/* Privacy_Mode for peer device */
-typedef enum{
-	NETWORK_PRIVACY_MODE	=		0x00,
-	DEVICE_PRIVACY_MODE 	=		0x01,
-}privacy_mode_t;
-
-
-/**
- *  @brief  Return Parameters for "7.8.46 LE Read Maximum Data Length command"
- */
-typedef struct {
-	u8         status;
-	u16        support_max_tx_oct;
-	u16        support_max_tx_time;
-	u16        support_max_rx_oct;
-	u16        support_max_rx_time;
-} hci_le_readMaxDataLengthCmd_retParam_t;
 
 /**
  *  @brief  Return Parameters for "7.8.43 LE Read Local Resolvable Address command"
@@ -560,6 +649,7 @@ typedef struct{
 	u8		status;
 	u8		local_res_addr[6];
 } hci_le_readLocalResolvableAddress_retParam_t;
+
 
 /**
  *  @brief  Command Parameters for "7.8.44 LE Set Address Resolution Enable command"
@@ -573,9 +663,23 @@ typedef enum {
 } addr_res_en_t;
 
 
+/**
+ *  @brief  Return Parameters for "7.8.46 LE Read Maximum Data Length command"
+ */
+typedef struct {
+	u8         status;
+	u16        support_max_tx_oct;
+	u16        support_max_tx_time;
+	u16        support_max_rx_oct;
+	u16        support_max_rx_time;
+} hci_le_readMaxDataLengthCmd_retParam_t;
+
+
+
+
 
 /**
- *  @brief  Return Parameters for "7.8.47 LE Read PHY command"
+ *  @brief  Command & Return Parameters for "7.8.47 LE Read PHY command"
  */
 typedef struct {
 	u8         status;
@@ -584,7 +688,11 @@ typedef struct {
 	u8         rx_phy;
 } hci_le_readPhyCmd_retParam_t;
 
-
+typedef enum {
+	BLE_PHY_1M 			= 0x01,
+	BLE_PHY_2M 			= 0x02,
+	BLE_PHY_CODED	 	= 0x03,
+} le_phy_type_t;
 
 /**
  *  @brief  Command Parameters for "7.8.48 LE Set Default PHY command"
@@ -604,13 +712,6 @@ typedef struct {
 } hci_le_setPhyCmd_param_t;
 
 
-
-
-typedef enum {
-	BLE_PHY_1M 			= 0x01,
-	BLE_PHY_2M 			= 0x02,
-	BLE_PHY_CODED	 	= 0x03,
-} le_phy_type_t;
 
 typedef enum {
 	PHY_PREFER_1M 		= BIT(0),
@@ -655,7 +756,7 @@ typedef struct {
     u8		sec_adv_max_skip;
     u8		sec_adv_phy;
     u8		adv_sid;
-    u8		scan_req_noti_en;
+    u8		scan_req_notify_en;
 }hci_le_setExtAdvParam_cmdParam_t;
 
 /* Advertising_Handle */
@@ -663,6 +764,7 @@ typedef enum{
 	ADV_HANDLE0		= 0x00,
 	ADV_HANDLE1		= 0x01,
 	ADV_HANDLE2		= 0x02,
+	ADV_HANDLE3		= 0x03,
 }adv_handle_t;
 
 
@@ -742,6 +844,13 @@ typedef enum{
 /**
  *  @brief  Command Parameters for "7.8.54 LE Set Extended Advertising Data command"
  */
+typedef struct {
+	u8		adv_handle;
+    u8		operation;
+    u8	 	fragmentPrefer;
+	u8		length;
+    u8 		data[251];
+}hci_le_setExtAdvData_cmdParam_t;
 
 /* Operation */
 typedef enum {
@@ -749,19 +858,27 @@ typedef enum {
 	DATA_OPER_FIRST      	=	0x01,
 	DATA_OPER_LAST       	=	0x02,
 	DATA_OPER_COMPLETE   	=	0x03,
-	DATA_OPER_UNCHANGEED	=  	0x04,
+	DATA_OPER_UNCHANGED	=  	0x04,
 } data_oper_t;
 
 
 /* Fragment_Preference */
 typedef enum {
-	DATA_FRAGM_ALLOWED			      	=	0x00,
-	DATA_FRAGM_NONE_OR_MINIMIZE      	=	0x01,
-} data_fragm_t;
+	DATA_FRAGMENT_ALLOWED			      	=	0x00,
+	DATA_FRAGMENT_NONE_OR_MINIMIZE      	=	0x01,
+} data_fragment_t;
 
 
-
-
+/**
+ *  @brief  Command Parameters for "7.8.55 LE Set Extended Scan Response Data command"
+ */
+typedef struct {
+	u8		adv_handle;
+    u8		operation;
+    u8	 	fragmentPrefer;
+	u8		length;
+    u8 		data[251];
+}hci_le_setExtScanRspData_cmdParam_t;
 
 /**
  *  @brief  Command Parameters for "7.8.56 LE Set Extended Advertising Enable command"
@@ -776,7 +893,7 @@ typedef struct{
 typedef struct{
 	u8		enable;
 	u8		num_sets;
-	extAdvEn_Cfg_t		cisCfg[3];  // ADV_SETS_NUMBER_MAX
+	extAdvEn_Cfg_t		cisCfg[3];  // TSKNUM_EXT_ADV
 } hci_le_setExtAdvEn_cmdParam_t;
 
 
@@ -784,6 +901,88 @@ typedef struct{
 /**
  *  @brief  Command Parameters for "7.8.61 LE Set Periodic Advertising Parameters command"
  */
+
+/* Periodic_adv_Interval, Time = N * 1.25 ms,
+ * Notice that these are just part of but not all Periodic_adv_Interval value */
+typedef enum{
+	PERADV_INTERVAL_7P5MS              =            6,
+	PERADV_INTERVAL_8P75MS             =            7,
+	PERADV_INTERVAL_10MS               =            8,
+	PERADV_INTERVAL_11P25MS            =            9,
+	PERADV_INTERVAL_12P5MS             =            10,
+	PERADV_INTERVAL_13P75MS            =            11,
+	PERADV_INTERVAL_15MS               =            12,
+	PERADV_INTERVAL_16P25MS            =            13,
+	PERADV_INTERVAL_17P5MS             =            14,
+	PERADV_INTERVAL_18P75MS            =            15,
+	PERADV_INTERVAL_20MS               =            16,
+	PERADV_INTERVAL_21P25MS            =            17,
+	PERADV_INTERVAL_22P5MS             =            18,
+	PERADV_INTERVAL_23P75MS            =            19,
+	PERADV_INTERVAL_25MS               =            20,
+	PERADV_INTERVAL_26P25MS            =            21,
+	PERADV_INTERVAL_27P5MS             =            22,
+	PERADV_INTERVAL_28P75MS            =            23,
+	PERADV_INTERVAL_30MS               =            24,
+	PERADV_INTERVAL_31P25MS            =            25,
+	PERADV_INTERVAL_32P5MS             =            26,
+	PERADV_INTERVAL_33P75MS            =            27,
+	PERADV_INTERVAL_35MS               =            28,
+	PERADV_INTERVAL_36P25MS            =            29,
+	PERADV_INTERVAL_37P5MS             =            30,
+	PERADV_INTERVAL_38P75MS            =            31,
+	PERADV_INTERVAL_40MS               =            32,
+	PERADV_INTERVAL_41P25MS            =            33,
+	PERADV_INTERVAL_42P5MS             =            34,
+	PERADV_INTERVAL_43P75MS            =            35,
+	PERADV_INTERVAL_45MS               =            36,
+	PERADV_INTERVAL_46P25MS            =            37,
+	PERADV_INTERVAL_47P5MS             =            38,
+	PERADV_INTERVAL_48P75MS            =            39,
+	PERADV_INTERVAL_50MS               =            40,
+	PERADV_INTERVAL_55MS               =            44,
+	PERADV_INTERVAL_60MS               =            48,
+	PERADV_INTERVAL_62P5MS			   =            50,
+	PERADV_INTERVAL_65MS               =            52,
+	PERADV_INTERVAL_70MS               =            56,
+	PERADV_INTERVAL_75MS               =            60,
+	PERADV_INTERVAL_80MS               =            64,
+	PERADV_INTERVAL_85MS               =            68,
+	PERADV_INTERVAL_90MS               =            72,
+	PERADV_INTERVAL_95MS               =            78,
+	PERADV_INTERVAL_100MS              =            80,
+	PERADV_INTERVAL_110MS              =            88,
+	PERADV_INTERVAL_120MS              =            96,
+	PERADV_INTERVAL_130MS              =            104,
+	PERADV_INTERVAL_140MS              =            112,
+	PERADV_INTERVAL_150MS              =            120,
+	PERADV_INTERVAL_180MS              =            144,
+	PERADV_INTERVAL_200MS              =            160,
+	PERADV_INTERVAL_250MS              =            200,
+	PERADV_INTERVAL_300MS              =            240,
+	PERADV_INTERVAL_400MS              =            320,
+	PERADV_INTERVAL_500MS              =            400,
+	PERADV_INTERVAL_600MS              =            480,
+	PERADV_INTERVAL_700MS              =            560,
+	PERADV_INTERVAL_800MS              =            640,
+	PERADV_INTERVAL_900MS              =            720,
+	PERADV_INTERVAL_1S				   =            800,
+	PERADV_INTERVAL_1S2				   =            960,
+	PERADV_INTERVAL_1S4				   =            1120,
+	PERADV_INTERVAL_1S5				   =            1200,
+	PERADV_INTERVAL_1S6				   =            1280,
+	PERADV_INTERVAL_1S8				   =            1440,
+	PERADV_INTERVAL_2S				   =            1600,
+	PERADV_INTERVAL_3S				   =            2400,
+	PERADV_INTERVAL_4S				   =            3200,
+	PERADV_INTERVAL_5S				   =            4000,
+	PERADV_INTERVAL_6S				   =            4800,
+	PERADV_INTERVAL_7S				   =            5600,
+	PERADV_INTERVAL_8S				   =            6400,
+	PERADV_INTERVAL_9S				   =            7200,
+	PERADV_INTERVAL_10S				   =            8000,
+}periodic_adv_inter_t;
+
 typedef enum{
 
 	PERD_ADV_PROP_MASK_NONE	= 0,
@@ -808,7 +1007,7 @@ typedef struct{
 	u8		scan_filter_policy;
   	u8		scan_PHYs;
   	ext_scan_cfg_t		scanCfg[2];  //at most 2 kind of PHY: 1M and Coded
-} hci_le_setExtScan_cmdParam_t;
+} hci_le_setExtScanParam_cmdParam_t;
 
 
 /* Scanning_PHYs */
@@ -824,6 +1023,12 @@ typedef enum {
 /**
  *  @brief  Command Parameters for "7.8.65 LE Set Extended Scan Enable command"
  */
+typedef struct{
+	u8		Enable;
+	u8		Filter_Duplicates;
+	u16		Duration;
+	u16		Period;
+} hci_le_setExtScanEnable_cmdParam_t;
 
 /* Filter_Duplicates for Extended Scan*/
 typedef enum {
@@ -894,18 +1099,18 @@ typedef enum{
  *  @brief  Command Parameters for "7.8.66 LE Extended Create Connection command"
  */
 typedef struct{
-	u16		scan_interval;
-	u16		scan_window;
-  	u16		connInter_min;
-  	u16		connInter_max;
+	u16		scan_inter;
+	u16		scan_wind;
+  	u16		conn_min;
+  	u16		conn_max;
   	u16 	connLatency;
-  	u16		connTimeout;
+  	u16		timeout;
   	u16		ceLen_min;
   	u16		ceLen_max;
 } ext_init_cfg_t;
 
 typedef struct{
-	u8		init_filter_policy;
+	u8		fp; //init_filter_policy
 	u8		ownAddr_type;
   	u8		peerAddr_type;
 	u8		peer_addr[6];
@@ -918,12 +1123,12 @@ typedef struct{
 /* Initiating_PHYs */
 typedef enum {
 	INIT_PHY_1M 			= BIT(0),
-	INIT_PHY_2M 			= BIT(1),
+	INIT_PHY_2M 			= BIT(1),	//can not use this, at least one bit set for a PHY allowed for scanning on the primary advertising physical channel
 	INIT_PHY_CODED			= BIT(2),
 	INIT_PHY_1M_2M 			= (INIT_PHY_1M | INIT_PHY_2M),
 	INIT_PHY_1M_CODED 		= (INIT_PHY_1M | INIT_PHY_CODED),
 	INIT_PHY_2M_CODED 		= (INIT_PHY_2M | INIT_PHY_CODED),
-	INIT_PHY_1M_2M_CODED 	= (INIT_PHY_1M | INIT_PHY_2M | INIT_PHY_1M_CODED),
+	INIT_PHY_1M_2M_CODED 	= (INIT_PHY_1M | INIT_PHY_2M | INIT_PHY_CODED),
 } init_phy_t;
 
 
@@ -933,6 +1138,134 @@ typedef enum {
 /**
  *  @brief  Command Parameters for "7.8.67 LE Periodic Advertising Create Sync command"
  */
+typedef struct{
+	u8		Options;
+	u8		Advertising_SID;
+	u8		Advertiser_Address_Type;
+	u8		Advertiser_Address[6];
+	u16		Skip;
+	u16		Sync_Timeout;
+	u16		Sync_CTE_Type;
+} hci_le_periodicAdvCreateSync_cmdParam_t;
+
+
+
+/**
+ *  @brief  Return Parameters for "7.8.74 LE Read Transmit Power command"
+ */
+typedef struct
+{
+    u8      status;
+    s8      minTxPwrLvl;
+    s8      maxTxPwrLvl;
+}hci_le_rdSuppTxPwrRetParams_t;
+
+
+/**
+ *  @brief  Return Parameters for "7.8.75 LE Read RF Path Compensation command"
+ */
+typedef struct
+{
+    u8      status;
+    s16     txPathComp;
+    s16     rxPathComp;
+}hci_le_rdRfPathCompRetParams_t;
+
+
+/**
+ * @brief Command Parameters for "7.8.76 LE Write RF Path Compensation command"
+ */
+typedef struct
+{
+    s16     txPathComp;
+    s16     rxPathComp;
+}hci_le_writeRfPathCompCmdParams_t;
+
+
+
+/**
+ *  @brief  Command Parameters for "7.8.77 LE Set Privacy Mode command"
+ */
+typedef struct{
+	u8		peer_identity_address_type;
+	u8		peer_identity_address[6];
+	u8		privacy_mode;
+} hci_le_setPrivacyMode_cmdParam_t;
+
+/* Privacy_Mode for peer device */
+typedef enum{
+	NETWORK_PRIVACY_MODE	=		0x00,
+	DEVICE_PRIVACY_MODE 	=		0x01,
+}privacy_mode_t;
+
+/**
+ * @brief  Command Parameters for "7.8.80 LE Set Connectionless CTE Transmit Parameters command"
+ */
+typedef struct{
+	u8		Advertising_Handle;
+	u8		CTE_length;
+	u8		CTE_type;
+	u8		CTE_count;
+
+	u8		Switch_pattern_len;
+	u8		Antenna_IDs[1];
+}hci_le_setConnectionless_CTETransmitParam_t;
+
+
+typedef struct{
+	u8		adv_handle;
+	u8 		CTE_enable;
+}hci_le_CTE_enable_type;
+
+typedef struct{
+	u16		Sync_Handle;
+	u8		Sampling_Enable;
+	u8		Slot_Duration;
+
+	u8		Max_Sampled_CTEs;
+	u8		Switching_pattern_len;
+	u8		Antenna_IDs[1];
+}hci_le_setConnectionless_IQsampleEn_t;
+
+
+typedef struct{
+	u16		conn_handle;
+	u8		sampling_en;
+	u8		slot_duration;
+	u8		switch_pattern_len;
+
+	u8		antenna_ids[1];
+}hci_le_setConnection_CTERevParams_t;
+
+typedef struct{
+	u16		conn_handle;
+	u8		CTE_type;
+	u8		switching_pattern_len;
+	u8		antenna_IDs[1];
+}hci_le_setConnection_CTETransmitParams_t;
+
+typedef struct{
+	u8	support_switch_sample_rate;
+	u8	antenna_num;
+	u8	max_switch_pattern_len;
+	u8	max_cte_len;
+}cte_antenna_infor_t;
+
+typedef struct{
+	u16		conn_handle;
+	u8		cte_req_en;
+	u16		cte_req_intvl;
+
+	u8		req_cte_len;
+	u8		req_cte_type;
+}hci_le_cteReqEn_t;
+
+typedef struct{
+	u16		conn_handle;
+	u8		rsp_enable;
+}hci_le_cteRspEn_t;
+
+
 /* Options */
 typedef enum {
 
@@ -942,14 +1275,170 @@ typedef enum {
 	SYNC_ADV_SPECIFY	 = 0,
 	SYNC_ADV_FROM_LIST	 = BIT(0),
 
-	/* BIT(1) ~ BIT(7) reserved */
+	/* BIT(1)
+	   whether HCI_Periodic_Advertising_Report events for this periodic advertising train are initially enabled
+	   0: enabled
+	   1: disabled
+	*/
+	REPORTING_INITIALLY_EN	 = 0,
+	REPORTING_INITIALLY_DIS	 = BIT(1),
+
+    /* BIT(2)
+       Duplicate filtering initially
+       0: enabled
+       1: disabled
+    */
+    DUPLICATE_FILTERING_INITIALLY_DIS   = 0,
+    DUPLICATE_FILTERING_INITIALLY_EN  = BIT(2),
+
+	/* BIT(3) ~ BIT(7) reserved */
 } option_msk_t;
 
+typedef enum{
+    /* BIT(0): Reporting enabled
+        REPORTING_EN   = BIT(0),
+        REPORTING_DIS  = 0,
+    */
+    REPORTING_EN   = BIT(0),
+    REPORTING_DIS  = 0,
+
+    /*
+       BIT(1): Duplicate filtering enabled
+        DUPLICATE_FILTERING_EN   = BIT(1),
+        DUPLICATE_FILTERING_DIS  = 0,
+    */
+    DUPLICATE_FILTERING_EN   = BIT(1),
+    DUPLICATE_FILTERING_DIS  = 0,
+
+    SYNC_ADV_RCV_EN_MSK = REPORTING_EN | DUPLICATE_FILTERING_EN,
+
+}sync_adv_rcv_en_msk;
+
+
+/* Synchronization timeout, Time = N * 10 ms,
+ * Notice that these are just part of but not all Synchronization timeout value */
+typedef enum{
+	SYNC_TIMEOUT_100MS				 =			  10,
+	SYNC_TIMEOUT_200MS				 =			  20,
+	SYNC_TIMEOUT_300MS				 =			  30,
+	SYNC_TIMEOUT_400MS				 =			  40,
+	SYNC_TIMEOUT_500MS				 =			  50,
+	SYNC_TIMEOUT_1S					 =		 	  100,
+	SYNC_TIMEOUT_1S5				 =		 	  150,
+	SYNC_TIMEOUT_2S					 =		 	  200,
+	SYNC_TIMEOUT_2S5				 =		 	  250,
+	SYNC_TIMEOUT_3S					 =		 	  300,
+	SYNC_TIMEOUT_3S5				 =		 	  350,
+	SYNC_TIMEOUT_4S					 =		 	  400,
+	SYNC_TIMEOUT_4S5				 =		 	  450,
+	SYNC_TIMEOUT_5S					 =		 	  500,
+	SYNC_TIMEOUT_6S					 =		 	  600,
+	SYNC_TIMEOUT_7S					 =		 	  700,
+	SYNC_TIMEOUT_8S					 =		 	  800,
+	SYNC_TIMEOUT_9S					 =		 	  900,
+	SYNC_TIMEOUT_10S				 =			  1000,
+	SYNC_TIMEOUT_15S				 =			  1500,
+	SYNC_TIMEOUT_20S				 =			  2000,
+}sync_tm_t;
+
+
+/**
+ * @brief Command/Return Parameters for "7.8.88 LE Set Periodic Advertising Receive Enable command"
+ */
+typedef struct
+{
+	u16 	syncHandle;
+	u8		enable;
+}hci_le_setPeriodicAdvReceiveEnCmdParams_t;
+
+
+/**
+ * @brief Command/Return Parameters for "7.8.89 LE Periodic Advertising Sync Transfer command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u16 	serviceData;
+	u16 	syncHandle;
+}hci_le_pastCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+}hci_le_pastRetParams_t;
+
+
+/**
+ * @brief Command/Return Parameters for "7.8.90 LE Periodic Advertising Set Info Transfer command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u16 	serviceData;
+	u8	 	advHandle;
+}hci_le_paSetInfoTransferCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+}hci_le_paSetInfoTransferRetParams_t;
+
+/**
+ * @brief Command/Return Parameters for "7.8.91 LE Set Periodic Advertising Sync Transfer Parameters command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u8	 	mode;
+	u16	 	skip;
+	u16	 	syncTimeout;
+	u8		cteType;
+}hci_le_pastParamsCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+}hci_le_pastParamsRetParams_t;
+
+
+/**
+ * @brief Command/Return Parameters for "7.8.92 LE Set Default Periodic Advertising Sync Transfer Parameters command"
+ */
+typedef struct
+{
+	u8	 	mode;
+	u16	 	skip;
+	u16	 	syncTimeout;
+	u8		cteType;
+}hci_le_dftPastParamsCmdParams_t;
 
 
 
 
+typedef struct{
+	u8		cis_id;
+	u16		max_sdu_m2s;
+	u16		max_sdu_s2m;
+  	u8  	phy_m2s;	// le_phy_prefer_type_t: BIT(0) BIT(1) BIT(2)
+  	u8		phy_s2m;	// le_phy_prefer_type_t: BIT(0) BIT(1) BIT(2)
+  	u8		rtn_m2s;
+  	u8		rtn_s2m;
+} cigParam_cisCfg_t;
 
+
+/**
+ *  @brief  Return Parameters for "7.8.96 LE Read ISO TX Sync command"
+ */
+typedef struct{
+	u8		status;
+	u16		connHandle;
+	u16		pkt_seqno;
+  	u32  	tx_ts;
+  	u8		time_offset[3];
+}hci_le_readIsoTxSync_retParam_t;
 
 
 /**
@@ -957,29 +1446,33 @@ typedef enum {
  */
 typedef struct {
 	u8  	cig_id;
-	u8		sdu_int_m2s[3];
-	u8		sdu_int_s2m[3];
+	u8		sdu_int_m2s[3]; //unit: uS
+	u8		sdu_int_s2m[3]; //unit: uS
 	u8		sca;
 	u8		packing;
 	u8	    framing;
-	u16 	max_trans_lat_m2s;
-	u16 	max_trans_lat_s2m;
-	u8		cis_count;
-	u8*		restparam;
+	u16 	max_trans_lat_m2s;   //unit: mS
+	u16 	max_trans_lat_s2m;	 //unit: mS
+	u8		cis_count;	//15 B above
+	cigParam_cisCfg_t		cisCfg[1];
 } hci_le_setCigParam_cmdParam_t;
 
-typedef struct{
-	u8		cis_id;
-	u8		nse;
-	u16		max_sdu_m2s;
-	u16		max_sdu_s2m;
-	u16		max_pdu_m2s;
-	u16		max_pdu_s2m;
-  	u8  	phy_m2s;
-  	u8		phy_s2m;
-  	u8		bn_m2s;
-  	u8		bn_s2m;
-} cigParamTest_cisCfg_t;
+#define SET_CIG_COMMON_PARAM_LENGTH			15
+
+
+/* CIG_ID: 0x00 to 0xEF Used to identify the CIG.
+ * Notice that these are just part of but not all CIG_ID */
+typedef enum{
+	CIG_ID_0				=			  0x00,
+	CIG_ID_1				=		 	  0x01,
+	CIG_ID_2				=		 	  0x02,
+	CIG_ID_3				=		 	  0x03,
+	CIG_ID_MAX				=			  0xEF,
+
+	CIG_ID_INVALID		    =       	  0xFF,
+}cig_id_t;
+
+
 
 /* Slaves_Clock_Accuracy */
 typedef enum {
@@ -1002,19 +1495,47 @@ typedef enum {
 
 /* Framing */
 typedef enum {
-	UNFRAMED   =	0x00,
-	FRAMED     =	0x01,
-} framing_t;
+	CIS_UNFRAMED   =	0x00,
+	CIS_FRAMED     =	0x01,
+} cis_framing_t;
 
 
+/* CIS_ID: 0x00 to 0xEF Used to identify the CIS.
+ * Notice that these are just part of but not all CIG_ID */
+typedef enum{
+	CIS_ID_0				=			  0x00,
+	CIS_ID_1				=		 	  0x01,
+	CIS_ID_2				=		 	  0x02,
+	CIS_ID_3				=		 	  0x03,
+	CIS_ID_4				=			  0x04,
+	CIS_ID_5				=		 	  0x05,
+	CIS_ID_6				=		 	  0x06,
+	CIS_ID_7				=		 	  0x07,
+	CIS_ID_MAX				=			  0xEF,
 
+	CIS_ID_INVALID		    =       	  0xFF,
+}cis_id_t;
 /**
  *  @brief  Command Parameters for "7.8.98 LE Set CIG Parameters Test command"
  */
+
+typedef struct{
+	u8		cis_id;
+	u8		nse;
+	u16		max_sdu_m2s;
+	u16		max_sdu_s2m;
+	u16		max_pdu_m2s;
+	u16		max_pdu_s2m;
+  	u8  	phy_m2s;   // le_phy_prefer_type_t: BIT(0) BIT(1) BIT(2)
+  	u8		phy_s2m;   // le_phy_prefer_type_t: BIT(0) BIT(1) BIT(2)
+  	u8		bn_m2s;
+  	u8		bn_s2m;
+} cigParamTest_cisCfg_t;
+
 typedef struct{
 	u8		cig_id;
-	u8		sdu_int_m2s[3];
-  	u8		sdu_int_s2m[3];
+	u8		sdu_int_m2s[3]; //unit: uS
+  	u8		sdu_int_s2m[3]; //unit: uS
 	u8		ft_m2s;
 	u8		ft_s2m;
 	u16 	iso_intvl;
@@ -1022,7 +1543,7 @@ typedef struct{
 	u8		packing;
 	u8	    framing;
   	u8		cis_count;   //15 B above
-  	cigParamTest_cisCfg_t		cisCfg[1];  //14 B for one CIS configuration
+  	cigParamTest_cisCfg_t		cisCfg[0];  //14 B for one CIS configuration
 } hci_le_setCigParamTest_cmdParam_t;
 
 
@@ -1034,11 +1555,16 @@ typedef struct {
 	u8  	status;
 	u8		cig_id;
 	u8		cis_count;
-	u16		cis_connHandle[1];  //not 4 byte aligned, but no problem
+	u16		cis_connHandle[0];  //not 4 byte aligned, but no problem
 } hci_le_setCigParam_retParam_t;
 
 
-/* ISO_Interval, Time = N * 1.25 ms,
+
+
+/* ISO_Interval
+ * Range: 0x0004 to 0x0C80
+ * Time = N * 1.25 ms
+ * Time Range: 5 ms to 4 s
  * Notice that these are just part of but not all ISO_Interval value */
 typedef enum{
 	ISO_INTERVAL_5MS                  =        	 4,
@@ -1060,6 +1586,23 @@ typedef enum{
 	ISO_INTERVAL_48P75MS              =          39,
 	ISO_INTERVAL_50MS                 =          40,
 	ISO_INTERVAL_100MS                =          80,
+	ISO_INTERVAL_150MS                =          120,
+	ISO_INTERVAL_200MS                =          160,
+	ISO_INTERVAL_250MS                =          200,
+	ISO_INTERVAL_300MS                =          240,
+	ISO_INTERVAL_400MS                =          320,
+	ISO_INTERVAL_500MS                =          400,
+	ISO_INTERVAL_600MS                =          480,
+	ISO_INTERVAL_700MS                =          560,
+	ISO_INTERVAL_800MS                =          640,
+	ISO_INTERVAL_900MS                =          720,
+	ISO_INTERVAL_1S               	  =          800,
+	ISO_INTERVAL_1S5                  =         1200,
+	ISO_INTERVAL_2S                   =         1600,
+	ISO_INTERVAL_2S5                  =         2000,
+	ISO_INTERVAL_3S                   =         2400,
+	ISO_INTERVAL_3S5                  =         2800,
+	ISO_INTERVAL_4S                   =         3200,
 }iso_inter_t;
 
 
@@ -1081,8 +1624,17 @@ typedef struct
 }hci_le_CreateCisParams_t;
 
 
+/**
+ *	@brief  Return Parameters for "7.8.100 LE Remove CIG command"
+ */
+typedef struct {
+	u8  	status;
+	u8		cig_id;
+} hci_le_removeCig_retParam_t;
 
-#if 0
+
+
+
 /**
  *	@brief  Command Parameters for "7.8.102 LE Reject CIS Request command"
  */
@@ -1090,10 +1642,14 @@ typedef struct
 {
 	u16		cis_handle;
 	u8		reason;
-} hci_le_rejectCisReqParams_t;
-#endif
+} hci_le_rejectCisReq_cmdParams_t;
 
 
+typedef struct
+{
+	u8		status;
+	u16		cis_handle;
+} hci_le_rejectCisReq_retParams_t;
 
 /**
  *	@brief  Command Parameters for "7.8.103 LE Create BIG command"
@@ -1103,19 +1659,23 @@ typedef struct
   	u8  	big_handle;			/* Used to identify the BIG */
 	u8		adv_handle;			/* Used to identify the periodic advertising train */
 	u8		num_bis;			/* Total number of BISes in the BIG */
-  	u8  	sdu_intvl[3];		/* The interval, in microseconds, of periodic SDUs */
+  	u8  	sdu_intvl[3];		/* The interval, in microseconds, of BIS SDUs */
   	u16		max_sdu;			/* Maximum size of an SDU, in octets */
   	u16		max_trans_lat; 		/* Maximum time, in milliseconds, for transmitting an SDU */
   	u8  	rtn; 				/* The maximum number of times that every BIS Data PDU should be retransmitted */
   	u8		phy;				/* The transmitter PHY of packets */
-	packing_type_t		packing;//type same as u8
-	framing_t	    	framing;//type same as u8
+	u8		packing;			//refer to 'packing_type_t'
+	u8		framing;			//refer to 'framing_t'
 	u8		enc;				/* Encryption flag */
 	u8      broadcast_code[16]; /* The code used to derive the session key that is used to encrypt and decrypt BIS payloads */
 } hci_le_createBigParams_t;
 
 
-
+/* Framing */
+typedef enum {
+	BIS_UNFRAMED   =	0x00,
+	BIS_FRAMED     =	0x01,
+} bis_framing_t;
 
 /**
  *	@brief  Command Parameters for "7.8.104 LE Create BIG Test command"
@@ -1126,13 +1686,13 @@ typedef struct
 	u8		adv_handle;			/* Used to identify the periodic advertising train */
 	u8		num_bis;			/* Total number of BISes in the BIG */
   	u8  	sdu_intvl[3];		/* The interval, in microseconds, of periodic SDUs */
-  	u16     iso_intvl;			/* The time between consecutive BIG anchor points */
+  	u16     iso_intvl;			/* The time between consecutive BIG anchor points, Time = N * 1.25 ms */
   	u8		nse;				/* The total number of subevents in each interval of each BIS in the BIG */
   	u16		max_sdu;			/* Maximum size of an SDU, in octets */
   	u16		max_pdu; 			/* Maximum size, in octets, of payload */
-  	u8		phy;				/* The transmitter PHY of packets */
-	packing_type_t packing : 8; //type same as u8
-	framing_t      framing : 8; //type same as u8
+  	u8		phy;				/* The transmitter PHY of packets, BIT(0): LE 1M; BIT(1): LE 2M; BIT(3): LE Coded PHY */
+	u8		packing;
+	u8		framing;
 	u8		bn;					/* The number of new payloads in each interval for each BIS */
 	u8		irc;				/* The number of times the scheduled payload(s) are transmitted in a given event*/
 	u8		pto;				/* Offset used for pre-transmissions */
@@ -1162,34 +1722,253 @@ typedef struct
 	u8		enc;				/* Encryption flag */
 	u8      broadcast_code[16]; /* The code used to derive the session key that is used to encrypt and decrypt BIS payloads */
 	u8		mse;				/* The Controller can schedule reception of any number of subevents up to NSE */
-  	u16		big_sync_timeout;	/* Synchronization timeout for the BIG */
-  	u16		max_trans_lat; 		/* Maximum time, in milliseconds, for transmitting an SDU */
+  	u16		big_sync_timeout;	/* Synchronization timeout for the BIG, Time = N*10 ms, Time Range: 100 ms to 163.84 s */
   	u8  	num_bis; 			/* Total number of BISes to synchronize */
-  	u8*     bis;				/* List of indices of BISes */
+  	u8      bis[1];				/* List of indices of BISes */
 } hci_le_bigCreateSyncParams_t;
 
 
 
 
 /**
- *	@brief  Command Parameters for "7.8.109 LE Setup ISO Data Path command"
+ *	@brief  Command & Return Parameters for "7.8.109 LE Setup ISO Data Path command"
+ */
+typedef struct
+{
+	u16  conn_handle;
+	u8   data_path_dir;
+	u8   data_path_id;
+	u8   codec_id_assignNum;
+	u16  codec_id_compId;
+	u16  codec_id_venderDef;
+	u8   contro_delay[3];
+	u8   codec_config_len;
+	u8	 codec_config[19]; /* Max buffer length 19Byte */
+}hci_le_setupIsoDataPath_cmdParam_t;
+
+
+/* Data_Path_Direction */
+typedef enum {
+	Data_Dir_Input 	= 0x00, //Input (Host to Controller)
+	Data_Dir_Output	= 0x01, //Output (Controller to Host)
+} dat_path_dir_t;
+
+
+/* Data_Path_ID */
+typedef enum {
+	Data_Path_HCI	 	= 0x00,
+	//x01 to 0xFE: Logical_Channel_Number. The meaning of the logical channel is vendorspecific.
+	Data_Path_Disable	= 0xFF,
+} dat_path_id_t;
+
+/**
+ *  @brief  Return Parameters for "7.8.110 LE Remove ISO Data Path command"
+ */
+typedef struct {
+	u8		status;
+	u16		conn_handle; //cis/bis handle
+} hci_le_setupIsoDataPath_retParam_t;
+
+
+
+/**
+ *	@brief  Command & Return Parameters for "7.8.110 LE Remove ISO Data Path command"
  */
 typedef struct
 {
 	u16 conn_handle;
-	u8  data_path_direction;
-	u8  data_path_id;
-	u8  codec_id[5];
-
-	u32 controller_delay 		  :24;
-	u32 codec_configration_length :8;
-
-	u8	codec_config[1];
-
-}hci_le_setupIsoDataPathCmdParams_t;
+	u8  dp_dir_mask; //data path direction mask
+}hci_le_rmvIsoDataPath_cmdParam_t;
 
 
+/* Data_Path_Direction */
+typedef enum {
+	DP_INPUT_MASK 			= BIT(0),
+	DP_OUTPUT_MASK 			= BIT(1),
+	DP_INPUT_OUTPUT_MASK 	= BIT(0) | BIT(1),
+} dp_dir_msk_t;
 
 
+/**
+ *  @brief   for "7.8.110 LE Remove ISO Data Path command"
+ */
+typedef struct {
+	u8		status;
+	u16		conn_handle; //cis/bis handle
+} hci_le_rmvIsoDataPath_retParam_t;
+
+
+/**
+ * @brief Command & Return Parameters for "7.8.111 LE ISO Transmit Test command" & "7.8.112 LE ISO Receive Test command"
+ */
+typedef struct
+{
+	u16 	conn_handle;
+	u8 		payload_type;
+}hci_le_isoTestCmdParams_t;
+
+
+/* Payload_Type */
+typedef enum{
+	ITEST_ZERO_LENGTH,
+	ITEST_VARIABLE_LENGTH,
+	ITEST_MAX_LENGTH,
+}itest_payload_type_t;
+
+
+typedef struct
+{
+	u8		status;
+	u16 	conn_handle;
+}hci_le_isoTestRetParams_t;
+
+
+/**
+ * @brief Return parameters for "7.8.113 LE ISO Receive Test command"
+ */
+
+typedef struct{
+
+	u16 conn_handle;
+}hci_le_isoReadTestCountsCmdParams_t;
+
+
+typedef struct{
+	u8 		status;
+	u16 	conn_handle;
+
+	u32 	received_packet_count;
+	u32 	miss_packet_count;
+	u32 	failed_packet_count;
+}hci_le_isoRxTestStatusParam_t;
+
+/**
+ * @brief Return parameters for "7.8.114 LE ISO Test End command"
+ */
+typedef struct{
+
+	u16 conn_handle;
+}hci_le_isoTestEndCmdParams_t;
+
+
+typedef struct{
+	u8 		status;
+	u16 	conn_handle;
+
+	u32 	received_packet_count;
+	u32 	miss_packet_count;
+	u32 	failed_packet_count;
+}hci_le_isoTestEndStatusParam_t;
+
+
+/**
+ * @brief Command & Return Parameters for "7.8.117 LE Enhanced Read Transmit Power Level command"
+ * 									    & "7.8.118 LE Read Remote Transmit Power Level command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u8 		phy;
+}hci_le_rdTxPwrLvlCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+	u8 		phy;
+	s8		curTxPwrLvl;
+	s8 		maxTxPwrLvl;
+}hci_le_enRdTxPwrLvlRetParams_t;
+
+/**
+ * @brief Command & Return Parameters for "7.8.119 LE Set Path Loss Reporting Parameters command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u8 		highThresh;
+	u8 		highHyst;
+	u8		lowThresh;
+	u8 		lowHyst;
+	u16 	minTime;
+}hci_le_setPathLossRptingCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+}hci_le_setPathLossRptingRetParams_t;
+
+/**
+ * @brief Command & Return Parameters for "7.8.120 LE Set Path Loss Reporting Enable command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u8 		enable;
+}hci_le_setPathLossRptingEnCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+}hci_le_setPathLossRptingEnRetParams_t;
+
+/**
+ * @brief Command & Return Parameters for "7.8.121 LE Set Transmit Power Reporting Enable command"
+ */
+typedef struct
+{
+	u16 	connHandle;
+	u8 		localEn;
+	u8		remoteEn;
+}hci_le_setTxPwrRptingEnCmdParams_t;
+
+typedef struct
+{
+	u8 		status;
+	u16 	connHandle;
+}hci_le_setTxPwrRptingEnRetParams_t;
+
+
+
+/**
+ * @brief Command for "7.8.122 LE Set Data Related Address Changes command"
+ */
+typedef struct
+{
+	u8		adv_handle;
+	u8		reasons;
+}hci_le_setDataAddrChange_cmdParams_t;
+
+typedef enum{
+	REFRESH_RPA_ADVDATA_CHANGE 				= BIT(0),
+	REFRESH_RPA_SCANRSPDATA_CHANGE 			= BIT(1),
+}chng_reason_msk_t;
+
+/**
+ * @brief Command & Return Parameters for "7.8.123 LE Set default subrate command"
+ */
+typedef struct
+{
+	u16 	factor_min;
+	u16		factor_max;
+	u16		max_latency;
+	u16 		conti_num;
+	u16		timeout;
+}hci_le_setDefaultSubrateCmdParams_t;
+
+/**
+ * @brief Command & Return Parameters for "7.8.124 LE subrate request command"
+ */
+typedef struct
+{
+	u16 	connection_handle;
+	u16 	factor_min;
+	u16		factor_max;
+	u16		max_latency;
+	u16 		conti_num;
+	u16		timeout;
+}hci_le_subrateRequestCmdParams_t;
 
 #endif /* HCI_CMD_H_ */

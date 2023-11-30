@@ -59,6 +59,14 @@
 _attribute_ram_code_ void irq_handler(void)
 {
 	irq_blt_sdk_handler ();
+
+#if (SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_OOB||SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_OOB||\
+		SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MDSI || SMP_TEST_MODE == SMP_TEST_SC_PASSKEY_ENTRY_MISI || \
+		SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MISI || SMP_TEST_MODE == SMP_TEST_LEGACY_PASSKEY_ENTRY_MDSI)
+	extern void uart_irq_handler();
+	uart_irq_handler();
+#endif
+
 }
 
 

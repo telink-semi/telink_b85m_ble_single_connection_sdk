@@ -49,7 +49,7 @@
 #include "battery_check.h"
 
 
-#if (BATT_CHECK_ENABLE)
+#if (APP_BATT_CHECK_ENABLE)
 
 #define ADC_SAMPLE_NUM		8
 
@@ -318,7 +318,7 @@ _attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)
 	else
 		batt_vol_mv  = ((adc_result*adc_pre_scale*adc_gpio_calib_vref)>>13) + adc_gpio_calib_vref_offset;
 
-	tlkapi_printf(APP_BATT_VOL_LOG_EN, "[BATTERY][CHECK] The battery power is %dmV!\n", batt_vol_mv);
+	tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[APP][BAT] The battery power is %dmV!\n", batt_vol_mv);
 
 	if(batt_vol_mv < alram_vol_mv){
 		return 0;

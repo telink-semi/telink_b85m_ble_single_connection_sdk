@@ -44,7 +44,6 @@
  *
  *******************************************************************************************************/
 #include "tl_common.h"
-#if(USB_MOUSE_ENABLE)
 
 #include "usbmouse.h"
 #include "usbkb.h"
@@ -63,7 +62,7 @@ static mouse_data_t mouse_dat_buff[USBMOUSE_BUFF_DATA_NUM];
 
 static u8  usbmouse_wptr, usbmouse_rptr;
 static u32 usbmouse_not_released;
-volatile static u32 usbmouse_data_report_time;
+static volatile u32 usbmouse_data_report_time;
 
 
 
@@ -72,6 +71,7 @@ void usbmouse_add_frame (rf_packet_mouse_t *packet_mouse){
 	u8 new_data_num = packet_mouse->pno;  //according to pno, get the number of the latest data.
 	for(u8 i=0;i<new_data_num;i++)
 	{
+			/* need to check next two lines code */
 			memcpy4((int*)(&mouse_dat_buff[usbmouse_wptr]), (int*)(&packet_mouse->data[i*sizeof(mouse_data_t)]), sizeof(mouse_data_t));
 			BOUND_INC_POW2(usbmouse_wptr,USBMOUSE_BUFF_DATA_NUM);
 			if(usbmouse_wptr == usbmouse_rptr)
@@ -112,7 +112,7 @@ void usbmouse_report_frame(){
         u32 data = *(u32*)(&mouse_dat_buff[usbmouse_rptr]);	// that is   >  0
         int ret = usbmouse_hid_report(USB_HID_MOUSE,(u8*)(&data), MOUSE_REPORT_DATA_LEN);
 		if(ret){
-            BOUND_INC_POW2(usbmouse_rptr,USBMOUSE_BUFF_DATA_NUM);
+            BOUND_INC_POW2(usbmouse_rptr,USBMOUSE_BUFF_DATA_NUM); // need to check
 		}
 		if(0 == data && ret){			//  successfully  release the key
 			usbmouse_not_released = 0;
@@ -124,7 +124,13 @@ void usbmouse_report_frame(){
 	return;
 }
 
-
+/**
+ * @brief      This function serves to return report to host
+ * @param[in]  report_id - mouse report ID
+ * @param[in]  *data - report data
+ * @param[in]  cnt - data length
+ * @return     1 success   0 fail
+ */
 int usbmouse_hid_report(u8 report_id, u8 *data, int cnt){
 	//unsigned char crc_in[8];
 	//unsigned short crc;
@@ -175,4 +181,3 @@ int usbmouse_hid_report(u8 report_id, u8 *data, int cnt){
 void usbmouse_init(){
 }
 
-#endif

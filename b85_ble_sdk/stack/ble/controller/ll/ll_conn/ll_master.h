@@ -48,15 +48,10 @@
 
 
 
-/******************************* User Interface  ************************************/
-#ifndef	BLM_CONN_ENC_REFRESH
-#define BLM_CONN_ENC_REFRESH	BIT(10)
-#endif
-
 
 /**
  * @brief      for user to initialize ACL connection master role.
- * @param	   none
+ * @param[in]  none
  * @return     none
  */
 void		blc_ll_initMasterRoleSingleConn_module(void);
@@ -64,7 +59,7 @@ void		blc_ll_initMasterRoleSingleConn_module(void);
 
 /**
  * @brief      for user to check if RF Machine is busy.
- * @param	   none
+ * @param[in]  none
  * @return     status. 1:  busy
  * 					   other: not busy
  */
@@ -82,7 +77,7 @@ ble_sts_t	blm_ll_disconnect (u16 handle, u8 reason);
 
 
 /**
- * @brief      for user to start update prarameter process in master role .
+ * @brief      for user to start update parameter process in master role .
  * @param[in]  connHandle - connect handle
  * @param[in]  conn_min - minimum connection interval
  * @param[in]  conn_max - maximum connection interval

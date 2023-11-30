@@ -90,15 +90,13 @@ static const u16 my_devNameUUID = GATT_UUID_DEVICE_NAME;
 
 static const u16 my_gapServiceUUID = SERVICE_UUID_GENERIC_ACCESS;
 
-static const u16 my_appearanceUIID = GATT_UUID_APPEARANCE;
+static const u16 my_appearanceUUID = GATT_UUID_APPEARANCE;
 
 static const u16 my_periConnParamUUID = GATT_UUID_PERI_CONN_PARAM;
 
 static const u16 my_appearance = GAP_APPEARE_UNKNOWN;
 
 static const u16 my_gattServiceUUID = SERVICE_UUID_GENERIC_ATTRIBUTE;
-
-//static const gap_periConnectParams_t my_periConnParameters = {20, 40, 0, 1000};
 
 static u16 serviceChangeVal[2] = {0};
 
@@ -249,7 +247,7 @@ static const u8 reportMap[] =
 	0x26,0x8c,0x02,  //global, max  0x28c
 	0x19,0x01,     //local, min   0x01
 	0x2a,0x8c,0x02,  //local, max    0x28c
-	0x81,0x00,     //main,  input data varible, absolute
+	0x81,0x00,     //main,  input data variable, absolute
 	0xc0,        //main, end collection
 
 #if (TL_AUDIO_MODE & TL_AUDIO_MASK_HID_SERVICE_CHANNEL)							//HID Service
@@ -440,7 +438,7 @@ static const u8 my_OtaCharVal[19] = {
 		TELINK_SPEAKER_DATA,
 	};
 #elif(TL_AUDIO_MODE & TL_AUDIO_MASK_HID_SERVICE_CHANNEL)
-	static const u8 my_hidReportAudioFristCharVal[5] = {
+	static const u8 my_hidReportAudioFirstCharVal[5] = {
 		CHAR_PROP_READ | CHAR_PROP_NOTIFY,
 		U16_LO(HID_AUDIO_REPORT_INPUT_FIRST_DP_H), U16_HI(HID_AUDIO_REPORT_INPUT_FIRST_DP_H),
 		U16_LO(CHARACTERISTIC_UUID_HID_REPORT), U16_HI(CHARACTERISTIC_UUID_HID_REPORT)
@@ -474,6 +472,7 @@ static const u8 my_OtaCharVal[19] = {
 #endif
 int normal_client2service(void *p)
 {
+    (void)p;
 #if(TL_AUDIO_MODE & TL_AUDIO_MASK_HID_SERVICE_CHANNEL)
 	server2client_auido_proc(p);
 #endif
@@ -483,119 +482,119 @@ int normal_client2service(void *p)
 // TM : to modify
 static const attribute_t my_Attributes[] = {
 
-	{ATT_END_H - 1, 0,0,0,0,0},	// total num of attribute
+	{ATT_END_H - 1, 0,0,0,0,0,0,0},	// total num of attribute
 
 
 	// 0001 - 0007  gap
-	{7,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_gapServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devNameCharVal),(u8*)(&my_characterUUID), (u8*)(my_devNameCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devName), (u8*)(&my_devNameUUID), (u8*)(my_devName), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_appearanceCharVal),(u8*)(&my_characterUUID), (u8*)(my_appearanceCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof (my_appearance), (u8*)(&my_appearanceUIID), 	(u8*)(&my_appearance), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_periConnParamCharVal),(u8*)(&my_characterUUID), (u8*)(my_periConnParamCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof (my_periConnParameters),(u8*)(&my_periConnParamUUID), 	(u8*)(&my_periConnParameters), 0},
+	{7,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_gapServiceUUID), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devNameCharVal),(u8*)(&my_characterUUID), (u8*)(my_devNameCharVal), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devName), (u8*)(&my_devNameUUID), (u8*)(my_devName), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_appearanceCharVal),(u8*)(&my_characterUUID), (u8*)(my_appearanceCharVal), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof (my_appearance), (u8*)(&my_appearanceUUID), 	(u8*)(&my_appearance), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_periConnParamCharVal),(u8*)(&my_characterUUID), (u8*)(my_periConnParamCharVal), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof (my_periConnParameters),(u8*)(&my_periConnParamUUID), 	(u8*)(&my_periConnParameters), 0, 0},
 
 
 	// 0008 - 000b gatt
-	{4,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_gattServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_serviceChangeCharVal),(u8*)(&my_characterUUID), 		(u8*)(my_serviceChangeCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof (serviceChangeVal), (u8*)(&serviceChangeUUID), 	(u8*)(&serviceChangeVal), 0},
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof (serviceChangeCCC),(u8*)(&clientCharacterCfgUUID), (u8*)(serviceChangeCCC), 0},
+	{4,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_gattServiceUUID), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_serviceChangeCharVal),(u8*)(&my_characterUUID), 		(u8*)(my_serviceChangeCharVal), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof (serviceChangeVal), (u8*)(&serviceChangeUUID), 	(u8*)(&serviceChangeVal), 0, 0},
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof (serviceChangeCCC),(u8*)(&clientCharacterCfgUUID), (u8*)(serviceChangeCCC), 0, 0},
 
 
 	// 000c - 000e  device Information Service
-	{3,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_devServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_PnCharVal),(u8*)(&my_characterUUID), (u8*)(my_PnCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof (my_PnPtrs),(u8*)(&my_PnPUUID), (u8*)(my_PnPtrs), 0},
+	{3,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_devServiceUUID), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_PnCharVal),(u8*)(&my_characterUUID), (u8*)(my_PnCharVal), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof (my_PnPtrs),(u8*)(&my_PnPUUID), (u8*)(my_PnPtrs), 0, 0},
 
 
 	/////////////////////////////////// 4. HID Service /////////////////////////////////////////////////////////
 	// 000f
-	//{27, ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_hidServiceUUID), 0},
-	{HID_CONTROL_POINT_DP_H - HID_PS_H + 1, ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_hidServiceUUID), 0},
+	//{27, ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_hidServiceUUID), 0, 0},
+	{HID_CONTROL_POINT_DP_H - HID_PS_H + 1, ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_hidServiceUUID), 0, 0},
 
 	// 0010  include battery service
-	{0,ATT_PERMISSIONS_READ,2,sizeof(include),(u8*)(&hidIncludeUUID), 	(u8*)(include), 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(include),(u8*)(&hidIncludeUUID), 	(u8*)(include), 0, 0},
 
 	// 0011 - 0012  protocol mode
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidProtocolModeCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidProtocolModeCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_RDWR,2, sizeof(protocolMode),(u8*)(&hidProtocolModeUUID), 	(u8*)(&protocolMode), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidProtocolModeCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidProtocolModeCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_RDWR,2, sizeof(protocolMode),(u8*)(&hidProtocolModeUUID), 	(u8*)(&protocolMode), 0, 0},	//value
 
 	// 0013 - 0015  boot keyboard input report (char-val-client)
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidbootKeyInReporCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidbootKeyInReporCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2,sizeof(bootKeyInReport),(u8*)(&hidbootKeyInReportUUID), 	(u8*)(&bootKeyInReport), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(bootKeyInReportCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(bootKeyInReportCCC), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidbootKeyInReporCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidbootKeyInReporCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2,sizeof(bootKeyInReport),(u8*)(&hidbootKeyInReportUUID), 	(u8*)(&bootKeyInReport), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(bootKeyInReportCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(bootKeyInReportCCC), 0, 0},	//value
 
 	// 0016 - 0017   boot keyboard output report (char-val)
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidbootKeyOutReporCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidbootKeyOutReporCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_RDWR,2, sizeof(bootKeyOutReport), (u8*)(&hidbootKeyOutReportUUID), 	(u8*)(&bootKeyOutReport), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidbootKeyOutReporCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidbootKeyOutReporCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_RDWR,2, sizeof(bootKeyOutReport), (u8*)(&hidbootKeyOutReportUUID), 	(u8*)(&bootKeyOutReport), 0, 0},	//value
 
 
 	// 0018 - 001b. consume report in: 4 (char-val-client-ref)
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportCCinCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportCCinCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2, sizeof(reportConsumerControlIn),(u8*)(&hidReportUUID), 	(u8*)(reportConsumerControlIn), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportConsumerControlInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(reportConsumerControlInCCC), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportRefConsumerControlIn),(u8*)(&reportRefUUID), 	(u8*)(reportRefConsumerControlIn), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportCCinCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportCCinCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2, sizeof(reportConsumerControlIn),(u8*)(&hidReportUUID), 	(u8*)(reportConsumerControlIn), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportConsumerControlInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(reportConsumerControlInCCC), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportRefConsumerControlIn),(u8*)(&reportRefUUID), 	(u8*)(reportRefConsumerControlIn), 0, 0},	//value
 
 	// 001c - 001f . keyboard report in : 4 (char-val-client-ref)
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportKEYinCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportKEYinCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2, sizeof(reportKeyIn),(u8*)(&hidReportUUID), 	(u8*)(reportKeyIn), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportKeyInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(reportKeyInCCC), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportRefKeyIn),(u8*)(&reportRefUUID), 	(u8*)(reportRefKeyIn), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportKEYinCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportKEYinCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2, sizeof(reportKeyIn),(u8*)(&hidReportUUID), 	(u8*)(reportKeyIn), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportKeyInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(reportKeyInCCC), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportRefKeyIn),(u8*)(&reportRefUUID), 	(u8*)(reportRefKeyIn), 0, 0},	//value
 
 	// 0020 - 0022 . keyboard report out: 3 (char-val-ref)
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportKEYoutCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportKEYoutCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportKeyOut),(u8*)(&hidReportUUID), 	(u8*)(reportKeyOut), &normal_client2service},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportRefKeyOut),(u8*)(&reportRefUUID), 	(u8*)(reportRefKeyOut), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportKEYoutCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportKEYoutCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportKeyOut),(u8*)(&hidReportUUID), 	(u8*)(reportKeyOut), &normal_client2service, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(reportRefKeyOut),(u8*)(&reportRefUUID), 	(u8*)(reportRefKeyOut), 0, 0},	//value
 
 
 	// 0023 - 0025 . report map: 3
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportMapCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportMapCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2,sizeof(reportMap),(u8*)(&hidReportMapUUID), 	(u8*)(reportMap), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(extServiceUUID),(u8*)(&extReportRefUUID), 	(u8*)(&extServiceUUID), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportMapCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidReportMapCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2,sizeof(reportMap),(u8*)(&hidReportMapUUID), 	(u8*)(reportMap), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(extServiceUUID),(u8*)(&extReportRefUUID), 	(u8*)(&extServiceUUID), 0, 0},	//value
 
 	// 0026 - 0027 . hid information: 2
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidinformationCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidinformationCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2, sizeof(hidInformation),(u8*)(&hidinformationUUID), 	(u8*)(hidInformation), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidinformationCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidinformationCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2, sizeof(hidInformation),(u8*)(&hidinformationUUID), 	(u8*)(hidInformation), 0, 0},	//value
 
 	// 0028 - 0029 . control point: 2
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidCtrlPointCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidCtrlPointCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_WRITE,2, sizeof(controlPoint),(u8*)(&hidCtrlPointUUID), 	(u8*)(&controlPoint), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidCtrlPointCharVal),(u8*)(&my_characterUUID), (u8*)(my_hidCtrlPointCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_WRITE,2, sizeof(controlPoint),(u8*)(&hidCtrlPointUUID), 	(u8*)(&controlPoint), 0, 0},	//value
 
 #if(TL_AUDIO_MODE & TL_AUDIO_MASK_HID_SERVICE_CHANNEL)
 	//audio character 1     //HID_NORMAL_AUDIO_REPORT_INPUT_FIRST_CD_H
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportAudioFristCharVal),(u8*)(&my_characterUUID),(u8*)(&my_hidReportAudioFristCharVal), 0},				        //prop
-	{0,ATT_PERMISSIONS_READ,2, sizeof(AudioHandleFirst),(u8*)(&hidReportUUID),(u8*)(AudioHandleFirst), 0},	//value  handle 36
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioCCCFirst),(u8*)(&clientCharacterCfgUUID), (u8*)(AudioCCCFirst), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioReportFirst),(u8*)(&reportRefUUID), (u8*)(AudioReportFirst), 0},	    //value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportAudioFirstCharVal),(u8*)(&my_characterUUID),(u8*)(&my_hidReportAudioFirstCharVal), 0, 0},				        //prop
+	{0,ATT_PERMISSIONS_READ,2, sizeof(AudioHandleFirst),(u8*)(&hidReportUUID),(u8*)(AudioHandleFirst), 0, 0},	//value  handle 36
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioCCCFirst),(u8*)(&clientCharacterCfgUUID), (u8*)(AudioCCCFirst), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioReportFirst),(u8*)(&reportRefUUID), (u8*)(AudioReportFirst), 0, 0},	    //value
 
 	//audio character 2     //HID_NORMAL_AUDIO_REPORT_INPUT_SEC_CD_H
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportAudioSecondCharVal),(u8*)(&my_characterUUID),(u8*)(&my_hidReportAudioSecondCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2, sizeof(AudioHandleSecnd),(u8*)(&hidReportUUID), (u8*)(AudioHandleSecnd), 0},//value handle 40
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioCCCSecnd),(u8*)(&clientCharacterCfgUUID), (u8*)(AudioCCCSecnd), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioReportSecnd),(u8*)(&reportRefUUID), (u8*)(AudioReportSecnd), 0},	//value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportAudioSecondCharVal),(u8*)(&my_characterUUID),(u8*)(&my_hidReportAudioSecondCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2, sizeof(AudioHandleSecnd),(u8*)(&hidReportUUID), (u8*)(AudioHandleSecnd), 0, 0},//value handle 40
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioCCCSecnd),(u8*)(&clientCharacterCfgUUID), (u8*)(AudioCCCSecnd), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioReportSecnd),(u8*)(&reportRefUUID), (u8*)(AudioReportSecnd), 0, 0},	//value
 
 	//audio character 3     //HID_NORMAL_AUDIO_REPORT_INPUT_THIRD_CD_H
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportAudioThirdCharVal),(u8*)(&my_characterUUID),(u8*)(&my_hidReportAudioThirdCharVal), 0},				      //prop
-	{0,ATT_PERMISSIONS_READ,2, sizeof(AudioHandleThird),(u8*)(&hidReportUUID), (u8*)(AudioHandleThird), 0},//value  handle 44
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioCCCThird),(u8*)(&clientCharacterCfgUUID), (u8*)(AudioCCCThird), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioReportThird),(u8*)(&reportRefUUID), (u8*)(AudioReportThird), 0},	  //value
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_hidReportAudioThirdCharVal),(u8*)(&my_characterUUID),(u8*)(&my_hidReportAudioThirdCharVal), 0, 0},				      //prop
+	{0,ATT_PERMISSIONS_READ,2, sizeof(AudioHandleThird),(u8*)(&hidReportUUID), (u8*)(AudioHandleThird), 0, 0},//value  handle 44
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioCCCThird),(u8*)(&clientCharacterCfgUUID), (u8*)(AudioCCCThird), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(AudioReportThird),(u8*)(&reportRefUUID), (u8*)(AudioReportThird), 0, 0},	  //value
 #endif
 	////////////////////////////////////// Battery Service /////////////////////////////////////////////////////
 	// 002a - 002d
-	{4,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_batServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batCharVal),(u8*)(&my_characterUUID), (u8*)(my_batCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batVal),(u8*)(&my_batCharUUID), 	(u8*)(my_batVal), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(batteryValueInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(batteryValueInCCC), 0},	//value
+	{4,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_batServiceUUID), 0, 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batCharVal),(u8*)(&my_characterUUID), (u8*)(my_batCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batVal),(u8*)(&my_batCharUUID), 	(u8*)(my_batVal), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(batteryValueInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(batteryValueInCCC), 0, 0},	//value
 
 #if (BLE_REMOTE_OTA_ENABLE)
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////
 	// 002e - 0032
-	{5,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},				//prop
+	{5,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0, 0},
+	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0, 0},				//prop
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(otaDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(otaDataCCC), 0},				//value
-	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(otaDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(otaDataCCC), 0, 0},				//value
+	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0, 0},
 #endif
 
 	////////////////////////////////////// Audio /////////////////////////////////////////////////////
@@ -605,37 +604,37 @@ static const attribute_t my_Attributes[] = {
 	* TELINK AUDIO service
 	********************************************************************************************/
 	//0032
-	{8,ATT_PERMISSIONS_READ,2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_AudioUUID), 0},
+	{8,ATT_PERMISSIONS_READ,2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_AudioUUID), 0, 0},
 
 	// 0033 - 0036  MIC
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_MicCharVal),(u8*)(&my_characterUUID), 		(u8*)(my_MicCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_READ,16,sizeof(my_MicData),(u8*)(&my_MicUUID), 	(u8*)(&my_MicData), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(micDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(micDataCCC), 0},	//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof (my_MicName),(u8*)(&userdesc_UUID), (u8*)(my_MicName), 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_MicCharVal),(u8*)(&my_characterUUID), 		(u8*)(my_MicCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_READ,16,sizeof(my_MicData),(u8*)(&my_MicUUID), 	(u8*)(&my_MicData), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(micDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(micDataCCC), 0, 0},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof (my_MicName),(u8*)(&userdesc_UUID), (u8*)(my_MicName), 0, 0},
 
 	// 0037 - 0039  SPEAKER
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_SpeakerCharVal),(u8*)(&my_characterUUID), 		(u8*)(my_SpeakerCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_WRITE,16,sizeof(my_SpeakerData),(u8*)(&my_SpeakerUUID), 	(u8*)(&my_SpeakerData), 0},//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof (my_SpeakerName),(u8*)(&userdesc_UUID), (u8*)(my_SpeakerName), 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_SpeakerCharVal),(u8*)(&my_characterUUID), 		(u8*)(my_SpeakerCharVal), 0, 0},				//prop
+	{0,ATT_PERMISSIONS_WRITE,16,sizeof(my_SpeakerData),(u8*)(&my_SpeakerUUID), 	(u8*)(&my_SpeakerData), 0, 0},//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof (my_SpeakerName),(u8*)(&userdesc_UUID), (u8*)(my_SpeakerName), 0, 0},
 
 #elif(TL_AUDIO_MODE == TL_AUDIO_RCU_ADPCM_GATT_GOOGLE)
 	/********************************************************************************************
 	* GOOGLE AUDIO service
 	********************************************************************************************/
 	//0032
-	{9,ATT_PERMISSIONS_READ,2,16, (u8*)(&my_primaryServiceUUID), (u8*)(&sAudioGoogleServiceUUID), 0},
+	{9,ATT_PERMISSIONS_READ,2,16, (u8*)(&my_primaryServiceUUID), (u8*)(&sAudioGoogleServiceUUID), 0, 0},
 
 	//TX 0033-0034
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(sAudioGoogleTXChar),(u8*)(&my_characterUUID),(u8*)(sAudioGoogleTXChar), 0},
-	{0,ATT_PERMISSIONS_RDWR,16,sizeof(sAudioGoogleTXData),(u8*)(&sAudioGoogleTXUUID),(u8*)(&sAudioGoogleTXData), &app_auido_google_callback},	//value
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(sAudioGoogleTXChar),(u8*)(&my_characterUUID),(u8*)(sAudioGoogleTXChar), 0, 0},
+	{0,ATT_PERMISSIONS_RDWR,16,sizeof(sAudioGoogleTXData),(u8*)(&sAudioGoogleTXUUID),(u8*)(&sAudioGoogleTXData), &app_auido_google_callback, 0},	//value
 	//RX 0035 - 0037
-	{0,ATT_PERMISSIONS_READ,2,sizeof(sAudioGoogleRXChar),(u8*)(&my_characterUUID),(u8*)(sAudioGoogleRXChar), 0},
-	{0,ATT_PERMISSIONS_READ,16,sizeof(sAudioGoogleRXData),(u8*)(&sAudioGoogleRXUUID),(u8*)(&sAudioGoogleRXData), 0},
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(gAudioGoogleRXCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&gAudioGoogleRXCCC), 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(sAudioGoogleRXChar),(u8*)(&my_characterUUID),(u8*)(sAudioGoogleRXChar), 0, 0},
+	{0,ATT_PERMISSIONS_READ,16,sizeof(sAudioGoogleRXData),(u8*)(&sAudioGoogleRXUUID),(u8*)(&sAudioGoogleRXData), 0, 0},
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(gAudioGoogleRXCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&gAudioGoogleRXCCC), 0, 0},
 	//CTRL 0038 -003A
-	{0,ATT_PERMISSIONS_READ,2,sizeof(sAudioGoogleCTLChar),(u8*)(&my_characterUUID),(u8*)(sAudioGoogleCTLChar), 0},
-	{0,ATT_PERMISSIONS_READ,16,sizeof(sAudioGoogleCTLData),(u8*)(&sAudioGoogleCTLUUID),(u8*)(&sAudioGoogleCTLData), 0},
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(gAudioGoogleCTLCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&gAudioGoogleCTLCCC), 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(sAudioGoogleCTLChar),(u8*)(&my_characterUUID),(u8*)(sAudioGoogleCTLChar), 0, 0},
+	{0,ATT_PERMISSIONS_READ,16,sizeof(sAudioGoogleCTLData),(u8*)(&sAudioGoogleCTLUUID),(u8*)(&sAudioGoogleCTLData), 0, 0},
+	{0,ATT_PERMISSIONS_RDWR,2,sizeof(gAudioGoogleCTLCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&gAudioGoogleCTLCCC), 0, 0},
 
 #endif
 };

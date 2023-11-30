@@ -46,13 +46,6 @@
 #include "tl_common.h"
 #include "drivers.h"
 
-//#define MODULE_USB_ENABLE  1
-//#define FLOW_NO_OS         0
-//#define USB_MOUSE_ENABLE   1
-
-#if(USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE || USB_ID_AND_STRING_CUSTOM)
-	#include "../../vendor/8267_multi_mode/dongle_usb.h"
-#endif
 
 #ifndef USB_CUSTOM_HID_REPORT_REG_ACCESS
 #define	USB_CUSTOM_HID_REPORT_REG_ACCESS		1
@@ -66,29 +59,25 @@
 #include "usbhw.h"				// inline
 #include "usbhw_i.h"
 
-
-#if (USB_MOUSE_ENABLE)
 #include "../app/usbmouse_i.h"
-#endif
-
-#if (USB_KEYBOARD_ENABLE)
 #include "../app/usbkb_i.h"
-#endif
+#include "../app/usbcdc.h"
+#include "../app/usbaud_i.h"
 
 #if (USB_SOMATIC_ENABLE)
 #include "../app/usbsomatic_i.h"
 #include "somatic_sensor.h"
 #endif
 
-#if (USB_SPEAKER_ENABLE || USB_MIC_ENABLE)
-#include "../app/usbaud_i.h"
-#endif
-
 #ifdef WIN32
 #include <stdio.h>
 #endif
 
-extern u8 keyboard_interface_number, mouse_interface_number;
+unsigned char usb_g_config = 0;
+unsigned char usb_g_config_value = 0;
+volatile unsigned char usb_g_feature=0;
+
+//extern u8 keyboard_interface_number, mouse_interface_number;
 
 u8		host_keyboard_status;
 u8		host_cmd[8];
@@ -99,7 +88,11 @@ static u16 g_response_len = 0;
 static int g_stall = 0;
 u8 usb_mouse_report_proto = 0; //default 1 for report proto
 u8 g_rate = 0; //default 0 for all report
-
+#if(MCU_CORE_B80)
+static unsigned short usb_len_idx_0;
+static unsigned short usb_len_idx_s;
+static unsigned short usb_len_idx_h;
+#endif
 #if (USB_SPEAKER_ENABLE || USB_MIC_ENABLE)
 u8 usb_alt_intf[USB_INTF_MAX];
 #endif
@@ -116,6 +109,9 @@ void usb_send_response(void) {
 		n = 8;
 	}
 	g_response_len -= n;
+#if(MCU_CORE_B80)
+	usb_len_idx_0=n;
+#endif
 #endif
 	usbhw_reset_ctrl_ep_ptr();
 	while (n-- > 0) {
@@ -136,39 +132,17 @@ void usb_prepare_desc_data(void) {
 	switch (value_h) {
 
 	case DTYPE_Device:
-#if(USB_ID_AND_STRING_CUSTOM)
-		g_response = (u8*) (&device_desc_km);
-#else
 		g_response = usbdesc_get_device();
-#endif
 		g_response_len = sizeof(USB_Descriptor_Device_t);
 		break;
 
 	case DTYPE_Configuration:
-#if(USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE)
-		g_response = (u8*) (&configuration_km_desc);
-		g_response_len = configuration_km_desc[2];  //the third element is the len
-#else
 		g_response = usbdesc_get_configuration();
 		g_response_len = sizeof(USB_Descriptor_Configuration_t);
-#endif
+
 		break;
 
 	case DTYPE_String:
-#if(USB_ID_AND_STRING_CUSTOM)
-		if (USB_STRING_LANGUAGE == value_l) {
-			g_response = usbdesc_get_language();
-			g_response_len = sizeof(LANGUAGE_ID_ENG);
-		} else if (USB_STRING_VENDOR == value_l) {
-			g_response = (u8*) (&vendor_desc_km);
-			g_response_len = vendor_desc_km.Size;
-		} else if (USB_STRING_PRODUCT == value_l) {
-			g_response = (u8*) (&prodct_desc_km);
-			g_response_len = prodct_desc_km.Size;
-		} else if (USB_STRING_SERIAL == value_l) {
-			g_response = (u8*) (&serial_desc_km);
-			g_response_len = serial_desc_km.Size;
-#else
 		if (USB_STRING_LANGUAGE == value_l) {
 			g_response = usbdesc_get_language();
 			g_response_len = sizeof(LANGUAGE_ID_ENG);
@@ -181,7 +155,6 @@ void usb_prepare_desc_data(void) {
 		} else if (USB_STRING_SERIAL == value_l) {
 			g_response = usbdesc_get_serial();
 			g_response_len = sizeof(STRING_SERIAL);
-#endif
 
 #if (MS_OS_DESCRIPTOR_ENABLE)
 		} else if (USB_STRING_MS_OS == value_l) {
@@ -199,7 +172,9 @@ void usb_prepare_desc_data(void) {
 		break;
 
 	}
-
+#if(MCU_CORE_B80)
+	usb_len_idx_s = g_response_len;
+#endif
 	if (control_request.Length < g_response_len) {
 		g_response_len = control_request.Length;
 	}
@@ -226,13 +201,6 @@ void usb_handle_std_intf_req() {
 		}
 #endif
 #if(USB_MOUSE_ENABLE)
-#if(USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE)
-		if (index_l == mouse_interface_number)
-		{
-			g_response = (u8*) (&configuration_desc_mouse[9]);
-			g_response_len = USB_HID_DESCRIPTOR_LENGTH;
-		}
-#else
 		if (index_l == USB_INTF_MOUSE) //index_l is the interface number
 		{
 			//mouse
@@ -240,21 +208,12 @@ void usb_handle_std_intf_req() {
 			g_response_len = sizeof(USB_HID_Descriptor_HID_Mouse_t);
 		}
 #endif
-#endif
 #if(USB_KEYBOARD_ENABLE)
-#if(USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE)
-		if (index_l == keyboard_interface_number)
-		{
-			g_response = (u8*) (&configuration_desc_keyboard[9]);
-			g_response_len = USB_HID_DESCRIPTOR_LENGTH;
-		}
-#else
 		if (index_l == USB_INTF_KEYBOARD) {
 			//keyboard
 			g_response = usbdesc_get_keyboard();
 			g_response_len = sizeof(USB_HID_Descriptor_HID_Keyboard_t);
 		}
-#endif
 #if (AUDIO_HOGP)
 		if (index_l == USB_INTF_AUDIO_HOGP) {
 			//keyboard
@@ -278,6 +237,9 @@ void usb_handle_std_intf_req() {
 #endif
 		break;
 	case HID_DTYPE_Report://Report Descriptor
+		if(0){
+
+		}
 #if (0)
 		if (index_l == USB_INTF_AUDIO_HID) {
 			//audio hid
@@ -286,14 +248,14 @@ void usb_handle_std_intf_req() {
 		}
 #endif
 #if(USB_KEYBOARD_ENABLE)
-		if (index_l == (USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE ? keyboard_interface_number : USB_INTF_KEYBOARD)) {
+		if (index_l == USB_INTF_KEYBOARD) {
 			//keyboard
 			g_response = (u8*) usbkb_get_report_desc();
 			g_response_len = usbkb_get_report_desc_size();
 		}
 #endif
 #if(USB_MOUSE_ENABLE)
-		else if (index_l == (USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE ? mouse_interface_number : USB_INTF_MOUSE)) {
+		else if (index_l == USB_INTF_MOUSE) {
 			//mouse
 			g_response = (u8*) usbmouse_get_report_desc();
 			g_response_len = usbmouse_get_report_desc_size();
@@ -328,7 +290,7 @@ void usb_handle_std_intf_req() {
 			g_stall = 1;
 		}
 		break;
-	case 0x23:// Phisical Descriptor
+	case 0x23:// Physical Descriptor
 		// TODO
 		break;
 
@@ -357,12 +319,33 @@ void usb_handle_out_class_intf_req(int data_request) {
 
 	switch (property) {
 
+#if(USB_CDC_ENABLE)//for cdc
+   case CDC_REQ_SetControlLine_State:
+
+	break;
+	case CDC_REQ_SetLine_Encoding:			// set serial parameter:baudrate,check,stop and data
+
+              if(USB_IRQ_DATA_REQ==data_request)
+              {
+				usbhw_reset_ctrl_ep_ptr();
+				for(int i = 0; i < 7; ++i)
+				{
+				  LineCoding[i] = usbhw_read_ctrl_ep_data();
+				}
+				//-todo- according to LineCoding from USB HOST, user can set baud rate, stop bits, parity, data bit, etc.
+              }
+			 break;
+
+
+
+#endif
+
 	case HID_REQ_SetReport:
 		switch (value_h) {
 		case HID_REPORT_ITEM_In:
 			break;
 		case HID_REPORT_ITEM_Out:
-			// usb_hid_set_report_ouput();
+			// usb_hid_set_report_output();
 			break;
 		case HID_REPORT_ITEM_Feature:
 			if (data_request) {
@@ -452,6 +435,13 @@ void usb_handle_out_class_intf_req(int data_request) {
 		usb_mouse_report_proto = value_l;
 		reg_usb_ep_ctrl(USB_EDP_MOUSE) = 0;
 		break;
+		#if (0)
+			case CDC_REQ_SetLine_Encoding:
+			case CDC_REQ_SetControlLine_State:
+				CDC_Device_ProcessControlRequest(control_request.Request, control_request.Value,  // past code in B85,delete in driver code
+					control_request.Index, control_request.Length);
+				break;
+		#endif
 
 	default:
 		g_stall = 1;
@@ -489,6 +479,22 @@ void usb_handle_in_class_intf_req() {
 		case 0x00:
 			usbhw_write_ctrl_ep_data(0x00);
 			break;
+#if(USB_CDC_ENABLE)
+			case CDC_REQ_GetLine_Encoding:
+
+				usbhw_write_ctrl_ep_data(LineCoding[0]);
+				usbhw_write_ctrl_ep_data(LineCoding[1]);
+				usbhw_write_ctrl_ep_data(LineCoding[2]);
+				usbhw_write_ctrl_ep_data(LineCoding[3]);
+				usbhw_write_ctrl_ep_data(LineCoding[4]);
+				usbhw_write_ctrl_ep_data(LineCoding[5]);
+				usbhw_write_ctrl_ep_data(LineCoding[6]);
+			break;
+
+			case CDC_NOTIF_Serial_State:
+
+			break;
+#endif
 		case HID_REQ_GetReport:
 #if(USB_SOMATIC_ENABLE)
 			if(usbsomatic_hid_report_type((control_request.Value & 0xff))){
@@ -578,10 +584,13 @@ void usb_handle_in_class_endp_req() {
 			break;
 		}
 	}
+#else
+	(void)property;
+	(void)ep_ctrl;
 #endif
 }
 
-void usb_handle_out_class_endp_req(int data_request) {
+void usb_handle_out_class_endp_req() {
 	return;
 #if 0
 	u8 property = control_request.Request;
@@ -604,7 +613,7 @@ void usb_handle_set_intf() {
 	if(USB_INTF_MIC == intf_index && value_l){
 //		usbhw_reset_ep_ptr(USB_EDP_MIC);
 //		reg_usb_ep_ptr(USB_EDP_MIC) = USB_MIC_CHANNELS_LEN;
-//		reg_usb_ep_ctrl(USB_EDP_MIC) = (MIC_CHANNLE_COUNT == 2 ? 0x81 : 0xc1);
+//		reg_usb_ep_ctrl(USB_EDP_MIC) = (MIC_CHANNEL_COUNT == 2 ? 0x81 : 0xc1);
 		reg_usb_ep_ptr(USB_EDP_MIC) = 0;
 		reg_usb_ep_ctrl(USB_EDP_MIC) = BIT(0);		//ACK first packet
 	}
@@ -614,7 +623,7 @@ void usb_handle_set_intf() {
 	if(USB_INTF_SPEAKER == intf_index && value_l){
 //		usbhw_reset_ep_ptr(USB_EDP_MIC);
 //		reg_usb_ep_ptr(USB_EDP_MIC) = USB_MIC_CHANNELS_LEN;
-//		reg_usb_ep_ctrl(USB_EDP_MIC) = (MIC_CHANNLE_COUNT == 2 ? 0x81 : 0xc1);
+//		reg_usb_ep_ctrl(USB_EDP_MIC) = (MIC_CHANNEL_COUNT == 2 ? 0x81 : 0xc1);
 		reg_usb_ep_ptr(USB_EDP_SPEAKER) = 0;
 		reg_usb_ep_ctrl(USB_EDP_SPEAKER) = BIT(0);		//ACK first packet
 	}
@@ -651,6 +660,10 @@ void usb_handle_request(u8 data_request) {
 				usb_prepare_desc_data();
 			}
 			usb_send_response();
+		}
+		else if (REQ_GetConfiguration == Request) {
+			usbhw_reset_ctrl_ep_ptr();
+			usbhw_write_ctrl_ep_data(usb_g_config_value);
 		}
 		break;
 
@@ -698,7 +711,7 @@ void usb_handle_request(u8 data_request) {
 		usb_handle_out_class_intf_req(data_request);
 		break;
 	case (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_ENDPOINT):
-		usb_handle_out_class_endp_req(data_request);
+		usb_handle_out_class_endp_req();
 		break;
 	case (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE):
 		usb_handle_in_class_intf_req();
@@ -711,6 +724,21 @@ void usb_handle_request(u8 data_request) {
 		if (REQ_SetInterface == Request) {
 			usb_handle_set_intf();
 		}
+		else if(REQ_SetFeature == Request) {
+			g_stall = 1;
+			usb_g_feature = 1;
+		}
+		break;
+
+	case (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE)://00
+        if (REQ_SetConfiguration == Request)
+        {
+            usb_g_config_value = control_request.Value & 0xff;
+            if(control_request.Value&0xff)
+            {
+                usb_g_config=1;
+            }
+        }
 		break;
 
 	default:
@@ -722,39 +750,71 @@ void usb_handle_request(u8 data_request) {
 }
 
 
-void usb_handle_ctl_ep_setup() {
+void usb_handle_ctl_ep_setup(void) {
+
+#if(MCU_CORE_B80)
+	reg_usb_sups_cyc_cali=0x38;
+#endif
 	usbhw_reset_ctrl_ep_ptr();
 	control_request.RequestType = usbhw_read_ctrl_ep_data();
 	control_request.Request = usbhw_read_ctrl_ep_data();
 	control_request.Value = usbhw_read_ctrl_ep_u16();
 	control_request.Index = usbhw_read_ctrl_ep_u16();
 	control_request.Length = usbhw_read_ctrl_ep_u16();
+#if(MCU_CORE_B80)
+	usb_len_idx_h = control_request.Length;
+#endif
 	g_stall = 0;
 	usb_handle_request(USB_IRQ_SETUP_REQ);
 	if (g_stall)
+	{
 		usbhw_write_ctrl_ep_ctrl(FLD_EP_DAT_STALL);
+	}
 	else
+	{
 		usbhw_write_ctrl_ep_ctrl(FLD_EP_DAT_ACK);
+	}
 }
 
 
 void usb_handle_ctl_ep_data(void) {
+#if(MCU_CORE_B80)
+	reg_usb_sups_cyc_cali=0x38;
+#endif
 	usbhw_reset_ctrl_ep_ptr();
 	g_stall = 0;
 	usb_handle_request(USB_IRQ_DATA_REQ);
 	if (g_stall)
+	{
 		usbhw_write_ctrl_ep_ctrl(FLD_EP_DAT_STALL);
-	else
+	}
+#if(MCU_CORE_B80)
+	else if((usb_len_idx_s % 8 == 0) && (usb_len_idx_0 == 0) && (usb_len_idx_s != usb_len_idx_h))
+	{
+		reg_usb_sups_cyc_cali=0x18; //suspend cnt
 		usbhw_write_ctrl_ep_ctrl(FLD_EP_DAT_ACK);
+	}
+#endif
+	else
+	{
+		usbhw_write_ctrl_ep_ctrl(FLD_EP_DAT_ACK);
+	}
 }
 
 
 
 void usb_handle_ctl_ep_status() {
+#if(MCU_CORE_B80)
+	reg_usb_sups_cyc_cali=0x38;
+#endif
 	if (g_stall)
+	{
 		usbhw_write_ctrl_ep_ctrl(FLD_EP_STA_STALL);
+	}
 	else
+	{
 		usbhw_write_ctrl_ep_ctrl(FLD_EP_STA_ACK);
+	}
 }
 
 u8 usb_has_suspend_irq = 0;
@@ -764,17 +824,7 @@ int usb_suspend_check(void){
 	return 0;
 }
 
-#if(0)
-void usb_resume_host(void)
-{
-#if (MCU_CORE_TYPE == MCU_CORE_3520)
-#else
-	reg_wakeup_en = FLD_WAKEUP_SRC_USB_RESM;
-	reg_wakeup_en = 0;
-#endif
-	sleep_us(6000);
-}
-#endif
+
 u8 edp_toggle[8];
 
 
@@ -788,6 +838,7 @@ void usb_handle_irq(void) {
 		usbhw_clr_ctrl_ep_irq(FLD_CTRL_EP_IRQ_DATA);
 		usb_handle_ctl_ep_data();
 	}
+	if(usb_g_feature==1){ sleep_us(1000);usb_g_feature=0;}//for Chapter 8 test
 	if (irq & FLD_CTRL_EP_IRQ_STA) {
 		usbhw_clr_ctrl_ep_irq(FLD_CTRL_EP_IRQ_STA);
 		usb_handle_ctl_ep_status();
@@ -799,8 +850,25 @@ void usb_handle_irq(void) {
 			reg_usb_ep_ctrl(i) = 0;
 			edp_toggle[i]=0;
 		}
+	#if (USB_CDC_ENABLE)
+		/*
+		 * must add ,if endpoint is reset and ack is not set,CDC out_irq will not be generated.
+		 * The packet capture phenomenon of the USB analyzer is: device does not return ack.(kaixin modify,2020-01-15)
+		 */
+		usbhw_data_ep_ack(USB_EDP_CDC_OUT);
+	#endif
 	}
-	irq = reg_usb_irq;							// data irq
+
+	irq = reg_usb_irq;							// data irq need to check
+
+#if(USB_CDC_ENABLE)
+	usb_cdc_irq_data_process();
+#endif
+
+#if(USB_MIC_ENABLE||USB_SPEAKER_ENABLE)
+	usb_audio_irq_data_process();
+#endif
+
 #if(USB_SOMATIC_ENABLE)
 	if(irq & BIT((USB_EDP_SOMATIC_OUT & 0x07))){
 		reg_usb_irq = BIT((USB_EDP_SOMATIC_OUT & 0x07));		// clear ime
@@ -851,7 +919,6 @@ void usb_handle_irq(void) {
 		usb_has_suspend_irq = 0;
 	}
 #endif
-#if (!USB_DESCRIPTER_CONFIGURATION_FOR_KM_DONGLE)
 	if ((reg_irq_src & FLD_IRQ_USB_PWDN_EN))
 	{
 		return;
@@ -870,14 +937,15 @@ void usb_handle_irq(void) {
 		//usbkb_report_frame();
 		//usbkb_release_check();
 	#endif
-#endif
-
 	usb_hid_report_fifo_proc();
 }
 
-void usb_init_interrupt() {
+void usb_init_interrupt(void) {
 
-	usbhw_enable_manual_interrupt(FLD_CTRL_EP_AUTO_STD | FLD_CTRL_EP_AUTO_DESC);
+	usbhw_enable_manual_interrupt(FLD_CTRL_EP_AUTO_STD | FLD_CTRL_EP_AUTO_DESC|FLD_CTRL_EP_AUTO_CFG);
+#if(MCU_CORE_B87||MCU_CORE_B80)
+	usbhw_set_eps_en(FLD_USB_EDP8_EN|FLD_USB_EDP1_EN|FLD_USB_EDP2_EN|FLD_USB_EDP3_EN|FLD_USB_EDP4_EN|FLD_USB_EDP5_EN|FLD_USB_EDP6_EN|FLD_USB_EDP7_EN);
+#endif
 
 }
 
@@ -899,5 +967,34 @@ void usb_init() {
 #endif
 }
 
+#if(USB_CDC_ENABLE)
 
+void usb_cdc_irq_data_process(void)
+{
+	unsigned char irq = usbhw_get_eps_irq();
+
+	if(irq & FLD_USB_EDP4_IRQ ){
+		usbhw_clr_eps_irq(FLD_USB_EDP4_IRQ);
+		usbhw_reset_ep_ptr(USB_EDP_CDC_IN);
+		usb_cdc_tx_cnt++;
+	}
+	//CDC host-to-device data Output IRQ
+	if(irq & FLD_USB_EDP5_IRQ){
+		reg_usb_irq=FLD_USB_EDP5_IRQ;
+		g_stall = 0;
+		//receive data from usb host
+		usb_cdc_rx_data_from_host(usb_cdc_data);
+		if(g_stall)
+		{
+			usbhw_data_ep_stall(USB_EDP_CDC_OUT);
+		}
+		else
+		{
+			usbhw_data_ep_ack(USB_EDP_CDC_OUT);
+
+		}
+	}
+}
 #endif
+
+#endif // endif(MODULE_USB_ENABLE)

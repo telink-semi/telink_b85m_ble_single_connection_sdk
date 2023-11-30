@@ -49,6 +49,7 @@
 
 #include "ble_common.h"
 #include "ble_format.h"
+#include "ble_comp.h"
 
 #include "controller/ble_controller.h"
 #include "host/ble_host.h"

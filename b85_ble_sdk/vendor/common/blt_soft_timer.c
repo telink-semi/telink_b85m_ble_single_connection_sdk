@@ -132,7 +132,7 @@ int blt_soft_timer_add(blt_timer_callback_t func, u32 interval_us)
  * 				and there is no need to reorder
  * @param[in]	index - the index for some software timer task
  * @return      0 - delete fail
- * 				other - delete successfully //Todo
+ * 				1 - delete successfully
  */
 int  blt_soft_timer_delete_by_index(u8 index)
 {
@@ -147,7 +147,7 @@ int  blt_soft_timer_delete_by_index(u8 index)
 
 	blt_timer.currentNum --;
 
-	return 0;
+	return 1;
 }
 
 /**

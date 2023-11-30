@@ -112,6 +112,7 @@
 #define IS_POWER_OF_2(x)		(!(x & (x-1)))
 #define IS_LITTLE_ENDIAN 		(*(unsigned short*)"\0\xff" > 0x100) 
 #define IS_4BYTE_ALIGN(x) 		(!(x & 3))
+#define IS_16BYTE_ALIGN(x) 		(!(x & 15))
 
 #define IMPLIES(x, y) 			(!(x) || (y))
 
@@ -125,7 +126,7 @@
 
 #define foreach(i, n) 			for(int i = 0; i < (n); ++i)
 #define foreach_range(i, s, e) 	for(int i = (s); i < (e); ++i)
-#define foreach_arr(i, arr) 	for(int i = 0; i < ARRAY_SIZE(arr); ++i)
+#define foreach_arr(i, arr) 	for(unsigned int i = 0; i < ARRAY_SIZE(arr); ++i)
 
 #define ARRAY_SIZE(a) 			(sizeof(a) / sizeof(*a))
 

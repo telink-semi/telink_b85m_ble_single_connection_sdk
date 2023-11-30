@@ -52,16 +52,16 @@
 
 
 /**
- * @brief      for user to initialize advertising module
- * @param[in]  *public_adr -  public address pointer
+ * @brief      This function is used to initialize advertising module.
+ * @param[in]  public_adr -  public address pointer
  * @return     none
  */
 void 		blc_ll_initAdvertising_module(u8 *public_adr);
 
 
 /**
- * @brief	   set the data used in advertising packets that have a data field.
- * @param[in]  *data -  advertising data buffer
+ * @brief	   This function is used to set the data used in advertising packets that have a data field.
+ * @param[in]  data -  advertising data buffer
  * @param[in]  len - The number of significant octets in the Advertising_Data.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -70,7 +70,7 @@ ble_sts_t	bls_ll_setAdvData(u8 *data, u8 len);
 
 /**
  * @brief	   This function is used to provide data used in Scanning Packets that have a data field.
- * @param[in]  *data -  Scan_Response_Data buffer
+ * @param[in]  data -  Scan_Response_Data buffer
  * @param[in]  len - The number of significant octets in the Scan_Response_Data.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -80,8 +80,8 @@ ble_sts_t 	bls_ll_setScanRspData(u8 *data, u8 len);
 
 /**
 * @brief	   This function is used to set whether to check the adv_interval
-* @param[in]  enable -  adv_interval_check_enable
-* @return     none
+* @param[in]   enable -  adv_interval_check_enable
+* @return      none
 */
 void blc_ll_setAdvIntervalCheckEnable(u8 enable);
 
@@ -95,7 +95,7 @@ void blc_ll_setAdvIntervalCheckEnable(u8 enable);
  * @param[in]  advType - Advertising_Type
  * @param[in]  ownAddrType - Own_Address_Type
  * @param[in]  peerAddrType - Peer_Address_Type
- * @param[in]  *peerAddr - Peer_Address
+ * @param[in]  peerAddr - Peer_Address
  * @param[in]  adv_channelMap - Advertising_Channel_Map
  * @param[in]  advFilterPolicy - Advertising_Filter_Policy
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
@@ -140,13 +140,12 @@ ble_sts_t   bls_ll_setAdvDuration (u32 duration_us, u8 duration_en);
 void 		blc_ll_setAdvCustomedChannel (u8 chn0, u8 chn1, u8 chn2);
 
 /**
- * @brief      this function is used to set whether to continue sending broadcast packets when receiving scan request in the current adv interval.
+ * @brief      This function is used to set whether to continue sending broadcast packets when receiving scan request in the current adv interval.
  * @param[in]  enable - enable:continue sending broadcast packets when receiving scan request.
  * @return     none.
  */
-void bls_ll_continue_adv_after_scan_req(u8 enable);
+void 		bls_ll_continue_adv_after_scan_req(u8 enable);
 
-#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 /**
  * @brief      This function is used to set direct advertising initial address type.
  * @param[in]  cmdPara - command parameter
@@ -172,7 +171,7 @@ ble_sts_t   bls_ll_setAdvType(u8 advType);
  * 						other: fail
  */
 ble_sts_t 	blt_set_adv_addrtype(u8* cmdPara);
-#endif
+
 
 extern u32  blc_rcvd_connReq_tick;
 

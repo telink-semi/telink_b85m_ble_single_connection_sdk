@@ -129,6 +129,7 @@ static const u16 vk_consumer_map[16] = {
 			{500,	  500 ,   2,	  0x04,	 },    //1Hz for 3 seconds
 			{250,	  250 ,   4,	  0x04,  },    //2Hz for 3 seconds
 			{250,	  250 ,   200,	  0x08,  },    //2Hz for 50 seconds
+			{1000,	  1000,	  3,	  0x10,	 },	   //IR learn OK, 3s on
 	};
 
 #endif
@@ -200,6 +201,7 @@ static const u16 vk_consumer_map[16] = {
 	 */
 	void app_debug_ota_result(int result)
 	{
+	    (void)result;
 
 		#if(0 && UI_LED_ENABLE)  //this is only for debug
 
@@ -274,6 +276,7 @@ void deep_wakeup_proc(void)
 
 void deepback_pre_proc(int *det_key)
 {
+    (void)det_key;
 #if (DEEPBACK_FAST_KEYSCAN_ENABLE)
 	// to handle deepback key cache
 	if(!(*det_key) && deepback_key_state == DEEPBACK_KEY_CACHE && blc_ll_getCurrentState() == BLS_LINK_STATE_CONN \
@@ -487,7 +490,7 @@ _attribute_data_retention_	static u32 keyScanTick = 0;
  */
 void proc_keyboard (u8 e, u8 *p, int n)
 {
-
+    (void)e;(void)p;(void)n;
 #if(REMOTE_IR_LEARN_ENABLE)
 	static u8	led_open = 1;
 	if(!get_ir_learn_state() )
@@ -611,7 +614,7 @@ void app_ui_init_normal(void)
 
 	/////////// keyboard gpio wakeup init ////////
 	u32 pin[] = KB_DRIVE_PINS;
-	for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+	for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 	{
 		cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 	}
@@ -628,7 +631,7 @@ void app_ui_init_normal(void)
 
 
 #if (UI_LED_ENABLE)
-	device_led_init(GPIO_LED, LED_ON_LEVAL);  //LED initialization
+	device_led_init(GPIO_LED, LED_ON_LEVEL);  //LED initialization
 	device_led_setup(led_cfg[LED_POWER_ON]);
 #endif
 
@@ -655,7 +658,7 @@ void app_ui_init_deepRetn(void)
 {
 	/////////// keyboard gpio wakeup init ////////
 	u32 pin[] = KB_DRIVE_PINS;
-	for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+	for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 	{
 		cpu_set_gpio_wakeup (pin[i], Level_High, 1);  //drive pin pad high wakeup deepsleep
 	}

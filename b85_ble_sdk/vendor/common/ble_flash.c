@@ -51,10 +51,11 @@
 
 /* global variable for some flash sector address, initial value use 512K flash.
  * attention that they will be changed in function "blc readFlashSize_autoConfigCustomFlashSector"  */
-_attribute_data_retention_	u32 flash_sector_mac_address = CFG_ADR_MAC_512K_FLASH;
-_attribute_data_retention_	u32 flash_sector_calibration = CFG_ADR_CALIBRATION_512K_FLASH;
-_attribute_data_retention_	u32 flash_sector_smp_storage = FLASH_ADR_SMP_PAIRING_512K_FLASH;
+_attribute_data_retention_	unsigned int flash_sector_mac_address = CFG_ADR_MAC_512K_FLASH;
+_attribute_data_retention_	unsigned int flash_sector_calibration = CFG_ADR_CALIBRATION_512K_FLASH;
+_attribute_data_retention_	unsigned int flash_sector_smp_storage = FLASH_ADR_SMP_PAIRING_512K_FLASH; //for slave only
 
+_attribute_data_retention_	unsigned int flash_sector_master_pairing = FLASH_ADR_MASTER_PAIRING_512K; //for master only
 
 _attribute_data_retention_	unsigned int  blc_flash_mid = 0;
 _attribute_data_retention_	unsigned int  blc_flash_vendor = 0;
@@ -120,6 +121,7 @@ void blc_readFlashSize_autoConfigCustomFlashSector(void)
 		flash_sector_mac_address = CFG_ADR_MAC_512K_FLASH;
 		flash_sector_calibration = CFG_ADR_CALIBRATION_512K_FLASH;
 		flash_sector_smp_storage = FLASH_ADR_SMP_PAIRING_512K_FLASH;
+		flash_sector_master_pairing = FLASH_ADR_MASTER_PAIRING_512K;
 		tlkapi_printf(APP_FLASH_INIT_LOG_EN, "[FLASH][INI] 512K Flash, MAC on 0x%x\n", flash_sector_mac_address);
 	}
 #endif
@@ -128,6 +130,7 @@ void blc_readFlashSize_autoConfigCustomFlashSector(void)
 		flash_sector_mac_address = CFG_ADR_MAC_1M_FLASH;
 		flash_sector_calibration = CFG_ADR_CALIBRATION_1M_FLASH;
 		flash_sector_smp_storage = FLASH_ADR_SMP_PAIRING_1M_FLASH;
+		flash_sector_master_pairing = FLASH_ADR_MASTER_PAIRING_1M;
 		tlkapi_printf(APP_FLASH_INIT_LOG_EN, "[FLASH][INI] 1M Flash, MAC on 0x%x\n", flash_sector_mac_address);
 	}
 #endif

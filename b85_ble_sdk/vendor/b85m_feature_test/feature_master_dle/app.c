@@ -65,29 +65,34 @@
 #define			SPP_HANDLE_DATA_C2S			0x15
 
 
-#if (1) // support RF RX/TX MAX data Length: 251byte
-	#define RX_FIFO_SIZE						288  //rx-24   max:251+24 = 275  16 align-> 288
-	#define RX_FIFO_NUM							8
 
-	#define TX_FIFO_SIZE						264  //tx-12   max:251+12 = 263  4 align-> 264
-	#define TX_FIFO_NUM							8
+#if 1
 
-	#define MTU_SIZE_SETTING   			 		247
-	#define DLE_TX_SUPPORTED_DATA_LEN    		251//MAX_OCTETS_DATA_LEN_EXTENSION //264-12 = 252 > Tx max:251
+MYFIFO_INIT(blt_rxfifo, ACL_RX_FIFO_SIZE, ACL_RX_FIFO_NUM);
+MYFIFO_INIT(blt_txfifo, ACL_TX_FIFO_SIZE, ACL_TX_FIFO_NUM);
+
 #else
-	#define RX_FIFO_SIZE						224 //rx-24   max:200+24 = 224  16 align-> 224
-	#define RX_FIFO_NUM							8
 
-	#define TX_FIFO_SIZE						212 //tx-12   max:200+12 = 212  4 align-> 212
-	#define TX_FIFO_NUM							16
+u8 		 	blt_rxfifo_b[ACL_RX_FIFO_SIZE * ACL_RX_FIFO_NUM] = {0};
+my_fifo_t	blt_rxfifo = {
+					ACL_RX_FIFO_SIZE,
+					ACL_RX_FIFO_NUM,
+					0,
+					0,
+					blt_rxfifo_b,};
 
-	#define MTU_SIZE_SETTING   			 		196
-	#define DLE_TX_SUPPORTED_DATA_LEN    		(BLM_TX_FIFO_SIZE-12)
+
+u8 		 	blt_txfifo_b[ACL_TX_FIFO_SIZE * ACL_TX_FIFO_NUM] = {0};
+my_fifo_t	blt_txfifo = {
+					ACL_TX_FIFO_SIZE,
+					ACL_TX_FIFO_NUM,
+					0,
+					0,
+					blt_txfifo_b,};
+
 #endif
 
 
-MYFIFO_INIT(blt_rxfifo, RX_FIFO_SIZE, RX_FIFO_NUM);
-MYFIFO_INIT(blt_txfifo, TX_FIFO_SIZE, TX_FIFO_NUM);
 
 static u32 master_connected_led_on;
 static u32 host_update_conn_param_req;
@@ -98,144 +103,131 @@ static u32 connect_event_occurTick;
 static u32 mtuExchange_check_tick;
 static u32 dle_started_flg;
 static u32 mtuExchange_started_flg;
-static u32 dongle_pairing_enable;
-static u32 dongle_unpair_enable;
+static u32 pairing_enable;
+static u32 unpair_enable;
 static u32 final_MTU_size = 23;
-static u32 cur_conn_device_hdl; //conn_handle
 
 
+#if (UI_KEYBOARD_ENABLE)
+	#define CONSUMER_KEY   	   		1
+	#define KEYBOARD_KEY   	   		2
+	_attribute_data_retention_	int 	key_not_released;
+	_attribute_data_retention_	u8 		key_type;
+	_attribute_data_retention_		static u32 keyScanTick = 0;
+	extern u32	scan_pin_need;
 
+	#define KEY_PAIR				VK_1
+	#define KEY_UNPAIR				VK_2
 
-#if (1) //button
-	#define MAX_BTN_SIZE			2
-	#define BTN_VALID_LEVEL			0
-	#define BTN_PAIR				0x01
-	#define BTN_UNPAIR				0x02
-
-	u32 ctrl_btn[] = {SW1_GPIO, SW2_GPIO};
-	u8 btn_map[MAX_BTN_SIZE] = {BTN_PAIR, BTN_UNPAIR};
-
-	typedef	struct{
-		u8 	cnt;				//count button num
-		u8 	btn_press;
-		u8 	keycode[MAX_BTN_SIZE];			//6 btn
-	}vc_data_t;
-	vc_data_t vc_event;
-
-	typedef struct{
-		u8  btn_history[4];		//vc history btn save
-		u8  btn_filter_last;
-		u8	btn_not_release;
-		u8 	btn_new;					//new btn  flag
-	}btn_status_t;
-	btn_status_t 	btn_status;
 
 	/**
-	 * @brief      the function server to debounce the key
-	 * @param[in]  btn_v - the pointer ponit to the button press value
-	 * @return     1 - key change press effect
-	 *             0 - key change press no effect
+	 * @brief   Check changed key value.
+	 * @param   none.
+	 * @return  none.
 	 */
-	u8 btn_debounce_filter(u8 *btn_v)
+	void key_change_proc(void)
 	{
-		u8 change = 0;
+		u8 key0 = kb_event.keycode[0];
 
-		for(int i=3; i>0; i--){
-			btn_status.btn_history[i] = btn_status.btn_history[i-1];
+		key_not_released = 1;
+		if (kb_event.cnt == 2)   //two key press, do  not process
+		{
+
 		}
-		btn_status.btn_history[0] = *btn_v;
+		else if(kb_event.cnt == 1)
+		{
+			if(key0 == KEY_PAIR)
+			{
+				pairing_enable = 1;
 
-		if(  btn_status.btn_history[0] == btn_status.btn_history[1] && btn_status.btn_history[1] == btn_status.btn_history[2] && \
-			btn_status.btn_history[0] != btn_status.btn_filter_last ){
-			change = 1;
+				if(master_connected_led_on) //test DLE, write cmd data
+				{
+					u8 write_pkt_buf[MTU_SIZE_SETTING];//buffer
+					generateRandomNum(sizeof(write_pkt_buf), write_pkt_buf);
+					u8 len = final_MTU_size-3;
 
-			btn_status.btn_filter_last = btn_status.btn_history[0];
-		}
-		return change;
-	}
+					blc_gatt_pushWriteCommand(BLM_CONN_HANDLE, SPP_HANDLE_DATA_C2S, write_pkt_buf, len);
 
-	/**
-	 * @brief      the function detect wheather or not the key press/release
-	 * @param[in]  read_key - enable or diable store key value in buffer
-	 * @return     1 - key change press or release
-	 *             0 - key no change
-	 */
-	u8 vc_detect_button(int read_key)
-	{
-		u8 btn_changed, i;
-		memset(&vc_event,0,sizeof(vc_data_t));			//clear vc_event
-		//vc_event.btn_press = 0;
-
-		for(i=0; i<MAX_BTN_SIZE; i++){
-			if(BTN_VALID_LEVEL != !gpio_read(ctrl_btn[i])){
-				vc_event.btn_press |= BIT(i);
-			}
-		}
-
-		btn_changed = btn_debounce_filter(&vc_event.btn_press);
-
-		if(btn_changed && read_key){
-			for(i=0; i<MAX_BTN_SIZE; i++){
-				if(vc_event.btn_press & BIT(i)){
-					vc_event.keycode[vc_event.cnt++] = btn_map[i];
+					printf("c2s:write data: %d\n", len);
+					array_printf(write_pkt_buf, len);
 				}
 			}
-			return 1;
+			else if(key0 == KEY_UNPAIR)
+			{
+				unpair_enable = 1;
+			}
+
 		}
-		return 0;
+		else   //kb_event.cnt == 0,  key release
+		{
+			key_not_released = 0;
+			if(pairing_enable)
+			{
+				pairing_enable = 0;
+			}
+
+			if(unpair_enable)
+			{
+				unpair_enable = 0;
+			}
+		}
+
+
+	}
+
+
+
+
+
+	/**
+	 * @brief      keyboard task handler
+	 * @param[in]  e    - event type
+	 * @param[in]  p    - Pointer point to event parameter.
+	 * @param[in]  n    - the length of event parameter.
+	 * @return     none.
+	 */
+	void proc_keyboard (u8 e, u8 *p, int n)
+	{
+	    (void)e;(void)p;(void)n;
+		if(clock_time_exceed(keyScanTick, 8000)){
+			keyScanTick = clock_time();
+		}
+		else{
+			return;
+		}
+
+		kb_event.keycode[0] = 0;
+		int det_key = kb_scan_key (0, 1);
+
+
+
+		if (det_key){
+			key_change_proc();
+		}
+
 	}
 
 	/**
-	 * @brief      the function handle the key value
-	 * @param[in]  none
+	 * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_SUSPEND_ENTER"
+	 * @param[in]  e - LinkLayer Event type
+	 * @param[in]  p - data pointer of event
+	 * @param[in]  n - data length of event
 	 * @return     none
 	 */
-	void proc_button (void)
+	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
-		int det_key = vc_detect_button (1);
-
-		if (det_key)  //key change: press or release
-		{
-			u8 key0 = vc_event.keycode[0];
-
-			if(vc_event.cnt == 1) //one key press
-			{
-				if(key0 == BTN_PAIR)
-				{
-					dongle_pairing_enable = 1;
-
-					if(master_connected_led_on) //test DLE, write cmd data
-					{
-						u8 write_pkt_buf[L2CAP_RX_BUFF_LEN_MAX];//buffer
-						generateRandomNum(sizeof(write_pkt_buf), write_pkt_buf);
-						u8 len = final_MTU_size-3;
-
-						blc_gatt_pushWriteComand(cur_conn_device_hdl, SPP_HANDLE_DATA_C2S, write_pkt_buf, len);
-
-						printf("c2s:write data: %d\n", len);
-						array_printf(write_pkt_buf, len);
-					}
-				}
-				else if(key0 == BTN_UNPAIR)
-				{
-					dongle_unpair_enable = 1;
-				}
-			}
-			else
-			{  //release
-				if(dongle_pairing_enable)
-				{
-					dongle_pairing_enable = 0;
-				}
-
-				if(dongle_unpair_enable)
-				{
-					dongle_unpair_enable = 0;
-				}
-			}
+	    (void)e;(void)p;(void)n;
+		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
+			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 		}
 	}
+
 #endif
+
+
+
+
+
 
 /**
  * @brief      callback function of L2CAP layer handle packet data
@@ -267,12 +259,12 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			u16 peer_mtu_size = (pMtu->mtu[0] | pMtu->mtu[1]<<8);
 			final_MTU_size = min(MTU_SIZE_SETTING, peer_mtu_size);
 
-			blt_att_setEffectiveMtuSize(cur_conn_device_hdl , final_MTU_size); //stack API, user can not change
+			blc_att_setEffectiveMtuSize(BLM_CONN_HANDLE , final_MTU_size); //important
 
 
 			mtuExchange_started_flg = 1;   //set MTU size exchange flag here
 
-			printf("Final MTU size:%d\n", final_MTU_size);
+			tlkapi_printf(APP_LOG_EN,"Final MTU size:%d\n", final_MTU_size);
 		}
 		else if(pAtt->opcode == ATT_OP_HANDLE_VALUE_NOTI)  //slave handle notify
 		{
@@ -281,7 +273,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 				u8 len = pAtt->l2capLen - 3;
 				if(len > 0)
 				{
-					printf("RF_RX len: %d\ns2c:notify data: %d\n", pAtt->rf_len, len);
+					tlkapi_printf(APP_LOG_EN,"RF_RX len: %d\ns2c:notify data: %d\n", pAtt->rf_len, len);
 					array_printf(pAtt->dat, len);
 				}
 			}
@@ -301,10 +293,10 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			if( interval_us < 200000 && long_suspend_us < 20000000 && (long_suspend_us*2<=timeout_us) )
 			{
 				//when master host accept slave's conn param update req, should send a conn param update response on l2cap
-				//with CONN_PARAM_UPDATE_ACCEPT; if not accpet,should send  CONN_PARAM_UPDATE_REJECT
+				//with CONN_PARAM_UPDATE_ACCEPT; if not accept,should send  CONN_PARAM_UPDATE_REJECT
 				blc_l2cap_SendConnParamUpdateResponse(conn_handle, req->id, CONN_PARAM_UPDATE_ACCEPT);  //send SIG Connection Param Update Response
 
-				printf("send SIG Connection Param Update accept\n");
+				tlkapi_printf(APP_LOG_EN,"send SIG Connection Param Update accept\n");
 
 				//if accept, master host should mark this, add will send  update conn param req on link layer later set a flag here, then send update conn param req in mainloop
 				host_update_conn_param_req = clock_time() | 1 ; //in case zero value
@@ -315,7 +307,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 			else
 			{
 				blc_l2cap_SendConnParamUpdateResponse(conn_handle, req->id, CONN_PARAM_UPDATE_REJECT);  //send SIG Connection Param Update Response
-				printf("send SIG Connection Param Update reject\n");
+				tlkapi_printf(APP_LOG_EN,"send SIG Connection Param Update reject\n");
 			}
 		}
 	}
@@ -341,6 +333,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 
 int controller_event_callback (u32 h, u8 *p, int n)
 {
+    (void)h;(void)p;(void)n;
 	if (h &HCI_FLAG_EVENT_BT_STD)		//ble controller hci event
 	{
 		u8 evtCode = h & 0xff;
@@ -348,7 +341,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 		//------------ disconnect -------------------------------------
 		if(evtCode == HCI_EVT_DISCONNECTION_COMPLETE)  //connection terminate
 		{
-			event_disconnection_t	*pd = (event_disconnection_t *)p;
+			hci_disconnectionCompleteEvt_t	*pd = (hci_disconnectionCompleteEvt_t *)p;
 
 			//terminate reason//connection timeout
 			if(pd->reason == HCI_ERR_CONN_TIMEOUT){
@@ -356,7 +349,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 			//peer device(slave) send terminate cmd on link layer
 			else if(pd->reason == HCI_ERR_REMOTE_USER_TERM_CONN){
 			}
-			//master host disconnect( blm_ll_disconnect(current_connHandle, HCI_ERR_REMOTE_USER_TERM_CONN) )
+			//master host disconnect( blm_ll_disconnect(BLM_CONN_HANDLE, HCI_ERR_REMOTE_USER_TERM_CONN) )
 			else if(pd->reason == HCI_ERR_CONN_TERM_BY_LOCAL_HOST){
 			}
 			 //master create connection, send conn_req, but did not received acked packet in 6 connection event
@@ -365,18 +358,17 @@ int controller_event_callback (u32 h, u8 *p, int n)
 			else{
 			}
 
-			printf("----- terminate rsn: 0x%x -----\n", pd->reason);
+			tlkapi_printf(APP_LOG_EN,"----- terminate rsn: 0x%x -----\n", pd->reason);
 
 			//led show none connection state
 			if(master_connected_led_on){
 				master_connected_led_on = 0;
-				gpio_write(GPIO_LED_WHITE, LED_ON_LEVAL);   //white on
-				gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);    //red off
+				gpio_write(GPIO_LED_WHITE, LED_ON_LEVEL);   //white on
+				gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);    //red off
 			}
 
 			connect_event_occurTick = 0;
 			host_update_conn_param_req = 0; //when disconnect, clear update conn flag
-			cur_conn_device_hdl = 0;  //when disconnect, clear conn handle
 
 			//MTU size exchange and data length exchange procedure must be executed on every new connection,
 			//so when connection terminate, relative flags must be cleared
@@ -384,7 +376,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 			mtuExchange_started_flg = 0;
 
 			//MTU size reset to default 23 bytes when connection terminated
-			blt_att_resetEffectiveMtuSize(pd->connHandle);  //stack API, user can not change
+			blc_att_resetEffectiveMtuSize(pd->connHandle);  //important
 
 			//should set scan mode again to scan slave adv packet
 			blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, OWN_ADDRESS_PUBLIC, SCAN_FP_ALLOW_ADV_ANY);
@@ -402,14 +394,13 @@ int controller_event_callback (u32 h, u8 *p, int n)
 
 				if (pCon->status == BLE_SUCCESS)	// status OK
 				{
-					printf("----- connected -----\n");
+					tlkapi_printf(APP_LOG_EN,"----- connected -----\n");
 
 					//led show connection state
 					master_connected_led_on = 1;
-					gpio_write(GPIO_LED_RED, LED_ON_LEVAL);     //red on
-					gpio_write(GPIO_LED_WHITE, !LED_ON_LEVAL);  //white off
+					gpio_write(GPIO_LED_RED, LED_ON_LEVEL);     //red on
+					gpio_write(GPIO_LED_WHITE, !LED_ON_LEVEL);  //white off
 
-					cur_conn_device_hdl = pCon->handle;   //mark conn handle, in fact this equals to BLM_CONN_HANDLE
 					connect_event_occurTick = clock_time()|1;
 				}
 			}
@@ -420,7 +411,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 				event_adv_report_t *pa = (event_adv_report_t *)p;
 				s8 rssi = pa->data[pa->len];
 
-				int user_manual_pairing = dongle_pairing_enable && (rssi > -56);  //button trigger pairing(rssi threshold, short distance)
+				int user_manual_pairing = pairing_enable && (rssi > -56);  //key press trigger pairing(rssi threshold, short distance)
 				if(user_manual_pairing)
 				{
 					//send create connection cmd to controller, trigger it switch to initiating state, after this cmd,
@@ -437,9 +428,9 @@ int controller_event_callback (u32 h, u8 *p, int n)
 			else if (subEvt_code == HCI_SUB_EVT_LE_DATA_LENGTH_CHANGE)
 			{
 				hci_le_dataLengthChangeEvt_t* dle_param = (hci_le_dataLengthChangeEvt_t*)p;
-				printf("----- DLE exchange: -----\n");
-				printf("Effective Max Rx Octets: %d\n", dle_param->maxRxOct);
-				printf("Effective Max Tx Octets: %d\n", dle_param->maxTxOct);
+				tlkapi_printf(APP_LOG_EN,"----- DLE exchange: -----\n");
+				tlkapi_printf(APP_LOG_EN,"Effective Max Rx Octets: %d\n", dle_param->maxRxOct);
+				tlkapi_printf(APP_LOG_EN,"Effective Max Tx Octets: %d\n", dle_param->maxTxOct);
 
 				dle_started_flg = 1;
 			}
@@ -464,6 +455,12 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
@@ -474,6 +471,7 @@ void user_init_normal(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 	////// Controller Initialization  //////////
 	blc_ll_initBasicMCU();
@@ -483,11 +481,7 @@ void user_init_normal(void)
 	blc_ll_initConnection_module();						//connection module  mandatory for BLE slave/master
 	blc_ll_initMasterRoleSingleConn_module();			//master module: 	 mandatory for BLE master,
 
-#if (MCU_CORE_TYPE == MCU_CORE_8278)
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
-#else
-	rf_set_power_level_index (MY_RF_POWER_INDEX);
-#endif
 
 	////// Host Initialization  //////////
 	blc_gap_central_init();										//gap initialization
@@ -505,7 +499,11 @@ void user_init_normal(void)
 							    | HCI_LE_EVT_MASK_CONNECTION_ESTABLISH ); //connection establish: telink private event
 
 	//ATT initialization
-	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //If not set RX MTU size, default is: 23 bytes.
+	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //set MTU size, default MTU is 23 if not call this API
+
+	#if (MTU_SIZE_SETTING > ATT_MTU_MAX_SDK_DFT_BUF)
+		blc_l2cap_initMtuBuffer(app_l2cap_rx_fifo, ACL_L2CAP_BUFF_SIZE, app_l2cap_rx_fifo, ACL_L2CAP_BUFF_SIZE);
+	#endif
 
 	//NO SMP process
 	blc_smp_setSecurityLevel(No_Security);
@@ -514,25 +512,27 @@ void user_init_normal(void)
 	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS, OWN_ADDRESS_PUBLIC, SCAN_FP_ALLOW_ADV_ANY);
 	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
 
-	#if(FEATURE_PM_ENABLE)
-		//
-	#else
-		bls_pm_setSuspendMask (SUSPEND_DISABLE);
-	#endif
-}
+
+	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 
 
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
 
-/**
- * @brief		user initialization when MCU wake_up from deepSleep_retention mode
- * @param[in]	none
- * @return      none
- */
-_attribute_ram_code_ void user_init_deepRetn(void)
-{
-#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-	//
-#endif
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_master_dle \n");
+
 }
 
 /**
@@ -547,22 +547,15 @@ void feature_mdle_test_mainloop(void)
 	blc_hci_proc ();
 
 	////////////////////////////////////// UI entry /////////////////////////////////
-	static u8 button_detect_en = 0;
-	if(!button_detect_en && clock_time_exceed(0, 1000000)){// proc button 1 second later after power on
-		button_detect_en = 1;
-	}
-	static u32 button_detect_tick = 0;
-	if(button_detect_en && clock_time_exceed(button_detect_tick, 5000))
-	{
-		button_detect_tick = clock_time();
-		proc_button();
-	}
+#if (UI_KEYBOARD_ENABLE)
+	proc_keyboard(0,0,0);
+#endif
 
 	if( host_update_conn_param_req && clock_time_exceed(host_update_conn_param_req, 50000))
 	{
 		host_update_conn_param_req = 0;
 		if(blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){  //still in connection state
-			blm_ll_updateConnection (cur_conn_device_hdl, host_update_conn_min, host_update_conn_min, host_update_conn_latency,  host_update_conn_timeout, 0, 0 );
+			blm_ll_updateConnection (BLM_CONN_HANDLE, host_update_conn_min, host_update_conn_min, host_update_conn_latency,  host_update_conn_timeout, 0, 0 );
 		}
 	}
 
@@ -571,8 +564,8 @@ void feature_mdle_test_mainloop(void)
 		mtuExchange_check_tick = clock_time() | 1;
 
 		if(!mtuExchange_started_flg){  //master do not send MTU exchange request in time
-			printf("After conn 200ms, if not receive S's MTU exchange pkt, M send MTU exchange req to S.\n");
-			blc_att_requestMtuSizeExchange(cur_conn_device_hdl, MTU_SIZE_SETTING);
+			tlkapi_printf(APP_LOG_EN,"After conn 200ms, if not receive S's MTU exchange pkt, M send MTU exchange req to S.\n");
+			blc_att_requestMtuSizeExchange(BLM_CONN_HANDLE, MTU_SIZE_SETTING);
 		}
 	}
 
@@ -580,19 +573,19 @@ void feature_mdle_test_mainloop(void)
 		mtuExchange_check_tick = 0;
 
 		if(!dle_started_flg){ //master do not send data length request in time
-			printf("Master initiated the DLE.\n");
-			blc_ll_exchangeDataLength(LL_LENGTH_REQ , DLE_TX_SUPPORTED_DATA_LEN);
+			tlkapi_printf(APP_LOG_EN,"Master initiated the DLE.\n");
+			blc_ll_exchangeDataLength(LL_LENGTH_REQ , ACL_CONN_MAX_TX_OCTETS);
 		}
 	}
 
 
 	//terminate and unpair proc
 	static int master_disconnect_flag;
-	if(dongle_unpair_enable){
+	if(unpair_enable){
 		if(!master_disconnect_flag && blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){
-			if( blm_ll_disconnect(cur_conn_device_hdl, HCI_ERR_REMOTE_USER_TERM_CONN) == BLE_SUCCESS){
+			if( blm_ll_disconnect(BLM_CONN_HANDLE, HCI_ERR_REMOTE_USER_TERM_CONN) == BLE_SUCCESS){
 				master_disconnect_flag = 1;
-				dongle_unpair_enable = 0;
+				unpair_enable = 0;
 			}
 		}
 	}

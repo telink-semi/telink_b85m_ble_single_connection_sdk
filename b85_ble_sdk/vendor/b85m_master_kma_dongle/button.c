@@ -87,7 +87,7 @@
 
 	/**
 	 * @brief      the function server to debounce the key
-	 * @param[in]  btn_v - the pointer ponit to the button press value
+	 * @param[in]  btn_v - the pointer point to the button press value
 	 * @return     1 - key change press effect
 	 *             0 - key change press no effect
 	 */
@@ -111,8 +111,8 @@
 	}
 
 	/**
-	 * @brief      the function detect wheather or not the key press/release
-	 * @param[in]  read_key - enable or diable store key value in buffer
+	 * @brief      the function detect whether or not the key press/release
+	 * @param[in]  read_key - enable or disable store key value in buffer
 	 * @return     1 - key change press or release
 	 *             0 - key no change
 	 */

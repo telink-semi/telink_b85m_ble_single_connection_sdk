@@ -93,6 +93,7 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
  */
 void	att_mic (u16 conn, u8 *p)
 {
+	(void)conn;
 	att_mic_rcvd = 1;
 	memcpy (buff_mic_adpcm, p, MIC_ADPCM_FRAME_SIZE);
 	abuf_mic_add ((u32 *)buff_mic_adpcm);
@@ -160,6 +161,7 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
  */
 void	att_mic (u16 conn, u8 *p)
 {
+	(void)conn;(void)p;
 	att_mic_rcvd = 1;
 	memcpy (buff_mic_adpcm, p, MIC_ADPCM_FRAME_SIZE);
 	abuf_mic_add ((u32 *)buff_mic_adpcm);
@@ -539,6 +541,7 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
  */
 void	att_mic (u16 conn, u8 *p)
 {
+	(void)conn;
 	att_mic_rcvd = 1;
 	memcpy (tmp_mic_data, p, MIC_ADPCM_FRAME_SIZE);
 	abuf_mic_add ((u32 *)tmp_mic_data);
@@ -606,6 +609,7 @@ _attribute_ram_code_ void  usb_endpoints_irq_handler (void)
  */
 void	att_mic (u16 conn, u8 *p)
 {
+	(void)conn;
 	att_mic_rcvd = 1;
 	memcpy (tmp_mic_data, p, MIC_ADPCM_FRAME_SIZE);
 	abuf_mic_add ((u32 *)tmp_mic_data);

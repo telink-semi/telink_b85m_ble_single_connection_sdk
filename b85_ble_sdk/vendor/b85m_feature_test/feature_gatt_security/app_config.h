@@ -55,7 +55,7 @@
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		0
 
-
+///////////////////////// GATT SECURITY CONFIGURATION ////////////////////////////
 /* Attention: The test mode marked 'not test', is not supported in this demo.
    If user need to use it, please refer to feature_smp_security.  */
 
@@ -116,164 +116,33 @@
 #endif
 
 
-///////////////////////// UI Configuration ////////////////////////////////////////////////////
-#define	UI_KEYBOARD_ENABLE								0
-#define UI_LED_ENABLE                                   0
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE								0
-#define UART_PRINT_DEBUG_ENABLE  						1
+#define UART_PRINT_DEBUG_ENABLE							1
+#define APP_LOG_EN										1
 #define APP_FLASH_INIT_LOG_EN							0
 #define APP_HOST_EVENT_LOG_EN							0
 #define APP_ATT_LOG_EN									0
+#define APP_CONTR_EVENT_LOG_EN							1
 
-#define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
-#define BOARD_825X_DONGLE_C1T139A3						2     //
-#define BOARD_827X_EVK_C1T197A30						3	  //TLSR8278DK48
-#define BOARD_827X_DONGLE_C1T201A3						4	  //
-
-
+/////////////////////// Feature Test Board Select Configuration ///////////////////////////////
 #if (__PROJECT_8258_FEATURE_TEST__)
 	#define BOARD_SELECT								BOARD_825X_EVK_C1T139A30
 #elif (__PROJECT_8278_FEATURE_TEST__)
 	#define BOARD_SELECT								BOARD_827X_EVK_C1T197A30
 #endif
 
-#if (UI_KEYBOARD_ENABLE)   // if test pure power, kyeScan GPIO setting all disabled
-
-    #define	MATRIX_ROW_PULL					PM_PIN_PULLDOWN_100K
-	#define	MATRIX_COL_PULL					PM_PIN_PULLUP_10K
-	#define	KB_LINE_HIGH_VALID				0   //dirve pin output 0 when keyscan, scanpin read 0 is valid
-
-	//repeat key
-	#define 		KB_REPEAT_KEY_ENABLE			0
-	#define			KB_REPEAT_KEY_INTERVAL_MS		200
-	#define 		KB_REPEAT_KEY_NUM				1
-	#define 		KB_MAP_REPEAT					{VK_1, }
-
-	#define			CR_VOL_UP						0xf0  ////
-	#define			CR_VOL_DN						0xf1
-	#define			CR_VOL_MUTE						0xf2
-	#define			CR_CHN_UP						0xf3
-	#define			CR_CHN_DN						0xf4  ////
-	#define			CR_POWER						0xf5
-	#define			CR_SEARCH						0xf6
-	#define			CR_RECORD						0xf7
-	#define			CR_PLAY							0xf8  ////
-	#define			CR_PAUSE						0xf9
-	#define			CR_STOP							0xfa
-	#define			CR_FAST_BACKWARD				0xfb
-	#define			CR_FAST_FORWARD					0xfc  ////
-	#define			CR_HOME							0xfd
-	#define			CR_BACK							0xfe
-	#define			CR_MENU							0xff
-
-	/**
-	 *  @brief  Normal keyboard map
-	 */
-
-	#define			KB_MAP_NORMAL	{\
-						VK_B,		CR_POWER,		VK_NONE,		VK_C,				CR_HOME,	 \
-						VK_NONE,	VK_NONE,		VK_NONE,		CR_VOL_UP,			CR_VOL_DN,	 \
-						VK_2,		VK_RIGHT,		CR_VOL_DN,		VK_3,				VK_1,	 \
-						VK_5,		VK_ENTER,		CR_VOL_UP,		VK_6,				VK_4,	 \
-						VK_8,		VK_DOWN,		VK_UP ,			VK_9,				VK_7,	 \
-						VK_0,		CR_BACK,		VK_LEFT,		CR_VOL_MUTE,		CR_MENU,	 }
-
-	#define  		KB_DRIVE_PINS  {GPIO_PD5, GPIO_PD2, GPIO_PD4, GPIO_PD6, GPIO_PD7}
-	#define  		KB_SCAN_PINS   {GPIO_PC5, GPIO_PA0, GPIO_PB2, GPIO_PA4, GPIO_PA3, GPIO_PD3}
-
-	//drive pin as gpio
-	#define	PD5_FUNC				AS_GPIO
-	#define	PD2_FUNC				AS_GPIO
-	#define	PD4_FUNC				AS_GPIO
-	#define	PD6_FUNC				AS_GPIO
-	#define	PD7_FUNC				AS_GPIO
-	//drive pin need 100K pulldown
-	#define	PULL_WAKEUP_SRC_PD5		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD2		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD4		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD6		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD7		MATRIX_ROW_PULL
-	//drive pin open input to read gpio wakeup level
-	#define PD5_INPUT_ENABLE		1
-	#define PD2_INPUT_ENABLE		1
-	#define PD4_INPUT_ENABLE		1
-	#define PD6_INPUT_ENABLE		1
-	#define PD7_INPUT_ENABLE		1
-	//scan pin as gpio
-	#define	PC5_FUNC				AS_GPIO
-	#define	PA0_FUNC				AS_GPIO
-	#define	PB2_FUNC				AS_GPIO
-	#define	PA4_FUNC				AS_GPIO
-	#define	PA3_FUNC				AS_GPIO
-	#define	PD3_FUNC				AS_GPIO
-	//scan  pin need 10K pullup
-	#define	PULL_WAKEUP_SRC_PC5		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PA0		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PB2		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PA4		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PA3		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PD3		MATRIX_COL_PULL
-	//scan pin open input to read gpio level
-	#define PC5_INPUT_ENABLE		1
-	#define PA0_INPUT_ENABLE		1
-	#define PB2_INPUT_ENABLE		1
-	#define PA4_INPUT_ENABLE		1
-	#define PA3_INPUT_ENABLE		1
-	#define PD3_INPUT_ENABLE		1
-
-	#define	KB_MAP_NUM			    KB_MAP_NORMAL
-	#define	KB_MAP_FN			    KB_MAP_NORMAL
-
-#endif
 
 
-/**
- *  @brief  LED Configuration
- */
-#if (UI_LED_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30 || BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		/* 825X EVK and 827X EVK use same GPIO for LED: PD2/PD3/PD4/PD5 */
-		#define	GPIO_LED_BLUE			GPIO_PD2
-		#define	GPIO_LED_GREEN			GPIO_PD3
-		#define	GPIO_LED_WHITE			GPIO_PD4
-		#define	GPIO_LED_RED			GPIO_PD5
+///////////////////////// UI Configuration ////////////////////////////////////////////////////
+#define	UI_KEYBOARD_ENABLE								0
+#define UI_LED_ENABLE                                   0
 
-		#define PD2_FUNC				AS_GPIO
-		#define PD3_FUNC				AS_GPIO
-		#define PD4_FUNC				AS_GPIO
-		#define PD5_FUNC				AS_GPIO
 
-		#define	PD2_OUTPUT_ENABLE		1
-		#define	PD3_OUTPUT_ENABLE		1
-		#define PD4_OUTPUT_ENABLE		1
-		#define	PD5_OUTPUT_ENABLE		1
 
-		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
-	#elif (BOARD_SELECT == BOARD_825X_DONGLE_C1T139A3 || BOARD_SELECT == BOARD_827X_DONGLE_C1T201A3)
-		/* 825X Dongle and 827X Dongle use same GPIO for LED: PA3/PB1/PA2/PB0/PA4 */
-		#define	GPIO_LED_RED			GPIO_PA3
-		#define	GPIO_LED_WHITE			GPIO_PB1
-		#define	GPIO_LED_GREEN			GPIO_PA2
-		#define	GPIO_LED_BLUE			GPIO_PB0
-		#define	GPIO_LED_YELLOW			GPIO_PA4
 
-		#define PA3_FUNC				AS_GPIO
-		#define PB1_FUNC				AS_GPIO
-		#define PA2_FUNC				AS_GPIO
-		#define PB0_FUNC				AS_GPIO
-		#define PA4_FUNC				AS_GPIO
 
-		#define	PA3_OUTPUT_ENABLE		1
-		#define	PB1_OUTPUT_ENABLE		1
-		#define PA2_OUTPUT_ENABLE		1
-		#define	PB0_OUTPUT_ENABLE		1
-		#define	PA4_OUTPUT_ENABLE		1
-
-		#define LED_ON_LEVAL 			1 		//gpio output high voltage to turn on led
-	#endif
-#endif
 
 
 ///////////////////////// System Clock  Configuration /////////////////////////////////////////
@@ -300,51 +169,15 @@ enum{
 
 
 
-#if(DEBUG_GPIO_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-	#elif (BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							GPIO_PB0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-		#define PB0_OUTPUT_ENABLE					1
-	#endif
-#endif  //end of DEBUG_GPIO_ENABLE
 
 /////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
 #if (UART_PRINT_DEBUG_ENABLE)
-		#define DEBUG_INFO_TX_PIN           					GPIO_PB1
-		#define PULL_WAKEUP_SRC_PB1         					PM_PIN_PULLUP_10K
-		#define PB1_OUTPUT_ENABLE         						1
-        #define PB1_DATA_OUT                                    1 //must
+	#define DEBUG_INFO_TX_PIN           	GPIO_PB1
+	#define PULL_WAKEUP_SRC_PB1         	PM_PIN_PULLUP_10K
+	#define PB1_OUTPUT_ENABLE         		1
+	#define PB1_DATA_OUT                    1
 #endif
 
 #include "../common/default_config.h"

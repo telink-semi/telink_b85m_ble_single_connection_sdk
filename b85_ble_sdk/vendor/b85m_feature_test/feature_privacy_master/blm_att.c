@@ -57,7 +57,7 @@
 
 #if (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
 
-#define     TELINK_UNPAIR_KEYVALUE		0xFF  //conn state, unpair
+//#define     TELINK_UNPAIR_KEYVALUE		0xFF  //conn state, unpair
 
 
 const u8 my_MicUUID[16]		= WRAPPING_BRACES(TELINK_MIC_DATA);
@@ -70,26 +70,8 @@ const u8 sAudioGoogleTXUUID[16]   = WRAPPING_BRACES(AUDIO_GOOGL_TX_CHAR_UUID);
 const u8 sAudioGoogleRXUUID[16]   = WRAPPING_BRACES(AUDIO_GOOGL_RX_CHAR_UUID);
 const u8 sAudioGoogleCTLUUID[16]   = WRAPPING_BRACES(AUDIO_GOOGL_CTL_CHAR_UUID);
 
-u8 read_by_type_req_uuid[16] = {};
-u8 read_by_type_req_uuidLen;
 
 u16 	current_read_req_handle;
-
-/**
- * @brief       host layer set current readByTypeRequest UUID
- * @param[in]	uuid
- * @param[in]	uuid_len - uuid byte number
- * @return      none
- */
-void host_att_set_current_readByTypeReq_uuid(u8 *uuid, u8 uuid_len)
-{
-	read_by_type_req_uuidLen = uuid_len;
-	memcpy(read_by_type_req_uuid, uuid, uuid_len);
-}
-
-
-
-
 
 
 
@@ -256,7 +238,7 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 		att_req_read_by_type (dat, s, 0xffff, (u8 *)&uuid, 2);
 		if (host_att_service_wait_event(handle, dat, 1000000))
 		{
-			return  GATT_ERR_SERVICE_DISCOVERY_TIEMOUT;			//timeout
+			return  GATT_ERR_SERVICE_DISCOVERY_TIMEOUT;			//timeout
 		}
 
 		// process response data
@@ -318,7 +300,7 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 			att_req_find_info (dat, p16->handle, 0xffff);
 			if (host_att_service_wait_event(handle, dat, 1000000))
 			{
-				return  GATT_ERR_SERVICE_DISCOVERY_TIEMOUT;			//timeout
+				return  GATT_ERR_SERVICE_DISCOVERY_TIMEOUT;			//timeout
 			}
 
 			att_findInfoRsp_t *p_rsp = (att_findInfoRsp_t *) dat;
@@ -341,7 +323,7 @@ ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16,
 						att_req_read (dat, pd[0]);
 						if (host_att_service_wait_event(handle, dat, 1000000))
 						{
-								return  GATT_ERR_SERVICE_DISCOVERY_TIEMOUT;			//timeout
+								return  GATT_ERR_SERVICE_DISCOVERY_TIMEOUT;			//timeout
 						}
 
 						att_readRsp_t *pr = (att_readRsp_t *) dat;
@@ -384,117 +366,11 @@ rf_packet_mouse_t	pkt_mouse = {
 		0,					// per
 		0,					// seq_no
 		1,					// number of frame
+		{0},
 };
 
 
-extern void usbmouse_add_frame (rf_packet_mouse_t *packet_mouse);
 
-/**
- * @brief       call this function when attribute handle:HID_HANDLE_MOUSE_REPORT
- * @param[in]	conn - connect handle
- * @param[in]	p - pointer of l2cap data packet
- * @return      none
- */
-void	att_mouse (u16 conn, u8 *p)
-{
-	memcpy (pkt_mouse.data, p, 4);
-	pkt_mouse.seq_no++;
-    usbmouse_add_frame(&pkt_mouse);
-}
-
-
-
-extern void usbkb_hid_report(kb_data_t *data);
-extern void report_to_KeySimTool(u8 len,u8 * keycode);
-extern void usbkb_report_consumer_key(u16 consumer_key);
-
-extern void report_media_key_to_KeySimTool(u16);
-
-/**
- * @brief       call this function when report consumer key
- * @param[in]	conn - connect handle
- * @param[in]	p - pointer of l2cap data packet
- * @return      none
- */
-void	att_keyboard_media (u16 conn, u8 *p)
-{
-	u16 media_key = p[0] | p[1]<<8;
-
-	usbkb_report_consumer_key(media_key);
-}
-
-//////////////// keyboard ///////////////////////////////////////////////////
-int Adbg_att_kb_cnt = 0;
-kb_data_t		kb_dat_report = {1, 0, {0,0,0,0,0,0} };
-int keyboard_not_release = 0;
-extern int 	dongle_unpair_enable;
-
-/**
- * @brief       call this function when report keyborad
- * @param[in]	conn - connect handle
- * @param[in]	p - pointer of l2cap data packet
- * @return      none
- */
-void	att_keyboard (u16 conn, u8 *p)
-{
-	Adbg_att_kb_cnt ++;
-
-	memcpy(&kb_dat_report, p, sizeof(kb_data_t));
-
-	if(kb_dat_report.keycode[0] == TELINK_UNPAIR_KEYVALUE){ //slave special unpair cmd
-
-		if(!dongle_unpair_enable){
-			dongle_unpair_enable = 1;
-		}
-
-		return;  //TELINK_UNPAIR_KEYVALUE not report
-	}
-
-
-	if (kb_dat_report.keycode[0])  			//keycode[0]
-	{
-		kb_dat_report.cnt = 1;  //1 key value
-		keyboard_not_release = 1;
-	}
-	else{
-		kb_dat_report.cnt = 0;  //key release
-		keyboard_not_release = 0;
-	}
-
-
-	usbkb_hid_report((kb_data_t *) &kb_dat_report);
-}
-
-
-
-/**
- * @brief       call this function when keyboard release
- * @param[in]	none
- * @return      none
- */
-void att_keyboard_release(void)
-{
-	kb_dat_report.cnt = 0;  //key release
-//	usbkb_hid_report((kb_data_t *) &kb_dat_report);
-}
-
-
-
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
-
-/**
- * @brief       this function serves to clear host attribute data
- * @param[in]	none
- * @return      none
- */
-void host_att_data_clear(void)
-{
-	if(keyboard_not_release){
-		keyboard_not_release = 0;
-		att_keyboard_release();
-	}
-}
 
 
 /**

@@ -4,43 +4,21 @@
  * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	06,2020
+ * @date	06,2022
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef HCI_CONST_H_
@@ -72,19 +50,20 @@
 #define HCI_EVT_DATA_BUF_OVERFLOW                                    0x1A
 #define HCI_EVT_ENCRYPTION_KEY_REFRESH                               0x30
 #define HCI_EVT_LE_META                                              0x3E
-#define HCI_EVT_CERT_VS                                              0xF0
+#define HCI_EVT_AUTH_PAYLOAD_TIMEOUT_EXPIRED                         0x57
+#define HCI_EVT_HT_ERR_FLAG                                          0xF0
 
 // LE Meta Event Codes
 #define HCI_SUB_EVT_LE_CONNECTION_COMPLETE                           0x01	//core_4.0
-#define HCI_SUB_EVT_LE_ADVERTISING_REPORT                            0x02
-#define HCI_SUB_EVT_LE_CONNECTION_UPDATE_COMPLETE                    0x03
-#define HCI_SUB_EVT_LE_READ_REMOTE_USED_FEATURES_COMPLETE            0x04
+#define HCI_SUB_EVT_LE_ADVERTISING_REPORT                            0x02	//core_4.0
+#define HCI_SUB_EVT_LE_CONNECTION_UPDATE_COMPLETE                    0x03	//core_4.0
+#define HCI_SUB_EVT_LE_READ_REMOTE_USED_FEATURES_COMPLETE            0x04	//core_4.0
 #define HCI_SUB_EVT_LE_LONG_TERM_KEY_REQUESTED                       0x05	//core_4.0
 #define HCI_SUB_EVT_LE_REMOTE_CONNECTION_PARAM_REQUEST               0x06   //core_4.1
 #define HCI_SUB_EVT_LE_DATA_LENGTH_CHANGE                            0x07	//core_4.2
-#define HCI_SUB_EVT_LE_READ_LOCAL_P256_KEY_COMPLETE                  0x08
-#define HCI_SUB_EVT_LE_GENERATE_DHKEY_COMPLETE				         0x09
-#define HCI_SUB_EVT_LE_ENHANCED_CONNECTION_COMPLETE                  0x0A
+#define HCI_SUB_EVT_LE_READ_LOCAL_P256_KEY_COMPLETE                  0x08	//core_4.2
+#define HCI_SUB_EVT_LE_GENERATE_DHKEY_COMPLETE				         0x09	//core_4.2
+#define HCI_SUB_EVT_LE_ENHANCED_CONNECTION_COMPLETE                  0x0A	//core_4.2
 #define HCI_SUB_EVT_LE_DIRECT_ADVERTISE_REPORT		                 0x0B   //core_4.2
 
 #define HCI_SUB_EVT_LE_PHY_UPDATE_COMPLETE							 0x0C	//core_5.0
@@ -101,20 +80,24 @@
 #define HCI_SUB_EVT_LE_CONNECTIONLESS_IQ_REPORT               	     0x15	//core_5.1	7.7.65.21 LE Connectionless IQ Report event
 #define HCI_SUB_EVT_LE_CONNECTION_IQ_REPORT               		 	 0x16	//core_5.1	7.7.65.22 LE Connection IQ Report event
 #define HCI_SUB_EVT_LE_CTE_REQUEST_FAILED                		     0x17	//core_5.1	7.7.65.23 LE CTE Request Failed event
-#define HCI_SUB_EVT_LE_PERIODIC_ADVERTISING_SYNC_TRANSFOR_RECEIVED   0x18	//core_5.1	7.7.65.24 LE Periodic Advertising Sync Transfer Received event
+#define HCI_SUB_EVT_LE_PERIODIC_ADVERTISING_SYNC_TRANSFER_RECEIVED   0x18	//core_5.1	7.7.65.24 LE Periodic Advertising Sync Transfer Received event
 
 
 #define HCI_SUB_EVT_LE_CIS_ESTABLISHED								 0x19	//core_5.2	7.7.65.25 LE CIS Established event
-#define HCI_SUB_EVT_LE_CIS_REQUESTED								 0x1A	//core_5.2	7.7.65.26 LE CIS Request event
+#define HCI_SUB_EVT_LE_CIS_REQUEST								 	 0x1A	//core_5.2	7.7.65.26 LE CIS Request event
 #define HCI_SUB_EVT_LE_CREATE_BIG_COMPLETE							 0x1B	//core_5.2	7.7.65.27 LE Create BIG Complete event
 #define HCI_SUB_EVT_LE_TERMINATE_BIG_COMPLETE						 0x1C	//core_5.2	7.7.65.28 LE Terminate BIG Complete event
-#define HCI_SUB_EVT_LE_BIG_SYNC_ESTABLILSHED						 0x1D	//core_5.2	7.7.65.29 LE BIG Sync Established event
+#define HCI_SUB_EVT_LE_BIG_SYNC_ESTABLISHED						 0x1D	//core_5.2	7.7.65.29 LE BIG Sync Established event
 #define HCI_SUB_EVT_LE_BIG_SYNC_LOST								 0x1E	//core_5.2	7.7.65.30 LE BIG Sync Lost event
 #define HCI_SUB_EVT_LE_REQUEST_PEER_SCA_COMPLETE					 0x1F	//core_5.2	7.7.65.31 LE Request Peer SCA Complete event
 #define HCI_SUB_EVT_LE_PATH_LOSS_THRESHOLD							 0x20	//core_5.2	7.7.65.32 LE Path Loss Threshold event
 #define HCI_SUB_EVT_LE_TRANSMIT_POWER_REPORTING						 0x21	//core_5.2	7.7.65.33 LE Transmit Power Reporting event
 #define HCI_SUB_EVT_LE_BIGINFO_ADVERTISING_REPORT					 0x22	//core_5.2	7.7.65.34 LE BIGInfo Advertising Report event
 
+
+#define HCI_SUB_EVT_LE_SUBRATE_CHANGE								 0x23	//core_5.3	7.7.65.35 LE Subrate Change event
+
+#define HCI_SUB_EVT_MAX												 0x24
 
 
 #define HCI_SUB_EVT_LE_CONNECTION_ESTABLISH					         0xFF   //Telink private
@@ -123,20 +106,26 @@
 
 
 //Event mask - last octet
-#define HCI_EVT_MASK_NONE                                        	 0x0000000000
-#define HCI_EVT_MASK_INQUIRY_COMPLETE                          	  	 0x0000000001
-#define HCI_EVT_MASK_INQUIRY_RESULT                              	 0x0000000002
-#define HCI_EVT_MASK_CONNECTION_COMPELETE                        	 0x0000000004
-#define HCI_EVT_MASK_CONNECTION_REQUEST                          	 0x0000000008
-#define HCI_EVT_MASK_DISCONNECTION_COMPLETE                      	 0x0000000010     //
-#define HCI_EVT_MASK_AUTHENTICATION_COMPLETE                     	 0x0000000020
-#define HCI_EVT_MASK_REMOTE_NAME_REQUEST_COMPLETE                	 0x0000000040
-#define HCI_EVT_MASK_ENCRYPTION_CHANGE                           	 0x0000000080
-#define HCI_EVT_MASK_CHANGE_CONECTION_LINK_KEY_COMPLETE              0x0000000100
-#define HCI_EVT_MASK_CHANGE_CONNECTION_LINK_KEY_COMPLETE   			 0x0000000100	
-#define HCI_EVT_MASK_MASTER_LINK_KEY_COMPLETE                        0x0000000200
-#define HCI_EVT_MASK_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE     	 0x0000000400
-#define HCI_EVT_MASK_READ_REMOTE_VERSION_INFORMATION_COMPLETE    	 0x0000000800     //
+#define HCI_EVT_MASK_NONE                                        	 0x00000000
+#define HCI_EVT_MASK_INQUIRY_COMPLETE                          	  	 0x00000001	// 0
+#define HCI_EVT_MASK_INQUIRY_RESULT                              	 0x00000002	// 1
+#define HCI_EVT_MASK_CONNECTION_COMPLETE                        	 0x00000004	// 2
+#define HCI_EVT_MASK_CONNECTION_REQUEST                          	 0x00000008	// 3
+#define HCI_EVT_MASK_DISCONNECTION_COMPLETE                      	 0x00000010	// 4
+#define HCI_EVT_MASK_AUTHENTICATION_COMPLETE                     	 0x00000020	// 5
+#define HCI_EVT_MASK_REMOTE_NAME_REQUEST_COMPLETE                	 0x00000040	// 6
+#define HCI_EVT_MASK_ENCRYPTION_CHANGE                           	 0x00000080	// 7
+#define HCI_EVT_MASK_CHANGE_CONNECTION_LINK_KEY_COMPLETE              0x00000100	// 8
+#define HCI_EVT_MASK_MASTER_LINK_KEY_COMPLETE                        0x00000200	// 9
+#define HCI_EVT_MASK_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE     	 0x00000400	// 10
+#define HCI_EVT_MASK_READ_REMOTE_VERSION_INFORMATION_COMPLETE    	 0x00000800	// 11
+
+#define HCI_EVT_MASK_ENCRYPTION_KEY_REFRESH_COMPLETE		    	 (((unsigned long long)1)<<47)	// 47
+
+#define HCI_EVT_MASK_LE_META								    	 (((unsigned long long)1)<<61)	// 61
+
+//Event mask page 2
+#define HCI_EVT_MASK_AUTH_PAYLOAD_TIMEOUT_EXPIRED                     (((unsigned long long)1)<<23)
 
 #define HCI_EVT_MASK_DEFAULT                                     	 HCI_EVT_MASK_DISCONNECTION_COMPLETE
 
@@ -165,21 +154,22 @@
 #define HCI_LE_EVT_MASK_CHANNEL_SELECTION_ALGORITHM                  0x00080000 // core5.0 - bit19
 
 #define HCI_LE_EVT_MASK_CONNECTIONLESS_IQ_REPORT                     0x00100000 // core5.1 - bit20
-#define HCI_LE_EVT_MASK_CONNECTION_IQ_REPORTD          				 0x00200000 // core5.1 - bit21
+#define HCI_LE_EVT_MASK_CONNECTION_IQ_REPORT          				 0x00200000 // core5.1 - bit21
 #define HCI_LE_EVT_MASK_CTE_REQUEST_FAILED                           0x00400000 // core5.1 - bit22
-#define HCI_LE_EVT_MASK_PERIODIC_ADVERTISING_SYNC_TRANSFOR_RECEIVED  0x00800000 // core5.1 - bit23
+#define HCI_LE_EVT_MASK_PERIODIC_ADVERTISING_SYNC_TRANSFER_RECEIVED  0x00800000 // core5.1 - bit23
 
 #define HCI_LE_EVT_MASK_CIS_ESTABLISHED								 0x01000000 // core5.2 - bit24
 #define HCI_LE_EVT_MASK_CIS_REQUESTED								 0x02000000 // core5.2 - bit25
 #define HCI_LE_EVT_MASK_CREATE_BIG_COMPLETE							 0x04000000 // core5.2 - bit26
 #define HCI_LE_EVT_MASK_TERMINATE_BIG_COMPLETE						 0x08000000 // core5.2 - bit27
-#define HCI_LE_EVT_MASK_BIG_SYNC_ESTABLILSHED						 0x10000000 // core5.2 - bit28
+#define HCI_LE_EVT_MASK_BIG_SYNC_ESTABLISHED						 0x10000000 // core5.2 - bit28
 #define HCI_LE_EVT_MASK_BIG_SYNC_LOST								 0x20000000 // core5.2 - bit29
 #define HCI_LE_EVT_MASK_REQUEST_PEER_SCA_COMPLETE					 0x40000000 // core5.2 - bit30
 #define HCI_LE_EVT_MASK_PATH_LOSS_THRESHOLD							 0x80000000 // core5.2 - bit31
 
 #define HCI_LE_EVT_MASK_2_TRANSMIT_POWER_REPORTING					 0x00000001 // core5.2 - bit32
 #define HCI_LE_EVT_MASK_2_BIGINFO_ADVERTISING_REPORT				 0x00000002 // core5.2 - bit33
+#define HCI_LE_EVT_MASK_2_SUBRATE_CHANGE							 0x00000004 // core5.3 - bit34
 
 
 
@@ -218,7 +208,7 @@
 #define HCI_CMD_DELETE_STORED_LINK_KEY								 0x12
 #define	HCI_CMD_WRITE_LOCAL_NAME									 0x13
 #define	HCI_CMD_READ_LOCAL_NAME										 0x14
-#define	HCI_CMD_WRITE_CONNECTION_ACCEPT_TIMEOUT						 0x16
+#define	HCI_CMD_WRITE_CONNECTION_ACCEPT_TIMEOUT						 0x16	//LE controller will use, for HCI_LE_CIS_REQUEST event
 #define	HCI_CMD_WRITE_PAGE_TIMEOUT									 0x18
 #define	HCI_CMD_WRITE_SCAN_ENABLE									 0x1A
 #define	HCI_CMD_WRITE_PAGE_SCAN_ACTIVITY							 0x1C
@@ -238,7 +228,11 @@
 #define HCI_CMD_WRITE_INQUIRY_SCAN_TYPE								 0x43
 #define HCI_CMD_WRITE_INQUIRY_MODE									 0x45
 #define HCI_CMD_WRITE_PAGE_SCAN_TYPE								 0x47
-
+#define HCI_CMD_READ_AFH_CHN_ASSESSMENT_MODE						 0x48
+#define HCI_CMD_WRITE_AFH_CHN_ASSESSMENT_MODE						 0x49
+#define HCI_CMD_SET_EVT_MASK_PAGE_2                                  0x63
+#define HCI_CMD_READ_AUTH_PAYLOAD_TIMEOUT                            0x7B
+#define HCI_CMD_WRITE_AUTH_PAYLOAD_TIMEOUT                           0x7C
 
 //Informational Parameters
 //-- OGF --
@@ -368,10 +362,10 @@
 #define HCI_CMD_LE_CONNECTION_RESPONSE_ENABLE					 	 0x57 //7.8.86 LE Connection CTE Response Enable command
 #define HCI_CMD_LE_READ_ANTENNA_INFORMATION						 	 0x58 //7.8.87 LE Read Antenna Information command
 #define HCI_CMD_LE_SET_PERIODIC_ADVERTISING_RECEIVE_ENABLE		     0x59 //7.8.88 LE Set Periodic Advertising Receive Enable command
-#define HCI_CMD_LE_PERIODIC_ADVERTISING_SYNC_TRANSFOR				 0x5A //7.8.89 LE Periodic Advertising Sync Transfer command
-#define HCI_CMD_LE_PERIODIC_ADVERTISING_SET_INFO_TRANSFOR			 0x5B //7.8.90 LE Periodic Advertising Set Info Transfer command
-#define HCI_CMD_LE_SET_PERIODIC_ADV_SYNC_TRANSFOR_PARAMETERS 		 0x5C //7.8.91 LE Set Periodic Advertising Sync Transfer Parameters command
-#define HCI_CMD_LE_SET_DEFAULT_PERIODIC_ADV_SYNC_TRANSFOR_PARAMS 	 0x5D //7.8.92 LE Set Default Periodic Advertising Sync Transfer Parameters command
+#define HCI_CMD_LE_PERIODIC_ADVERTISING_SYNC_TRANSFER				 0x5A //7.8.89 LE Periodic Advertising Sync Transfer command
+#define HCI_CMD_LE_PERIODIC_ADVERTISING_SET_INFO_TRANSFER			 0x5B //7.8.90 LE Periodic Advertising Set Info Transfer command
+#define HCI_CMD_LE_SET_PERIODIC_ADV_SYNC_TRANSFER_PARAMETERS 		 0x5C //7.8.91 LE Set Periodic Advertising Sync Transfer Parameters command
+#define HCI_CMD_LE_SET_DEFAULT_PERIODIC_ADV_SYNC_TRANSFER_PARAMS 	 0x5D //7.8.92 LE Set Default Periodic Advertising Sync Transfer Parameters command
 #define HCI_CMD_LE_GENERATE_DHKEY_V2								 0x5E //7.8.93 LE Generate DHKey command [v2]
 #define HCI_CMD_LE_MODIFY_SLEEP_CLOCK_ACCURACY						 0x5F //7.8.94 LE Modify Sleep Clock Accuracy command
 //core_5.1 end
@@ -392,8 +386,8 @@
 #define HCI_CMD_LE_BIG_TERMINATE_SYNC								 0x6C //7.8.107 LE BIG Terminate Sync command
 #define HCI_CMD_LE_REQUEST_PEER_SCA									 0x6D //7.8.108 LE Request Peer SCA command
 #define HCI_CMD_LE_SETUP_ISO_DATA_PATH								 0x6E //7.8.109 LE Setup ISO Data Path command
-#define HCI_CMD_LE_REMOVE_ISO_DARA_PATH								 0x6F //7.8.110 LE Remove ISO Data Path command
-#define HCI_CMD_LE_ISO_TRTANSMIT_TEST								 0x70 //7.8.111 LE ISO Transmit Test command
+#define HCI_CMD_LE_REMOVE_ISO_DATA_PATH								 0x6F //7.8.110 LE Remove ISO Data Path command
+#define HCI_CMD_LE_ISO_TRANSMIT_TEST								 0x70 //7.8.111 LE ISO Transmit Test command
 #define HCI_CMD_LE_ISO_RECEIVE_TEST									 0x71 //7.8.112 LE ISO Receive Test command
 #define HCI_CMD_LE_ISO_READ_TEST_COUNTERS							 0x72 //7.8.113 LE ISO Read Test Counters command
 #define HCI_CMD_LE_ISO_TEST_END										 0x73 //7.8.114 LE ISO Test End command
@@ -406,6 +400,11 @@
 #define HCI_CMD_LE_SET_TRANSMIT_POWER_REPORTING_ENABLE				 0x7A //7.8.121 LE Set Transmit Power Reporting Enable command
 //core_5.2 end
 
+//core_5.3 begin
+#define	HCI_CMD_LE_SET_DATA_RELATE_ADDRESS_CHANGES					 0X7C //7.8.122 LE Set Data Related Address Changes command
+#define	HCI_CMD_LE_SET_DEFAULT_SUBRATE								 0x7D //7.8.123 LE Set Default Subrate command
+#define HCI_CMD_LE_SUBRATE_REQUEST									 0x7E //7.8.124 LE Subrate Request command
+//core_5.3 end
 
 #define HCI_CMD_LINK_POLICY_OPCODE_OGF								 0x08 //0x02<<2 = 0x08
 #define HCI_CMD_TEST_OPCODE_OGF										 0x18 //0x06<<2 = 0x18
@@ -419,4 +418,5 @@
 #define HCI_TELINK_SET_TX_PWR										 0x03
 #define HCI_TELINK_REBOOT_MCU										 0x04
 #define HCI_TELINK_SET_RXTX_DATA_LEN								 0x40
+#define HCI_EBQ_TEST_CASE_LOG										 0xE2 //EBQ log case name and timestamp
 #endif /* HCI_CONST_H_ */

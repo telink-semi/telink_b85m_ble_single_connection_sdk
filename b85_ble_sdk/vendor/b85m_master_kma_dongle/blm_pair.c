@@ -76,7 +76,7 @@ typedef struct {
 
 typedef struct {
 	u32 bond_flash_idx[USER_PAIR_SLAVE_MAX_NUM];  //mark paired slave mac address in flash
-	macAddr_t bond_device[USER_PAIR_SLAVE_MAX_NUM];  //macAddr_t alreay defined in ble stack
+	macAddr_t bond_device[USER_PAIR_SLAVE_MAX_NUM];  //macAddr_t already defined in ble stack
 	u8 curNum;
 } user_salveMac_t;
 
@@ -117,7 +117,7 @@ void user_tbl_slave_mac_delete_by_index(int index)  //remove the oldest adr in s
 {
 	//erase the oldest with ERASE_MARK
 	u8 delete_mark = ADR_ERASE_MARK;
-	flash_write_page (FLASH_ADR_PARING + user_tbl_slaveMac.bond_flash_idx[index], 1, &delete_mark);
+	flash_write_page (flash_sector_master_pairing + user_tbl_slaveMac.bond_flash_idx[index], 1, &delete_mark);
 
 	for(int i=index; i<user_tbl_slaveMac.curNum - 1; i++){ 	//move data
 		user_tbl_slaveMac.bond_flash_idx[i] = user_tbl_slaveMac.bond_flash_idx[i+1];
@@ -152,7 +152,7 @@ int user_tbl_slave_mac_add(u8 adr_type, u8 *adr)  //add new mac address to table
 		memcpy(user_tbl_slaveMac.bond_device[user_tbl_slaveMac.curNum].address, adr, 6);
 
 		user_bond_slave_flash_cfg_idx += 8;  //inc flash idx to get the new 8 bytes area
-		flash_write_page (FLASH_ADR_PARING + user_bond_slave_flash_cfg_idx, 8, (u8 *)&user_tbl_slaveMac.bond_device[user_tbl_slaveMac.curNum] );
+		flash_write_page (flash_sector_master_pairing + user_bond_slave_flash_cfg_idx, 8, (u8 *)&user_tbl_slaveMac.bond_device[user_tbl_slaveMac.curNum] );
 
 		user_tbl_slaveMac.bond_flash_idx[user_tbl_slaveMac.curNum] = user_bond_slave_flash_cfg_idx;  //mark flash idx
 		user_tbl_slaveMac.curNum++;
@@ -201,7 +201,7 @@ int user_tbl_slave_mac_delete_by_adr(u8 adr_type, u8 *adr)  //remove adr from sl
 
 			//erase the match adr
 			u8 delete_mark = ADR_ERASE_MARK;
-			flash_write_page (FLASH_ADR_PARING + user_tbl_slaveMac.bond_flash_idx[i], 1, &delete_mark);
+			flash_write_page (flash_sector_master_pairing + user_tbl_slaveMac.bond_flash_idx[i], 1, &delete_mark);
 
 			for(int j=i; j< user_tbl_slaveMac.curNum - 1;j++){ //move data
 				user_tbl_slaveMac.bond_flash_idx[j] = user_tbl_slaveMac.bond_flash_idx[j+1];
@@ -227,7 +227,7 @@ void user_tbl_slave_mac_delete_all(void)  //delete all the  adr in slave mac tab
 {
 	u8 delete_mark = ADR_ERASE_MARK;
 	for(int i=0; i< user_tbl_slaveMac.curNum; i++){
-		flash_write_page (FLASH_ADR_PARING + user_tbl_slaveMac.bond_flash_idx[i], 1, &delete_mark);
+		flash_write_page (flash_sector_master_pairing + user_tbl_slaveMac.bond_flash_idx[i], 1, &delete_mark);
 		memset( (u8 *)&user_tbl_slaveMac.bond_device[i], 0, 8);
 		//user_tbl_slaveMac.bond_flash_idx[i] = 0;  //do not  concern
 	}
@@ -273,7 +273,7 @@ void	user_bond_slave_flash_clean (void)
 
 	adbg_flash_clean = 1;
 
-	flash_erase_sector (FLASH_ADR_PARING);
+	flash_erase_sector (flash_sector_master_pairing);
 
 	user_bond_slave_flash_cfg_idx = -8;  //init value for no bond slave mac
 
@@ -282,7 +282,7 @@ void	user_bond_slave_flash_clean (void)
 		//u8 add_mark = ADR_BOND_MARK;
 
 		user_bond_slave_flash_cfg_idx += 8;  //inc flash idx to get the new 8 bytes area
-		flash_write_page (FLASH_ADR_PARING + user_bond_slave_flash_cfg_idx, 8, (u8*)&user_tbl_slaveMac.bond_device[i] );
+		flash_write_page (flash_sector_master_pairing + user_bond_slave_flash_cfg_idx, 8, (u8*)&user_tbl_slaveMac.bond_device[i] );
 
 		user_tbl_slaveMac.bond_flash_idx[i] = user_bond_slave_flash_cfg_idx;  //update flash idx
 	}
@@ -295,13 +295,13 @@ void	user_bond_slave_flash_clean (void)
  */
 void	user_master_host_pairing_flash_init(void)
 {
-	u8 *pf = (u8 *)FLASH_ADR_PARING;
+	u8 *pf = (u8 *)flash_sector_master_pairing;
 	for (user_bond_slave_flash_cfg_idx=0; user_bond_slave_flash_cfg_idx<4096; user_bond_slave_flash_cfg_idx+=8)
 	{ //traversing 8 bytes area in sector 0x11000 to find all the valid slave mac adr
 		if( pf[user_bond_slave_flash_cfg_idx] == ADR_BOND_MARK ){  //valid adr
 			if(user_tbl_slaveMac.curNum < USER_PAIR_SLAVE_MAX_NUM){
 				user_tbl_slaveMac.bond_flash_idx[user_tbl_slaveMac.curNum] = user_bond_slave_flash_cfg_idx;
-				flash_read_page (FLASH_ADR_PARING + user_bond_slave_flash_cfg_idx, 8, (u8 *)&user_tbl_slaveMac.bond_device[user_tbl_slaveMac.curNum] );
+				flash_read_page (flash_sector_master_pairing + user_bond_slave_flash_cfg_idx, 8, (u8 *)&user_tbl_slaveMac.bond_device[user_tbl_slaveMac.curNum] );
 				user_tbl_slaveMac.curNum ++;
 			}
 			else{ //slave mac in flash more than max, we think it's code bug

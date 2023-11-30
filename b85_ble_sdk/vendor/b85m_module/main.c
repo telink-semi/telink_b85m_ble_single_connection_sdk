@@ -69,7 +69,7 @@ _attribute_ram_code_ void irq_handler(void)
     	dma_chn_irq_status_clr(FLD_DMA_CHN_UART_RX);
 
     	u8* w = spp_rx_fifo.p + (spp_rx_fifo.wptr & (spp_rx_fifo.num-1)) * spp_rx_fifo.size;
-    	if(w[0]!=0)
+    	if (w[0] != 0 || w[1] != 0) //Length(u16) is not 0
     	{
     		my_fifo_next(&spp_rx_fifo);
     		u8* p = spp_rx_fifo.p + (spp_rx_fifo.wptr & (spp_rx_fifo.num-1)) * spp_rx_fifo.size;

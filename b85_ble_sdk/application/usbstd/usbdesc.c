@@ -243,7 +243,7 @@ const unsigned char OSFeatureDescriptor_compatID[] = {
 #endif
 #endif
 
-
+// need to check,driver don't have this part, ID_Product in driver is 8006
 #ifndef ID_PRODUCT
 #define ID_PRODUCT	(ID_PRODUCT_BASE | (USB_PRINTER_ENABLE?(1<<0):0) | (USB_SPEAKER_ENABLE?(1<<1):0) | (USB_MIC_ENABLE?(1<<2):0)	\
 	 | (USB_MOUSE_ENABLE?(1<<3):0) | (USB_KEYBOARD_ENABLE?(1<<4):0) | (USB_SOMATIC_ENABLE?(1<<5):0))
@@ -268,7 +268,7 @@ const USB_Descriptor_Device_t device_desc = { {
 		8, // Endpoint0Size, Maximum Packet Size for Zero Endpoint. Valid Sizes are 8, 16, 32, 64
 		ID_VENDOR, // VendorID
 #if USB_CDC_ENABLE
-        0x8846,
+        0x8002, //0x8846, // need to check , driver is 0x8002 when cdc enable
 #else
 #if AUDIO_HOGP
         0xc080,//ID_PRODUCT, // ProductID
@@ -290,8 +290,9 @@ const USB_Descriptor_Configuration_t
 				USB_INTF_MAX, // NumInterfaces
 				1, // Configuration index
 				NO_DESCRIPTOR, // Configuration String
-				USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_REMOTEWAKEUP, // Attributes
-				USB_CONFIG_POWER_MA(50) // MaxPower = 100mA
+//				USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_REMOTEWAKEUP, // Attributes
+				USB_CONFIG_ATTR_RESERVED, // don't support remote wakeup
+				USB_CONFIG_POWER_MA(250) //  need to check , past code MaxPower is 100 MA , Driver change to 500MA
                 },
 #if AUDIO_HOGP
 				// HID audio hogp interface
@@ -582,13 +583,14 @@ const USB_Descriptor_Configuration_t
 				// speaker_audio_format
 				{	{	sizeof(USB_Audio_Descriptor_Format_t)
 						+ sizeof(USB_Audio_SampleFreq_t), DTYPE_CSInterface},
-					AUDIO_DSUBTYPE_CSInterface_FormatType, USB_AUDIO_FORMAT_PCM, 2, // Channels
+					AUDIO_DSUBTYPE_CSInterface_FormatType, USB_AUDIO_FORMAT_PCM,
+					2, // need to check SPK Channel counts, driver is 1
 					2, // SubFrameSize
 					0x10, // BitsResolution
 					1 // TotalDiscreteSampleRates
 				},
 				// speaker_sample_rate AUDIO_SAMPLE_FREQ
-				{	0x80, 0xbb, 0x00},
+				{	0x80, 0xbb, 0x00}, // 48000, {(SPEAKER_SAMPLE_RATE & 0xff), (SPEAKER_SAMPLE_RATE >> 8), 0x00},
 				// speaker_stream_endpoint
 				{	{
 						{	sizeof(USB_Audio_Descriptor_StreamEndpoint_Std_t), DTYPE_Endpoint},
@@ -637,7 +639,7 @@ const USB_Descriptor_Configuration_t
 				{	{	sizeof(USB_Audio_Descriptor_Format_t)
 						+ sizeof(USB_Audio_SampleFreq_t), DTYPE_CSInterface},
 					AUDIO_DSUBTYPE_CSInterface_FormatType, USB_AUDIO_FORMAT_PCM, // FormatType
-					MIC_CHANNLE_COUNT, // Channels
+					MIC_CHANNEL_COUNT, // Channels
 					2, // SubFrameSize
 					MIC_RESOLUTION_BIT, // BitsResolution
 					1 // TotalDiscreteSampleRates

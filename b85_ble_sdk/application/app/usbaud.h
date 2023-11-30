@@ -118,8 +118,23 @@ void usbaud_init(void);
 u8 usbaud_speaker_vol_get(void);
 u8 usbaud_mic_vol_get(void);
 void usbaud_mic_en(int en);
+
+/**
+ * @brief     This function serves to send data to USB.
+ * @param[in] Input_Type - audio input type.
+ * @param[in] Audio_Rate - audio rate. This value is matched with usb_desc.c :USB_RATE.
+ * @return    none.
+ */
+void audio_tx_data_to_usb(AudioInput_Typedef Input_Type,AudioRate_Typedef Audio_Rate);
+void audio_rx_data_from_usb(void);
+/**
+ * @brief		This function serves to send data to USB Host or receive data from USB Host
+ * @param[in] 	none
+ * @return 		none
+ */
+void usb_audio_irq_data_process(void);
+
 /* Disable C linkage for C++ Compilers: */
 #if defined(__cplusplus)
 }
 #endif
-

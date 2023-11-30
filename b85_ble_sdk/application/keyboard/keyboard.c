@@ -142,7 +142,7 @@ static const unsigned char kb_map_normal[ARRAY_SIZE(scan_pins)][ARRAY_SIZE(drive
 	{VK_PAGE_UP, VK_RIGHT,	  VK_PAGE_DOWN,	VKPAD_PERIOD,	VKPAD_ASTERIX,VKPAD_MINUS,	VK_PAGE_UP,		VK_PAGE_DOWN},
 	{VKPAD_PLUS, VK_K107,	  VKPAD_ENTER,  VK_UP,		    VK_PLAY_PAUSE,VK_LEFT,	  	VK_HOME,	    VK_END},
 	{VK_WAKEUP,	 VK_SHIFT,	  VK_RSHIFT,	VK_VOL_DN,	    VK_VOL_UP,	  VK_NEXT_TRK,	VK_PREV_TRK,	VK_MEDIA},
-	{VK_MAIL,	 VK_WIN,	  VK_W_FORWRD,	VK_W_STOP,		VK_W_BACK,	  VK_W_REFRESH,	VK_W_MUTE,    	VK_W_SRCH},
+	{VK_MAIL,	 VK_WIN,	  VK_W_FORWARD,	VK_W_STOP,		VK_W_BACK,	  VK_W_REFRESH,	VK_W_MUTE,    	VK_W_SRCH},
 	{VK_KCL,	 VK_W_FAV,	  VK_RWIN,		VK_MY_COMP,		VK_STOP,	  VK_CAL,	  	VK_WEB,	    	VK_KCR},
 };
 #else
@@ -167,7 +167,7 @@ static const unsigned char kb_map_num[ARRAY_SIZE(scan_pins)][ARRAY_SIZE(drive_pi
 	{VKPAD_9,	 VKPAD_6,	  VKPAD_3,	    VKPAD_PERIOD,	VKPAD_ASTERIX,VKPAD_MINUS,	VK_PAGE_UP,		VK_PAGE_DOWN},
 	{VKPAD_PLUS, VK_K107,	  VKPAD_ENTER,  VK_UP,		    VK_PLAY_PAUSE,VK_LEFT,	  	VK_HOME,	    VK_END},
 	{VK_WAKEUP,	 VK_SHIFT,	  VK_RSHIFT,	VK_VOL_DN,	    VK_VOL_UP,	  VK_NEXT_TRK,	VK_PREV_TRK,	VK_MEDIA},
-	{VK_MAIL,	 VK_WIN,	  VK_W_FORWRD,	VK_W_STOP,		VK_W_BACK,	  VK_W_REFRESH,	VK_W_MUTE,    	VK_W_SRCH},
+	{VK_MAIL,	 VK_WIN,	  VK_W_FORWARD,	VK_W_STOP,		VK_W_BACK,	  VK_W_REFRESH,	VK_W_MUTE,    	VK_W_SRCH},
 	{VK_KCL,	 VK_W_FAV,	  VK_RWIN,		VK_MY_COMP,		VK_STOP,	  VK_CAL,	  	VK_WEB,	    	VK_KCR},
 };
 #else
@@ -192,7 +192,7 @@ static const unsigned char kb_map_fn[ARRAY_SIZE(scan_pins)][ARRAY_SIZE(drive_pin
 	{VKPAD_9,	 VKPAD_6,	  VKPAD_3,	    VKPAD_PERIOD,	VKPAD_ASTERIX,VKPAD_MINUS,	VK_PAGE_UP,		VK_PAGE_DOWN},
 	{VKPAD_PLUS, VK_K107,	  VKPAD_ENTER,  VK_UP,		    VK_PLAY_PAUSE,VK_LEFT,	  	VK_HOME,	    VK_END},
 	{VK_WAKEUP,	 VK_SHIFT,	  VK_RSHIFT,	VK_VOL_DN,	    VK_VOL_UP,	  VK_NEXT_TRK,	VK_PREV_TRK,	VK_MEDIA},
-	{VK_MAIL,	 VK_WIN,	  VK_W_FORWRD,	VK_W_STOP,		VK_W_BACK,	  VK_W_REFRESH,	VK_W_MUTE,    	VK_W_SRCH},
+	{VK_MAIL,	 VK_WIN,	  VK_W_FORWARD,	VK_W_STOP,		VK_W_BACK,	  VK_W_REFRESH,	VK_W_MUTE,    	VK_W_SRCH},
 	{VK_KCL,	 VK_W_FAV,	  VK_RWIN,		VK_MY_COMP,		VK_STOP,	  VK_CAL,	  	VK_WEB,	    	VK_KCR},
 
 };
@@ -224,7 +224,7 @@ kb_k_mp_t * kb_k_mp;
 void kb_rmv_ghost_key(u32 * pressed_matrix){
 	u32 mix_final = 0;
 	foreach_arr(i, drive_pins){
-		for(int j = (i+1); j < ARRAY_SIZE(drive_pins); ++j){
+		for(unsigned int j = (i+1); j < ARRAY_SIZE(drive_pins); ++j){
 			u32 mix = (pressed_matrix[i] & pressed_matrix[j]);
 			// >=2 غ,  Ǿ ghost key
 			//four or three key at "#" is pressed at the same time, should remove ghost key
@@ -425,7 +425,7 @@ u32 kb_scan_key_value (int numlock_status, int read_key,unsigned char * gpio)
 		kb_k_mp = kb_p_map[0];
 
 		kb_scan_row (0, gpio);
-		for (int i=0; i<=ARRAY_SIZE(drive_pins); i++) {
+		for (unsigned int i=0; i<=ARRAY_SIZE(drive_pins); i++) {
 			u32 r = kb_scan_row (i < ARRAY_SIZE(drive_pins) ? i : 0, gpio);
 			if (i) {
 				pressed_matrix[i - 1] = r;
@@ -466,7 +466,7 @@ u32 kb_scan_key_value (int numlock_status, int read_key,unsigned char * gpio)
 
 			/////////// push to matrix buffer /////////////////////////
 			pd = matrix_buff[matrix_wptr&3];
-			for (int k=0; k<ARRAY_SIZE(drive_pins); k++) {
+			for (unsigned int k=0; k<ARRAY_SIZE(drive_pins); k++) {
 				*pd++ = pressed_matrix[k];
 			}
 			matrix_wptr = (matrix_wptr + 1) & 7;

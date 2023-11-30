@@ -52,7 +52,7 @@
 #endif
 
 enum {
-	USB_EDP_PRINTER_IN = 8, // endpoint 8 is alias of enpoint 0,  becareful.  // default hw buf len = 64
+	USB_EDP_PRINTER_IN = 8, // endpoint 8 is alias of endpoint 0,  becareful.  // default hw buf len = 64
 	USB_EDP_MOUSE = 2,			// default hw buf len = 8
 	USB_EDP_KEYBOARD_IN = 1,	// default hw buf len = 8
 	USB_EDP_KEYBOARD_OUT = 3,	// default hw buf len = 16
@@ -85,9 +85,36 @@ enum {
 };
 
 void usbhw_disable_manual_interrupt(int m);
+
+/**
+ * @brief      This function enable the manual interrupt
+ * @param[in]  m - the irq mode needs to set
+ * @return     none
+ */
 void usbhw_enable_manual_interrupt(int m);
+
+/**
+ * @brief      This function sends a bulk of data to host via the specified endpoint
+ * @param[in]  ep - the number of the endpoint
+ * @param[in]  data - pointer to the data need to send
+ * @param[in]  len - length in byte of the data need to send
+ * @return     none
+ */
 void usbhw_write_ep(u32 ep, u8 * data, int len);
+
+/**
+ * @brief      This function sends two bytes data to host via the control endpoint
+ *             (handy help function)
+ * @param[in]  v - the two bytes data need to send
+ * @return     none
+ */
 void usbhw_write_ctrl_ep_u16(u16 v);
+
+/**
+ * @brief   This function reads two bytes data from host via the control endpoint
+ * @param   none
+ * @return  the two bytes data read from the control endpoint
+ */
 u16 usbhw_read_ctrl_ep_u16(void);
 
 /* Disable C linkage for C++ Compilers: */

@@ -77,7 +77,6 @@ int main_idle_loop (void);
 
 
 
-void proc_button (void);
 
 
 #endif /* APP_H_ */

@@ -55,21 +55,15 @@
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
 
-///////////////////////// UI Configuration ////////////////////////////////////////////////////
-#define	UI_KEYBOARD_ENABLE								1
-
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
 #define DEBUG_GPIO_ENABLE								0
+#define UART_PRINT_DEBUG_ENABLE							1
 #define APP_FLASH_INIT_LOG_EN							0
+#define APP_LOG_EN										1
+#define APP_CONTR_EVENT_LOG_EN							1
 
-
-#define BOARD_825X_EVK_C1T139A30						1     //TLSR8258DK48
-#define BOARD_825X_DONGLE_C1T139A3						2     //
-#define BOARD_827X_EVK_C1T197A30						3	  //TLSR8278DK48
-#define BOARD_827X_DONGLE_C1T201A3						4	  //
-
-
+/////////////////////// Feature Test Board Select Configuration ///////////////////////////////
 #if (__PROJECT_8258_FEATURE_TEST__)
 	#define BOARD_SELECT								BOARD_825X_EVK_C1T139A30
 #elif (__PROJECT_8278_FEATURE_TEST__)
@@ -78,86 +72,9 @@
 
 
 
-
-
-#if (UI_KEYBOARD_ENABLE)   // if test pure power, kyeScan GPIO setting all disabled
-	#define	MATRIX_ROW_PULL					PM_PIN_PULLDOWN_100K
-	#define	MATRIX_COL_PULL					PM_PIN_PULLUP_10K
-	#define	KB_LINE_HIGH_VALID				0   //dirve pin output 0 when keyscan, scanpin read 0 is valid
-
-	#define			CR_VOL_UP				0xf0  ////
-	#define			CR_VOL_DN				0xf1
-
-	/**
-	 *  @brief  Normal keyboard map
-	 */
-	#define		KB_MAP_NORMAL	{	{CR_VOL_DN,		VK_1},	 \
-									{CR_VOL_UP,		VK_2}, }
-
-
-	//////////////////// KEY CONFIG (EVK board) ///////////////////////////
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
-		//---------------  KeyMatrix PB2/PB3/PB4/PB5 -----------------------------
-		#define  KB_DRIVE_PINS  {GPIO_PB4, GPIO_PB5}
-		#define  KB_SCAN_PINS   {GPIO_PB2, GPIO_PB3}
-
-		//drive pin as gpio
-		#define	PB4_FUNC				AS_GPIO
-		#define	PB5_FUNC				AS_GPIO
-
-		//drive pin need 100K pulldown
-		#define	PULL_WAKEUP_SRC_PB4		MATRIX_ROW_PULL
-		#define	PULL_WAKEUP_SRC_PB5		MATRIX_ROW_PULL
-
-		//drive pin open input to read gpio wakeup level
-		#define PB4_INPUT_ENABLE		1
-		#define PB5_INPUT_ENABLE		1
-
-		//scan pin as gpio
-		#define	PB2_FUNC				AS_GPIO
-		#define	PB3_FUNC				AS_GPIO
-
-		//scan  pin need 10K pullup
-		#define	PULL_WAKEUP_SRC_PB2		MATRIX_COL_PULL
-		#define	PULL_WAKEUP_SRC_PB3		MATRIX_COL_PULL
-
-		//scan pin open input to read gpio level
-		#define PB2_INPUT_ENABLE		1
-		#define PB3_INPUT_ENABLE		1
-	#elif (BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		//---------------  KeyMatrix PB2/PB3/PB4/PB5 -----------------------------
-		#define  KB_DRIVE_PINS  {GPIO_PB4, GPIO_PB5}
-		#define  KB_SCAN_PINS   {GPIO_PB2, GPIO_PB3}
-
-		//drive pin as gpio
-		#define	PB4_FUNC				AS_GPIO
-		#define	PB5_FUNC				AS_GPIO
-
-		//drive pin need 100K pulldown
-		#define	PULL_WAKEUP_SRC_PB4		MATRIX_ROW_PULL
-		#define	PULL_WAKEUP_SRC_PB5		MATRIX_ROW_PULL
-
-		//drive pin open input to read gpio wakeup level
-		#define PB4_INPUT_ENABLE		1
-		#define PB5_INPUT_ENABLE		1
-
-		//scan pin as gpio
-		#define	PB2_FUNC				AS_GPIO
-		#define	PB3_FUNC				AS_GPIO
-
-		//scan  pin need 10K pullup
-		#define	PULL_WAKEUP_SRC_PB2		MATRIX_COL_PULL
-		#define	PULL_WAKEUP_SRC_PB3		MATRIX_COL_PULL
-
-		//scan pin open input to read gpio level
-		#define PB2_INPUT_ENABLE		1
-		#define PB3_INPUT_ENABLE		1
-	#endif
-
-
-	#define		KB_MAP_NUM		KB_MAP_NORMAL
-	#define		KB_MAP_FN		KB_MAP_NORMAL
-#endif
+///////////////////////// UI Configuration ////////////////////////////////////////////////////
+#define	UI_KEYBOARD_ENABLE								1
+#define	UI_LED_ENABLE									0
 
 
 
@@ -189,45 +106,16 @@ enum{
 
 
 
-#if(DEBUG_GPIO_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_EVK_C1T139A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-	#elif (BOARD_SELECT == BOARD_827X_EVK_C1T197A30)
-		#define GPIO_CHN0							GPIO_PD0
-		#define GPIO_CHN1							GPIO_PD1
-		#define GPIO_CHN2							GPIO_PD6
-		#define GPIO_CHN3							GPIO_PD7
-		#define GPIO_CHN4							GPIO_PA2
-		#define GPIO_CHN5							GPIO_PA3
-		#define GPIO_CHN6							GPIO_PA4
-		#define GPIO_CHN7							GPIO_PB0
 
-		#define PD0_OUTPUT_ENABLE					1
-		#define PD1_OUTPUT_ENABLE					1
-		#define PD6_OUTPUT_ENABLE					1
-		#define PD7_OUTPUT_ENABLE					1
-		#define PA2_OUTPUT_ENABLE					1
-		#define PA3_OUTPUT_ENABLE					1
-		#define PA4_OUTPUT_ENABLE					1
-		#define PB0_OUTPUT_ENABLE					1
-	#endif
-#endif  //end of DEBUG_GPIO_ENABLE
 
+/////////////////////////////////////// PRINT DEBUG INFO ///////////////////////////////////////
+#if (UART_PRINT_DEBUG_ENABLE)
+	#define DEBUG_INFO_TX_PIN           	GPIO_PB1
+	#define PULL_WAKEUP_SRC_PB1         	PM_PIN_PULLUP_10K
+	#define PB1_OUTPUT_ENABLE         		1
+	#define PB1_DATA_OUT                    1
+#endif
 
 #include "../common/default_config.h"
 

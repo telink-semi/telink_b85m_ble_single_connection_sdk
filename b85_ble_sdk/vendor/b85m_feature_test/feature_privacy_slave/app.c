@@ -36,7 +36,7 @@
 
 
 
-#define 	MY_DIRECT_ADV_TMIE					30000000
+#define 	MY_DIRECT_ADV_TIME					30000000
 
 
 #define     MY_APP_ADV_CHANNEL					BLT_ENABLE_ADV_ALL
@@ -88,7 +88,7 @@ const u8	tbl_advData[] = {
 	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
 	 0x02, DT_FLAGS, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
 	 0x03, DT_APPEARANCE, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
-	 0x05, DT_INCOMPLT_LIST_16BIT_SERVICE_UUID, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+	 0x05, DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
 };
 /**
  * @brief	Scan Response Packet data
@@ -177,6 +177,7 @@ void slave_cfgLegAdvParam(void);
 	 */
 	void proc_keyboard (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;void(n);
 		if(clock_time_exceed(keyScanTick, 8000)){
 			keyScanTick = clock_time();
 		}
@@ -204,6 +205,7 @@ void slave_cfgLegAdvParam(void);
 	 */
 	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;void(n);
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 		}
@@ -214,9 +216,11 @@ void slave_cfgLegAdvParam(void);
 
 
 
-void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
+void 	app_switch_to_undirected_adv(u8 e, u8 *p, int n)
 {
-	bls_ll_setAdvEnable(0);
+    (void)e;(void)p;(void)n;
+
+	bls_ll_setAdvEnable(BLC_ADV_DISABLE);
 
 	app_own_address_type = OWN_ADDRESS_PUBLIC;
 	u8 status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
@@ -227,7 +231,7 @@ void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
 	if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
 	status = blc_ll_setAddressResolutionEnable(0);
 
-	bls_ll_setAdvEnable(1);  //must: set adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set adv enable
 }
 
 
@@ -241,12 +245,17 @@ void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
  */
 void	task_connect (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
+
+	rf_packet_connect_t *pConnEvt = (rf_packet_connect_t *)p;
+	tlkapi_send_string_data(APP_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
+
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 
 	device_in_connection_state = 1;//
 
 	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, LED_ON_LEVAL);
+		gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
 	#endif
 }
 
@@ -261,6 +270,9 @@ void	task_connect (u8 e, u8 *p, int n)
  */
 void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
+    (void)e;(void)p;(void)n;
+
+	tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", *p);
 	device_in_connection_state = 0;
 
 	if(*p == HCI_ERR_CONN_TIMEOUT){
@@ -280,7 +292,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 	slave_cfgLegAdvParam();
 
 #if (UI_LED_ENABLE)
-	gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);  //yellow light off
+	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  //RED light off
 #endif
 
 }
@@ -296,6 +308,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  */
 void	task_suspend_exit (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
@@ -304,14 +317,14 @@ _attribute_data_retention_ u32 bondingFlashAddr;
 _attribute_data_retention_ u16 centralAddrResHdlReq = 0;
 u8 * l2cap_matt_handler(u16 connHandle, u8 * p)
 {
+	(void)connHandle;
 	rf_packet_l2cap_req_t * req = (rf_packet_l2cap_req_t *)p;
-
 	switch(req->opcode){
 		case ATT_OP_READ_BY_TYPE_RSP: {
 			if(centralAddrResHdlReq == 1){
 				centralAddrResHdlReq = 0;
-				rf_pkt_att_readByTypeRsp_t *ptr = (rf_pkt_att_readByTypeRsp_t *)&req->type;
-				u16 centralAddrResHdl = ptr->data[0] | (u16)ptr->data[1]<<8;
+				//rf_pkt_att_readByTypeRsp_t *ptr = (rf_pkt_att_readByTypeRsp_t *)&req->type;
+				//u16 centralAddrResHdl = ptr->data[0] | (u16)ptr->data[1]<<8;
 			}
 		}
 		break;
@@ -319,7 +332,7 @@ u8 * l2cap_matt_handler(u16 connHandle, u8 * p)
 		case ATT_OP_ERROR_RSP: {
 			if(centralAddrResHdlReq == 1){
 				centralAddrResHdlReq = 0;
-				rf_packet_att_errRsp_t * errRsp = (rf_packet_att_errRsp_t*)p;
+				//rf_packet_att_errRsp_t * errRsp = (rf_packet_att_errRsp_t*)p;
 			}
 		}
 		break;
@@ -330,42 +343,41 @@ u8 * l2cap_matt_handler(u16 connHandle, u8 * p)
 
 int app_host_event_callback (u32 h, u8 *para, int n)
 {
+
+    (void)h;(void)para;(void)n;
 	u8 event = h & 0xFF;
 
 	switch(event)
 	{
 		case GAP_EVT_SMP_PAIRING_BEGIN:
 		{
-			printf("Pairing begin\n");
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] Pairing Begin",0,0);
 		}
 		break;
 
 		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
 			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
-			printf("Pairing success:bond flg %s\n", p->bonding ?"true":"false");
+			tlkapi_send_string_u8s(APP_LOG_EN,"[APP][SMP] Pairing success,bond flg", p->bonding ?1:0);
 
 			if(p->bonding_result){
-				printf("save smp key succ\n");
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] save smp key succ",0,0);
 
 			    u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
 			    smp_param_save_t  bondInfo;
 
 			    bondingFlashAddr = bls_smp_param_loadByIndex(bond_number - 1, &bondInfo);  //get the latest bonding device (index: bond_number-1 )
-				printf("bondingFlashAddr:0x%x\n", bondingFlashAddr);
+			    tlkapi_send_string_u32s(APP_LOG_EN,"[APP][SMP] bondingFlashAddr", bondingFlashAddr);
 
 				u16 my_centralAddrResUUID = GATT_UUID_CENTRAL_ADDR_RES;
-				u8 dat[64];
-			    att_req_read_by_type (dat, 0x0001, 0xffff, (u8*)&my_centralAddrResUUID, 2);
-
-			    if(bls_ll_pushTxFifo (BLS_CONN_HANDLE, dat)){
+			    if(blc_gatt_pushReadByTypeRequest(BLS_CONN_HANDLE, 0x0001, 0xffff, (u8*)&my_centralAddrResUUID, 2)){
 			    	DBG_CHN3_TOGGLE;
 			    	centralAddrResHdlReq = 1;
-			    	printf("read by type req: UUID: 0x%x\n", my_centralAddrResUUID);
+			    	tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] read by type req: UUID: 0x%x\n", &my_centralAddrResUUID,2);
 			    }
 			}
 			else{
-				printf("save smp key failed\n");
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] save smp key failed",0,0);
 			}
 		}
 		break;
@@ -373,14 +385,14 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_SMP_PAIRING_FAIL:
 		{
 			gap_smp_pairingFailEvt_t* p = (gap_smp_pairingFailEvt_t*)para;
-			printf("Pairing failed:rsn:0x%x\n", p->reason);
+			tlkapi_send_string_u8s(APP_LOG_EN,"[APP][SMP] Pairing failed", p->reason);
 		}
 		break;
 
 		case GAP_EVT_SMP_CONN_ENCRYPTION_DONE:
 		{
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
-			printf("Connection encryption done\n");
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] Pairing failed",0,0);
 
 			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
 
@@ -403,6 +415,7 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 //////////////////////////////////////////////////////////
 int controller_event_callback (u32 h, u8 *p, int n)
 {
+    (void)h;(void)p;(void)n;
 	if (h &HCI_FLAG_EVENT_BT_STD)		//ble controller hci event
 	{
 		u8 evtCode = h & 0xff;
@@ -410,7 +423,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 		//------------ disconnect -------------------------------------
 		if(evtCode == HCI_EVT_DISCONNECTION_COMPLETE)  //connection terminate
 		{
-			printf("le connection terminate event\n");
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] le connection terminate event",0,0);
 		}
 		else if(evtCode == HCI_EVT_LE_META)
 		{
@@ -420,19 +433,15 @@ int controller_event_callback (u32 h, u8 *p, int n)
 			//------hci le event: le connection complete event---------------------------------
 			if (subEvt_code == HCI_SUB_EVT_LE_CONNECTION_COMPLETE)	// connection complete
 			{
-				printf("le conn complete event\n");
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] le conn complete event",0,0);
 			}
 			else if (subEvt_code == HCI_SUB_EVT_LE_ENHANCED_CONNECTION_COMPLETE)
 			{
 				hci_le_enhancedConnCompleteEvt_t *pEvt = (hci_le_enhancedConnCompleteEvt_t *)p;
-				printf("le enhanced conn complete event\n");
-				printf("peerAddrType: %d\n", pEvt->PeerAddrType);
-				printf("peerAddr:");
-				array_printf(pEvt->PeerAddr, 6);
-				printf("localRpa:");
-				array_printf(pEvt->localRslvPrivAddr, 6);
-				printf("peerRpa:");
-				array_printf(pEvt->Peer_RslvPrivAddr, 6);
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] le enhanced conn complete event",0,0);
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] peerAddrType,peerAddr",&pEvt->PeerAddrType,7);
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] localRpa",pEvt->localRslvPrivAddr, 6);
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] peerRpa",pEvt->Peer_RslvPrivAddr, 6);
 			}
 		}
 	}
@@ -465,18 +474,20 @@ void blt_pm_proc(void)
 }
 
 void slave_cfgLegAdvParam(void){
-	bls_ll_setAdvEnable(0);  //adv disable
+	bls_ll_setAdvEnable(BLC_ADV_DISABLE);  //adv disable
 	////////////////// config adv packet /////////////////////
 	u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
+	tlkapi_send_string_u8s(APP_LOG_EN,"[APP][SMP] bond_number", bond_number);
 	smp_param_save_t  bondInfo;
+	u8 adv_param_status = BLE_SUCCESS;
+	ble_sts_t status;
 	if(bond_number)   //at least 1 bonding device exist
 	{
 
 		u32 current_addr = bls_smp_param_loadByIndex( bond_number - 1, &bondInfo);  //get the latest bonding device (index: bond_number-1 )
-		printf("smpAddr:0x%x\n", current_addr);
-		ble_sts_t status;
+		tlkapi_send_string_u32s(APP_LOG_EN,"[APP][SMP] smpAddr", current_addr);
 
-		printf("central addr res %d support\n", bondInfo.flag);
+		tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] central bondInfo.flag", &bondInfo.flag,1);
 
 		u8 own_use_rpa = 1;
 		u8 empty_16_ff[16] = {0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF,  0xFF, 0xFF, 0xFF, 0xFF};
@@ -489,17 +500,19 @@ void slave_cfgLegAdvParam(void){
 		}
 
 		status = blc_ll_addDeviceToResolvingList(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, bondInfo.local_irk);
-		printf("LL resolving list add status: 0x%x\n", status);
+		tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] LL resolving list add status", &status,1);
 
 		status = blc_ll_setAddressResolutionEnable(1);
-		printf("LL add resolution enable status: 0x%x\n", status);
+		tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] LL add resolution enable status", &status,1);
+
+		tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] central bondInfo.flag", &bondInfo.flag,1);
 
 		app_own_address_type = own_use_rpa ? OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC : OWN_ADDRESS_PUBLIC;
 		if(app_own_address_type == OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC){
-			printf("[APP][RPA] RPA\n");
-			DBG_CHN3_TOGGLE;
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] RPA",0,0);
+			DBG_CHN3_TOGGLE;;
 		}else{
-			printf("[APP][RPA] PUB\n");
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] PUB",0,0);
 			DBG_CHN4_TOGGLE;
 		}
 
@@ -508,57 +521,39 @@ void slave_cfgLegAdvParam(void){
 		if(app_own_address_type < OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC){
 			peerAddr = bondInfo.peer_addr;
 			peerAddrType = bondInfo.peer_addr_type;
-			printf("AdvA: pub\n");
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] AdvA: pub",bondInfo.peer_addr,6);
 		}
 		else{
 			peerAddr = bondInfo.peer_id_addr;
 			peerAddrType = bondInfo.peer_id_adrType;
-			printf("AdvA: rpa\n");
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] AdvA: rpa",bondInfo.peer_id_addr,6);
 		}
-
-
-		status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+		adv_param_status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 									ADV_TYPE_CONNECTABLE_DIRECTED_LOW_DUTY, app_own_address_type,
 									 peerAddrType,  peerAddr,
 									 MY_APP_ADV_CHANNEL,
 									 ADV_FP_NONE);//  ADV_FP_NONE  ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL
-		if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
+		if(adv_param_status != BLE_SUCCESS) { 	//debug: adv setting err
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+			while(1);
+		}
 
-		bls_ll_setAdvDuration(MY_DIRECT_ADV_TMIE>>1, 1);
-		bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_indirect_adv);
+		bls_ll_setAdvDuration(MY_DIRECT_ADV_TIME>>1, 1);
+		bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_undirected_adv);
 	}
 	else{
-#if	1
 		app_own_address_type = OWN_ADDRESS_PUBLIC;
-		u8 status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+		adv_param_status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 										 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
 										 0,  NULL,
 										 MY_APP_ADV_CHANNEL,
 										 ADV_FP_NONE);
-		if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
+		if(adv_param_status != BLE_SUCCESS) { 	//debug: adv setting err
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+			while(1);
+		}
 		status = blc_ll_setAddressResolutionEnable(0);
-		printf("LL add resolution disable status: 0x%x\n", status);
-#else
-
-		u8	tmp_peer_irk[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-		u8	tmp_local_irk[16] = {0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
-		u8	tmp_peer_addr[6] = {0x11,0x22,0x33,0x44,0x55,0x66};
-		u8	tmp_peer_addr_type = OWN_ADDRESS_PUBLIC;
-
-		u8 status =blc_ll_addDeviceToResolvingList(tmp_peer_addr_type,tmp_peer_addr,tmp_peer_irk,tmp_local_irk);
-
-		status = blc_ll_setAddressResolutionEnable(1);
-
-		status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
-									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC,
-									 tmp_peer_addr_type,  tmp_peer_addr,
-									 MY_APP_ADV_CHANNEL,
-									 ADV_FP_NONE);//  ADV_FP_NONE  ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL
-		if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
-
-
-
-#endif
+		tlkapi_send_string_u8s(APP_LOG_EN,"[APP][RPA] LL add resolution disable status",status);
 	}
 
 		bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
@@ -577,6 +572,12 @@ _attribute_no_inline_ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	#if (UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
@@ -588,6 +589,7 @@ _attribute_no_inline_ void user_init_normal(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M   Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 	#if(BLE_DEVICE_ADDRESS_TYPE == BLE_DEVICE_ADDRESS_PUBLIC)
 		app_own_address_type = OWN_ADDRESS_PUBLIC;
@@ -611,8 +613,8 @@ _attribute_no_inline_ void user_init_normal(void)
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
 
 #if (1)
-	extern void blc_l2cap_reg_att_cli_hander(void *p);
-	blc_l2cap_reg_att_cli_hander(l2cap_matt_handler);
+	extern void blc_l2cap_reg_att_cli_handler(void *p);
+	blc_l2cap_reg_att_cli_handler(l2cap_matt_handler);
 
 	//host(GAP/SMP/GATT/ATT) event process: register host event callback and set event mask
 	blc_gap_registerHostEventHandler( app_host_event_callback );
@@ -674,7 +676,16 @@ _attribute_no_inline_ void user_init_normal(void)
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
+		extern u32 _retention_use_size_div_16_;
+		if (((u32)&_retention_use_size_div_16_) < 0x400)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
+		else if (((u32)&_retention_use_size_div_16_) < 0x800)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
+		else
+		{
+			//retention size > 32k, overflow
+			//debug: deep retention size setting err
+		}
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 
@@ -691,7 +702,7 @@ _attribute_no_inline_ void user_init_normal(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}
@@ -704,7 +715,21 @@ _attribute_no_inline_ void user_init_normal(void)
 	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 #endif
 
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
 
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_privacy_slave init \n");
 }
 
 
@@ -728,7 +753,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}

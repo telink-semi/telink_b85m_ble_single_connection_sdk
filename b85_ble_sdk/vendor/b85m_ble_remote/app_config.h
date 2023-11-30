@@ -55,9 +55,10 @@
 #define BLE_REMOTE_OTA_ENABLE				1
 #define REMOTE_IR_ENABLE					0
 #define REMOTE_IR_LEARN_ENABLE				0
-#define BATT_CHECK_ENABLE       			1   //must enable
+#define APP_BATT_CHECK_ENABLE       			1   //must enable
 #define BLE_AUDIO_ENABLE					1
 #define UI_LED_ENABLE						1
+#define UI_KEYBOARD_ENABLE						1	//must enable
 #define BLT_TEST_SOFT_TIMER_ENABLE			0
 
 #define UNUSED_GPIO_PULLDOWN_ENABLE			0
@@ -65,7 +66,6 @@
 #define FIRMWARES_SIGNATURE_ENABLE          0   //firmware check
 #define AUDIO_TRANS_USE_2M_PHY_ENABLE		0
 #define APP_FLASH_PROTECTION_ENABLE			0
-#define APP_BATT_VOL_LOG_EN					0
 
 #if (BLT_TEST_SOFT_TIMER_ENABLE)
 	#define BLT_SOFTWARE_TIMER_ENABLE		1
@@ -73,7 +73,7 @@
 
 
 /////////////////// DEBUG Configuration /////////////////////////////////
-#define UART_PRINT_DEBUG_ENABLE             0   //GPIO simulate uart print func
+#define UART_PRINT_DEBUG_ENABLE             1   //GPIO simulate uart print func
 
 #define APP_LOG_EN							1
 #define APP_SMP_LOG_EN						0
@@ -84,12 +84,8 @@
 #define APP_FLASH_INIT_LOG_EN				1
 #define APP_FLASH_PROT_LOG_EN				1
 #define APP_BATT_CHECK_LOG_EN				1
-#define APP_BATT_VOL_LOG_EN					0
 
 /////////////////////// RCU Board Select Configuration ///////////////////////////////
-#define BOARD_825X_RCU_C1T139A5						1     //TLSR8258DK48
-#define BOARD_827X_RCU_C1T197A5						2     //
-
 #if (__PROJECT_8258_BLE_REMOTE__)
 	/* can only choose BOARD_825X_RCU_C1T139A5*/
 	#define BOARD_SELECT							BOARD_825X_RCU_C1T139A5
@@ -105,36 +101,11 @@
 #define IR_MODE_DEEP_FLG	 				BIT(2) //if 1: IR mode, 0: BLE mode
 #define LOW_BATT_SUSPEND_FLG				BIT(3) //if 1 : low battery, < 1.8v
 
-
-/**
- *  @brief  Battery_check Configuration
- */
-#if (BATT_CHECK_ENABLE)
-	#if(BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
-		#if 0//(__PROJECT_8278_BLE_REMOTE__)
-			//use VBAT(8278) , then adc measure this VBAT voltage
-			#define ADC_INPUT_PCHN					VBAT    //corresponding  ADC_InputPchTypeDef in adc.h
-		#else
-			//telink device: you must choose one gpio with adc function to output high level(voltage will equal to vbat), then use adc to measure high level voltage
-			//use PB7(8258) output high level, then adc measure this high level voltage
-			#define GPIO_VBAT_DETECT				GPIO_PB7
-			#define PB7_FUNC						AS_GPIO
-			#define PB7_INPUT_ENABLE				0
-			#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
-		#endif
-	#endif
-#endif
-
-
 /**
  *  @brief  LED Configuration
  */
 #if (UI_LED_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
-		#define LED_ON_LEVAL 						1 			//gpio output high voltage to turn on led
-		#define	GPIO_LED							GPIO_PC6
-		#define PC6_FUNC							AS_GPIO
-	#endif
+	#define BLT_APP_LED_ENABLE 1
 #endif
 
 
@@ -146,57 +117,21 @@
 	#define BLE_DMIC_ENABLE					0  //0: Amic   1: Dmic
 	#define IIR_FILTER_ENABLE				0
 
-	#if(BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
-		#if BLE_DMIC_ENABLE
-			#define GPIO_DMIC_BIAS					GPIO_PC4
-			#define GPIO_DMIC_DI					GPIO_PA0
-			#define GPIO_DMIC_CK					GPIO_PA1
-		#else
-			#define GPIO_AMIC_BIAS					GPIO_PC0// need check ,v1.0 PC4, V1.1 PC0
-			#define GPIO_AMIC_SP					GPIO_PC1
-		#endif
-	#elif(BOARD_SELECT == BOARD_825X_RCU_C1T139A5)
-		#if BLE_DMIC_ENABLE
-			#define GPIO_DMIC_BIAS					GPIO_PC4
-			#define GPIO_DMIC_DI					GPIO_PA0
-			#define GPIO_DMIC_CK					GPIO_PA1
-		#else
-			#define GPIO_AMIC_BIAS					GPIO_PC4
-			#define GPIO_AMIC_SP					GPIO_PC0
-			#define GPIO_AMIC_SN					GPIO_PC1
-		#endif
-	#endif
 	/* RCU Audio MODE:
 	 * TL_AUDIO_RCU_ADPCM_GATT_TLEINK
 	 * TL_AUDIO_RCU_ADPCM_GATT_GOOGLE
 	 * TL_AUDIO_RCU_ADPCM_HID
-	 * TL_AUDIO_RCU_SBC_HID						//need config 32k retention
+	 * TL_AUDIO_RCU_SBC_HID
 	 * TL_AUDIO_RCU_ADPCM_HID_DONGLE_TO_STB
-	 * TL_AUDIO_RCU_SBC_HID_DONGLE_TO_STB		//need config 32k retention
-	 * TL_AUDIO_RCU_MSBC_HID					//need config 32k retention
+	 * TL_AUDIO_RCU_SBC_HID_DONGLE_TO_STB
+	 * TL_AUDIO_RCU_MSBC_HID
 	 */
 	#define TL_AUDIO_MODE  						TL_AUDIO_RCU_ADPCM_GATT_GOOGLE
 
 #endif
 
-
-/**
- *  @brief  IR Configuration
- */
-#if (REMOTE_IR_ENABLE)
-	#if(BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
-		//PB3 IRout 100K pulldown when  IR not working,  when IR begin, disable this 100K pulldown
-		#define	PULL_WAKEUP_SRC_PB3		PM_PIN_PULLDOWN_100K
-	#endif
-#endif
-
-
 //////////////////////////// KEYSCAN/MIC  GPIO //////////////////////////////////
-#define	MATRIX_ROW_PULL					PM_PIN_PULLDOWN_100K
-#define	MATRIX_COL_PULL					PM_PIN_PULLUP_10K
-
-#define	KB_LINE_HIGH_VALID				0   //dirve pin output 0 when keyscan, scanpin read 0 is valid
-#define DEEPBACK_FAST_KEYSCAN_ENABLE	0   //proc fast scan when deepsleep back trigged by key press, in case key loss
+#define DEEPBACK_FAST_KEYSCAN_ENABLE	0   //proc fast scan when deepsleep back triggered by key press, in case key loss
 #define LONG_PRESS_KEY_POWER_OPTIMIZE	1   //lower power when pressing key without release
 
 //stuck key
@@ -327,70 +262,6 @@
 
 #endif  //end of REMOTE_IR_ENABLE
 
-#if(BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
-	//////////////////// KEY CONFIG (RCU board) ///////////////////////////
-	#define  KB_DRIVE_PINS  {GPIO_PD5, GPIO_PD2, GPIO_PD4, GPIO_PD6, GPIO_PD7}			// last pin 'GPIO_PD7' abnormal
-	#define  KB_SCAN_PINS   {GPIO_PC5, GPIO_PA0, GPIO_PB2, GPIO_PA4, GPIO_PA3, GPIO_PD3}// second pin 'GPIO_PA0' abnormal
-
-	//drive pin as gpio
-	#define	PD5_FUNC				AS_GPIO
-	#define	PD2_FUNC				AS_GPIO
-	#define	PD4_FUNC				AS_GPIO
-	#define	PD6_FUNC				AS_GPIO
-	#define	PD7_FUNC				AS_GPIO
-
-	//drive pin need 100K pulldown
-	#define	PULL_WAKEUP_SRC_PD5		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD2		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD4		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD6		MATRIX_ROW_PULL
-	#define	PULL_WAKEUP_SRC_PD7		MATRIX_ROW_PULL
-
-	//drive pin open input to read gpio wakeup level
-	#define PD5_INPUT_ENABLE		1
-	#define PD2_INPUT_ENABLE		1
-	#define PD4_INPUT_ENABLE		1
-	#define PD6_INPUT_ENABLE		1
-	#define PD7_INPUT_ENABLE		1
-
-	//scan pin as gpio
-	#define	PC5_FUNC				AS_GPIO
-	#define	PA0_FUNC				AS_GPIO
-	#define	PB2_FUNC				AS_GPIO
-	#define	PA4_FUNC				AS_GPIO
-	#define	PA3_FUNC				AS_GPIO
-	#define	PD3_FUNC				AS_GPIO
-
-	//scan  pin need 10K pullup
-	#define	PULL_WAKEUP_SRC_PC5		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PA0		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PB2		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PA4		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PA3		MATRIX_COL_PULL
-	#define	PULL_WAKEUP_SRC_PD3		MATRIX_COL_PULL
-
-	//scan pin open input to read gpio level
-	#define PC5_INPUT_ENABLE		1
-	#define PA0_INPUT_ENABLE		1
-	#define PB2_INPUT_ENABLE		1
-	#define PA4_INPUT_ENABLE		1
-	#define PA3_INPUT_ENABLE		1
-	#define PD3_INPUT_ENABLE		1
-#endif
-
-#if UNUSED_GPIO_PULLDOWN_ENABLE
-	#define PULL_WAKEUP_SRC_PA5			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PA6			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PB0			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PB1			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PB4			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PB5			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PB6			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PB7			PM_PIN_PULLDOWN_100K
-	#define PULL_WAKEUP_SRC_PD0			PM_PIN_PULLDOWN_100K    //note: A0 version, if enable pull down 100k, will make current leakage
-	#define PULL_WAKEUP_SRC_PD1			PM_PIN_PULLDOWN_100K
-
-#endif
 
 #define		KB_MAP_NUM		KB_MAP_NORMAL
 #define		KB_MAP_FN		KB_MAP_NORMAL
@@ -424,34 +295,6 @@ enum{
 /////////////////// watchdog  //////////////////////////////
 #define MODULE_WATCHDOG_ENABLE		0
 #define WATCHDOG_INIT_TIMEOUT		500  //ms
-
-
-/**
- *  @brief  DEBUG_GPIO Configuration
- */
-#define DEBUG_GPIO_ENABLE							0
-#if(DEBUG_GPIO_ENABLE)
-	#if(BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5)
-		//define debug GPIO here according to your hardware
-		#define GPIO_CHN0							GPIO_PB4
-		#define GPIO_CHN1							GPIO_PB5
-		#define GPIO_CHN2							GPIO_PB6
-		#define GPIO_CHN3							//GPIO_PC2  // PC2/PC3 may used for external crystal input
-		#define GPIO_CHN4							//GPIO_PC3  // PC2/PC3 may used for external crystal input
-		#define GPIO_CHN5							GPIO_PB0
-		#define GPIO_CHN6							GPIO_PB1
-
-
-		#define PB4_OUTPUT_ENABLE					1
-		#define PB5_OUTPUT_ENABLE					1
-		#define PB6_OUTPUT_ENABLE					1
-		//#define PC2_OUTPUT_ENABLE					1
-		//#define PC3_OUTPUT_ENABLE					1
-		#define PB0_OUTPUT_ENABLE					1
-		#define PB1_OUTPUT_ENABLE					1
-	#endif
-#endif  //end of DEBUG_GPIO_ENABLE
-
 
 #define BLE_PHYTEST_MODE						PHYTEST_MODE_DISABLE
 

@@ -102,14 +102,14 @@ my_fifo_t	blt_txfifo = {
 //	 Adv Packet, Response Packet
 //////////////////////////////////////////////////////////////////////////////
 const u8	tbl_advData[] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
-	 0x02, 0x01, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
-	 0x03, 0x19, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
-	 0x05, 0x02, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x02, DT_FLAGS, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
+	 0x03, DT_APPEARANCE, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
+	 0x05, DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
 };
 
 const u8	tbl_scanRsp [] = {
-	 0x08, 0x09, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
 };
 
 #if (CONNECTABLE_MODE == EXTENDED_ADV_CONNECTABLE_UNDIRECTED)
@@ -221,6 +221,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 */
 	void proc_keyboard (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;(void)n;
 		if(clock_time_exceed(keyScanTick, 8000)){
 			keyScanTick = clock_time();
 		}
@@ -248,6 +249,7 @@ _attribute_data_retention_	int device_in_connection_state;
 	 */
 	void  task_suspend_enter (u8 e, u8 *p, int n)
 	{
+	    (void)e;(void)p;(void)n;
 		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 		}
@@ -271,6 +273,11 @@ _attribute_data_retention_	int device_in_connection_state;
  */
 void	task_connect (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
+
+	rf_packet_connect_t *pConnEvt = (rf_packet_connect_t *)p;
+	tlkapi_send_string_data(APP_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
+
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 
 	device_in_connection_state = 1;//
@@ -278,7 +285,7 @@ void	task_connect (u8 e, u8 *p, int n)
 	device_connection_tick = clock_time() | 1;
 
 	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, LED_ON_LEVAL);  // light on
+		gpio_write(GPIO_LED_RED, LED_ON_LEVEL);  // light on
 	#endif
 }
 
@@ -293,6 +300,9 @@ void	task_connect (u8 e, u8 *p, int n)
  */
 void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
+    (void)e;(void)p;(void)n;
+    tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", *p);
+
 	device_in_connection_state = 0;
 
 	device_connection_tick = 0;
@@ -313,7 +323,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 
 
 #if (UI_LED_ENABLE)
-	gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);  // light off
+	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  // light off
 #endif
 
 
@@ -328,7 +338,8 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  */
 void 	callback_phy_update_complete_event(u8 e,u8 *p, int n)
 {
-//	hci_le_phyUpdateCompleteEvt_t *pEvt = (hci_le_phyUpdateCompleteEvt_t *)p;
+    (void)e;(void)p;(void)n;
+//		hci_le_phyUpdateCompleteEvt_t *pEvt = (hci_le_phyUpdateCompleteEvt_t *)p;
 
 }
 
@@ -341,6 +352,7 @@ void 	callback_phy_update_complete_event(u8 e,u8 *p, int n)
  */
 void	task_suspend_exit (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
@@ -384,6 +396,11 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
@@ -395,6 +412,7 @@ void user_init_normal(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 
 	////// Controller Initialization  //////////
@@ -443,16 +461,19 @@ void user_init_normal(void)
 	bls_ll_setAdvData( (u8 *)tbl_advData, sizeof(tbl_advData) );
 	bls_ll_setScanRspData( (u8 *)tbl_scanRsp, sizeof(tbl_scanRsp));
 
-
-	u8 status = bls_ll_setAdvParam(  ADV_INTERVAL_50MS, ADV_INTERVAL_50MS,
+	u8 adv_param_status = BLE_SUCCESS;
+	adv_param_status = bls_ll_setAdvParam(  ADV_INTERVAL_50MS, ADV_INTERVAL_50MS,
 									 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
 									 0,  NULL,
 									 BLT_ENABLE_ADV_ALL,
 									 ADV_FP_NONE);
-	if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
+	if(adv_param_status != BLE_SUCCESS){
+		tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+		while(1);
+	}
 
 
-	bls_ll_setAdvEnable(1);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
 #elif (CONNECTABLE_MODE == EXTENDED_ADV_CONNECTABLE_UNDIRECTED)
 	u32 my_adv_interval_min = ADV_INTERVAL_50MS;
 	u32 my_adv_interval_max = ADV_INTERVAL_50MS;
@@ -490,9 +511,19 @@ void user_init_normal(void)
 	///////////////////// Power Management initialization///////////////////
 #if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
-	blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
+
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+		extern u32 _retention_use_size_div_16_;
+		if (((u32)&_retention_use_size_div_16_) < 0x400)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
+		else if (((u32)&_retention_use_size_div_16_) < 0x800)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
+		else
+		{
+			//retention size > 32k, overflow
+			//debug: deep retention size setting err
+		}
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 
@@ -509,7 +540,7 @@ void user_init_normal(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}
@@ -522,7 +553,21 @@ void user_init_normal(void)
 	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 #endif
 
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
 
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_phy_conn init \n");
 }
 
 
@@ -546,7 +591,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}

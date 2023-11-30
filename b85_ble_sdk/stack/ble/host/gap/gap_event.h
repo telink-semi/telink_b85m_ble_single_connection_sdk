@@ -1,47 +1,24 @@
 /********************************************************************************************************
- * @file	gap_event.h
+ * @file     gap_event.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief    This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author	 BLE GROUP
+ * @date         12,2021
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *******************************************************************************************************/
 #ifndef GAP_EVENT_H_
 #define GAP_EVENT_H_
@@ -158,7 +135,7 @@ Situation 2:   SMP Fast Connect																		|
 #define GAP_EVT_SMP_CONN_ENCRYPTION_DONE							 3	// Refer to SMP message sequence and event chart above
 #define GAP_EVT_SMP_SECURITY_PROCESS_DONE							 4	// Refer to SMP message sequence and event chart above
 
-#define GAP_EVT_SMP_TK_DISPALY			                             8
+#define GAP_EVT_SMP_TK_DISPLAY			                             8
 #define GAP_EVT_SMP_TK_REQUEST_PASSKEY								 9
 #define GAP_EVT_SMP_TK_REQUEST_OOB									 10
 #define GAP_EVT_SMP_TK_NUMERIC_COMPARE								 11
@@ -168,14 +145,8 @@ Situation 2:   SMP Fast Connect																		|
 
 
 #define GAP_EVT_ATT_EXCHANGE_MTU									 16
-#define GAP_EVT_GATT_HANDLE_VLAUE_CONFIRM							 17
+#define GAP_EVT_GATT_HANDLE_VALUE_CONFIRM							 17
 
-#if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	///Correct spelling errors, but need to be compatible with the previous version
-	#define GAP_EVT_SMP_PARING_BEAGIN		                             GAP_EVT_SMP_PAIRING_BEGIN	// Refer to SMP message sequence and event chart above
-	#define GAP_EVT_SMP_PARING_SUCCESS			                         GAP_EVT_SMP_PAIRING_SUCCESS	// Refer to SMP message sequence and event chart above
-	#define GAP_EVT_SMP_PARING_FAIL			                             GAP_EVT_SMP_PAIRING_FAIL
-#endif
 
 #define GAP_EVT_L2CAP_COC_CONNECT									 22
 #define GAP_EVT_L2CAP_COC_DISCONNECT								 23
@@ -197,7 +168,7 @@ Situation 2:   SMP Fast Connect																		|
 #define GAP_EVT_MASK_SMP_CONN_ENCRYPTION_DONE                     	 (1<<GAP_EVT_SMP_CONN_ENCRYPTION_DONE)
 #define GAP_EVT_MASK_SMP_SECURITY_PROCESS_DONE                     	 (1<<GAP_EVT_SMP_SECURITY_PROCESS_DONE)
 
-#define GAP_EVT_MASK_SMP_TK_DISPALY                  				 (1<<GAP_EVT_SMP_TK_DISPALY)
+#define GAP_EVT_MASK_SMP_TK_DISPLAY                  				 (1<<GAP_EVT_SMP_TK_DISPLAY)
 #define GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY                  		 (1<<GAP_EVT_SMP_TK_REQUEST_PASSKEY)
 #define GAP_EVT_MASK_SMP_TK_REQUEST_OOB	                     		 (1<<GAP_EVT_SMP_TK_REQUEST_OOB)
 #define GAP_EVT_MASK_SMP_TK_NUMERIC_COMPARE                     	 (1<<GAP_EVT_SMP_TK_NUMERIC_COMPARE)
@@ -206,21 +177,16 @@ Situation 2:   SMP Fast Connect																		|
 #define GAP_EVT_MASK_SMP_TK_REQUEST_SC_OOB	                     		 (1<<GAP_EVT_SMP_TK_REQUEST_SC_OOB)
 
 #define GAP_EVT_MASK_ATT_EXCHANGE_MTU                     	 		 (1<<GAP_EVT_ATT_EXCHANGE_MTU)
-#define GAP_EVT_MASK_GATT_HANDLE_VLAUE_CONFIRM                     	 (1<<GAP_EVT_GATT_HANDLE_VLAUE_CONFIRM)
+#define GAP_EVT_MASK_GATT_HANDLE_VALUE_CONFIRM                     	 (1<<GAP_EVT_GATT_HANDLE_VALUE_CONFIRM)
 
 
-#define GAP_EVT_MASK_DEFAULT										( GAP_EVT_MASK_SMP_TK_DISPALY 			| \
+#define GAP_EVT_MASK_DEFAULT										( GAP_EVT_MASK_SMP_TK_DISPLAY 			| \
 																	  GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY   | \
 																	  GAP_EVT_MASK_SMP_TK_REQUEST_OOB		| \
 																	  GAP_EVT_MASK_ATT_EXCHANGE_MTU )
 
 
-#if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	///Correct spelling errors, but need to be compatible with the previous version
-	#define GAP_EVT_MASK_SMP_PARING_BEAGIN                               GAP_EVT_MASK_SMP_PAIRING_BEGIN
-	#define GAP_EVT_MASK_SMP_PARING_SUCCESS                              GAP_EVT_MASK_SMP_PAIRING_SUCCESS
-	#define GAP_EVT_MASK_SMP_PARING_FAIL                                 GAP_EVT_MASK_SMP_PAIRING_FAIL
-#endif
+
 
 #define GAP_EVT_MASK_L2CAP_CONN_PARAM_UPDATE_REQ					(1<<GAP_EVT_L2CAP_CONN_PARAM_UPDATE_REQ)
 #define GAP_EVT_MASK_L2CAP_CONN_PARAM_UPDATE_RSP					(1<<GAP_EVT_L2CAP_CONN_PARAM_UPDATE_RSP)
@@ -233,7 +199,7 @@ Situation 2:   SMP Fast Connect																		|
 #define GAP_EVT_MASK_L2CAP_COC_CREATE_CONNECT_FINISH				(1<<GAP_EVT_L2CAP_COC_CREATE_CONNECT_FINISH)
 
 /**
- * @brief      data structure of GAP event callback data
+ * @brief      data structure of GAP_EVT_SMP_PAIRING_BEGIN event parameters
  */
 typedef struct {
 	u16	connHandle;
@@ -242,22 +208,34 @@ typedef struct {
 } gap_smp_pairingBeginEvt_t;
 
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_PAIRING_SUCCESS event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u8	bonding;
 	u8	bonding_result;
 } gap_smp_pairingSuccessEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_PAIRING_FAIL event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u8  reason;
 } gap_smp_pairingFailEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_CONN_ENCRYPTION_DONE event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u8	re_connect;   //1: re_connect, encrypt with previous distributed LTK;   0: pairing , encrypt with STK
 } gap_smp_connEncDoneEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_SECURITY_PROCESS_DONE event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u8	re_connect;   //1: re_connect, encrypt with previous distributed LTK;   0: pairing , encrypt with STK
@@ -265,20 +243,32 @@ typedef struct {
 
 
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_TK_DISPLAY event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u32	tk_pincode;
 } gap_smp_TkDisplayEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_TK_REQUEST_PASSKEY event parameters
+ */
 typedef struct {
 	u16	connHandle;
 } gap_smp_TkReqPassKeyEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_SMP_KEYPRESS_NOTIFY event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u8  ntfType;
 } gap_smp_keypressNotifyEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_ATT_EXCHANGE_MTU event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u16	peer_MTU;
@@ -287,7 +277,7 @@ typedef struct {
 
 
 /**
- *  @brief  Event Parameters for "GAP_EVT_L2CAP_CONN_PARAM_UPDATE_REQ"
+ * @brief      data structure of GAP_EVT_L2CAP_CONN_PARAM_UPDATE_REQ event parameters
  */
 typedef struct {
 	u16	connHandle;
@@ -299,7 +289,7 @@ typedef struct {
 } gap_l2cap_connParamUpdateReqEvt_t;
 
 /**
- *  @brief  Event Parameters for "GAP_EVT_L2CAP_CONN_PARAM_UPDATE_RSP"
+ * @brief      data structure of GAP_EVT_L2CAP_CONN_PARAM_UPDATE_RSP event parameters
  */
 typedef struct {
 	u16	connHandle;
@@ -307,7 +297,9 @@ typedef struct {
 	u16	result;
 } gap_l2cap_connParamUpdateRspEvt_t;
 
-
+/**
+ * @brief      data structure of GAP_EVT_L2CAP_COC_CONNECT event parameters
+ */
 typedef struct{
 	u16	connHandle;
 	u16 spsm;
@@ -316,18 +308,27 @@ typedef struct{
 	u16 dstCid;
 } gap_l2cap_cocConnectEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_L2CAP_COC_DISCONNECT event parameters
+ */
 typedef struct {
 	u16	connHandle;
 	u16 srcCid;
 	u16 dstCid;
 } gap_l2cap_cocDisconnectEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_L2CAP_COC_RECONFIGURE event parameters
+ */
 typedef struct {
 	u16 connHandle;
 	u16 srcCid;
 	u16 mtu;
 } gap_l2cap_cocReconfigureEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_L2CAP_COC_RECV_DATA event parameters
+ */
 typedef struct{
 	u16	connHandle;
 	u16 dstCid;
@@ -335,11 +336,17 @@ typedef struct{
 	u8* data;
 } gap_l2cap_cocRecvDataEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_L2CAP_COC_SEND_DATA_FINISH event parameters
+ */
 typedef struct{
 	u16 connHandle;
 	u16 srcCid;
 } gap_l2cap_cocSendDataFinishEvt_t;
 
+/**
+ * @brief      data structure of GAP_EVT_L2CAP_COC_CREATE_CONNECT_FINISH event parameters
+ */
 typedef struct{
 	u16 connHandle;
 	u8 code;
@@ -347,7 +354,7 @@ typedef struct{
 } gap_l2cap_cocCreateConnectFinishEvt_t;
 
 /**
- *  @brief  Event Parameters for "GAP_EVT_SMP_TK_SEND_SC_OOB_DATA"
+ * @brief      data structure of GAP_EVT_SMP_TK_SEND_SC_OOB_DATA event parameters
  */
 typedef struct {
 	u16	connHandle;
@@ -355,7 +362,7 @@ typedef struct {
 } gap_smp_TkSendScOobDataEvt_t;
 
 /**
- *  @brief  Event Parameters for "GAP_EVT_SMP_TK_REQUEST_OOB"
+ * @brief      data structure of GAP_EVT_SMP_TK_REQUEST_OOB event parameters
  */
 typedef struct {
 	u16	connHandle;
@@ -371,7 +378,7 @@ typedef int (*gap_event_handler_t) (u32 h, u8 *para, int n);
 
 
 /**
- * @brief      set event mask for specific gap event
+ * @brief      This function is used to set event mask for specific gap event
  * @param[in]  evtMask - event mask
  * @return     none
  */
@@ -379,12 +386,11 @@ void 	blc_gap_setEventMask(u32 evtMask);
 
 
 /**
- * @brief      register public enter for all gap event callback
+ * @brief      This function is used to register public enter for all gap event callback
  * @param[in]  handler - public enter function
  * @return     none
  */
 void 	blc_gap_registerHostEventHandler (gap_event_handler_t  handler);
-
 
 
 

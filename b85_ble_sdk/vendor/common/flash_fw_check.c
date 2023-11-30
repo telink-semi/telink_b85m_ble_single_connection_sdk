@@ -102,9 +102,9 @@ bool flash_fw_check( u32 crc_init_value ){
 		flash_read_page( (fw_flashAddr+i*FW_READ_SIZE), FW_READ_SIZE, fw_tmpdata);
 
 		//FW_READ_SIZE byte OTA data32  half byteCRC
-		for(int i=0;i<FW_READ_SIZE;i++){
-			ota_dat[i*2] = fw_tmpdata[i]&0x0f;
-			ota_dat[i*2+1] = fw_tmpdata[i]>>4;
+		for(int j=0;j<FW_READ_SIZE;j++){
+			ota_dat[j*2] = fw_tmpdata[j]&0x0f;
+			ota_dat[j*2+1] = fw_tmpdata[j]>>4;
 		}
 		fw_crc_init = crc32_half_cal(fw_crc_init, ota_dat, (unsigned long* )fw_crc32_half_tbl, (FW_READ_SIZE<<1));
 	}

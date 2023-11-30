@@ -302,6 +302,7 @@
 							<tool id="com.telink.tc32eclipse.tool.archiver.TC32Win.base.601461944" name="TC32 Archiver" superClass="com.telink.tc32eclipse.tool.archiver.TC32Win.base"/>
 							<tool command="tc32-elf-objdump" commandLinePattern="${COMMAND} ${FLAGS} ${INPUTS} &gt;${OUTPUT}" errorParsers="" id="com.telink.tc32eclipse.tool.objdump.TC32Win.app.debug.1901576288" name="TC32 Create Extended Listing" superClass="com.telink.tc32eclipse.tool.objdump.TC32Win.app.debug">
 								<option id="com.telink.tc32eclipse.objdump.option.output.2107441610" name="Output Filename" superClass="com.telink.tc32eclipse.objdump.option.output" value="825x_feature_test.lst" valueType="string"/>
+								<option id="com.telink.tc32eclipse.objdump.option.stdopts.424860427" superClass="com.telink.tc32eclipse.objdump.option.stdopts" value="-x -l -S" valueType="string"/>
 							</tool>
 							<tool command="tc32-elf-objcopy" commandLinePattern="${COMMAND} ${FLAGS} ${INPUTS} ${OUTPUT}" errorParsers="" id="com.telink.tc32eclipse.tool.objcopy.flash.TC32Win.app.debug.209669813" name="TC32 Create Flash image" superClass="com.telink.tc32eclipse.tool.objcopy.flash.TC32Win.app.debug">
 								<option id="com.telink.tc32eclipse.objcopy.flash.option.output.1500300267" name="Output Filename" superClass="com.telink.tc32eclipse.objcopy.flash.option.output" value="" valueType="string"/>
@@ -702,6 +703,7 @@
 							<tool id="com.telink.tc32eclipse.tool.archiver.TC32Win.base.805303637" name="TC32 Archiver" superClass="com.telink.tc32eclipse.tool.archiver.TC32Win.base"/>
 							<tool command="tc32-elf-objdump" commandLinePattern="${COMMAND} ${FLAGS} ${INPUTS} &gt;${OUTPUT}" errorParsers="" id="com.telink.tc32eclipse.tool.objdump.TC32Win.app.debug.1223320003" name="TC32 Create Extended Listing" superClass="com.telink.tc32eclipse.tool.objdump.TC32Win.app.debug">
 								<option id="com.telink.tc32eclipse.objdump.option.output.941190846" name="Output Filename" superClass="com.telink.tc32eclipse.objdump.option.output" value="827x_feature_test.lst" valueType="string"/>
+								<option id="com.telink.tc32eclipse.objdump.option.stdopts.1004398743" superClass="com.telink.tc32eclipse.objdump.option.stdopts" value="-x -l -S" valueType="string"/>
 							</tool>
 							<tool command="tc32-elf-objcopy" commandLinePattern="${COMMAND} ${FLAGS} ${INPUTS} ${OUTPUT}" errorParsers="" id="com.telink.tc32eclipse.tool.objcopy.flash.TC32Win.app.debug.584765713" name="TC32 Create Flash image" superClass="com.telink.tc32eclipse.tool.objcopy.flash.TC32Win.app.debug">
 								<option id="com.telink.tc32eclipse.objcopy.flash.option.output.975327403" name="Output Filename" superClass="com.telink.tc32eclipse.objcopy.flash.option.output" value="" valueType="string"/>

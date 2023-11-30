@@ -24,11 +24,14 @@
 
 #pragma once
 
+#include "stack/ble/host/l2cap/l2cap.h"
 
-//MPS - Maximum PDU Payload Size
-//MTU - Maximum Transmission Unit
-//CID - Channel Identifier
-//SPSM - Simplified Protocol/Service Multiplexer
+/**
+ * @brief MPS - Maximum PDU Payload Size
+ * 		  MTU - Maximum Transmission Unit
+ * 		  CID - Channel Identifier
+ * 		  SPSM - Simplified Protocol/Service Multiplexer
+ */
 #define SIGNAL_MINIMUM_MTU			23
 #define SIGNAL_MINIMUM_MPS			23
 #define SIGNAL_MAXIMUM_MPS			65533
@@ -37,6 +40,9 @@
 #define SIGNAL_CREDIT_MINIMUM_MPS	64
 #define SIGNAL_CREDIT_MAXIMUM_MPS	65533
 
+/**
+ * @brief 	data structure of CoC channel
+ */
 typedef struct{
 	u16 connHandle;
 	u16 SPSM;
@@ -55,9 +61,11 @@ typedef struct{
 	u8* pTxSdu;
 }l2cap_coc_cid_t;
 
-//LE Only supported CID 0x0040 to 0x007F
-//0x0020 to 0x003E LE-U Reserved for future use
-//0xFFFF for send reconfigure request
+/**
+ * @brief 	data structure of CoC CID
+ * 			LE Only supported CID 0x0040 to 0x007F
+ * 			0x0020 to 0x003E LE-U Reserved for future use, 0xFFFF for send reconfigure request
+ */
 typedef struct{
 	u16 connHandle;
 	u16 SPSM;
@@ -66,7 +74,9 @@ typedef struct{
 }l2cap_coc_acl_t;
 
 #if L2CAP_SERVER_FEATURE_SUPPORTED_EATT
-//tx or rx packet, for MTU size
+/**
+ * @brief 	tx or rx packet, for MTU size
+ */
 #define COC_MODULE_BUFFER_SIZE(createConnCnt, cocCidCnt, eattCidCnt, mtu)			\
 		(\
 			(createConnCnt)*sizeof(l2cap_coc_acl_t)  \
@@ -74,7 +84,9 @@ typedef struct{
 			+(mtu)*(cocCidCnt+2*eattCidCnt)  \
 		)
 #else
-//tx or rx packet, for MTU size
+/**
+ * @brief 	tx or rx packet, for MTU size
+ */
 #define COC_MODULE_BUFFER_SIZE(createConnCnt, cocCidCnt, mtu)			\
 		(\
 			(createConnCnt)*sizeof(l2cap_coc_acl_t)  \
@@ -83,7 +95,9 @@ typedef struct{
 		)
 #endif
 
-
+/**
+ * @brief 	data structure of CoC initial parameter
+ */
 typedef struct{
 	u16 SPSM;	//supported SPSM.
 	u16 MTU;	//CID receive MTU.

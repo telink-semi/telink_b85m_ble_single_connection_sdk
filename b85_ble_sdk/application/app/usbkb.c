@@ -76,7 +76,7 @@ static vk_ext_t vk_media_map[VK_MEDIA_CNT] = {
     {VK_W_SRCH_V},
     {VK_HOME_V},
     {VK_W_BACK_V},
-    {VK_W_FORWRD_V},
+    {VK_W_FORWARD_V},
     {VK_W_STOP_V},
     {VK_W_REFRESH_V},
     {VK_W_FAV_V},
@@ -108,9 +108,9 @@ kb_data_t kb_dat_buff[USBKB_BUFF_DATA_NUM];
 //static
 u8  usbkb_wptr, usbkb_rptr;
 static u32 usbkb_not_released;
-volatile static u32 usbkb_data_report_time;
+static volatile u32 usbkb_data_report_time;
 
-
+// need to check , don not used in other part, driver don't have this part
 void usbkb_add_frame (rf_packet_keyboard_t *packet_kb)
 {
 	u8 new_data_num = packet_kb->pno;  //according to pno, get the number of the latest data.
@@ -131,7 +131,7 @@ void usbkb_report_frame(void)
 	if(usbkb_wptr != usbkb_rptr){
 		kb_data_t *data = (kb_data_t *)(&kb_dat_buff[usbkb_rptr]);
         usbkb_hid_report(data);
-		BOUND_INC_POW2(usbkb_rptr,USBKB_BUFF_DATA_NUM);
+		BOUND_INC_POW2(usbkb_rptr,USBKB_BUFF_DATA_NUM);  // need to check, driver don't have
 	}
 	return;
 }
@@ -383,11 +383,9 @@ void usbkb_hid_report(kb_data_t *data){
     usbkb_data_report_time = clock_time();
 }
 
-
 void usbkb_init(){
 	//ev_on_poll(EV_POLL_KEYBOARD_RELEASE_CHECK, usbkb_release_check);
 }
-
 
 int usb_hid_report_fifo_proc(void)
 {

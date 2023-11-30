@@ -51,7 +51,7 @@
 
 
 
-// general swap/endianess utils
+// general swap/endianness utils
 
 void swapN(unsigned char *p, int n)
 {
@@ -134,7 +134,7 @@ int my_fifo_push (my_fifo_t *f, u8 *p, int n)
 		return -1;
 	}
 
-	if (n >= f->size)
+	if ((unsigned int)n >= f->size)
 	{
 		return -1;
 	}

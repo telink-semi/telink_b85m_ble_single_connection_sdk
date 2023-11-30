@@ -51,14 +51,25 @@
 	#include <stdio.h>
 #endif
 
+
 static inline void usbhw_set_printer_threshold(u8 th) {
 	reg_usb_ep8_send_thres = th;
 }
 
+/**
+ * @brief     This function servers to get the irq status of control Endpoint.
+ * @param[in] none.
+ * @return    none.
+ */
 static inline u32 usbhw_get_ctrl_ep_irq(void) {
 	return reg_ctrl_ep_irq_sta;
 }
 
+/**
+ * @brief     This function servers to clear the irq status of control Endpoint.
+ * @param[in] ep - select the Endpoint
+ * @return    none.
+ */
 static inline void usbhw_clr_ctrl_ep_irq(int irq) {
 #ifdef WIN32
 	CLR_FLD(reg_ctrl_ep_irq_sta, irq);
@@ -66,11 +77,21 @@ static inline void usbhw_clr_ctrl_ep_irq(int irq) {
 	reg_ctrl_ep_irq_sta = irq;
 #endif
 }
+
+/**
+ * @brief     This function servers to set the value of control Endpoint.
+ * @param[in] data - the value of control Endpoint
+ * @return    none.
+ */
 static inline void usbhw_write_ctrl_ep_ctrl(u8 data) {
 	reg_ctrl_ep_ctrl = data;
 }
 
-// Reset the buffer pointer
+/**
+ * @brief     This function servers to reset the pointer of control Endpoint.
+ * @param[in] data - the value of control Endpoint
+ * @return    none.
+ */
 static inline void usbhw_reset_ctrl_ep_ptr(void) {
 	reg_ctrl_ep_ptr = 0;
 }
@@ -78,6 +99,11 @@ static inline void usbhw_reset_ctrl_ep_ptr(void) {
 #if 0
 #define usbhw_read_ctrl_ep_data()	(reg_ctrl_ep_dat)
 #else
+/**
+ * @brief     This function servers to read the data of control Endpoint.
+ * @param[in] none.
+ * @return    the value of control Endpoint
+ */
 static inline u8 usbhw_read_ctrl_ep_data(void) {
 #ifdef WIN32
 	return 0;// usb_sim_ctrl_ep_buffer[usb_sim_ctrl_ep_ptr++];
@@ -87,6 +113,11 @@ static inline u8 usbhw_read_ctrl_ep_data(void) {
 }
 #endif
 
+/**
+ * @brief     This function servers to write the data of control Endpoint.
+ * @param[in] data -  the value of control Endpoint
+ * @return    none
+ */
 static inline void usbhw_write_ctrl_ep_data(u8 data) {
 	reg_ctrl_ep_dat = data;
 #ifdef WIN32
@@ -94,14 +125,29 @@ static inline void usbhw_write_ctrl_ep_data(u8 data) {
 #endif
 }
 
+/**
+ * @brief     This function servers to determine whether control Endpoint is busy.
+ * @param[in] none.
+ * @return    1: busy; 0: not busy.
+ */
 static inline bool usbhw_is_ctrl_ep_busy() {
 	return reg_ctrl_ep_irq_sta & FLD_USB_EP_BUSY;
 }
 
+/**
+ * @brief     This function servers to read the data of Endpoint.
+ * @param[in] none.
+ * @return    the value of Endpoint
+ */
 static inline u8 usbhw_read_ep_data(u32 ep) {
 	return reg_usb_ep_dat(ep & 0x07);
 }
 
+/**
+ * @brief     This function servers to write the data of Endpoint.
+ * @param[in] data -  the value of Endpoint
+ * @return    none
+ */
 static inline void usbhw_write_ep_data(u32 ep, u8 data) {
 	reg_usb_ep_dat(ep & 0x07) = data;
 #ifdef WIN32
@@ -109,20 +155,58 @@ static inline void usbhw_write_ep_data(u32 ep, u8 data) {
 #endif
 }
 
+/**
+ * @brief     This function servers to determine whether Endpoint is busy.
+ * @param[in] none.
+ * @return    1: busy; 0: not busy.
+ */
 static inline u32 usbhw_is_ep_busy(u32 ep) {
 	return reg_usb_ep_ctrl(ep & 0x07) & FLD_USB_EP_BUSY;
 }
 
+/**
+ * @brief     This function servers to set the specified data EndPoint to ack.
+ * @param[in] ep -  select the data EndPoint.
+ * @return    none.
+ */
 static inline void usbhw_data_ep_ack(u32 ep) {
 	reg_usb_ep_ctrl(ep & 0x07) = FLD_USB_EP_BUSY;
 }
 
+/**
+ * @brief     This function servers to set the specified data EndPoint to stall.
+ * @param[in] ep -  select the data EndPoint.
+ * @return    none.
+ */
 static inline void usbhw_data_ep_stall(u32 ep) {
 	reg_usb_ep_ctrl(ep & 0x07) = FLD_USB_EP_STALL;
 }
 
+/**
+ * @brief     This function servers to reset the pointer of Endpoint.
+ * @param[in] data - the value of control Endpoint
+ * @return    none.
+ */
 static inline void usbhw_reset_ep_ptr(u32 ep) {
 	reg_usb_ep_ptr(ep & 0x07) = 0;
+}
+
+/**
+ * @brief     This function servers to get the irq status of Endpoint.
+ * @param[in] none.
+ * @return    none.
+ */
+static inline unsigned int usbhw_get_eps_irq(void) {
+	return reg_usb_irq;
+}
+
+/**
+ * @brief     This function servers to clear the irq status of Endpoint.
+ * @param[in] ep - select the Endpoint
+ * @return    none.
+ */
+static inline void usbhw_clr_eps_irq(int ep) {
+	reg_usb_irq = ep;
 }
 
 

@@ -54,8 +54,6 @@
 #include "application/usbstd/usbkeycode.h"
 
 #if (FEATURE_TEST_MODE == TEST_OTA_HID)
-#define 	ADV_IDLE_ENTER_DEEP_TIME			60  //60 s
-#define 	CONN_IDLE_ENTER_DEEP_TIME			60  //60 s
 
 #define 	MY_DIRECT_ADV_TMIE					2000000
 
@@ -106,10 +104,10 @@ _attribute_data_retention_	my_fifo_t	blt_txfifo = {
  * @brief	Adv Packet data
  */
 const u8	tbl_advData[] = {
-	 0x05, 0x09, 'V', 'H', 'I', 'D',
-	 0x02, 0x01, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
-	 0x03, 0x19, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
-	 0x05, 0x02, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+	 0x05,  DT_COMPLETE_LOCAL_NAME, 				'V', 'H', 'I', 'D',
+	 0x02,	DT_FLAGS, 								0x05, 					// BLE limited discoverable mode and BR/EDR not supported
+	 0x03,  DT_APPEARANCE, 							0x80, 0x01, 			// 384, Generic Remote Control, Generic category
+	 0x05,  DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID,	0x12, 0x18, 0x0F, 0x18,	// incomplete list of service class UUIDs (0x1812, 0x180F)
 };
 
 
@@ -117,28 +115,24 @@ const u8	tbl_advData[] = {
  * @brief	Scan Response Packet data
  */
 const u8	tbl_scanRsp [] = {
-		 0x08, 0x09, 'v', 'S', 'a', 'm', 'p', 'l', 'e',
-	};
+	 0x08,  DT_COMPLETE_LOCAL_NAME, 				 'v', 'S', 'a', 'm', 'p', 'l', 'e',
+};
 
 
 _attribute_data_retention_	int device_in_connection_state;
-_attribute_data_retention_	u32 advertise_begin_tick;
-_attribute_data_retention_	u32	interval_update_tick;
-_attribute_data_retention_	u8	sendTerminate_before_enterDeep = 0;
-_attribute_data_retention_	u32	latest_user_event_tick;
 
 
 
 #if (UI_KEYBOARD_ENABLE)
-
+#define CONSUMER_KEY   	   		1
+#define KEYBOARD_KEY   	   		2
 _attribute_data_retention_	int 	key_not_released;
 _attribute_data_retention_	u8 		key_type;
 _attribute_data_retention_	static u32 keyScanTick = 0;
 
 extern u32	scan_pin_need;
 
-#define CONSUMER_KEY   	   		1
-#define KEYBOARD_KEY   	   		2
+
 
 /**
  * @brief		this function is used to process keyboard matrix status change.
@@ -147,7 +141,6 @@ extern u32	scan_pin_need;
  */
 void key_change_proc(void)
 {
-	latest_user_event_tick = clock_time();  //record latest key change time
 
 	u8 key0 = kb_event.keycode[0];
 	u8 key_buf[8] = {0,0,0,0,0,0,0,0};
@@ -205,6 +198,7 @@ void key_change_proc(void)
 _attribute_ram_code_
 void proc_keyboard (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	if(clock_time_exceed(keyScanTick, 8000)){
 		keyScanTick = clock_time();
 	}
@@ -222,16 +216,10 @@ void proc_keyboard (u8 e, u8 *p, int n)
 
 
 
-#elif (UI_BUTTON_ENABLE)
 
 
-_attribute_data_retention_ static int button_detect_en = 0;
-_attribute_data_retention_ static u32 button_detect_tick = 0;
 
 #endif
-
-
-
 /**
  * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_SUSPEND_ENTER"
  * @param[in]  e - LinkLayer Event type
@@ -241,6 +229,7 @@ _attribute_data_retention_ static u32 button_detect_tick = 0;
  */
 void  task_suspend_enter (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
 		bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
 	}
@@ -253,7 +242,27 @@ void  task_suspend_enter (u8 e, u8 *p, int n)
 
 
 
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_CONNECT"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
+void	task_connect (u8 e, u8 *p, int n)
+{
+    (void)e;(void)p;(void)n;
+	rf_packet_connect_t *pConnEvt = (rf_packet_connect_t *)p;
+	tlkapi_send_string_data(APP_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
 
+	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
+
+	device_in_connection_state = 1;//
+
+	#if (UI_LED_ENABLE)
+		gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+	#endif
+}
 
 
 
@@ -266,14 +275,14 @@ void  task_suspend_enter (u8 e, u8 *p, int n)
  */
 void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
 {
-
+    (void)e;(void)p;(void)n;
 	bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 						ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
 						0,  NULL,
 						MY_APP_ADV_CHANNEL,
 						ADV_FP_NONE);
 
-	bls_ll_setAdvEnable(1);  //must: set adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set adv enable
 }
 
 
@@ -286,10 +295,11 @@ void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
  * @param[in]  n - data length of event
  * @return     none
  */
-void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
+void 	task_terminate(u8 e,u8 *p, int n) //p is terminate reason
 {
+    (void)e;(void)p;(void)n;
+    tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", *p);
 	device_in_connection_state = 0;
-
 
 	if(*p == HCI_ERR_CONN_TIMEOUT){
 
@@ -304,19 +314,13 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 
 	}
 
-	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, !LED_ON_LEVAL);
-	#endif
 
 
-	#if (BLE_APP_PM_ENABLE)
-		 //user has push terminate pkt to ble TX buffer before deepsleep
-		if(sendTerminate_before_enterDeep == 1){
-			sendTerminate_before_enterDeep = 2;
-		}
-	#endif
+#if (UI_LED_ENABLE)
+	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  //RED light off
+#endif
 
-	advertise_begin_tick = clock_time();
+
 }
 
 
@@ -330,40 +334,12 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  */
 _attribute_ram_code_ void	task_suspend_exit (u8 e, u8 *p, int n)
 {
+    (void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 }
 
 
-/**
- * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_CONNECT"
- * @param[in]  e - LinkLayer Event type
- * @param[in]  p - data pointer of event
- * @param[in]  n - data length of event
- * @return     none
- */
-void	task_connect (u8 e, u8 *p, int n)
-{
 
-#if (!UI_BUTTON_ENABLE) //if use button, do not use big latency
-//	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 19, CONN_TIMEOUT_4S);  // 200mS
-	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
-//	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 149, CONN_TIMEOUT_8S);  // 1.5 S
-//	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 199, CONN_TIMEOUT_8S);  // 2 S
-//	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
-//	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 299, CONN_TIMEOUT_8S);  // 3 S
-#endif
-
-	latest_user_event_tick = clock_time();
-
-	device_in_connection_state = 1;//
-
-	interval_update_tick = clock_time() | 1; //none zero
-
-
-	#if (UI_LED_ENABLE)
-		gpio_write(GPIO_LED_RED, LED_ON_LEVAL);
-	#endif
-}
 
 
 /**
@@ -371,49 +347,22 @@ void	task_connect (u8 e, u8 *p, int n)
  * @param	   none
  * @return     none
  */
-_attribute_ram_code_ void blt_pm_proc(void)
+_attribute_ram_code_
+void blt_pm_proc(void)
 {
-#if(BLE_APP_PM_ENABLE)
+#if(FEATURE_PM_ENABLE)
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 	#else
 		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
 	#endif
 
-	//do not care about keyScan/button_detect power here, if you care about this, please refer to "8258_ble_remote" demo
 	#if (UI_KEYBOARD_ENABLE)
 		if(scan_pin_need || key_not_released){
 			bls_pm_setSuspendMask (SUSPEND_DISABLE);
 		}
 	#endif
-
-
-	#if (!TEST_CONN_CURRENT_ENABLE)   //test connection power, should disable deepSleep
-			if(sendTerminate_before_enterDeep == 2){  //Terminate OK
-				analog_write(USED_DEEP_ANA_REG, analog_read(USED_DEEP_ANA_REG) | CONN_DEEP_FLG);
-				cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepSleep
-			}
-
-
-			if(  !blc_ll_isControllerEventPending() ){  //no controller event pending
-				//adv 60s, deepsleep
-				if( blc_ll_getCurrentState() == BLS_LINK_STATE_ADV && !sendTerminate_before_enterDeep && \
-					clock_time_exceed(advertise_begin_tick , ADV_IDLE_ENTER_DEEP_TIME * 1000000))
-				{
-					cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepsleep
-				}
-				//conn 60s no event(key/voice/led), enter deepsleep
-				else if( device_in_connection_state && \
-						clock_time_exceed(latest_user_event_tick, CONN_IDLE_ENTER_DEEP_TIME * 1000000) )
-				{
-
-					bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN); //push terminate cmd into ble TX buffer
-					bls_ll_setAdvEnable(0);   //disable adv
-					sendTerminate_before_enterDeep = 1;
-				}
-			}
-	#endif  //end of !TEST_CONN_CURRENT_ENABLE
-#endif  //end of BLE_APP_PM_ENABLE
+#endif  //end of FEATURE_PM_ENABLE
 }
 
 
@@ -432,6 +381,11 @@ void user_init_normal(void)
 	//when deepSleep retention wakeUp, no need initialize again
 	random_generator_init();  //this is must
 
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
 	blc_readFlashSize_autoConfigCustomFlashSector();
 
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
@@ -443,6 +397,7 @@ void user_init_normal(void)
 	//for 512K Flash, flash_sector_mac_address equals to 0x76000
 	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
 	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
 
 	#if(BLE_DEVICE_ADDRESS_TYPE == BLE_DEVICE_ADDRESS_PUBLIC)
 		app_own_address_type = OWN_ADDRESS_PUBLIC;
@@ -469,7 +424,7 @@ void user_init_normal(void)
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
 	//   is about to exceed the sector threshold, this sector must be erased, and all useful information
 	//   should re_stored) , so it must be done after battery check
-#if (BLE_REMOTE_SECURITY_ENABLE)
+#if (BLE_APP_SECURITY_ENABLE)
 	blc_smp_peripheral_init();
 #else
 	blc_smp_setSecurityLevel(No_Security);
@@ -486,7 +441,8 @@ void user_init_normal(void)
 
 
 	////////////////// config adv packet /////////////////////
-#if (BLE_REMOTE_SECURITY_ENABLE)
+	u8 adv_param_status = BLE_SUCCESS;
+#if (BLE_APP_SECURITY_ENABLE)
 	u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
 	smp_param_save_t  bondInfo;
 	if(bond_number)   //at least 1 bonding device exist
@@ -498,12 +454,15 @@ void user_init_normal(void)
 	if(bond_number)   //set direct adv
 	{
 		//set direct adv
-		u8 status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+		adv_param_status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 										ADV_TYPE_CONNECTABLE_DIRECTED_LOW_DUTY, app_own_address_type,
 										bondInfo.peer_addr_type,  bondInfo.peer_addr,
 										MY_APP_ADV_CHANNEL,
 										ADV_FP_NONE);
-		if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
+		if(adv_param_status != BLE_SUCCESS) {  	//debug: adv setting err
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+			while(1);
+		}
 
 		//it is recommended that direct adv only last for several seconds, then switch to indirect adv
 		bls_ll_setAdvDuration(MY_DIRECT_ADV_TMIE, 1);
@@ -513,15 +472,18 @@ void user_init_normal(void)
 	else   //set indirect adv
 #endif
 	{
-		u8 status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+		adv_param_status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 										 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
 										 0,  NULL,
 										 MY_APP_ADV_CHANNEL,
 										 ADV_FP_NONE);
-		if(status != BLE_SUCCESS) {  	while(1); }  //debug: adv setting err
+		if(adv_param_status != BLE_SUCCESS) {  	//debug: adv setting err
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+			while(1);
+		}
 	}
 
-	bls_ll_setAdvEnable(1);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
 
 
 	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
@@ -536,18 +498,27 @@ void user_init_normal(void)
 
 
 	///////////////////// Power Management initialization///////////////////
-#if(BLE_APP_PM_ENABLE)
+#if(FEATURE_PM_ENABLE)
 	blc_ll_initPowerManagement_module();
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-	    blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //default use 16k deep retention
+		extern u32 _retention_use_size_div_16_;
+		if (((u32)&_retention_use_size_div_16_) < 0x400)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
+		else if (((u32)&_retention_use_size_div_16_) < 0x800)
+			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
+		else
+		{
+			//retention size > 32k, overflow
+			//debug: deep retention size setting err
+		}
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 
 		#if(MCU_CORE_TYPE == MCU_CORE_825x)
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(TEST_CONN_CURRENT_ENABLE ? 240 : 260);
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(260);
 		#elif((MCU_CORE_TYPE == MCU_CORE_827x))
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(TEST_CONN_CURRENT_ENABLE ? 340 : 350);
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(350);
 		#else
 		#endif
 	#else
@@ -563,18 +534,12 @@ void user_init_normal(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}
 
 		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
-	#elif (UI_BUTTON_ENABLE)
-
-		cpu_set_gpio_wakeup (SW1_GPIO, Level_Low,1);  //button pin pad low wakeUp suspend/deepSleep
-		cpu_set_gpio_wakeup (SW2_GPIO, Level_Low,1);  //button pin pad low wakeUp suspend/deepSleep
-
-		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_button);
 	#endif
 
 	blc_ota_initOtaServer_module();
@@ -583,7 +548,22 @@ void user_init_normal(void)
 	blc_ota_setAttHandleOffset(HID_NORMAL_OTA_REPORT_INPUT_DP_H-HID_NORMAL_OTA_REPORT_OUTPUT_DP_H);
 	bls_ota_setTimeout(90*1000*1000);			//us	//currently about 66s, 90s is a safe value.
 
-	advertise_begin_tick = clock_time();
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
+	u32 error_code1 = blc_contr_checkControllerInitialization();
+	u32 error_code2 = blc_host_checkHostInitialization();
+	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
+		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
+		#if (UART_PRINT_DEBUG_ENABLE)
+			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
+		#endif
+
+		#if (UI_LED_ENABLE)
+			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
+		#endif
+		while(1);
+	}
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_ota_hid init \n");
+
 }
 
 
@@ -609,18 +589,16 @@ _attribute_ram_code_ void user_init_deepRetn(void)
 	#if (UI_KEYBOARD_ENABLE)
 		/////////// keyboard gpio wakeup init ////////
 		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
 		{
 			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
 		}
-	#elif (UI_BUTTON_ENABLE)
-
-		cpu_set_gpio_wakeup (SW1_GPIO, Level_Low,1);  //button pin pad low wakeUp suspend/deepSleep
-		cpu_set_gpio_wakeup (SW2_GPIO, Level_Low,1);  //button pin pad low wakeUp suspend/deepSleep
 	#endif
 
 #endif
 }
+
+
 
 
 /**
@@ -637,31 +615,11 @@ void main_loop (void)
 
 	////////////////////////////////////// UI entry /////////////////////////////////
 	#if (UI_KEYBOARD_ENABLE)
-			proc_keyboard (0,0, 0);
-	#elif (UI_BUTTON_ENABLE)
-			// process button 1 second later after power on, to avoid power unstable
-			if(!button_detect_en && clock_time_exceed(0, 1000000)){
-				button_detect_en = 1;
-			}
-			if(button_detect_en && clock_time_exceed(button_detect_tick, 5000))
-			{
-				button_detect_tick = clock_time();
-				proc_button(0, 0, 0);  //button triggers pair & unpair  and OTA
-			}
+		proc_keyboard (0,0, 0);
 	#endif
-
 
 	////////////////////////////////////// PM Process /////////////////////////////////
-	#if (UI_KEYBOARD_ENABLE)
-			blt_pm_proc();
-	#elif (UI_BUTTON_ENABLE)
-			if(button_not_released){
-				bls_pm_setSuspendMask (SUSPEND_DISABLE);
-			}
-			else{
-				bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
-			}
-	#endif
+	blt_pm_proc();
 }
 
 #endif

@@ -262,7 +262,7 @@ void user_init_normal(void)
 
 	uart_dma_enable(1,1);
 
-	reg_uart_rx_timeout1  = UART_BW_MUL4; //packet intervel timeout
+	reg_uart_rx_timeout1  = UART_BW_MUL4; //packet interval timeout
 	irq_set_mask(FLD_IRQ_DMA_EN);
 	dma_chn_irq_enable(FLD_DMA_CHN_UART_RX | FLD_DMA_CHN_UART_TX, 1);   	//uart Rx/Tx dma irq enable
 	uart_irq_enable(1,0);

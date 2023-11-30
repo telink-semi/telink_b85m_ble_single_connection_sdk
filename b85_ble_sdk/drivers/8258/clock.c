@@ -26,6 +26,7 @@
 #include "irq.h"
 #include "analog.h"
 #include "timer.h"
+#include "lib/include/pm.h"
 #include "vendor/common/user_config.h"
 
 extern _attribute_data_retention_ unsigned char tl_24mrc_cal;
@@ -66,6 +67,9 @@ _attribute_ram_code_ void clock_init(SYS_CLK_TypeDef SYS_CLK)
 	#elif(CLOCK_SYS_CLOCK_HZ == 24000000)  //24M
 		sys_clock_print = 24;
 	#endif
+	if(!pm_is_MCU_deepRetentionWakeup()){
+		rc_24m_cal();
+	}
 }
 
 /**

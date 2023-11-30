@@ -4,43 +4,21 @@
  * @brief	This is the header file for BLE SDK
  *
  * @author	BLE GROUP
- * @date	06,2020
+ * @date	06,2022
  *
- * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
+ * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef LL__H_
@@ -66,10 +44,7 @@
 typedef void (*blt_event_callback_t)(u8 e, u8 *p, int n);
 
 
-/**
- * @brief	Telink defined LinkLayer Callback Declaration for phyTest
- */
-typedef int (*blc_main_loop_phyTest_callback_t)(void);
+
 
 
 /**
@@ -83,7 +58,7 @@ typedef int (*blc_main_loop_phyTest_callback_t)(void);
 #define			BLT_EV_FLAG_CONNECT								3
 #define			BLT_EV_FLAG_TERMINATE							4
 #define			BLT_EV_FLAG_LL_REJECT_IND		    			5
-#define			BLT_EV_FLAG_RX_DATA_ABANDOM						6
+#define			BLT_EV_FLAG_RX_DATA_ABANDON						6
 #define 		BLT_EV_FLAG_PHY_UPDATE							7
 #define			BLT_EV_FLAG_DATA_LENGTH_EXCHANGE				8
 #define			BLT_EV_FLAG_GPIO_EARLY_WAKEUP					9
@@ -99,13 +74,18 @@ typedef int (*blc_main_loop_phyTest_callback_t)(void);
 
 
 
-#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	my_fifo_t			blt_rxfifo;
-	u8					blt_rxfifo_b[];
+/**
+ *  @brief  Event Parameters for "BLT_EV_FLAG_ADV_TX_EACH_CHANNEL"
+ */
+typedef struct{
+	u8 *	pAdvData;					//point to first ADV data
+	u32 	advPacketHeader_tick; //ADV packet header Stimer tick
+} blt_evt_advTxEachChn_t;
 
-	my_fifo_t			blt_txfifo;
-	u8					blt_txfifo_b[];
-#endif
+
+
+
+
 typedef struct {
 	u16		connEffectiveMaxRxOctets;
 	u16		connEffectiveMaxTxOctets;
@@ -124,29 +104,28 @@ typedef struct {
 
 extern _attribute_aligned_(4) ll_data_extension_t  bltData;
 
-#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
 extern my_fifo_t		hci_tx_fifo;
-#endif
+
 /**
- * @brief	This function is used to obtain the effective maximum TX data length
- * @param	none
- * @return	bltData.connEffectiveMaxTxOctets
+ * @brief	   This function is used to obtain the effective maximum TX data length
+ * @param	   none
+ * @return	   bltData.connEffectiveMaxTxOctets
  */
-u8 blc_ll_get_connEffectiveMaxTxOctets(void);
+u8 			blc_ll_get_connEffectiveMaxTxOctets(void);
 
 
 /**
- * @brief	irq_handler for BLE stack, process system tick interrupt and RF interrupt
- * @param	none
- * @return	none
+ * @brief	   irq_handler for BLE stack, process system tick interrupt and RF interrupt
+ * @param	   none
+ * @return	   none
  */
 void		irq_blt_sdk_handler (void);
 
 
 /**
- * @brief   main_loop for BLE stack, process data and event
- * @param	none
- * @return	none
+ * @brief      main_loop for BLE stack, process data and event
+ * @param	   none
+ * @return	   none
  */
 int 		blt_sdk_main_loop(void);
 
@@ -154,9 +133,9 @@ int 		blt_sdk_main_loop(void);
 
 
 /**
- * @brief   LinkLayer initialization after deepSleep retention wake_up
- * @param	none
- * @return	none
+ * @brief      LinkLayer initialization after deepSleep retention wake_up
+ * @param	   none
+ * @return	   none
  */
 void 		blc_ll_recoverDeepRetention(void);
 
@@ -172,7 +151,7 @@ void 		blc_ll_initBasicMCU (void);
 
 /**
  * @brief      for user to initialize link layer Standby state
- * @param[in]  *public_adr -  public address pointer
+ * @param[in]  public_adr -  public address pointer
  * @return     none
  */
 void 		blc_ll_initStandby_module (u8 *public_adr);
@@ -182,7 +161,7 @@ void 		blc_ll_initStandby_module (u8 *public_adr);
 
 /**
  * @brief      this function is used to set the LE Random Device Address in the Controller
- * @param[in]  *randomAddr -  Random Device Address
+ * @param[in]  randomAddr -  Random Device Address
  * @return     status, 0x00:  succeed
  * 					   other: failed
  */
@@ -191,7 +170,7 @@ ble_sts_t 	blc_ll_setRandomAddr(u8 *randomAddr);
 
 /**
  * @brief      this function is used to read MAC address
- * @param[in]  *addr -  The address where the read value(MAC address) prepare to write.
+ * @param[in]  addr -  The address where the read value(MAC address) prepare to write.
  * @return     status, 0x00:  succeed
  * 					   other: failed
  */
@@ -212,13 +191,18 @@ u8 			blc_ll_getCurrentState(void);
 /**
  * @brief      this function is used to get the most recent average RSSI
  * @param[in]  none.
- * @return     blmsParam.ll_recentAvgRSSI
+ * @return     the most recent average RSSI
  */
 u8 			blc_ll_getLatestAvgRSSI(void);
 
-#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
+
+/**
+ * @brief      this function is used to set initial Tx data length.
+ * @param[in]  maxTxOct -  maximum Tx octets.
+ * @return     bltData.connInitialMaxTxOctets
+ */
 u16   		blc_ll_setInitTxDataLength (u16 maxTxOct);   //core4.2 long data packet
-#endif
+
 
 /**
  * @brief      this function is used to pend Controller event
@@ -235,17 +219,23 @@ bool		blc_ll_isControllerEventPending(void);
  */
 u8  		blc_ll_getTxFifoNumber (void);
 
-ble_sts_t 	blt_ll_exchangeDataLength (u8 opcode, u16 maxTxOct);   ///core4.2 data extension
+/**
+ * @brief      this function is used to exchange data length
+ * @param[in]  opcode - LL Control PDU Opcode
+ * @param[in]  maxTxOct -  maximum Tx octets
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
+ble_sts_t 	blc_ll_exchangeDataLength (u8 opcode, u16 maxTxOct);
 
-#if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-#define 	blc_ll_exchangeDataLength	blt_ll_exchangeDataLength  ///Compatible with previous versions
-#endif
+
+
 
 
 /**
  * @brief		this function is used to register LinkLayer Event Callback function
- * @param[in]	e -
- * @param[in]	p -
+ * @param[in]	e - event type when this function is triggered by LinkLayer event
+ * @param[in]	p - event callback function
  * @return		none
  */
 void		bls_app_registerEventCallback (u8 e, blt_event_callback_t p);
@@ -261,10 +251,10 @@ bool 		blc_ll_isBrxBusy (void);
 
 /**
  * @brief      this function is used to set customized access code
- * @param[in]  none.
+ * @param[in]  access_code - BLE ADV access code
  * @return     none.
  */
-void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code);
+void  blc_ll_set_CustomizedAdvScanAccessCode(u32 access_code);
 
 
 
@@ -274,7 +264,7 @@ void  blc_ll_set_CustomedAdvScanAccessCode(u32 accss_code);
  * @param[in]  none.
  * @return     us.
  */
-u32  blc_ll_GetBrxNextTick(void);
+u32  		blc_ll_GetBrxNextTick(void);
 
 /**
  * @brief      this function is used to get local supported feature by HCI.
@@ -282,7 +272,7 @@ u32  blc_ll_GetBrxNextTick(void);
  * @return     status, 0x00:  succeed
  * 					   other: failed
  */
-ble_sts_t blc_hci_le_getLocalSupportedFeatures(u8 *features);
+ble_sts_t 	blc_hci_le_getLocalSupportedFeatures(u8 *features);
 
 
 /**
@@ -291,7 +281,7 @@ ble_sts_t blc_hci_le_getLocalSupportedFeatures(u8 *features);
  * @return     status, 0x00:  succeed
  * 					   other: failed
  */
-ble_sts_t  		blc_hci_reset(void);
+ble_sts_t  	blc_hci_reset(void);
 
 
 /**
@@ -305,17 +295,17 @@ void 		blc_ll_init_max_md_nums(u8 num);
 /**
  * @brief      this function is used to get random MAC address.
  * @param[in]  none
- * @return     none
+ * @return     the random MAC address pointer
  */
-u8* 	blc_ll_get_macAddrRandom(void);
+u8* 		blc_ll_get_macAddrRandom(void);
 
 
 /**
  * @brief      this function is used to get public MAC address.
  * @param[in]  none
- * @return     none
+ * @return     the public MAC address pointer
  */
-u8* 	blc_ll_get_macAddrPublic(void);
+u8* 		blc_ll_get_macAddrPublic(void);
 
 
 
@@ -323,48 +313,21 @@ u8* 	blc_ll_get_macAddrPublic(void);
  * @brief      this function is used check if any controller initialization incorrect.
  * 			   attention: this function must be called after all controller Initialization finished.
  * @param	   none
-* @return      status - 0x00:  succeed, no error
+ * @return     status - 0x00:  succeed, no error
 * 			  		    other: error code
  */
 init_err_t	blc_contr_checkControllerInitialization(void);
 
 
-/**
- *  @brief  Event Parameters for "BLT_EV_FLAG_ADV_TX_EACH_CHANNEL"
- */
-typedef struct{
-	u8 *	pAdvData;					//point to first ADV data
-	u32 	advPacketHeader_tick; //ADV packet header Stimer tick
-} blt_evt_advTxEachChn_t;
-
-
 
 /**
- *  @brief  Event Parameters for TLK defined special adv report event
-			if user enable RX packet header Stimer tick, should this data structure to analyze ADV report event
+ * @brief      this function is used to set Bluetooth core specification version in controller
+ * @param[in]  version - core specification version
+ * @return     none
  */
-typedef struct{
-	u8		subcode;
-	u8		nreport;
-	u8		event_type;
-	u8		adr_type;
-	u8		mac[6];
-	u32 	rxPktHeader_tick;	//RX packet header Stimer tick
-	u8		len;
-	u8		data[1];
-}hci_tlk_advReportWithRxTickEvt_t;
+void 		blc_contr_setBluetoothVersion(core_version_t version);
 
 
-/**
- *  @brief  this function is used to set
- */
-/**
- * @brief      this function is used to enable or disable RX packet header Stimer tick in ADV report event
- * @param[in]  *randomAddr -  Random Device Address
- * @return     status, 0x00:  succeed
- * 					   other: failed
- */
-void  blc_ll_advReport_setRxPacketTickEnable(int en);
 
 
 #endif /* LL__H_ */

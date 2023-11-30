@@ -51,7 +51,7 @@
 
 
 /**
- * @brief      for user to initialize scanning module
+ * @brief      This function is used to initialize scanning module
  * @param	   none
  * @return     none
  */
@@ -67,17 +67,17 @@ void 		blc_ll_initScanning_module(u8 *public_adr);
  * @param[in]  scan_fp - Scanning_Filter_Policy
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_ll_setScanParameter (scan_type_t scan_type, u16 scan_interval, u16 scan_window, own_addr_type_t  ownAddrType, scan_fp_type_t scan_fp);
+ble_sts_t	blc_ll_setScanParameter (scan_type_t scan_type, u16 scan_interval, u16 scan_window, own_addr_type_t  ownAddrType, scan_fp_type_t scan_fp);
 
 
 /**
- * @brief	   enable or disable legacy scanning.
+ * @brief	   This function is used to enable or disable legacy scanning.
  * @param[in]  scan_enable
  * @param[in]  filter_duplicate - controls whether the Link Layer should filter out
  * 								  duplicate advertising reports (Filtering_Enabled) to the Host,
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_ll_setScanEnable (scan_en_t scan_enable, dupFilter_en_t filter_duplicate);
+ble_sts_t	blc_ll_setScanEnable (scan_en_t scan_enable, dupFilter_en_t filter_duplicate);
 
 
 /**
@@ -85,15 +85,15 @@ ble_sts_t 	blc_ll_setScanEnable (scan_en_t scan_enable, dupFilter_en_t filter_du
  * @param[in]  none.
  * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
-ble_sts_t    blc_ll_addScanningInAdvState(void);
+ble_sts_t	blc_ll_addScanningInAdvState(void);
 
 
 /**
  * @brief      This function is used to remove scan state in advertise state of slave role.
  * @param[in]  none.
- * @return      Status - 0x00: BLE success; 0x01-0xFF: fail
+ * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
-ble_sts_t    blc_ll_removeScanningFromAdvState(void);
+ble_sts_t	blc_ll_removeScanningFromAdvState(void);
 
 
 /**
@@ -101,15 +101,15 @@ ble_sts_t    blc_ll_removeScanningFromAdvState(void);
  * @param[in]  none.
  * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
-ble_sts_t    blc_ll_addScanningInConnSlaveRole(void);
+ble_sts_t   blc_ll_addScanningInConnSlaveRole(void);
 
 
 /**
  * @brief      This function is used to remove scan state in connect state of slave role.
  * @param[in]  none.
- * @return      Status - 0x00: BLE success; 0x01-0xFF: fail
+ * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
-ble_sts_t    blc_ll_removeScanningFromConnSLaveRole(void);
+ble_sts_t	blc_ll_removeScanningFromConnSLaveRole(void);
 
 
 /**
@@ -117,7 +117,7 @@ ble_sts_t    blc_ll_removeScanningFromConnSLaveRole(void);
  * @param[in]  scan_req_filter_enable - Scan request filter enable.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t   blc_ll_scanReq_filter_en(u8 scan_req_filter_enable);
+ble_sts_t	blc_ll_scanReq_filter_en(u8 scan_req_filter_enable);
 
 /**
  * @brief      This function is used to set Scan channel.
@@ -125,7 +125,35 @@ ble_sts_t   blc_ll_scanReq_filter_en(u8 scan_req_filter_enable);
  * @return     Status - 0x00:  success;
  * 						other: fail
  */
-ble_sts_t bls_ll_setScanChannelMap(adv_chn_map_t scan_channelMap);
+ble_sts_t 	bls_ll_setScanChannelMap(adv_chn_map_t scan_channelMap);
+
+
+
+
+
+/**
+ * @brief      This function is used to enable or disable RX packet header Stimer tick in ADV report event
+ * 			   attention: it's not standard BLE function, just for some customer's special requirement
+ * @param[in]  randomAddr -  Random Device Address
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
+void		blc_ll_advReport_setRxPacketTickEnable(int en);
+
+/**
+ *  @brief  Event Parameters for TLK defined special adv report event
+			if user enable RX packet header Stimer tick, should this data structure to analyze ADV report event
+ */
+typedef struct{
+	u8		subcode;
+	u8		nreport;
+	u8		event_type;
+	u8		adr_type;
+	u8		mac[6];
+	u32 	rxPktHeader_tick;	//RX packet header Stimer tick
+	u8		len;
+	u8		data[1];
+}hci_tlk_advReportWithRxTickEvt_t;
 
 
 

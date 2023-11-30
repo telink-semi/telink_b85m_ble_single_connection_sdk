@@ -45,7 +45,9 @@
 	ZB25WD80B	0x4b		0x14325E	ZB			500ms
 	GD25LD05C	0x4b(AN)	0x1060C8	GD			500ms
 	GD25LD40C	0x4b		0x1360C8	GD			500ms
+	GD25LD40E	0x4b		0x1360C8	GD			500ms
 	GD25LD80C	0x4b(AN)	0x1460C8	GD			500ms
+	GD25LD80E	0x4b(AN)	0x1460C8	GD			500ms
 	GD25LE80C	0x4b		0x1460C8	GD			300ms
 	GD25LQ80C	0x4b		0x1460C8	GD			300ms
 	MD25D40D	0x4b(AN)	0x134051	GD			400ms
@@ -432,10 +434,10 @@ flash_mid_e flash_read_mid(void)
 	flash_mspi_read_ram(FLASH_GET_JEDEC_ID, 0, 0, 0, (unsigned char*)(&flash_mid), 3);
 
 	/*
-	 * The mids of GD25LD80C and GD25LE80C are both 0x1460c8, but the status register of GD25LD80C is 8 bits,
+	 * The mids of GD25LD80C/GD25LD80E and GD25LE80C are both 0x1460c8, but the status register of GD25LD80C/GD25LD80E are 8 bits,
 	 * and the status register of GD25LE80C is 16 bits. The functions of the two chips are different.
 	 * The software detection method is to read SFDP Signature. If it is 50444653H, it is GD25LE80C,
-	 * if it is all zeros, it is GD25LD80C.
+	 * if it is all zeros, it is GD25LD80C//GD25LD80E.
 	 */
 	if(flash_mid == 0x1460c8)
 	{

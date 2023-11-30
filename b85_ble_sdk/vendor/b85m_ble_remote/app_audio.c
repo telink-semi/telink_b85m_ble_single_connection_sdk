@@ -213,7 +213,7 @@ void ui_enable_mic (int en)
 		#endif
 		buffer_mic_pkt_rptr = buffer_mic_pkt_wptr = 0;
 	}
-	#if ((!BLE_DMIC_ENABLE) && (BATT_CHECK_ENABLE))
+	#if ((!BLE_DMIC_ENABLE) && (APP_BATT_CHECK_ENABLE))
 		battery_set_detect_enable(!en);
 	#endif
 
@@ -460,7 +460,7 @@ else{  //audio off
 	audio_start = 0;
 	buffer_mic_pkt_rptr = buffer_mic_pkt_wptr = 0;
 }
-#if ((!BLE_DMIC_ENABLE) && (BATT_CHECK_ENABLE))
+#if ((!BLE_DMIC_ENABLE) && (APP_BATT_CHECK_ENABLE))
 	battery_set_detect_enable(!en);
 #endif
 
@@ -755,7 +755,7 @@ void ui_enable_mic (int en)
 		audio_end_tick = 0;
 		audio_bt_status = APP_AUDIO_BT_CLOSE;
 	}
-	#if ((!BLE_DMIC_ENABLE) && (BATT_CHECK_ENABLE))
+	#if ((!BLE_DMIC_ENABLE) && (APP_BATT_CHECK_ENABLE))
 		battery_set_detect_enable(!en);
 	#endif
 
@@ -1052,7 +1052,7 @@ void ui_enable_mic (int en)
 		audio_end_tick = 0;
 		audio_bt_status = APP_AUDIO_BT_CLOSE;
 	}
-	#if ((!BLE_DMIC_ENABLE) && (BATT_CHECK_ENABLE))
+	#if ((!BLE_DMIC_ENABLE) && (APP_BATT_CHECK_ENABLE))
 		battery_set_detect_enable(!en);
 	#endif
 
@@ -1340,7 +1340,7 @@ void ui_enable_mic (int en)
 		audio_end_tick = 0;
 		audio_bt_status = APP_AUDIO_BT_CLOSE;
 	}
-	#if ((!BLE_DMIC_ENABLE) && (BATT_CHECK_ENABLE))
+	#if ((!BLE_DMIC_ENABLE) && (APP_BATT_CHECK_ENABLE))
 		battery_set_detect_enable(!en);
 	#endif
 

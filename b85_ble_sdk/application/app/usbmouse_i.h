@@ -61,96 +61,57 @@
 /*
  0x85, 0x01, //Report ID (1) keyboard
  0x85, 0x02, //report ID 02 mouse
- ǷҪ , 1,2Ƿȷ
  */
 static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 #if 0
-	//ÿпʼĵһֽΪĿǰ׺ǰ׺ĸʽΪ
-	//D7~D4bTagD3~D2bTypeD1~D0bSize·ֱÿĿע͡
 
-	//һȫ֣bTypeΪ1Ŀѡ;ҳΪͨGeneric Desktop Page(0x01)
-	//һֽݣbSizeΪ1ֽͲעˣ
-	//ԼbSizeжϡ
 	HID_RPT_USAGE_PAGE(8, 0x01), /* Generic Desktop */
 
-	//һֲbTypeΪ2Ŀ˵Ӧü;
     HID_RPT_USAGE(8, 0x02)		, /* Mouse */
 
-	//һĿbTypeΪ0Ŀϣ0x01ʾ
-	//üһӦüϡǰ;ҳ;Ϊ
-	//ͨõꡣ
     HID_RPT_COLLECTION(8, 0x01)		, /* Application */
 
     HID_RPT_REPORT_ID(8, USB_HID_MOUSE)		, /*Report ID*/
 
     HID_RPT_USAGE_PAGE(8, 0x09)		, /* Button */
 
-	//һֲĿ˵;СֵΪ1ʵ
-	// 1 is mouse left button,2 is mouse right button,3 is central buuton
+	// 1 is mouse left button,2 is mouse right button,3 is central button
     HID_RPT_USAGE_MINIMUM(8, 0x01)		,
-	//һֲĿ˵;ֵ
+
     HID_RPT_USAGE_MAXIMUM(8, 0x05),
 
-	//һȫĿ˵صݵ߼ֵǷصֵ
-	//СΪ0ΪBitʾһСΪ0Ϊ1
     HID_RPT_LOGICAL_MINIMUM(8, 0x00)		,
-	//һȫĿ˵߼ֵΪ1
+
     HID_RPT_LOGICAL_MAXIMUM(8, 0x01),
 
-	//һȫĿ˵ÿĳΪ1bit
 	HID_RPT_REPORT_SIZE(8, 0x01),
-	//һȫĿ˵total button Ϊ5
+
     HID_RPT_REPORT_COUNT(8, 0x05), /* debug note: 3->5*/
 
-	//һĿ˵3Ϊ1bitͳ
-	//ǰȫĿ壩Ϊ룬
-	//ΪData,Var,AbsDataʾЩݿԱ䶯Varʾ
-	//ЩǶģÿʾһ˼Absʾֵ
-	//Ľǣһbit0ʾ1Ƿ£
-	//ڶbit1ʾ2ҼǷ£bit2ʾ
-	//3мǷ¡
     HID_RPT_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
-	//һȫĿ˵ÿĳΪ
+
 	HID_RPT_REPORT_SIZE(8, 0x03), /* debug note: 5->3*/
-	//һȫĿ˵Ϊ1
+
     HID_RPT_REPORT_COUNT(8, 0x01),
 
-	//һĿãǰȫĿ֪Ϊ3bit
-	//Ϊ1Ϊصһֱ0
-	//ֻΪ˴һֽڣǰ3bitһЩ
-	//ѣûʵ;ġ
     HID_RPT_INPUT(8, HID_IOF_CONSTANT),
 
-	//һֲĿ˵;Ϊָ뼯
     HID_RPT_USAGE(8, 0x01), /* Pointer */
 
-	//һĿϣ0x00ʾüһ
-	//ϣ;ǰľֲĿΪָ뼯ϡ
     HID_RPT_COLLECTION(8, 0x00), /* Physical */
 
-	//һȫĿѡ;ҳΪͨGeneric Desktop Page(0x01)
     HID_RPT_USAGE_PAGE(8, 0x01),  /* Generic Desktop */
 
-	//һֲĿ˵;ΪX
     HID_RPT_USAGE(8, 0x30), /* Usage X */
 
-	//һֲĿ˵;ΪY
     HID_RPT_USAGE(8, 0x31), /* Usage Y */
 
-	//ΪȫĿ˵ص߼Сֵ
-	//Ϊָƶʱֵͨʾģ
-	//ֵ˼ǣָƶʱֻƶ
-	//ƶʱXֵΪƶʱYֵΪ
-	//ڹ֣ϹʱֵΪ
     HID_RPT_LOGICAL_MINIMUM(8, 0x81), //     LOGICAL_MINIMUM (-127)
     HID_RPT_LOGICAL_MAXIMUM(8, 0x7f), //     LOGICAL_MAXIMUM (127)
-	//һȫĿ˵ĳȡʹ 16ͿԱʾ
+
     HID_RPT_REPORT_SIZE(8, 0x08),
     HID_RPT_REPORT_COUNT(8, 0x02),
-	//һĿ˵8bitõģ
-	//ΪData,Var,RelData˵ǿԱģVar˵
-	//ЩǶģһ8bitʾXᣬڶ8bitʾ
-	//Yᣬ8bitʾ֡RelʾЩֵֵ
+
     HID_RPT_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_RELATIVE),
 
     HID_RPT_USAGE(8, 0x38),  /* Usage Wheel */
@@ -173,17 +134,17 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
     HID_RPT_LOGICAL_MAXIMUM(16, 0x02ff),     //global, max  0x028c
     HID_RPT_USAGE_MINIMUM(8, 0x01),          //local, min   0x01
     HID_RPT_USAGE_MAXIMUM(16, 0x02ff),       //local, max    0x28c
-    HID_RPT_INPUT(8, HID_IOF_ABSOLUTE),      //main,  input data varible, absolute
+    HID_RPT_INPUT(8, HID_IOF_ABSOLUTE),      //main,  input data variable, absolute
     HID_RPT_END_COLLECTION(0),               //main, end collection
 
-	HID_RPT_USAGE_PAGE(8, 0x01),             //gobal,  USAGE_PAGE 1 (Generic Desktop)
+	HID_RPT_USAGE_PAGE(8, 0x01),             //global,  USAGE_PAGE 1 (Generic Desktop)
 	HID_RPT_USAGE(8, 0x80),                  //local, usage ID 0x80 system control
-	HID_RPT_COLLECTION(8, 0x01),             //main conllection
+	HID_RPT_COLLECTION(8, 0x01),             //main collection
     HID_RPT_REPORT_ID(8, USB_HID_KB_SYS),    //Report ID
 	HID_RPT_REPORT_SIZE(8, 0x01),            //global, report size 2
 	HID_RPT_REPORT_COUNT(8, 0x03),           //report count  1
 	HID_RPT_LOGICAL_MINIMUM(8, 0x00),        //global min 01
-    HID_RPT_LOGICAL_MAXIMUM(8, 0x01),        //gobal, max 3
+    HID_RPT_LOGICAL_MAXIMUM(8, 0x01),        //global, max 3
 	HID_RPT_USAGE(8, 0x81),					//local usage ID 0x81 system power down
     HID_RPT_USAGE(8, 0x82),                  //local usage ID 0x82 system sleep
     HID_RPT_USAGE(8, 0x83),                  //local usage ID 0x83 system wakeup
@@ -195,102 +156,55 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 
 #else
 
-	//һȫ֣bTypeΪ1Ŀѡ;ҳΪͨGeneric Desktop Page(0x01)
-	//һֽݣbSizeΪ1ֽͲעˣ
-	//ԼbSizeжϡ
 	0x05, 0x01, // USAGE_PAGE (Generic Desktop)
 
-	//һֲbTypeΪ2Ŀ˵Ӧü;
 	0x09, 0x02, // USAGE (Mouse)
 
-	//һĿbTypeΪ0Ŀϣ0x01ʾ
-	//üһӦüϡǰ;ҳ;Ϊ
-	//ͨõꡣ
 	0xa1, 0x01, // COLLECTION (Application)
 
 	0x85, USB_HID_MOUSE, //report ID 01
 
-	//һֲĿ˵;Ϊָ뼯
 	0x09, 0x01, //   USAGE (Pointer)
 
-	//һĿϣ0x00ʾüһ
-	//ϣ;ǰľֲĿΪָ뼯ϡ
 	0xa1, 0x00, //   COLLECTION (Physical)
 
-
-	//һȫĿѡ;ҳΪButton Page(0x09)
 	0x05, 0x09, //     USAGE_PAGE (Button)
 
-	//һֲĿ˵;СֵΪ1ʵ
-	// 1 is mouse left button,2 is mouse right button,3 is central buuton
 	0x19, 0x01, //     USAGE_MINIMUM (Button 1)
 
-	//һֲĿ˵;ֵΪ3ʵм
 	0x29, 0x05, //     USAGE_MAXIMUM (Button 5)
 
-	//һȫĿ˵صݵ߼ֵǷصֵ
-	//СΪ0ΪBitʾһСΪ0Ϊ1
 	0x15, 0x00, //     LOGICAL_MINIMUM (0)
 
-	//һȫĿ˵߼ֵΪ1
 	0x25, 0x01, //     LOGICAL_MAXIMUM (1)
 
-	//һȫĿ˵total button Ϊ5
 	0x95, 0x05, //     REPORT_COUNT (3)
-	//һȫĿ˵ÿĳΪ1bit
+
 	0x75, 0x01, //     REPORT_SIZE (1)
 
-	//һĿ˵5Ϊ1bitͳ
-	//ǰȫĿ壩Ϊ룬
-	//ΪData,Var,AbsDataʾЩݿԱ䶯Varʾ
-	//ЩǶģÿʾһ˼Absʾֵ
-	//Ľǣһbit0ʾ1Ƿ£
-	//ڶbit1ʾ2ҼǷ£bit2ʾ
-	//3мǷ¡
 	0x81, 0x02, //     INPUT (Data,Var,Abs)
 
-	//һȫĿ˵Ϊ1
 	0x95, 0x01, //     REPORT_COUNT (1)
-	//һȫĿ˵ÿĳΪ3bit
+
 	0x75, 0x03, //     REPORT_SIZE (3)
 
-
-	//һĿãǰȫĿ֪Ϊ3bit
-	//Ϊ1Ϊصһֱ0
-	//ֻΪ˴һֽڣǰ3bitһЩ
-	//ѣûʵ;ġ
 	0x81, 0x01, //     INPUT (Cnst,Var,Abs)
 
-
-	//һȫĿѡ;ҳΪͨGeneric Desktop Page(0x01)
 	0x05, 0x01, //     USAGE_PAGE (Generic Desktop)
 
-	//һֲĿ˵;ΪX
 	0x09, 0x30, //     USAGE (X)
 
-	//һֲĿ˵;ΪY
 	0x09, 0x31, //     USAGE (Y)
-	//ΪȫĿ˵ص߼Сֵ
-	//Ϊָƶʱֵͨʾģ
-	//ֵ˼ǣָƶʱֻƶ
-	//ƶʱXֵΪƶʱYֵΪ
-	//ڹ֣ϹʱֵΪ
+
 	0x15, 0x81, //     LOGICAL_MINIMUM (-127)
 	0x25, 0x7f, //     LOGICAL_MAXIMUM (127)
 
-	//һȫĿ˵ĳΪ8bit
 	0x75, 0x08, //     REPORT_SIZE (16)
 
-	//һȫĿ˵ĸΪ2
 	0x95, 0x02, //     REPORT_COUNT (2)
 
-	//һĿ˵8bitõģ
-	//ΪData,Var,RelData˵ǿԱģVar˵
-	//ЩǶģһ8bitʾXᣬڶ8bitʾ
-	//Yᣬ8bitʾ֡RelʾЩֵֵ
 	0x81, 0x06, //     INPUT (Data,Var,Rel)
 
-	//һֲĿ˵;Ϊ
 	0x09, 0x38, //     USAGE (Wheel)
 	0x15, 0x81, //LOGICAL_MINIMUM (-127)
 	0x25, 0x7f, //LOGICAL_MAXIMUM (127)
@@ -298,9 +212,6 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 	0x95, 0x01, //REPORT_COUNT (1)
 	0x81, 0x06, //INPUT (Data,Var,Rel)
 
-
-	//Ŀرǰļá
-	//ǿϣҪΡbSizeΪ0Ժûݡ
 	0xc0, //   END_COLLECTION
 	0xc0, // END_COLLECTION
 
@@ -308,7 +219,7 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 	// begin of media key
 	0x05,0x0c,     //global, usage page (follow 1 bytes) consumer page
 	0x09,0x01,     //local,  usage ID 01  Consumer Control
-	0xA1,0x01,     //main, collection
+	0xa1,0x01,     //main, collection
 	0x85,USB_HID_KB_MEDIA,     //global, report ID 0x03
 	0x75,0x10,     //global, report size 16 bits
 	0x95,0x02,     //global, report count 2
@@ -321,17 +232,17 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 	0x19,0x01,     //local, min   0x01
 	0x2a,0x8c,0x02,  //local, max    0x28c
 #endif
-	0x81,0x00,     //main,  input data varible, absolute
+	0x81,0x00,     //main,  input data variable, absolute
 	0xc0,        //main, end collection
 
-	0x05,0x01,     //gobal,  USAGE_PAGE 1 (Generic Desktop)
+	0x05,0x01,     //global,  USAGE_PAGE 1 (Generic Desktop)
 	0x09,0x80,     //local, usage ID 0x80 system control
-	0xa1,0x01,     //main conllection
+	0xa1,0x01,     //main collection
 	0x85,USB_HID_KB_SYS,     //global report ID 0x4
 	0x75,0x02,     //global, report size 2
 	0x95,0x01,     //report count  1
 	0x15,0x01,     //global min 01
-	0x25,0x03,     //gobal, max 3
+	0x25,0x03,     //global, max 3
 	0x09,0x82,     //local usage ID 0x82 system sleep
 	0x09,0x81,     //local usage ID 0x81 system power down
 	0x09,0x83,     //local usage ID 0x83 system wakeup
@@ -354,7 +265,7 @@ static const USB_Descriptor_HIDReport_Datatype_t mouse_report_desc[] = {
 	0x75,0x08,     //global, report size 8
 	0x95,0x07,     //report count  7
 	0xb1,0x02,     //feature (data, var, abs)
-	HID_RPT_END_COLLECTION(0),         //main, end collection
+	HID_RPT_END_COLLECTION(0,0),         //main, end collection
 };
 
 static inline u8* usbmouse_get_report_desc(void) {
