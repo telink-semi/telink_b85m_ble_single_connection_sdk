@@ -85,12 +85,7 @@ _attribute_ram_code_ int main (void)    //must run in ramcode
 
 	clock_init(SYS_CLK_TYPE);
 
-	if( deepRetWakeUp ){
-		user_init_deepRetn ();
-	}
-	else{
-		user_init_normal ();
-	}
+	user_init_normal ();
 
     irq_enable();
 
