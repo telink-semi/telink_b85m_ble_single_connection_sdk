@@ -29,6 +29,10 @@
 #include "drivers.h"
 #include "vendor/common/ble_flash.h"
 
+_attribute_data_retention_
+adc_vref_ctr_t adc_vref_cfg = {
+	.adc_vref 		= 1175, //default ADC ref voltage (unit:mV)
+};
 
 /**
  * @brief      This function is used to calib ADC 1.2V vref.
@@ -37,11 +41,11 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 	/********************************************************************************************
 		There have three kind of calibration value of ADC 1.2V vref in flash,and one calibration value in Efuse.
 		Three kind of ADC calibration value in flash are adc_vbat_calib_vref(used for internal voltage sample)
-		and two-point calibration adc_gpio_calib_vref(used for gpio voltage sample)
-		and adc_gpio_calib_vref(used for gpio voltage sample).The ADC calibration value in Efuse is
+		and two-point calibration adc_vref_cfg.adc_vref(used for gpio voltage sample)
+		and adc_vref_cfg.adc_vref(used for gpio voltage sample).The ADC calibration value in Efuse is
 		adc_vbat_calib_vref(used for internal voltage sample).
 		The calibration value of efuse has a total of 8 bits, all of which are calibration values..
-		The priority of adc_gpio_calib_vref is: two-point calib from Flash > one-point calib from Flash > Default(1175mV).
+		The priority of adc_vref_cfg.adc_vref is: two-point calib from Flash > one-point calib from Flash > Default(1175mV).
 		The priority of adc_vbat_calib_vref is: Flash > Efuse >Default(1175mV).
 	********************************************************************************************/
 	unsigned short gpio_calib_vref = 0;
@@ -57,6 +61,7 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 		gpio_calib_vref_offset = adc_vref_calib_value_rd[4] - 20;
 		adc_set_gpio_calib_vref(gpio_calib_vref);
 		adc_set_gpio_two_point_calib_offset(gpio_calib_vref_offset);
+		adc_vref_cfg.adc_vref = gpio_calib_vref;
 	}
 	else{
 		/****** If flash do not exist the two-point gpio calibration value,use the one-point gpio calibration value ********/
@@ -67,6 +72,7 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 		if ((gpio_calib_vref >= 1047) && (gpio_calib_vref <= 1302))
 		{
 			adc_set_gpio_calib_vref(gpio_calib_vref);
+			adc_vref_cfg.adc_vref = gpio_calib_vref;
 		}
 	}
 	/****** Method of calculating calibration Flash_vbat_Vref value: ********/

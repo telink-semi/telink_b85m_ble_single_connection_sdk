@@ -29,6 +29,10 @@
 #include "drivers.h"
 #include "vendor/common/ble_flash.h"
 
+_attribute_data_retention_
+adc_vref_ctr_t adc_vref_cfg = {
+	.adc_vref 		= 1175, //default ADC ref voltage (unit:mV)
+};
 
 /**
  * @brief      This function is used to calib ADC 1.2V vref.
@@ -37,12 +41,12 @@
 int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 	/********************************************************************************************
 		There have two kind of calibration value of ADC 1.2V vref in flash,and one calibration value in Efuse.
-		Two kind of ADC calibration value in flash are two-point calibration adc_gpio_calib_vref(used for gpio voltage sample)
-		and one-point calibration adc_gpio_calib_vref(used for gpio voltage sample).
-		The ADC calibration value in Efuse is  adc_gpio_calib_vref(used for gpio voltage sample).
+		Two kind of ADC calibration value in flash are two-point calibration adc_vref_cfg.adc_vref(used for gpio voltage sample)
+		and one-point calibration adc_vref_cfg.adc_vref(used for gpio voltage sample).
+		The ADC calibration value in Efuse is  adc_vref_cfg.adc_vref(used for gpio voltage sample).
 		The efuse calibration value has a total of 8 bits, the value from bit[5] to bit[0] is the calibration value,
 		bit[7] and bit[6] represent whether the calibration value is stored.
-		The priority of adc_gpio_calib_vref is: two-point calib from Flash > one-point calib from Flash > calib from Efuse > Default(1175mV).
+		The priority of adc_vref_cfg.adc_vref is: two-point calib from Flash > one-point calib from Flash > calib from Efuse > Default(1175mV).
 	********************************************************************************************/
 	unsigned short gpio_calib_vref = 0;
 	signed char gpio_calib_vref_offset = 0;
@@ -56,6 +60,7 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 		gpio_calib_vref_offset = adc_vref_calib_value_rd[4] - 20;
 		adc_set_gpio_calib_vref(gpio_calib_vref);
 		adc_set_gpio_two_point_calib_offset(gpio_calib_vref_offset);
+		adc_vref_cfg.adc_vref = gpio_calib_vref;
 		return 1;
 	}
 	else{
@@ -67,6 +72,7 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 		if ((gpio_calib_vref >= 1047) && (gpio_calib_vref <= 1302))
 		{
 			adc_set_gpio_calib_vref(gpio_calib_vref);
+			adc_vref_cfg.adc_vref = gpio_calib_vref;
 			return 1;
 		}
 		else
@@ -76,6 +82,7 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 			if(0 != gpio_calib_vref)
 			{
 				adc_set_gpio_calib_vref(gpio_calib_vref);
+				adc_vref_cfg.adc_vref = gpio_calib_vref;
 				return 1;
 			}
 		}

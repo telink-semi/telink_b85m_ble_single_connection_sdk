@@ -32,6 +32,14 @@
 #include "../analog.h"
 
 /**
+ * @brief      This struct is ADC reference voltage cfg.
+ */
+typedef struct {
+	unsigned short adc_vref; //default: 1175 mV
+	unsigned short rsdv;
+}adc_vref_ctr_t;
+
+/**
  * @brief      This function is used to calib ADC 1.2V vref.
  */
 int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd);

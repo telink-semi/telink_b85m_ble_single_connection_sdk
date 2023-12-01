@@ -58,7 +58,7 @@ _attribute_data_retention_	u8		adc_first_flg = 1;
 _attribute_data_retention_	static u8 		lowBattDet_enable = 1;
 _attribute_data_retention_  static u16     batt_vol_mv;
 u8      adc_hw_initialized = 0;
-extern unsigned short 	adc_gpio_calib_vref;
+extern adc_vref_ctr_t adc_vref_cfg;
 extern signed char 		adc_gpio_calib_vref_offset;
 extern unsigned char   	adc_pre_scale;
 /**
@@ -316,7 +316,7 @@ _attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)
 		batt_vol_mv  = ((adc_result*adc_pre_scale*adc_vbat_calib_vref)>>13);
 	}
 	else
-		batt_vol_mv  = ((adc_result*adc_pre_scale*adc_gpio_calib_vref)>>13) + adc_gpio_calib_vref_offset;
+		batt_vol_mv  = ((adc_result*adc_pre_scale*adc_vref_cfg.adc_vref)>>13) + adc_gpio_calib_vref_offset;
 
 	tlkapi_printf(APP_BATT_CHECK_LOG_EN, "[APP][BAT] The battery power is %dmV!\n", batt_vol_mv);
 
