@@ -26,6 +26,7 @@
 #include "bsp.h"
 #include "gpio.h"
 #include "flash.h"
+#include "clock.h"
 #define PM_DEBUG							0
 
 #if(PM_DEBUG)
@@ -39,14 +40,12 @@ volatile unsigned int ana_32k_tick;
 #define PM_TIM_RECOVER_MODE			    	1 //this function only support for interface of cpu_sleep_wakeup_32k_rc and cpu_sleep_wakeup_32k_xtal
 #endif
 
-
-
 #define PM_XTAL_DELAY_DURATION      		500
-#define EARLYWAKEUP_TIME_US_DEEP    		1240
-#define EARLYWAKEUP_TIME_US_SUSPEND 		1190
-#define EMPTYRUN_TIME_US       	    		1500
+//#define EARLYWAKEUP_TIME_US_DEEP    		1240
+//#define EARLYWAKEUP_TIME_US_SUSPEND 		1190
+//#define EMPTYRUN_TIME_US       	    	1500
 
-#define PM_DCDC_DELAY_DURATION      		1000
+//#define PM_DCDC_DELAY_DURATION      		1000
 
 #define EARLYWAKEUP_TIME_MS_DEEP	2
 #define EARLYWAKEUP_TIME_MS_SUSPEND	1
@@ -65,7 +64,7 @@ volatile unsigned int ana_32k_tick;
  * 	      Reset these analog registers only by power cycle
  */
 
-#define DEEP_ANA_REG0                       0x3a //initial value =0x00
+#define DEEP_ANA_REG0                       0x3a //initial value =0x00 [Bit1] The crystal oscillator failed to start normally.The customer cannot change!
 #define DEEP_ANA_REG1                       0x3b //initial value =0x00
 #define DEEP_ANA_REG2                       0x3c //initial value =0x00
 
@@ -182,6 +181,29 @@ typedef struct{
 }pm_para_t;
 
 extern _attribute_aligned_(4) pm_para_t	pmParam;
+
+/**
+ * @brief	early wakeup time
+ */
+typedef struct {
+	unsigned short  suspend;	/*< suspend_early_wakeup_time_us >*/
+	unsigned short  deep_ret;	/*< deep_ret_early_wakeup_time_us >*/
+	unsigned short  deep;		/*< deep_early_wakeup_time_us >*/
+	unsigned short  min;		/*< sleep_min_time_us >*/
+}pm_early_wakeup_time_us_s;
+
+extern volatile pm_early_wakeup_time_us_s g_pm_early_wakeup_time_us;
+
+/**
+ * @brief	hardware delay time
+ */
+typedef struct {
+	unsigned short  deep_r_delay_us ;			/**< hardware delay time, deep_r_delay_us = (deep_r_delay_cycle) * 1/16k */
+	unsigned short  suspend_ret_r_delay_us ;		/**< hardware delay time, suspend_ret_r_delay_us = (suspend_ret_r_delay_cycle) * 1/16k */
+}pm_r_delay_us_s;
+
+extern volatile pm_r_delay_us_s g_pm_r_delay_us;
+
 
 #if (PM_TIM_RECOVER_MODE)
 
@@ -314,7 +336,7 @@ extern unsigned int pm_get_32k_tick(void);
  * @param   none
  * @return  none
  */
-void cpu_wakeup_init(void);
+_attribute_ram_code_sec_noinline_ void cpu_wakeup_init(void);
 
 /**
  * @brief   This function serves to recover system timer from tick of internal 32k RC.
@@ -434,6 +456,45 @@ void soft_reboot_dly13ms_use24mRC(void);
  * @return		none.
  */
 void pm_set_vdd_f(Flash_VoltageDef voltage);
+
+/**
+ * @brief		This function is used to configure the early wake-up time.
+ * @param[in]	param - deep/suspend/deep_retention r_delay time.(default value: suspend/deep_ret=16, deep=24)
+ * @return		none.
+ */
+void pm_set_wakeup_time_param(pm_r_delay_us_s param);
+
+/**
+ * @brief		This function is used in applications where the crystal oscillator is relatively slow to start.
+ * 				When the start-up time is very slow, you can call this function to avoid restarting caused
+ * 				by insufficient crystal oscillator time (it is recommended to leave a certain margin when setting).
+ * @param[in]	delay_us - This time setting is related to the parameter nopnum, which is about the execution time of the for loop
+ * 							in the ramcode(default value: 135).
+ * @param[in]	loopnum - The time for the crystal oscillator to stabilize is approximately: loopnum*40us(default value: loopnum=10).
+ * @param[in]	nopnum - The number of for loops used to wait for the crystal oscillator to stabilize after suspend wakes up.
+ * 						 for(i = 0; i < nopnum; i++){ asm("tnop"); }(default value: Flash=200).
+ * @return		none.
+ */
+void pm_set_xtal_stable_timer_param(unsigned int delay_us, unsigned int loopnum, unsigned int nopnum);
+
+/**
+ * @brief   	This function is used to determine the stability of the crystal oscillator.
+ * 				To judge the stability of the crystal oscillator, xo_ready_ana is invalid, and use an alternative solution to judge.
+ * 				Alternative principle: Because the clock source of the stimer is the crystal oscillator,
+ * 				if the crystal oscillator does not vibrate, the tick value of the stimer does not increase or increases very slowly (when there is interference).
+ * 				So first use 24M RC to run the program and wait for a fixed time, calculate the number of ticks that the stimer should increase during this time,
+ * 				and then read the tick value actually increased by the stimer.
+ * 				When it reaches 50% of the calculated value, it proves that the crystal oscillator has started.
+ * 				If it is not reached for a long time, the system will reboot.
+ * @return  	none.
+ */
+_attribute_ram_code_sec_noinline_ void pm_wait_xtal_ready(void);
+
+/**
+ * @brief		this function servers to wait bbpll clock lock.
+ * @return		none.
+ */
+_attribute_ram_code_sec_noinline_ void pm_wait_bbpll_done(void);
 
 #if PM_LONG_SLEEP_WAKEUP_EN
 /**
