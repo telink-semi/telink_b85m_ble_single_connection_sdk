@@ -44,14 +44,11 @@
  *
  *******************************************************************************************************/
 #include "tl_common.h"
+#include "drivers.h"
 #include "stack/ble/ble.h"
+
 #include "flash_prot.h"
 
-#if(MCU_CORE_TYPE == MCU_CORE_825x)
-#include "driver.h"
-#elif(MCU_CORE_TYPE == MCU_CORE_827x)
-#include "driver.h"
-#endif
 
 _attribute_ble_data_retention_	_attribute_aligned_(4)	flash_prot_t	blc_flashProt;
 
@@ -78,6 +75,23 @@ void blc_appRegisterStackFlashOperationCallback(flash_prot_op_callback_t cb)
 {
 	flash_prot_op_cb = cb;
 }
+
+
+#if (!MCU_SUPPORT_MULTI_PRIORITY_IRQ)
+/**
+ * @brief 		this function is used to replace Flash driver API "flash_write_status", solving BLE connection issue on MCU do not support multiple priority IRQ
+ * @param[in]  	type	- the type of status.8 bit or 16 bit.
+ * @param[in]  	data	- the value of status.
+ * @return 		none.
+ */
+void flash_write_status(flash_status_typedef_e type , unsigned short data)
+{
+	/* If MCU do not support multiple priority IRQ, Flash write status duration influencing BLE RF IRQ, then lead to BLE data error
+	 * use  "blc ll_write_flash_status" to solve the issue, SDK internal will find idle timing to write safely. */
+	blc_ll_write_flash_status(type, data);
+}
+#endif
+
 
 /**
  * @brief      this function is used to initialize flash protection.Block size of lock is a sample, user can change it according to bin size.
@@ -262,7 +276,7 @@ void flash_lock(unsigned int flash_lock_cmd)
 
 	u16 cur_lock_status = flash_get_lock_status_mid();
 
-	if(cur_lock_status == flash_lock_cmd){ //lock status is want we want, no need lock again
+	if(cur_lock_status == flash_lock_cmd){ //lock status is what we want, no need lock again
 
 	}
 	else{ //unlocked or locked block size is not what we want

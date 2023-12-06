@@ -327,7 +327,16 @@ init_err_t	blc_contr_checkControllerInitialization(void);
  */
 void 		blc_contr_setBluetoothVersion(core_version_t version);
 
-
+/**
+ * @brief 		this function is used to solving issue that BLE connection RF IRQ affected by Flash writing status duration
+ * 				by finding idle timing to write safely.
+ *              If MCU do not support multiple priority IRQ, Flash write status duration influencing BLE RF IRQ, then lead to BLE data error
+ * 			    attention: it's for Flash lock & unlock in BLE connection state
+ * @param[in]  	type	- the type of status.8 bit or 16 bit.
+ * @param[in]  	data	- the value of status.
+ * @return 		none.
+ */
+void        blc_ll_write_flash_status(flash_status_typedef_e type , unsigned short data);
 
 
 #endif /* LL__H_ */

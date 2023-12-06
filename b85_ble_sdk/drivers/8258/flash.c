@@ -63,7 +63,6 @@ const unsigned int FLASH_CNT = sizeof(flash_support_mid)/sizeof(*flash_support_m
 
 _attribute_data_retention_ flash_handler_t flash_read_page = flash_read_data;
 _attribute_data_retention_ flash_handler_t flash_write_page = flash_page_program;
-
 /*******************************************************************************************************************
  *												Primary interface
  ******************************************************************************************************************/
@@ -303,9 +302,14 @@ unsigned char flash_read_status(unsigned char cmd)
  *              Risk description: When the chip power supply voltage is relatively low, due to the unstable power supply,
  *              there may be a risk of error in the operation of the flash (especially for the write and erase operations.
  *              If an abnormality occurs, the firmware and user data may be rewritten, resulting in the final Product failure)
+ *
+ *              Because the operation of the write state takes a long time, and the interface of the write state will close the interrupt,
+ *              it is not suitable for the situation that needs to respond to the interrupt in a timely manner.
+ *              By using a weak definition for this interface, the application layer can redefine the interface according to its own needs.
  */
-void flash_write_status(flash_status_typedef_e type , unsigned short data)
+__attribute__((weak)) void flash_write_status(flash_status_typedef_e type , unsigned short data)
 {
+
 	unsigned char buf[2];
 
 	buf[0] = data;
