@@ -28,6 +28,7 @@
 #include "application/usbstd/usbkeycode.h"
 #include "application/usbstd/usbkeycode.h"
 
+#include "app.h"
 #include "app_att.h"
 #include "app_ui.h"
 
@@ -42,9 +43,8 @@ extern u32	latest_user_event_tick;
 void app_enter_ota_mode(void)
 {
 	tlkapi_send_string_data(APP_OTA_LOG_EN, "[APP][OTA] enter ota mode", 0, 0);
-
+	ota_is_working = 1;
 	latest_user_event_tick = clock_time();
-
 }
 
 

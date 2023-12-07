@@ -47,6 +47,10 @@
 #define APP_H_
 
 
+extern unsigned int	scan_pin_need;
+extern int button_not_released;
+extern u8 ota_is_working;
+
 
 
 /**
@@ -93,8 +97,6 @@ void proc_keyboard (u8 e, u8 *p, int n);
  */
 void proc_button (u8 e, u8 *p, int n);
 
-
-extern int button_not_released;
 
 /**
  * @brief      flash protection operation, including all locking & unlocking for application

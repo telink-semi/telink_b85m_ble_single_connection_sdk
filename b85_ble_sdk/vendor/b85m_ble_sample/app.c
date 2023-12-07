@@ -45,6 +45,8 @@
 
 #define		BLE_DEVICE_ADDRESS_TYPE 			BLE_DEVICE_ADDRESS_PUBLIC
 
+
+_attribute_data_retention_	u8 ota_is_working = 0;
 _attribute_data_retention_	own_addr_type_t 	app_own_address_type = OWN_ADDRESS_PUBLIC;
 
 
@@ -388,13 +390,16 @@ _attribute_ram_code_ void blt_pm_proc(void)
 
 
 	//do not care about keyScan/button_detect power here, if you care about this, please refer to "8258_ble_remote" demo
+			if(0){
+			}
 	#if (UI_KEYBOARD_ENABLE)
-		extern unsigned int	scan_pin_need;
-		if(scan_pin_need || key_not_released)
-		{
+			else if(scan_pin_need || key_not_released){
 			bls_pm_setSuspendMask (SUSPEND_DISABLE);
 		}
 	#endif
+			else if(ota_is_working){
+				bls_pm_setManualLatency(0);
+			}
 
 
 
@@ -407,7 +412,7 @@ _attribute_ram_code_ void blt_pm_proc(void)
 			}
 
 
-			if(  !blc_ll_isControllerEventPending() ){  //no controller event pending
+			if(!ota_is_working && !blc_ll_isControllerEventPending()){  //no controller event pending
 				//adv 60s, deepsleep
 				if( blc_ll_getCurrentState() == BLS_LINK_STATE_ADV && !sendTerminate_before_enterDeep && \
 					clock_time_exceed(advertise_begin_tick , ADV_IDLE_ENTER_DEEP_TIME * 1000000))
