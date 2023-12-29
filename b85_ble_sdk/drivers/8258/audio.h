@@ -29,7 +29,26 @@
 #include "i2c.h"
 #include "dfifo.h"
 
-#define AUDIO_DBL_BUF_ENABLE	0
+
+#define  DMIC_INPUT_MODE_STEREO    0
+
+#define AUDIO_DBL_BUF_ENABLE	   0
+
+/**
+ * define audio amic mode.
+ */
+typedef enum{
+	AUDIO_AMIC_MONO_MODE,
+	AUDIO_AMIC_STEREO_MODE,
+}Audio_Amic_mode;
+
+/**
+ * define audio sdm output mode.
+ */
+typedef enum{
+	AUDIO_SDM_SINGLE_OUTPUT,
+	AUDIO_SDM_DUAL_OUTPUT,
+}Audio_SDM_output_mode;
 
 /**
  * define audio rate value.
@@ -38,6 +57,7 @@ typedef enum{
 	AUDIO_8K,
 	AUDIO_16K,
 	AUDIO_32K,
+	AUDIO_48K,
 	RATE_SIZE
 }AudioRate_Typedef;
 
@@ -59,6 +79,7 @@ typedef enum{
 	CODEC_MODE_MICPHONE_TO_HEADPHONE_LINEOUT_I2S,
 	CODEC_MODE_LINE_TO_HEADPHONE_LINEOUT_I2S,
 	CODEC_MODE_I2S_TO_HEADPHONE_LINEOUT,
+	CODEC_MODE_LINE_IN_TO_LINEOUT_I2S
 }CodecMode_Typedef;
 
 /**
@@ -179,5 +200,46 @@ void audio_set_i2s_output(AudioInput_Typedef InType,AudioRate_Typedef Audio_Rate
  * 	@return    none.
  */
 void audio_set_codec(I2C_GPIO_GroupTypeDef i2c_pin_group, CodecMode_Typedef CodecMode,unsigned sysclk);
+
+
+
+/**
+ * @brief     This function servers to receive data from buffer.
+ * @param[in] buf - the buffer in which the data need to write
+ * @param[in] len - the length of the buffer.
+ * @return    none.
+ */
+void audio_rx_data_from_buff(signed char* buf,unsigned int len);
+
+/**
+ * @brief     This function servers to receive data from sample buffer by 16 bits.
+ * @param[in] buf - the buffer in which the data need to write
+ * @param[in] len - the length of the buffer by short.
+ * @return    none.
+ */
+void audio_rx_data_from_sample_buff(const short *buf, unsigned int len);
+
+/**
+ * @brief     This function servers to receive data from sample buffer by 16 bits.
+ * @param[in] buf - the buffer in which the data need to write
+ * @param[in] len - the length of the buffer by short.
+ * @return    none.
+ */
+void audio_rx_data_from_sample_buff(const short *buf, unsigned int len);
+
+/**
+ * 	@brief      This function serves to set amic mode
+ * 	@param[in]  mode - the amic mode(mono mode or stereo mode)
+ * 	@return     none
+ */
+void audio_set_amic_mode(Audio_Amic_mode mode);
+
+/**
+ * 	@brief      This function serves to set sdm output mode
+ * 	@param[in]  mode - the amic mode(mono mode or stereo mode)
+ * 	@return     none
+ */
+void audio_set_sdm_output_mode(Audio_SDM_output_mode mode);
+
 
 #endif

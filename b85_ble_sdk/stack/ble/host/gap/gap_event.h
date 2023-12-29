@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     gap_event.h
+ * @file    gap_event.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,6 +19,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 #ifndef GAP_EVENT_H_
 #define GAP_EVENT_H_
@@ -155,8 +156,6 @@ Situation 2:   SMP Fast Connect																		|
 #define GAP_EVT_L2CAP_COC_SEND_DATA_FINISH							 26
 #define GAP_EVT_L2CAP_COC_CREATE_CONNECT_FINISH						 27
 
-#define GAP_EVT_L2CAP_CONN_PARAM_UPDATE_REQ                          28
-#define GAP_EVT_L2CAP_CONN_PARAM_UPDATE_RSP                          29
 /**
  * @brief      GAP event mask
  */
@@ -184,12 +183,6 @@ Situation 2:   SMP Fast Connect																		|
 																	  GAP_EVT_MASK_SMP_TK_REQUEST_PASSKEY   | \
 																	  GAP_EVT_MASK_SMP_TK_REQUEST_OOB		| \
 																	  GAP_EVT_MASK_ATT_EXCHANGE_MTU )
-
-
-
-
-#define GAP_EVT_MASK_L2CAP_CONN_PARAM_UPDATE_REQ					(1<<GAP_EVT_L2CAP_CONN_PARAM_UPDATE_REQ)
-#define GAP_EVT_MASK_L2CAP_CONN_PARAM_UPDATE_RSP					(1<<GAP_EVT_L2CAP_CONN_PARAM_UPDATE_RSP)
 
 #define GAP_EVT_MASK_L2CAP_COC_CONNECT								(1<<GAP_EVT_L2CAP_COC_CONNECT)
 #define GAP_EVT_MASK_L2CAP_COC_DISCONNECT							(1<<GAP_EVT_L2CAP_COC_DISCONNECT)
@@ -274,28 +267,6 @@ typedef struct {
 	u16	peer_MTU;
 	u16	effective_MTU;
 } gap_gatt_mtuSizeExchangeEvt_t;
-
-
-/**
- * @brief      data structure of GAP_EVT_L2CAP_CONN_PARAM_UPDATE_REQ event parameters
- */
-typedef struct {
-	u16	connHandle;
-	u8	id;
-	u16 min_interval;
-	u16 max_interval;
-	u16 latency;
-	u16 timeout;
-} gap_l2cap_connParamUpdateReqEvt_t;
-
-/**
- * @brief      data structure of GAP_EVT_L2CAP_CONN_PARAM_UPDATE_RSP event parameters
- */
-typedef struct {
-	u16	connHandle;
-	u8  id;
-	u16	result;
-} gap_l2cap_connParamUpdateRspEvt_t;
 
 /**
  * @brief      data structure of GAP_EVT_L2CAP_COC_CONNECT event parameters

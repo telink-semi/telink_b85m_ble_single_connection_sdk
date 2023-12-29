@@ -30,6 +30,9 @@
 #include "timer.h"
 
 
+static unsigned char amic_stereo_mode = 0;
+static unsigned char sdm_output_mode = 0;
+
 unsigned char AMIC_ADC_SampleLength[3] = {0xf0/*96K*/,0xac/*132K*/,0x75/*192K*/};
 
 
@@ -96,8 +99,12 @@ void audio_amic_init(AudioRate_Typedef Audio_Rate)
 
 	adc_set_sample_clk(5); //adc sample clk= 24M/(1+5)=4M
 
+	if(1 == amic_stereo_mode){
 	//adc state machine state cnt 2( "set" stage and "capture" state for left channel)
-	adc_set_chn_enable_and_max_state_cnt(ADC_LEFT_CHN, 2);//left channel enable and  state cnt= 2
+		adc_set_chn_enable_and_max_state_cnt(ADC_LEFT_CHN|ADC_RIGHT_CHN, 4);//left and right channel enable and  state cnt= 2
+	}else{
+		adc_set_chn_enable_and_max_state_cnt(ADC_LEFT_CHN, 2);
+	}
 
 	//set "capture state" length for misc channel: 240
 	//set "set state" length for left channel: 10
@@ -105,13 +112,27 @@ void audio_amic_init(AudioRate_Typedef Audio_Rate)
 	adc_set_state_length(0, 240, 10);	//	96K
 
 	adc_set_input_mode(ADC_LEFT_CHN, DIFFERENTIAL_MODE); //left channel differential mode
+	if(1 == amic_stereo_mode){
+		adc_set_input_mode(ADC_RIGHT_CHN, DIFFERENTIAL_MODE); //left channel differential mode
+	}
+
 	adc_set_ain_channel_differential_mode(ADC_LEFT_CHN, PGA0P, PGA0N); //left channel positive and negative data in
+	if(1 == amic_stereo_mode)
+		adc_set_ain_channel_differential_mode(ADC_RIGHT_CHN, PGA1P, PGA1N); //left channel positive and negative data in
 
 	// adc_set_ref_voltage(ADC_LEFT_CHN, ADC_VREF_1P2V);
 	adc_set_ref_voltage(ADC_LEFT_CHN, ADC_VREF_0P6V);//to do by lijing
+	if(1 == amic_stereo_mode)
+		adc_set_ref_voltage(ADC_RIGHT_CHN, ADC_VREF_1P2V);
+
 
 	adc_set_resolution(ADC_LEFT_CHN, RES14);							//left channel resolution
+	if(1 == amic_stereo_mode)
+		adc_set_resolution(ADC_RIGHT_CHN, RES14);							//right channel resolution
+
 	adc_set_tsample_cycle(ADC_LEFT_CHN, SAMPLING_CYCLES_6);				//left channel tsample
+	if(1 == amic_stereo_mode)
+		adc_set_tsample_cycle(ADC_RIGHT_CHN, SAMPLING_CYCLES_6);	//right channel tsample
 
 //	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_OFF);                    //vbat vref divider
 	adc_set_ain_pre_scaler(ADC_PRESCALER_1);  //ain pre scaler none
@@ -127,15 +148,19 @@ void audio_amic_init(AudioRate_Typedef Audio_Rate)
 	SET_PGA_RIGHT_P_AIN(PGA_AIN_C0);
 	SET_PGA_RIGHT_N_AIN(PGA_AIN_C0);
 
+
 	//
 	adc_set_left_boost_bias(GAIN_STAGE_BIAS_PER75);
+	if(1 == amic_stereo_mode)
+		adc_set_right_boost_bias(GAIN_STAGE_BIAS_PER75);//plus
+
 
 	analog_write (areg_adc_pga_ctrl, MASK_VAL( FLD_PGA_ITRIM_GAIN_L, GAIN_STAGE_BIAS_PER150, \
 														  FLD_PGA_ITRIM_GAIN_R,GAIN_STAGE_BIAS_PER150, \
 														  FLD_ADC_MODE, 0, \
 														  FLD_SAR_ADC_POWER_DOWN, 1, \
 														  FLD_POWER_DOWN_PGA_CHN_L, 0, \
-														  FLD_POWER_DOWN_PGA_CHN_R, 1) );
+														  FLD_POWER_DOWN_PGA_CHN_R, (amic_stereo_mode==0)?1:0) );
 
 
 	WriteAnalogReg(0xfe,0x05);		//0x80+126  = 0x05,0xfe default value is 0xe5,for output audio, must clear 0xfe<7:5>
@@ -177,10 +202,18 @@ void audio_amic_init(AudioRate_Typedef Audio_Rate)
 
 	//alc mode select digital mode
 	reg_aud_alc_cfg &= ~FLD_AUD_ALC_ANALOG_MODE_EN;
-
 	//alc left channel select manual regulate, and set volume
+
+	if(0 == amic_stereo_mode){
 	reg_aud_alc_vol_l_chn = MASK_VAL( FLD_AUD_ALC_MIN_VOLUME_IN_DIGITAL_MODE,  0x28, \
 									  FLD_AUD_ALC_DIGITAL_MODE_AUTO_REGULATE_EN, 0);
+	}else{
+		reg_aud_alc_vol_l_chn = MASK_VAL( FLD_AUD_ALC_MIN_VOLUME_IN_DIGITAL_MODE,  0x20, \
+									  FLD_AUD_ALC_DIGITAL_MODE_AUTO_REGULATE_EN, 0);
+
+		reg_aud_alc_vol_r_chn = MASK_VAL( FLD_AUD_ALC_MIN_VOLUME_IN_DIGITAL_MODE,  0x20, \
+			                          FLD_AUD_ALC_DIGITAL_MODE_AUTO_REGULATE_EN, 0);
+	}
 
 	//2. Dfifo setting
 	reg_clk_en2 |= FLD_CLK2_DFIFO_EN; //enable dfifo clock, this will be initialed in cpu_wakeup_int()
@@ -193,7 +226,7 @@ void audio_amic_init(AudioRate_Typedef Audio_Rate)
 	//amic input, mono mode, enable decimation filter
 	reg_dfifo_ain =  MASK_VAL( FLD_AUD_DMIC0_DATA_IN_RISING_EDGE,AUDIO_DMIC_DATA_IN_FALLING_EDGE,\
 									FLD_AUD_INPUT_SELECT, AUDIO_INPUT_AMIC, \
-									FLD_AUD_INPUT_MONO_MODE, 1, \
+									FLD_AUD_INPUT_MONO_MODE, (amic_stereo_mode==0)?1:0, \
 									FLD_AUD_DECIMATION_FILTER_BYPASS, 0);
 
 
@@ -229,6 +262,22 @@ void audio_rx_data_from_buff(signed char* buf,unsigned int len)
 		}
 	}
 }
+
+/**
+ * @brief     This function servers to receive data from sample buffer by 16 bits.
+ * @param[in] buf - the buffer in which the data need to write
+ * @param[in] len - the length of the buffer by short.
+ * @return    none.
+ */
+void audio_rx_data_from_sample_buff(const short *buf, unsigned int len)
+{
+    for (unsigned int  i = 0; i < len; i += 2)
+    {
+        reg_usb_mic_dat1 = (unsigned short)buf[i];
+        reg_usb_mic_dat0 = (unsigned short)buf[i + 1];
+    }
+}
+
 
 /**
  * @brief     audio DMIC init function, config the speed of DMIC and downsample audio data to required speed.
@@ -367,8 +416,11 @@ void audio_set_sdm_output(AudioInput_Typedef InType,AudioRate_Typedef Audio_Rate
 	if(audio_out_en)
 	{
 		//SDM0  EVB(C1T139A30_V1.2) not used
-//		gpio_set_func(GPIO_PB4, AS_SDM);
-//		gpio_set_func(GPIO_PB5, AS_SDM);
+		if(AUDIO_SDM_DUAL_OUTPUT == sdm_output_mode)
+		{
+			gpio_set_func(GPIO_PB4, AS_SDM);
+			gpio_set_func(GPIO_PB5, AS_SDM);
+		}
 		//SDM1
 		gpio_set_func(GPIO_PB6, AS_SDM);
 		gpio_set_func(GPIO_PB7, AS_SDM);
@@ -451,6 +503,17 @@ void audio_set_sdm_output(AudioInput_Typedef InType,AudioRate_Typedef Audio_Rate
 #define		WM8731_ACTIVE_CTRL 					0x12		//Active Control
 #define		WM8731_RESET_CTRL 					0x1e		//Reset Register
 
+unsigned char I2S_To_HPout_CMD_TAB[7][2] ={	{WM8731_RESET_CTRL, 				0x00},
+											{WM8731_ANA_AUDIO_PATH_CTRL,		0x12},
+											{WM8731_DIG_AUDIO_PATH_CTRL,		0x00},
+											{WM8731_POWER_DOWN_CTRL,			0x07},
+											{WM8731_DIG_AUDIO_INTERFACE_FORMAT,	0x02},
+											{WM8731_SAMPLING_CTRL,				0x18},
+											{WM8731_ACTIVE_CTRL,				0x01},
+};
+
+
+
 unsigned char LineIn_To_I2S_CMD_TAB[9][2]={	{WM8731_RESET_CTRL, 				0x00},
 											{WM8731_LEFT_IN,					0x17},
 											{WM8731_RIGHT_IN,					0x17},
@@ -462,14 +525,6 @@ unsigned char LineIn_To_I2S_CMD_TAB[9][2]={	{WM8731_RESET_CTRL, 				0x00},
 											{WM8731_ACTIVE_CTRL,				0x01},
 };
 
-unsigned char I2S_To_HPout_CMD_TAB[7][2] ={	{WM8731_RESET_CTRL, 				0x00},
-											{WM8731_ANA_AUDIO_PATH_CTRL,		0x12},
-											{WM8731_DIG_AUDIO_PATH_CTRL,		0x00},
-											{WM8731_POWER_DOWN_CTRL,			0x07},
-											{WM8731_DIG_AUDIO_INTERFACE_FORMAT,	0x02},
-											{WM8731_SAMPLING_CTRL,				0x18},
-											{WM8731_ACTIVE_CTRL,				0x01},
-};
 
 /**
  * @brief     This function servers to config I2S input.
@@ -515,8 +570,20 @@ void audio_set_codec( I2C_GPIO_GroupTypeDef i2c_pin_group , CodecMode_Typedef Co
 			while(read_reg8(0x02)&0x04);
 		}
 	}
-	else
+	else if(CodecMode == CODEC_MODE_LINE_IN_TO_LINEOUT_I2S)
 	{
+
+		for(i=0;i<9;i++)
+		{
+			do
+			{
+				write_reg8(0x04,LineIn_To_I2S_CMD_TAB[i][0]);
+				write_reg8(0x05,LineIn_To_I2S_CMD_TAB[i][1]);
+				write_reg8(0x07,0x37);
+				while(read_reg8(0x02)&0x01);
+			}
+			while(read_reg8(0x02)&0x04);
+		}
 
 	}
 }
@@ -642,3 +709,22 @@ void audio_set_usb_output(void)
 
 
 
+/**
+ * 	@brief      This function serves to set amic mode
+ * 	@param[in]  mode - the amic mode(mono mode or stereo mode)
+ * 	@return     none
+ */
+void audio_set_amic_mode(Audio_Amic_mode mode)
+{
+	amic_stereo_mode = mode;
+}
+
+/**
+ * 	@brief      This function serves to set sdm output mode
+ * 	@param[in]  mode - the amic mode(mono mode or stereo mode)
+ * 	@return     none
+ */
+void audio_set_sdm_output_mode(Audio_SDM_output_mode mode)
+{
+	sdm_output_mode = mode;
+}

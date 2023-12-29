@@ -21,6 +21,12 @@
  *          limitations under the License.
  *
  *******************************************************************************************************/
+
+#ifndef C1T197A30_H_
+#define C1T197A30_H_
+
+
+
 /**
  *  @brief  Keyboard Configuration
  */
@@ -155,3 +161,6 @@
 		#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
 	#endif
 #endif
+
+
+#endif /* C1T197A30_H_ */

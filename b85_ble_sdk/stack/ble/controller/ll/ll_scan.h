@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	ll_scan.h
+ * @file    ll_scan.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef LL_SCAN_H_
@@ -52,7 +30,7 @@
 
 /**
  * @brief      This function is used to initialize scanning module
- * @param	   none
+ * @param[in]  public_adr - public address pointer
  * @return     none
  */
 void 		blc_ll_initScanning_module(u8 *public_adr);
@@ -60,6 +38,8 @@ void 		blc_ll_initScanning_module(u8 *public_adr);
 
 /**
  * @brief      This function is used to set the scan parameters
+ * 			   Please refer to BLE Core Specification: Vol 4, Part E, 7.8.10 for more information to understand the meaning of each parameters and
+ * 			   the return values.
  * @param[in]  scan_type - passive Scanning or active scanning.
  * @param[in]  scan_interval - time interval from when the Controller started its last LE scan until it begins the subsequent LE scan
  * @param[in]  scan_window - The duration of the LE scan.
@@ -72,6 +52,8 @@ ble_sts_t	blc_ll_setScanParameter (scan_type_t scan_type, u16 scan_interval, u16
 
 /**
  * @brief	   This function is used to enable or disable legacy scanning.
+ * 			   Please refer to BLE Core Specification: Vol 4, Part E, 7.8.11 for more information to understand the meaning of each parameters and
+ * 			   the return values.
  * @param[in]  scan_enable
  * @param[in]  filter_duplicate - controls whether the Link Layer should filter out
  * 								  duplicate advertising reports (Filtering_Enabled) to the Host,
@@ -81,7 +63,7 @@ ble_sts_t	blc_ll_setScanEnable (scan_en_t scan_enable, dupFilter_en_t filter_dup
 
 
 /**
- * @brief      This function is used to add scan state in advertise state of slave role.
+ * @brief      This function is used to add scanning state in advertising state of slave role.
  * @param[in]  none.
  * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
@@ -89,7 +71,7 @@ ble_sts_t	blc_ll_addScanningInAdvState(void);
 
 
 /**
- * @brief      This function is used to remove scan state in advertise state of slave role.
+ * @brief      This function is used to remove scanning state in advertising state of slave role.
  * @param[in]  none.
  * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
@@ -97,7 +79,7 @@ ble_sts_t	blc_ll_removeScanningFromAdvState(void);
 
 
 /**
- * @brief      This function is used to add scan state in connect state of slave role.
+ * @brief      This function is used to add scanning state in connection state of slave role.
  * @param[in]  none.
  * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
@@ -105,7 +87,7 @@ ble_sts_t   blc_ll_addScanningInConnSlaveRole(void);
 
 
 /**
- * @brief      This function is used to remove scan state in connect state of slave role.
+ * @brief      This function is used to remove scanning state in connection state of slave role.
  * @param[in]  none.
  * @return     Status - 0x00: BLE success; 0x01-0xFF: fail
  */
@@ -141,7 +123,7 @@ ble_sts_t 	bls_ll_setScanChannelMap(adv_chn_map_t scan_channelMap);
 void		blc_ll_advReport_setRxPacketTickEnable(int en);
 
 /**
- *  @brief  Event Parameters for TLK defined special adv report event
+ *  @brief  Event Parameters for TLK defined special ADV report event
 			if user enable RX packet header Stimer tick, should this data structure to analyze ADV report event
  */
 typedef struct{

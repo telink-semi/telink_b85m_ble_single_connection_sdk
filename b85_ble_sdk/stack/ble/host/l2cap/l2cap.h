@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     l2cap.h
+ * @file    l2cap.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,8 +19,8 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
-
 #ifndef _L2CAP_H
 #define _L2CAP_H
 
@@ -41,7 +41,7 @@ typedef int (*l2cap_conn_update_rsp_callback_t) (u8 id, u16 result);
 
 
 /**
- * @brief	Connection parameter update respond
+ * @brief	Connection parameter update response
  */
 typedef enum{
 	CONN_PARAM_UPDATE_ACCEPT = 0x0000,
@@ -62,7 +62,7 @@ void		bls_l2cap_requestConnParamUpdate (u16 min_interval, u16 max_interval, u16 
 
 
 /**
- * @brief	This function is used to set the minimal time for send connect parameter update request after connect created
+ * @brief	This function is used to set the minimal time for sending connect parameter update request after connect being created
  * @param	time_ms - the unit is millisecond
  * @return	none.
  */
@@ -91,7 +91,7 @@ int 		blc_l2cap_packet_receive (u16 connHandle, u8 * p);
  * @param	p - the pointer of l2cap data
  * @return	none.
  */
-void 		blc_l2cap_reg_att_sig_handler(void *p);//signaling pkt proc
+void 		blc_l2cap_reg_att_sig_handler(void *p);
 
 
 /**
@@ -130,19 +130,6 @@ void 		blc_l2cap_registerConnUpdateRspCb(l2cap_conn_update_rsp_callback_t cb);
  * @return		Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
 ble_sts_t 	blc_l2cap_initMtuBuffer(u8 *pMTU_rx_buff, u16 mtu_rx_size, u8 *pMTU_tx_buff, u16 mtu_tx_size);
-
-
-/**
- * @brief		This function is used to push l2cap layer data to controller
- * @param[in]	connHandle - connection handle
- * @param[in]	cid   - cid part.
- * @param[in]	format - the pointer of tx buffer.
- * @param[in]	format_len   - the size of of tx buffer.
- * @param[in]	pDate - buffer that want to send.
- * @param[in]	data_len - data length.
- * @return		Status - 0x00: command succeeded; 0x01-0xFF: command failed
- */
-ble_sts_t   blc_l2cap_pushData_2_controller (u16 connHandle, u16 cid, u8 *format, int format_len, u8 *pDate, int data_len);
 
 
 #endif

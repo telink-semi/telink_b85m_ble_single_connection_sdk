@@ -21,6 +21,10 @@
  *          limitations under the License.
  *
  *******************************************************************************************************/
+#ifndef C1T139A5_H_
+#define C1T139A5_H_
+
+
 /**
  *  @brief  Keyboard Configuration
  */
@@ -163,3 +167,6 @@
 	#define PB7_INPUT_ENABLE				0
 	#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
 #endif
+
+
+#endif /* C1T139A5_H_ */

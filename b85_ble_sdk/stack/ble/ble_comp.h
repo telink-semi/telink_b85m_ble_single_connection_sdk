@@ -1,49 +1,26 @@
 /********************************************************************************************************
- * @file	ble_comp.h
+ * @file    ble_comp.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
-
 #ifndef BLE_COMP_H_
 #define BLE_COMP_H_
 
@@ -53,8 +30,8 @@
 ///////////////////////////////////controller//////////////////////////////////////
 #define blt_ll_exchangeDataLength						blc_ll_exchangeDataLength
 #define blc_ll_modifyBluetoothVersion					blc_contr_setBluetoothVersion
-#define blc_pm_modefy_brx_early_set                  blc_pm_modify_brx_early_set
-#define blc_ll_set_CustomedAdvScanAccessCode         blc_ll_set_CustomizedAdvScanAccessCode
+#define blc_pm_modefy_brx_early_set                     blc_pm_modify_brx_early_set
+#define blc_ll_set_CustomedAdvScanAccessCode            blc_ll_set_CustomizedAdvScanAccessCode
 
 #define	ll_resolvingList_reset							blc_ll_clearResolvingList
 #define	ll_resolvingList_add							blc_ll_addDeviceToResolvingList
@@ -64,12 +41,13 @@
 #define	ll_whiteList_add								blc_ll_addDeviceToWhiteList
 #define	ll_whiteList_delete								blc_ll_removeDeviceFromWhiteList
 
-#define blc_smp_setPeerAddrResSupportFlg
-#define blc_ll_resolvListInit()
-#define ll_resolvingList_setResolvablePrivateAddrTimer
+
+#define blc_ll_setExtAdvEnable_1                        blc_ll_setExtAdvEnable
 
 /////////////////////////////////////L2CAP/////////////////////////////////////////////
 #define blc_l2cap_reg_att_cli_hander					blc_l2cap_reg_att_cli_handler
+#define blc_l2cap_reg_att_sig_hander					blc_l2cap_reg_att_sig_handler
+
 
 ////////////////////////////////////host//////////////////////////////////////
 #define	blt_att_setEffectiveMtuSize						blc_att_setEffectiveMtuSize
@@ -86,8 +64,8 @@
 #define	bls_ota_registerResultIndicateCb				blc_ota_registerOtaResultIndicationCb
 #define bls_ota_setTimeout(tm_us)						blc_ota_setOtaProcessTimeout( (tm_us)/1000000 )
 
-
-
+////////////////////////////////////APP///////////////////////////////////////
+#define blc_app_loadCustomizedParameters 				blc_app_loadCustomizedParameters_normal
 
 
 
@@ -95,7 +73,7 @@
 /* for some macro name in old version SDK compatible with new version SDK */
 
 ///////////////////////////////////controller//////////////////////////////////////
-#define BLT_EV_FLAG_RX_DATA_ABANDOM                  BLT_EV_FLAG_RX_DATA_ABANDON
+#define BLT_EV_FLAG_RX_DATA_ABANDOM                  	BLT_EV_FLAG_RX_DATA_ABANDON
 /////////////////////////////////////L2CAP/////////////////////////////////////////////
 
 ////////////////////////////////////host//////////////////////////////////////
@@ -136,39 +114,17 @@
 #define PARING_FAIL_REASON_CONN_DISCONNECT				PAIRING_FAIL_REASON_CONN_DISCONNECT
 #define PARING_FAIL_REASON_SUPPORT_NC_ONLY				PAIRING_FAIL_REASON_SUPPORT_NC_ONLY
 
-#define DATA_FRAGM_ALLOWED			DATA_FRAGMENT_ALLOWED
+#define DATA_FRAGM_ALLOWED								DATA_FRAGMENT_ALLOWED
 
 /* for some data structure name in old version SDK compatible with new version SDK */
 #define gap_smp_paringSuccessEvt_t						gap_smp_pairingSuccessEvt_t
 
 
-#define adv_para_t                       hci_le_setAdvParam_cmdParam_t
-#define data_fragm_t                    data_fragment_t
 
-#define event_disconnection_t         hci_disconnectionCompleteEvt_t
+#define event_disconnection_t         					hci_disconnectionCompleteEvt_t
 
-typedef struct {
-	u8	subcode;
-	u8	status;
-	u16	handle;
-	u8	role;
-	u8	peer_adr_type;
-	u8	mac[6];
-	u16	interval;
-	u16	latency;
-	u16	timeout;
-	u8	accuracy;
-} event_connection_complete_t;			//20-byte
 
-typedef struct {
-	u8	subcode;
-	u8	status;
-	u16	handle;
-	u16	interval;
-	u16	latency;
-	u16	timeout;
-} event_connection_update_t;			//20-byte
-
+/* these old ATT APIs not recommended to use anymore */
 extern void att_req_read (u8 *p, u16 attHandle);
 extern void att_req_read_blob (u8 *p, u16 attHandle, u16 offset);
 extern void att_req_read_multi (u8 *p, u16* h, u8 n);
@@ -184,5 +140,8 @@ extern void att_req_find_by_type (u8 *p, u16 start_attHandle, u16 end_attHandle,
 extern ble_sts_t  	bls_att_pushNotifyData (u16 attHandle, u8 *p, int len);
 extern ble_sts_t	bls_att_pushIndicateData (u16 attHandle, u8 *p, int len);
 
+
+/* the OTA API not recommended to use anymore */
+extern void bls_ota_clearNewFwDataArea(void);
 
 #endif /* BLE_COMP_H_ */

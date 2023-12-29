@@ -1,108 +1,68 @@
 /********************************************************************************************************
- * @file	app_buffer.h
+ * @file    app_buffer.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
-
 #ifndef APP_BUFFER_H_
 #define APP_BUFFER_H_
 
 #include "vendor/common/user_config.h"
-//#include "stack/ble/host/l2cap/l2cap.h"
 
 
 
 
 /********************* ACL connection LinkLayer TX & RX data FIFO allocation, Begin ************************************************/
-/**
- * @brief	connMaxRxOctets
- * refer to BLE SPEC "4.5.10 Data PDU length management" & "2.4.2.21 LL_LENGTH_REQ and LL_LENGTH_RSP"
- * usage limitation:
- * 1. should be in range of 27 ~ 251
- */
-#ifndef ACL_CONN_MAX_RX_OCTETS
-#define ACL_CONN_MAX_RX_OCTETS			27	//user set value
-#endif
 
-/**
- * @brief	connMaxTxOctets
- * refer to BLE SPEC: Vol 6, Part B, "4.5.10 Data PDU length management"
- * 					  Vol 6, Part B, "2.4.2.21 LL_LENGTH_REQ and LL_LENGTH_RSP"
- *
- * usage limitation:
- * 1. should be in range of 27 ~ 251
- */
-#ifndef ACL_CONN_MAX_TX_OCTETS
-#define ACL_CONN_MAX_TX_OCTETS			27	//user set value
-#endif
 
+/* if user set ACL_CONN_MAX_RX_OCTETS in app_config.h, then RX_FIFO_SIZE will auto calculated here;
+ * otherwise, user should define it in their application code */
+#ifdef ACL_CONN_MAX_RX_OCTETS
 
 /**
  * @brief	ACL RX buffer size & number
  *  		ACL RX buffer is shared by all connections to hold LinkLayer RF RX data.
- * usage limitation for ACL_RX_FIFO_SIZE:
- * 1. must use CAL_LL_ACL_RX_FIFO_SIZE to calculate, user can not change !!!
- *
- * usage limitation for ACL_RX_FIFO_NUM:
- * 1. must be: 2^n, (power of 2)
- * 2. at least 4; recommended value: 4, 8, 16
+ * usage limitation for RX_FIFO_SIZE:
+ * 1. must use CAL_LL_ACL_RX_BUF_SIZE to calculate, user can not change !!!
  */
-#define ACL_RX_FIFO_SIZE				CAL_LL_ACL_RX_FIFO_SIZE(ACL_CONN_MAX_RX_OCTETS)  //user can not change !!!
-#define ACL_RX_FIFO_NUM					8	//user set value
+#define RX_FIFO_SIZE				CAL_LL_ACL_RX_BUF_SIZE(ACL_CONN_MAX_RX_OCTETS)  //user can not change !!!
 
+#endif
+
+
+
+/* if user set ACL_CONN_MAX_TX_OCTETS in app_config.h, then TX_FIFO_SIZE will auto calculated here;
+ * otherwise, user should define it in their application code */
+#ifdef ACL_CONN_MAX_TX_OCTETS
 /**
  * @brief	ACL TX buffer size & number
  *  		ACL Central TX buffer is shared by all central connections to hold LinkLayer RF TX data.
 *			ACL Peripheral TX buffer is shared by all peripheral connections to hold LinkLayer RF TX data.
  * usage limitation for ACL_xxx_TX_FIFO_SIZE:
- * 1. must use CAL_LL_ACL_TX_FIFO_SIZE to calculate, user can not change !!!
- *
- * usage limitation for ACL_xxx_TX_FIFO_NUM:
- * 1. must be: (2^n), (power of 2)
- * 2. at least 8; recommended value: 8, 16, 32; other value not allowed.
+ * 1. must use CAL_LL_ACL_TX_BUF_SIZE to calculate, user can not change !!!
  */
-#define ACL_TX_FIFO_SIZE				CAL_LL_ACL_TX_FIFO_SIZE(ACL_CONN_MAX_TX_OCTETS)	//user can not change !!!
-#define ACL_TX_FIFO_NUM					8	//user set value
+#define TX_FIFO_SIZE				CAL_LL_ACL_TX_BUF_SIZE(ACL_CONN_MAX_TX_OCTETS)	//user can not change !!!
+
+
+#endif
+
 
 /******************** ACL connection LinkLayer TX & RX data FIFO allocation, End ***************************************************/
 
@@ -113,7 +73,7 @@
 
 /**
  * @brief	MTU MTU size
- * refer to BLE SPEC: Vol 3, Part F, "3.2.8 Exchanging MTU size" & "3.4.2 MTU exchange"; Vol 3, Part G, "4.3.1 Exchange MTU"
+ * refer to BLE Core Specification: Vol 3, Part F, "3.2.8 Exchanging MTU size" & "3.4.2 MTU exchange"; Vol 3, Part G, "4.3.1 Exchange MTU"
  * usage limitation:
  * 1. must equal to or greater than 23(default MTU)
  * 2. if support LE Secure Connections, must equal to or bigger than 65

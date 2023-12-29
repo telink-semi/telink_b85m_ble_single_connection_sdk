@@ -157,14 +157,6 @@ typedef struct {
 
 
 
-
-typedef struct{
-	u16 adr_index;
-	u8	data[16];
-	u16 crc_16;
-}ota_pdu16_t;
-
-
 /**
  * @brief      ota crc32 related function.
  * @param[in]  crc: initial crc value.

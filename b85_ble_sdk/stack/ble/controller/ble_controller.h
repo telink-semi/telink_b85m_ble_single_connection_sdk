@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	ble_controller.h
+ * @file    ble_controller.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -34,7 +34,7 @@
 #include "stack/ble/hci/hci_cmd.h"
 #include "stack/ble/hci/hci_event.h"
 
-
+#include "stack/ble/controller/controller.h"
 #include "stack/ble/controller/ll/ll.h"
 #include "stack/ble/controller/ll/ll_adv.h"
 #include "stack/ble/controller/ll/ll_pm.h"

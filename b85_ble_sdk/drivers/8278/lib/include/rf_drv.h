@@ -582,14 +582,6 @@ static inline void rf_set_rxpara(void)
 extern void rf_drv_init (RF_ModeTypeDef rf_mode);
 
 /**
-*	@brief     This function serves to initiate the mode of RF
-*	@param[in] rf_mode  -  mode of RF
-*	@return	   none.
-*/
-
-extern void rf_multi_mode_drv_init(RF_ModeTypeDef rf_mode);
-void rf_ble_1m_param_init(void);
-/**
  * @brief   	This function serves to set RF power level index.
  * @param[in]   RF_PowerTypeDef - the RF power types.
  * @return  	none.
@@ -706,16 +698,9 @@ static inline void rf_tx_acc_code_select(unsigned char pipe)
  * @param   none.
  * @return  none.
  */
-#if 1
+
 void rf_set_tx_rx_off(void);
-#else
-static inline void rf_set_tx_rx_off(void)
-{
-	write_reg8 (0x800f16, 0x29);
-	write_reg8 (0x800428, RF_TRX_MODE);	// rx disable
-	write_reg8 (0x800f02, RF_TRX_OFF);	// reset tx/rx state machine
-}
-#endif
+
 /**
  * @brief   This function serves to turn off RF auto mode.
  * @param   none.

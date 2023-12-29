@@ -533,11 +533,11 @@ static inline void usb_power_on(unsigned char en)
 {
 	if(en)
 	{
-		analog_write(0x34,analog_read(0x34)|0x02);
+	    analog_write(0x34,analog_read(0x34)&0xfd);
 	}
 	else
 	{
-		analog_write(0x34,analog_read(0x34)&0xfd);
+	    analog_write(0x34,analog_read(0x34)|0x02);
 	}
 }
 /**

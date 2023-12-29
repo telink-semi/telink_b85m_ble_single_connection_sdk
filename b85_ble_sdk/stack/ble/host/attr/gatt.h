@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     gatt.h
+ * @file    gatt.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,8 +19,8 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
-
 #ifndef GATT_H_
 #define GATT_H_
 
@@ -60,7 +60,7 @@ ble_sts_t	blc_gatt_pushHandleValueIndicate(u16 connHandle, u16 attHandle, u8 *p,
 
 
 /**
- * @brief	   This function is used to This function is used to request the server to write the value of an attribute without response.
+ * @brief	   This function is used to request the server to write the value of an attribute without response.
  * @param[in]  connHandle -  connection handle
  * @param[in]  attHandle - attribute handle.
  * @param[in]  p -  data buffer pointer
@@ -85,7 +85,7 @@ ble_sts_t 	blc_gatt_pushWriteRequest (u16 connHandle, u16 attHandle, u8 *p, int 
 
 /**
  * @brief	   This function is used to obtain the mapping of attribute handles with their associated types
- * 			   and allows a client to discover the list of attributes and their types on a server.
+ * 			   and allow a client to discover the list of attributes and their types on a server.
  * @param[in]  connHandle -  connection handle
  * @param[in]  start_attHandle - start attribute handle.
  * @param[in]  end_attHandle -  end attribute handle.
@@ -198,7 +198,7 @@ ble_sts_t	blc_gatt_pushReadMultiRequest(u16 connHandle, u8 numHandles, u16 *pHan
 ble_sts_t	blc_gatt_pushReadMultiVariableRequest(u16 connHandle, u8 numHandles, u16 *pHandle);
 
 /**
- * @brief       This function is used to send ATT Err Response.
+ * @brief       This function is used to send ATT Error Response.
  * @param[in]   connHandle - connection handle.
  * @param[in]   reqOpcode - request option code.
  * @param[in]   attHdlInErr - ATT handle in error.

@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	config.h
+ * @file    config.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -37,9 +37,8 @@
 
 
 #define	MCU_CORE_825x 		1
-#define	MCU_CORE_8258 		1
 #define MCU_CORE_827x       2
-#define MCU_CORE_8278       2
+
 
 
 

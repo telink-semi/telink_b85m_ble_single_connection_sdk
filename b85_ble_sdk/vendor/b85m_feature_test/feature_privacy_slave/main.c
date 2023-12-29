@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	main.c
+ * @file    main.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -36,7 +36,7 @@
  */
 _attribute_ram_code_ void irq_handler(void)
 {
-	irq_blt_sdk_handler ();
+	irq_blt_sdk_handler();
 }
 
 /**
@@ -58,22 +58,22 @@ _attribute_ram_code_ int main (void)    //must run in ramcode
 
 	rf_drv_ble_init();
 
-	gpio_init( !deepRetWakeUp );  //analog resistance will keep available in deepSleep mode, so no need initialize again
+	gpio_init(!deepRetWakeUp);  //analog resistance will keep available in deepSleep mode, so no need initialize again
 
 	clock_init(SYS_CLK_TYPE);
 
 	if( deepRetWakeUp ){
-		user_init_deepRetn ();
+		user_init_deepRetn();
 	}
 	else{
-		user_init_normal ();
+		user_init_normal();
 	}
 
     irq_enable();
 
 
 	while (1) {
-		main_loop ();
+		main_loop();
 	}
 }
 

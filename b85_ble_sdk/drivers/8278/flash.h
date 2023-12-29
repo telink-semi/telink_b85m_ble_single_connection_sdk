@@ -82,14 +82,6 @@ typedef enum{
 }flash_status_typedef_e;
 
 /**
- * @brief     flash uid cmd definition
- */
-typedef enum{
-	FLASH_UID_CMD_GD_PUYA   = 0x4b,
-	FLASH_XTX_READ_UID_CMD	= 0x5A,
-}flash_uid_cmddef_e;
-
-/**
  * @brief     flash vendor and technology definition
  */
 typedef enum{
@@ -139,8 +131,8 @@ typedef enum {
 } Flash_VoltageDef;
 
 typedef void (*flash_handler_t)(unsigned long, unsigned long, unsigned char*);
-extern flash_handler_t flash_read_page;
-extern flash_handler_t flash_write_page;
+extern _attribute_data_retention_ flash_handler_t flash_read_page;
+extern _attribute_data_retention_ flash_handler_t flash_write_page;
 
 /*******************************************************************************************************************
  *												Primary interface
@@ -272,7 +264,7 @@ void flash_read_uid(unsigned char idcmd, unsigned char *buf);
 int flash_read_mid_uid_with_check( unsigned int *flash_mid, unsigned char *flash_uid);
 
 /**
- * @brief		This function serves to get flash vendor.
+ * @brief		This function serves to judge whether flash vendor is ZB.
  * @param[in]	none.
  * @return		0 - err, other - flash vendor.
  */
@@ -295,30 +287,35 @@ void flash_vdd_f_calib(void);
 static inline unsigned short flash_get_vdd_f_calib_value(void)
 {
 	unsigned int mid = flash_read_mid();
-	unsigned short flash_volatage = 0;
+	unsigned short flash_voltage = 0;
 	switch((mid & 0xff0000) >> 16)
 	{
 	case(FLASH_SIZE_64K):
-		flash_read_page(0xe1c0, 2, (unsigned char*)&flash_volatage);
+		flash_read_page(0xe1c0, 2, (unsigned char*)&flash_voltage);
 		break;
 	case(FLASH_SIZE_128K):
-		flash_read_page(0x1e1c0, 2, (unsigned char*)&flash_volatage);
+		flash_read_page(0x1e1c0, 2, (unsigned char*)&flash_voltage);
 		break;
 	case(FLASH_SIZE_512K):
-		flash_read_page(0x771c0, 2, (unsigned char*)&flash_volatage);
+		flash_read_page(0x771c0, 2, (unsigned char*)&flash_voltage);
 		break;
 	case(FLASH_SIZE_1M):
-		flash_read_page(0xfe1c0, 2, (unsigned char*)&flash_volatage);
+		flash_read_page(0xfe1c0, 2, (unsigned char*)&flash_voltage);
 		break;
 	case(FLASH_SIZE_2M):
-		flash_read_page(0x1fe1c0, 2, (unsigned char*)&flash_volatage);
+		flash_read_page(0x1fe1c0, 2, (unsigned char*)&flash_voltage);
 		break;
 	default:
-		flash_volatage = 0xff;
+		flash_voltage = 0xff;
 		break;
 	}
-	return flash_volatage;
+	return flash_voltage;
 }
 
+/**
+ * @brief		This function serves to get flash vendor.
+ * @param[in]	none.
+ * @return		0 - err, other - flash vendor.
+ */
 unsigned int flash_get_vendor(unsigned int flash_mid);
 

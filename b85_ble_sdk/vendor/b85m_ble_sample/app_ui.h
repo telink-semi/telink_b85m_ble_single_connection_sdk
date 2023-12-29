@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app_ui.h
+ * @file    app_ui.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -21,8 +21,8 @@
  *          limitations under the License.
  *
  *******************************************************************************************************/
-#ifndef VENDOR_B91M_BLE_SAMPLE_APP_UI_H_
-#define VENDOR_B91M_BLE_SAMPLE_APP_UI_H_
+#ifndef APP_UI_H_
+#define APP_UI_H_
 
 #include "app_config.h"
 
@@ -54,7 +54,7 @@ extern int 	key_not_released;
  * @param[in]  n - data length of event
  * @return     none
  */
-void proc_keyboard (u8 e, u8 *p, int n);
+void proc_keyboard(u8 e, u8 *p, int n);
 
 
 
@@ -74,7 +74,7 @@ extern int button_not_released;
  * @param[in]	n - event callback data length when this function is triggered by LinkLayer event
  * @return      none
  */
-void proc_button (u8 e, u8 *p, int n);
+void proc_button(u8 e, u8 *p, int n);
 
 
 #endif
@@ -84,4 +84,4 @@ void proc_button (u8 e, u8 *p, int n);
 
 
 
-#endif /* VENDOR_B91M_BLE_SAMPLE_APP_UI_H_ */
+#endif /* APP_UI_H_ */

@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	app_config.h
+ * @file    app_config.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #pragma once
@@ -50,9 +28,21 @@
 #define BLE_APP_PM_ENABLE								1
 #define PM_DEEPSLEEP_RETENTION_ENABLE					1
 #define TEST_CONN_CURRENT_ENABLE            			0 	//test connection current, disable UI to have a pure power
-#define BLE_APP_SECURITY_ENABLE      				1
-#define BLE_OTA_SERVER_ENABLE							1
-#define APP_FLASH_PROTECTION_ENABLE						0
+#define BLE_APP_SECURITY_ENABLE      					1	//ACL Slave device SMP, strongly recommended enabled
+#define BLE_OTA_SERVER_ENABLE							0
+
+/* Flash Protection:
+ * 1. Flash protection is enabled by default in SDK. User must enable this function on their final mass production application.
+ * 2. User should use "Unlock" command in Telink BDT tool for Flash access during development and debugging phase.
+ * 3. Flash protection demonstration in SDK is a reference design based on sample code. Considering that user's final application may
+ *    different from sample code, for example, user's final firmware size is bigger, or user have a different OTA design, or user need
+ *    store more data in some other area of Flash, all these differences imply that Flash protection reference design in SDK can not
+ *    be directly used on user's mass production application without any change. User should refer to sample code, understand the
+ *    principles and methods, then change and implement a more appropriate mechanism according to their application if needed.
+ */
+#define APP_FLASH_PROTECTION_ENABLE						1
+
+/* User must check battery voltage on mass production application to prevent abnormal writing or erasing Flash at a low voltage !!! */
 #define APP_BATT_CHECK_ENABLE							0
 
 ///////////////////////// DEBUG  Configuration ////////////////////////////////////////////////
@@ -80,8 +70,8 @@
 
 
 ///////////////////////// UI Configuration ////////////////////////////////////////////////////
-#define	UI_KEYBOARD_ENABLE							1
-#define	UI_LED_ENABLE									1
+#define	UI_KEYBOARD_ENABLE								0
+#define	UI_LED_ENABLE									0
 #define	UI_BUTTON_ENABLE								0
 
 #if (UI_KEYBOARD_ENABLE)
@@ -101,34 +91,12 @@
 /////////////////// DEEP SAVE FLG //////////////////////////////////
 #define USED_DEEP_ANA_REG                   DEEP_ANA_REG0 //u8,can save 8 bit info when deep
 #define	LOW_BATT_FLG					    BIT(0) //if 1: low battery
-#define CONN_DEEP_FLG	                    BIT(1) //if 1: conn deep, 0: adv deep
-
-
-
+#define CONN_DEEP_FLG	                    BIT(1) //if 1: conn deep, 0: ADV deep
 
 
 
 ///////////////////////// System Clock  Configuration /////////////////////////////////////////
 #define CLOCK_SYS_CLOCK_HZ  								16000000
-
-#if (CLOCK_SYS_CLOCK_HZ == 16000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_16M_Crystal
-#elif (CLOCK_SYS_CLOCK_HZ == 24000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_24M_Crystal
-#elif(CLOCK_SYS_CLOCK_HZ == 32000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_32M_Crystal
-#elif(CLOCK_SYS_CLOCK_HZ == 48000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_48M_Crystal
-#else
-	#error "unsupported system clock !"
-#endif
-
-enum{
-	CLOCK_SYS_CLOCK_1S = CLOCK_SYS_CLOCK_HZ,
-	CLOCK_SYS_CLOCK_1MS = (CLOCK_SYS_CLOCK_1S / 1000),
-	CLOCK_SYS_CLOCK_1US = (CLOCK_SYS_CLOCK_1S / 1000000),
-};
-
 
 
 /////////////////// watchdog  //////////////////////////////
@@ -151,4 +119,4 @@ enum{
 #endif
 
 
-#include "../common/default_config.h"
+#include "vendor/common/default_config.h"

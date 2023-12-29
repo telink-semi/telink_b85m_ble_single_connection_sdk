@@ -54,6 +54,7 @@
 #include "dfifo.h"
 #include "dma.h"
 #include "timer.h"
+#include "usbhw.h"
 #include "s7816.h"
 #include "qdec.h"
 #include "lpc.h"

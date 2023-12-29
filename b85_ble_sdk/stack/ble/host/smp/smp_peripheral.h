@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     smp_peripheral.h
+ * @file    smp_peripheral.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,6 +19,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 #ifndef SMP_PERIPHERAL_H_
 #define SMP_PERIPHERAL_H_
@@ -53,6 +54,17 @@ void 		blc_smp_configSecurityRequestSending( secReq_cfg newConn_cfg,  secReq_cfg
  */
 int 		blc_smp_sendSecurityRequest (void);
 
+
+
+/**
+ * @brief      This function is used to set the maximum number of devices that can be bound.
+ * 			   attention: 1. this API is used on Slave device only; Master device can not be set !!!
+ * 			   			  2. return an error code if device_num greater than the number stack can support, user need check !!!
+ * @param[in]  device_num - Set the maximum number of devices that can be bound.
+ * @return     error code: 0 - set success
+ *                         others - error code for setting fail
+ */
+init_err_t 	blc_smp_param_setBondingDeviceMaxNumber ( int device_num);
 
 
 

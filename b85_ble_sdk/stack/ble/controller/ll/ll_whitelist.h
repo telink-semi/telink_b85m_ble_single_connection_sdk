@@ -1,12 +1,12 @@
 /********************************************************************************************************
- * @file	whitelist.h
+ * @file    ll_whitelist.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	09,2022
+ * @author  BLE GROUP
+ * @date    06,2020
  *
- * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
  *          Licensed under the Apache License, Version 2.0 (the "License");
  *          you may not use this file except in compliance with the License.
@@ -29,16 +29,19 @@
 /**
  * @brief      This function is used to clear WhiteList
  * @param[in]  none
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * @return     Status - 0x00: command succeeded;
+ *  * 			        Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t		blc_ll_clearWhiteList(void);
 
 
 /**
- * @brief      This function is used to add a device form WhiteList
+ * @brief      This function is used to add a device to WhiteList
+ *             attention: maximum device number in Resolving list is 2 by default. Please contact Telink if this number can not meet your requirement.
  * @param[in]  adr_type - device address type
  * @param[in]  addr - device address
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * @return     Status - 0x00: command succeeded;
+ * 			            Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t		blc_ll_addDeviceToWhiteList(u8 adr_type, u8 *addr);
 
@@ -47,7 +50,8 @@ ble_sts_t		blc_ll_addDeviceToWhiteList(u8 adr_type, u8 *addr);
  * @brief      This function is used to delete a device from WhiteList
  * @param[in]  adr_type - device address type
  * @param[in]  addr - device address
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * @return     Status - 0x00: command succeeded;
+ * 			            Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t		blc_ll_removeDeviceFromWhiteList(u8 adr_type, u8 *addr);
 

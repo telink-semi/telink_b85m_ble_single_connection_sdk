@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app.c
+ * @file    app.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -98,7 +98,6 @@ const u8	tbl_scanRsp [] = {
 };
 
 
-void slave_cfgLegAdvParam(void);
 
 
 #if (UI_KEYBOARD_ENABLE)
@@ -175,7 +174,7 @@ void slave_cfgLegAdvParam(void);
 	 * @param[in]  n    - the length of event parameter.
 	 * @return     none.
 	 */
-	void proc_keyboard (u8 e, u8 *p, int n)
+	void proc_keyboard(u8 e, u8 *p, int n)
 	{
 	    (void)e;(void)p;void(n);
 		if(clock_time_exceed(keyScanTick, 8000)){
@@ -228,10 +227,10 @@ void 	app_switch_to_undirected_adv(u8 e, u8 *p, int n)
 									 0,  NULL,
 									 MY_APP_ADV_CHANNEL,
 									 ADV_FP_NONE);
-	if(status != BLE_SUCCESS) { 	while(1);}  //debug: adv setting err
+	if(status != BLE_SUCCESS) { 	while(1);}  //debug: ADV setting err
 	status = blc_ll_setAddressResolutionEnable(0);
 
-	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set ADV enable
 }
 
 
@@ -247,8 +246,19 @@ void	task_connect (u8 e, u8 *p, int n)
 {
     (void)e;(void)p;(void)n;
 
-	rf_packet_connect_t *pConnEvt = (rf_packet_connect_t *)p;
+    tlk_contr_evt_connect_t *pConnEvt = (tlk_contr_evt_connect_t *)p;
 	tlkapi_send_string_data(APP_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
+
+#if 0
+	/* sample code for get peer Central(Master) IDA(identity address) if RPA(resolved private address) is used in packet "CONNECT_IND" */
+	u8 RxAdd = GET_RXADD_FROM_CONNECT_EVT_DATA(p);
+	if(IS_RESOLVABLE_PRIVATE_ADDR(RxAdd, pConnEvt->initA)){
+		smp_param_save_t  bondInfo;
+		if(bls_smp_param_loadByAddr(RxAdd, pConnEvt->initA, &bondInfo)){
+			tlkapi_send_string_data(APP_LOG_EN, "[APP][EVT] peer identity type and address", (u8*)&bondInfo.peer_id_adrType, 7);
+		}
+	}
+#endif
 
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 
@@ -272,24 +282,24 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 {
     (void)e;(void)p;(void)n;
 
-	tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", *p);
 	device_in_connection_state = 0;
 
-	if(*p == HCI_ERR_CONN_TIMEOUT){
+	tlk_contr_evt_terminate_t *pEvt = (tlk_contr_evt_terminate_t *)p;
+	if(pEvt->terminate_reason == HCI_ERR_CONN_TIMEOUT){
 
 	}
-	else if(*p == HCI_ERR_REMOTE_USER_TERM_CONN){  //0x13
+	else if(pEvt->terminate_reason == HCI_ERR_REMOTE_USER_TERM_CONN){
 
 	}
-	else if(*p == HCI_ERR_CONN_TERM_MIC_FAILURE){
+	else if(pEvt->terminate_reason == HCI_ERR_CONN_TERM_MIC_FAILURE){
 
 	}
 	else{
 
 	}
+	tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", pEvt->terminate_reason);
 
-
-	slave_cfgLegAdvParam();
+	app_configAdvParam();
 
 #if (UI_LED_ENABLE)
 	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  //RED light off
@@ -392,13 +402,12 @@ int app_host_event_callback (u32 h, u8 *para, int n)
 		case GAP_EVT_SMP_CONN_ENCRYPTION_DONE:
 		{
 			gap_smp_connEncDoneEvt_t* p = (gap_smp_connEncDoneEvt_t*)para;
-			tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] Pairing failed",0,0);
 
 			if(p->re_connect == SMP_STANDARD_PAIR){  //first pairing
-
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] First pairing",0,0);
 			}
 			else if(p->re_connect == SMP_FAST_CONNECT){  //auto connect
-
+				tlkapi_send_string_data(APP_LOG_EN,"[APP][SMP] Auto reconnect",0,0);
 			}
 		}
 		break;
@@ -455,10 +464,9 @@ int controller_event_callback (u32 h, u8 *p, int n)
  * @param	   none
  * @return     none
  */
-_attribute_ram_code_
 void blt_pm_proc(void)
 {
-#if(FEATURE_PM_ENABLE)
+#if(BLE_APP_PM_ENABLE)
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 	#else
@@ -470,12 +478,15 @@ void blt_pm_proc(void)
 			bls_pm_setSuspendMask (SUSPEND_DISABLE);
 		}
 	#endif
-#endif  //end of FEATURE_PM_ENABLE
+#endif  //end of BLE_APP_PM_ENABLE
 }
 
-void slave_cfgLegAdvParam(void){
-	bls_ll_setAdvEnable(BLC_ADV_DISABLE);  //adv disable
-	////////////////// config adv packet /////////////////////
+void app_configAdvParam(void){
+
+	blc_ll_initPrivacyLocalRpa(); //must call this API if user need local RPA for privacy
+
+	bls_ll_setAdvEnable(BLC_ADV_DISABLE);  //ADV disable
+	////////////////// config ADV packet /////////////////////
 	u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
 	tlkapi_send_string_u8s(APP_LOG_EN,"[APP][SMP] bond_number", bond_number);
 	smp_param_save_t  bondInfo;
@@ -533,7 +544,7 @@ void slave_cfgLegAdvParam(void){
 									 peerAddrType,  peerAddr,
 									 MY_APP_ADV_CHANNEL,
 									 ADV_FP_NONE);//  ADV_FP_NONE  ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL
-		if(adv_param_status != BLE_SUCCESS) { 	//debug: adv setting err
+		if(adv_param_status != BLE_SUCCESS) { 	//debug: ADV setting err
 			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
 			while(1);
 		}
@@ -542,21 +553,49 @@ void slave_cfgLegAdvParam(void){
 		bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_undirected_adv);
 	}
 	else{
-		app_own_address_type = OWN_ADDRESS_PUBLIC;
-		adv_param_status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
-										 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
-										 0,  NULL,
+		#if 1 //If enable, ADV used PUBLIC ADDRESS when no bonded device.
+			app_own_address_type = OWN_ADDRESS_PUBLIC;
+			adv_param_status = bls_ll_setAdvParam(  MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+											 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
+											 0,  NULL,
+											 MY_APP_ADV_CHANNEL,
+											 ADV_FP_NONE);
+			if(adv_param_status != BLE_SUCCESS) { 	//debug: ADV setting err
+				tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
+				while(1);
+			}
+			status = blc_ll_setAddressResolutionEnable(0);
+			tlkapi_send_string_u8s(APP_LOG_EN,"[APP][RPA] LL add resolution disable status",status);
+		#else //If enable, ADV used RPA when no bonded device.
+
+			u8	tmp_peer_irk[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			u8	tmp_local_irk[16];
+			u8	tmp_peer_addr[6];
+			generateRandomNum(16,tmp_local_irk);
+			generateRandomNum(6,tmp_peer_addr);
+
+			u8	tmp_peer_addr_type = OWN_ADDRESS_PUBLIC;
+
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] First Connection,made Irk and related message", tmp_local_irk,16);
+
+			u8 status =blc_ll_addDeviceToResolvingList(tmp_peer_addr_type,tmp_peer_addr,tmp_peer_irk,tmp_local_irk);
+			tlkapi_send_string_data(APP_LOG_EN,"[APP][RPA] LL resolving list add status", &status,1);
+
+			status = blc_ll_setAddressResolutionEnable(1);
+			tlkapi_send_string_u8s(APP_LOG_EN,"[APP][RPA] LL add resolution enable status",status);
+
+			status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
+										 ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC,
+										 tmp_peer_addr_type,  tmp_peer_addr,
 										 MY_APP_ADV_CHANNEL,
-										 ADV_FP_NONE);
-		if(adv_param_status != BLE_SUCCESS) { 	//debug: adv setting err
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
-			while(1);
-		}
-		status = blc_ll_setAddressResolutionEnable(0);
-		tlkapi_send_string_u8s(APP_LOG_EN,"[APP][RPA] LL add resolution disable status",status);
+										 ADV_FP_NONE);//  ADV_FP_NONE  ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL
+			if(status != BLE_SUCCESS) { 	while(1);}  //debug: ADV setting err
+
+		#endif
+
 	}
 
-		bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
+		bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
 }
 
 
@@ -601,7 +640,7 @@ _attribute_no_inline_ void user_init_normal(void)
 	////// Controller Initialization  //////////
 	blc_ll_initBasicMCU();                      //mandatory
 	blc_ll_initStandby_module(mac_public);				//mandatory
-	blc_ll_initAdvertising_module(mac_public); 	//adv module: 		 mandatory for BLE slave,
+	blc_ll_initAdvertising_module(mac_public); 	//ADV module: 		 mandatory for BLE slave,
 	blc_ll_initConnection_module();				//connection module  mandatory for BLE slave/master
 	blc_ll_initSlaveRole_module();				//slave module: 	 mandatory for BLE slave,
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
@@ -609,7 +648,7 @@ _attribute_no_inline_ void user_init_normal(void)
 
 	////// Host Initialization  //////////
 	blc_gap_peripheral_init();    //gap initialization
-	my_att_init (); //gatt initialization
+	my_att_init(); //gatt initialization
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
 
 #if (1)
@@ -657,9 +696,9 @@ _attribute_no_inline_ void user_init_normal(void)
 
 
 
-	////////////////// config adv packet /////////////////////
+	////////////////// config ADV packet /////////////////////
 
-	slave_cfgLegAdvParam(); ///note: this API set resolve list.
+	app_configAdvParam(); ///note: this API set resolve list.
 
 
 
@@ -671,28 +710,19 @@ _attribute_no_inline_ void user_init_normal(void)
 
 
 	///////////////////// Power Management initialization///////////////////
-#if(FEATURE_PM_ENABLE)
+#if(BLE_APP_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
 	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
 
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-		extern u32 _retention_use_size_div_16_;
-		if (((u32)&_retention_use_size_div_16_) < 0x400)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
-		else if (((u32)&_retention_use_size_div_16_) < 0x800)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
-		else
-		{
-			//retention size > 32k, overflow
-			//debug: deep retention size setting err
-		}
+    	blc_app_setDeepsleepRetentionSramSize(); //select DEEPSLEEP_MODE_RET_SRAM_LOW16K or DEEPSLEEP_MODE_RET_SRAM_LOW32K
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 
 		#if(MCU_CORE_TYPE == MCU_CORE_825x)
 			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(260);
 		#elif((MCU_CORE_TYPE == MCU_CORE_827x))
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(350);
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(270);
 		#endif
 	#else
 		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
@@ -715,20 +745,10 @@ _attribute_no_inline_ void user_init_normal(void)
 	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 #endif
 
-	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
-	u32 error_code1 = blc_contr_checkControllerInitialization();
-	u32 error_code2 = blc_host_checkHostInitialization();
-	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
-		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-		#if (UART_PRINT_DEBUG_ENABLE)
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
-		#endif
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
 
-		#if (UI_LED_ENABLE)
-			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
-		#endif
-		while(1);
-	}
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_privacy_slave init \n");
 }
 
@@ -770,7 +790,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
  * @param[in]  none.
  * @return     none.
  */
-_attribute_no_inline_ void main_loop (void)
+_attribute_no_inline_ void main_loop(void)
 {
 
 	////////////////////////////////////// BLE entry /////////////////////////////////
@@ -779,7 +799,7 @@ _attribute_no_inline_ void main_loop (void)
 
 	////////////////////////////////////// UI entry /////////////////////////////////
 	#if (UI_KEYBOARD_ENABLE)
-		proc_keyboard (0,0, 0);
+		proc_keyboard(0, 0, 0);
 	#endif
 
 	////////////////////////////////////// PM Process /////////////////////////////////

@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app_config.h
+ * @file    app_config.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -28,8 +28,8 @@
 #if (FEATURE_TEST_MODE == TEST_LL_PRIVACY_SLAVE)
 
 ///////////////////////// Feature Configuration////////////////////////////////////////////////
-#define FEATURE_PM_ENABLE								0
-#define PM_DEEPSLEEP_RETENTION_ENABLE				1
+#define BLE_APP_PM_ENABLE								1
+#define PM_DEEPSLEEP_RETENTION_ENABLE					1
 
 #define APP_DEFAULT_HID_BATTERY_OTA_ATTRIBUTE_TABLE		1
 
@@ -55,34 +55,8 @@
 
 
 
-
-
-
-
 ///////////////////////// System Clock  Configuration /////////////////////////////////////////
 #define CLOCK_SYS_CLOCK_HZ  								16000000
-
-#if (CLOCK_SYS_CLOCK_HZ == 16000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_16M_Crystal
-#elif (CLOCK_SYS_CLOCK_HZ == 24000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_24M_Crystal
-#elif(CLOCK_SYS_CLOCK_HZ == 32000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_32M_Crystal
-#elif(CLOCK_SYS_CLOCK_HZ == 48000000)
-	#define SYS_CLK_TYPE  									SYS_CLK_48M_Crystal
-#else
-	#error "unsupported system clock !"
-#endif
-
-enum{
-	CLOCK_SYS_CLOCK_1S = CLOCK_SYS_CLOCK_HZ,
-	CLOCK_SYS_CLOCK_1MS = (CLOCK_SYS_CLOCK_1S / 1000),
-	CLOCK_SYS_CLOCK_1US = (CLOCK_SYS_CLOCK_1S / 1000000),
-};
-
-
-
-
 
 
 
@@ -94,7 +68,7 @@ enum{
 	#define PB1_DATA_OUT                    1
 #endif
 
-#include "../common/default_config.h"
+#include "vendor/common/default_config.h"
 
 
 #endif  //end of (FEATURE_TEST_MODE == ...)

@@ -1,5 +1,5 @@
 /********************************************************************************************************
- * @file   C1T197A5.h
+ * @file    C1T197A5.h
  *
  * @brief   This is the header file for BLE SDK
  *
@@ -21,6 +21,11 @@
  *          limitations under the License.
  *
  *******************************************************************************************************/
+#ifndef C1T197A5_H_
+#define C1T197A5_H_
+
+
+
 /**
  *  @brief  Keyboard Configuration
  */
@@ -167,3 +172,7 @@
 		#define ADC_INPUT_PCHN					B7P    //corresponding  ADC_InputPchTypeDef in adc.h
 	#endif
 #endif
+
+
+
+#endif /* C1T197A5_H_ */

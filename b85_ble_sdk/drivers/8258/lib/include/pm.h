@@ -88,8 +88,9 @@ volatile unsigned int ana_32k_tick;
 #define WAKEUP_STATUS_TIMER_CORE     	    ( WAKEUP_STATUS_TIMER | WAKEUP_STATUS_CORE)
 #define WAKEUP_STATUS_TIMER_PAD		        ( WAKEUP_STATUS_TIMER | WAKEUP_STATUS_PAD)
 
-/* to compatible with some old API name */
+//API changed, compatible for the old SDK version user, define this macro.
 #define cpu_long_sleep_wakeup				cpu_long_sleep_wakeup_32k_rc
+
 /**
  * @brief sleep mode.
  * @note	After entering suspend mode,the registers of linklayer and modem return to default values,so the
@@ -335,8 +336,19 @@ extern unsigned int pm_get_32k_tick(void);
  * @brief   This function serves to initialize MCU
  * @param   none
  * @return  none
+ * @note	When this function called after power on or deep sleep wakeup, it will cost about 6~7ms for perform 32k RC calibration. 
+ * 			If do not want this logic, you can check the usage and precautions of cpu_wakeup_init_calib_32k_rc_cfg().
  */
 _attribute_ram_code_sec_noinline_ void cpu_wakeup_init(void);
+
+/**
+ * @brief 	  This function performs to configure whether to calibrate the 32k rc in the cpu_wakeup_init() when power-on or wakeup from deep sleep mode.If wakeup from deep retention sleep mode will not calibrate.
+ * @param[in] calib_flag - Choose whether to calibrate the 32k rc or not.
+ * 						1 - calibrate; 0 - not calibrate
+ * @return	  none
+ * @note	  This function will not take effect until it is called before cpu_wakeup_init(). 
+ */
+void cpu_wakeup_init_calib_32k_rc_cfg(char calib_flag);
 
 /**
  * @brief   This function serves to recover system timer from tick of internal 32k RC.
@@ -362,7 +374,7 @@ extern  pm_tim_recover_handler_t pm_tim_recover;
  * @brief      This function serves to set the working mode of MCU based on 32k crystal,e.g. suspend mode, deepsleep mode, deepsleep with SRAM retention mode and shutdown mode.
  * @param[in]  sleep_mode - sleep mode type select.
  * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 5 minutes.
+ * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 234 seconds.
  * @return     indicate whether the cpu is wake up successful.
  */
 int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
@@ -371,7 +383,7 @@ int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeD
  * @brief      This function serves to set the working mode of MCU based on 32k crystal,e.g. suspend mode, deepsleep mode, deepsleep with SRAM retention mode and shutdown mode.
  * @param[in]  sleep_mode - sleep mode type select.
  * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 5 minutes.
+ * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 234 seconds.
  * @return     indicate whether the cpu is wake up successful.
  */
 int  cpu_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
@@ -427,7 +439,6 @@ static inline void blc_pm_select_external_32k_crystal(void)
 }
 
 /**********************************  Internal APIs (not for user)***************************************************/
-extern  unsigned char 		    tl_multi_addr;
 extern  unsigned char 		    tl_24mrc_cal;
 extern 	unsigned short 			tick_32k_calib;
 extern  unsigned int 			tick_cur;
@@ -489,12 +500,6 @@ void pm_set_xtal_stable_timer_param(unsigned int delay_us, unsigned int loopnum,
  * @return  	none.
  */
 _attribute_ram_code_sec_noinline_ void pm_wait_xtal_ready(void);
-
-/**
- * @brief		this function servers to wait bbpll clock lock.
- * @return		none.
- */
-_attribute_ram_code_sec_noinline_ void pm_wait_bbpll_done(void);
 
 #if PM_LONG_SLEEP_WAKEUP_EN
 /**

@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	hci_cmd.h
+ * @file    hci_cmd.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -32,8 +32,6 @@
  *  @brief  Bluetooth Core Specification version
  */
 typedef enum{
-	BLUETOOTH_CORE_4_0			=	0x06,
-	BLUETOOTH_CORE_4_1			=	0x07,
 	BLUETOOTH_CORE_4_2			=	0x08,
 	BLUETOOTH_CORE_5_0			=	0x09,
 	BLUETOOTH_CORE_5_1			=	0x0A,
@@ -271,7 +269,7 @@ typedef enum {
 	ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL         =		0x02,  // Process scan requests from all devices and only connection requests from devices that are in the White List..
 	ADV_FP_ALLOW_SCAN_WL_ALLOW_CONN_WL          =		0x03,  // Process scan and connection requests only from devices in the White List.
 
-	ADV_FP_NONE									=		ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_ANY, //adv filter policy set to zero, not use whitelist
+	ADV_FP_NONE									=		ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_ANY, //ADV filter policy set to zero, not use whitelist
 } adv_fp_type_t;  //adv_filterPolicy_type_t
 
 
@@ -788,7 +786,7 @@ typedef enum{
 #define ADVEVT_PROP_MASK_LEGACY_CONNECTABLE_SCANNABLE			(0x0013)  // ADVEVT_PROP_MASK_LEGACY | ADVEVT_PROP_MASK_CONNECTABLE | ADVEVT_PROP_MASK_SCANNABLE
 
 /* Advertising Event Properties
- * refer to BLE SPEC:  Vol 4, Part E, "7.8.53 LE Set Extended Advertising Parameters command" & Vol 6, Part B, "4.4.2 Advertising state" for more information.
+ * refer to BLE Core Specification:  Vol 4, Part E, "7.8.53 LE Set Extended Advertising Parameters command" & Vol 6, Part B, "4.4.2 Advertising state" for more information.
 */
 typedef enum{
   ADV_EVT_PROP_LEGACY_CONNECTABLE_SCANNABLE_UNDIRECTED 				       	= 0x0013,		//  0001 0011'b 	ADV_IND
@@ -1216,7 +1214,9 @@ typedef struct{
 	u8		adv_handle;
 	u8 		CTE_enable;
 }hci_le_CTE_enable_type;
-
+/**
+ * @brief  Command Parameters for "7.8.82 LE Set Connectionless IQ Sampling Enable command"
+ */
 typedef struct{
 	u16		Sync_Handle;
 	u8		Sampling_Enable;
@@ -1226,8 +1226,9 @@ typedef struct{
 	u8		Switching_pattern_len;
 	u8		Antenna_IDs[1];
 }hci_le_setConnectionless_IQsampleEn_t;
-
-
+/**
+ * @brief  Command Parameters for "7.8.83 LE Set Connection CTE Receive Parameters command"
+ */
 typedef struct{
 	u16		conn_handle;
 	u8		sampling_en;
@@ -1236,21 +1237,18 @@ typedef struct{
 
 	u8		antenna_ids[1];
 }hci_le_setConnection_CTERevParams_t;
-
+/**
+ * @brief  Command Parameters for "7.8.84 LE Set Connection CTE Transmit Parameters command"
+ */
 typedef struct{
 	u16		conn_handle;
 	u8		CTE_type;
 	u8		switching_pattern_len;
 	u8		antenna_IDs[1];
 }hci_le_setConnection_CTETransmitParams_t;
-
-typedef struct{
-	u8	support_switch_sample_rate;
-	u8	antenna_num;
-	u8	max_switch_pattern_len;
-	u8	max_cte_len;
-}cte_antenna_infor_t;
-
+/**
+ * @brief  Command Parameters for "7.8.85 LE Connection CTE Request Enable command"
+ */
 typedef struct{
 	u16		conn_handle;
 	u8		cte_req_en;
@@ -1259,12 +1257,22 @@ typedef struct{
 	u8		req_cte_len;
 	u8		req_cte_type;
 }hci_le_cteReqEn_t;
-
+/**
+ * @brief  Command Parameters for "7.8.86 LE Connection CTE Response Enable command"
+ */
 typedef struct{
 	u16		conn_handle;
 	u8		rsp_enable;
 }hci_le_cteRspEn_t;
-
+/**
+ * @brief  Command Parameters for "7.8.87 LE Read Antenna Information command"
+ */
+typedef struct{
+	u8	support_switch_sample_rate;
+	u8	antenna_num;
+	u8	max_switch_pattern_len;
+	u8	max_cte_len;
+}cte_antenna_info_t;
 
 /* Options */
 typedef enum {
@@ -1711,10 +1719,9 @@ typedef struct
 	u8		big_handle;
 	u8		reason;
 } hci_le_terminateBigParams_t;
-
-
-
-
+/**
+ *	@brief  Command Parameters for "7.8.106 LE BIG Create Sync command"
+ */
 typedef struct
 {
   	u8  	big_handle;			/* Used to identify the BIG */
@@ -1740,8 +1747,8 @@ typedef struct
 	u8   data_path_id;
 	u8   codec_id_assignNum;
 	u16  codec_id_compId;
-	u16  codec_id_venderDef;
-	u8   contro_delay[3];
+	u16  codec_id_vendorDef;
+	u8   control_delay[3];
 	u8   codec_config_len;
 	u8	 codec_config[19]; /* Max buffer length 19Byte */
 }hci_le_setupIsoDataPath_cmdParam_t;
@@ -1769,11 +1776,6 @@ typedef struct {
 	u16		conn_handle; //cis/bis handle
 } hci_le_setupIsoDataPath_retParam_t;
 
-
-
-/**
- *	@brief  Command & Return Parameters for "7.8.110 LE Remove ISO Data Path command"
- */
 typedef struct
 {
 	u16 conn_handle;
@@ -1788,10 +1790,6 @@ typedef enum {
 	DP_INPUT_OUTPUT_MASK 	= BIT(0) | BIT(1),
 } dp_dir_msk_t;
 
-
-/**
- *  @brief   for "7.8.110 LE Remove ISO Data Path command"
- */
 typedef struct {
 	u8		status;
 	u16		conn_handle; //cis/bis handle

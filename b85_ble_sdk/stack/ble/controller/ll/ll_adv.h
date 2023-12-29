@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	ll_adv.h
+ * @file    ll_adv.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef LL_ADV_H_
@@ -61,6 +39,8 @@ void 		blc_ll_initAdvertising_module(u8 *public_adr);
 
 /**
  * @brief	   This function is used to set the data used in advertising packets that have a data field.
+ *  		   Please refer to BLE Core Specification: Vol 4, Part E, 7.8.7 for more information to understand the meaning of each parameters and
+ * 			   the return values.
  * @param[in]  data -  advertising data buffer
  * @param[in]  len - The number of significant octets in the Advertising_Data.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
@@ -70,6 +50,8 @@ ble_sts_t	bls_ll_setAdvData(u8 *data, u8 len);
 
 /**
  * @brief	   This function is used to provide data used in Scanning Packets that have a data field.
+ * 			   Please refer to BLE Core Specification: Vol 4, Part E, 7.8.8 for more information to understand the meaning of each parameters and
+ * 			   the return values.
  * @param[in]  data -  Scan_Response_Data buffer
  * @param[in]  len - The number of significant octets in the Scan_Response_Data.
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
@@ -79,17 +61,21 @@ ble_sts_t 	bls_ll_setScanRspData(u8 *data, u8 len);
 
 
 /**
-* @brief	   This function is used to set whether to check the adv_interval
-* @param[in]   enable -  adv_interval_check_enable
+* @brief	   This function is used to set whether to check the adv_interval.
+* 			   ADV interval is checked for undirected ADV by default according to BLE Core Specification.
+* 			   User can use this API to bypass the rule if they want some none standard ADV interval being used for undirected ADV.
+* @param[in]   enable -  1: check ADV interval; 0: not check ADV interval
 * @return      none
 */
-void blc_ll_setAdvIntervalCheckEnable(u8 enable);
-
+void 		blc_ll_setAdvIntervalCheckEnable(u8 enable);
 
 
 
 /**
  * @brief      This function is used to set the advertising parameters.
+ * 			   attention: this API is as same as LE controller commands "LE Set Advertising Parameters command".
+ * 			   Please refer to BLE Core Specification: Vol 4, Part E, 7.8.5 for more information to understand the meaning of each
+ * 			   parameters and the return value.
  * @param[in]  intervalMin - Minimum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)
  * @param[in]  intervalMin - Maximum advertising interval(Time = N * 0.625 ms, Range: 0x0020 to 0x4000)
  * @param[in]  advType - Advertising_Type
@@ -108,6 +94,8 @@ ble_sts_t   bls_ll_setAdvParam( u16 intervalMin,  u16 intervalMax,  adv_type_t a
 
 /**
  * @brief      This function is used to request the Controller to start or stop advertising.
+ *             Please refer to BLE Core Specification: Vol 4, Part E, 7.8.9 for more information to understand the meaning of each parameters and
+ * 			   the return values.
  * @param[in]  adv_enable - Advertising_Enable
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
@@ -189,7 +177,7 @@ static inline u32 	bls_ll_getConnectionCreateTime(void)
 
 /**
  * @brief      This function is used to add adv in connection slave role.
- * @param[in]  cmdPara - command parameter
+ * @param      none
  * @return     Status - 0x00:  success;
  * 						other: fail
  */
@@ -198,7 +186,7 @@ ble_sts_t   blc_ll_addAdvertisingInConnSlaveRole(void);
 
 /**
  * @brief      This function is used to remove adv in connection slave role.
- * @param[in]  cmdPara - command parameter
+ * @param      none
  * @return     Status - 0x00:  success;
  * 						other: fail
  */
@@ -207,7 +195,14 @@ ble_sts_t   blc_ll_removeAdvertisingFromConnSLaveRole(void);
 
 /**
  * @brief      This function is used to set ADV parameter in slave role.
- * @param[in]  cmdPara - command parameter
+ * @param[in]  adv_data -advertising data
+ * @param[in]  advData_len - length of the advertising data.
+ * @param[in]  scanRsp_data - scan response data
+ * @param[in]  scanRspData_len -  length of the scan response data.
+ * @param[in]  advType - advertising type
+ * @param[in]  ownAddrType - address type of the local device, which can be public or random
+ * @param[in]  adv_channelMap - channel map
+ * @param[in]  advFilterPolicy - advertising filter policy
  * @return     Status - 0x00:  success;
  * 						other: fail
  */
@@ -217,7 +212,7 @@ ble_sts_t 	blc_ll_setAdvParamInConnSlaveRole( u8 		  *adv_data,  u8             
 
 /**
  * @brief      This function is used to set ADV interval in slave role.
- * @param[in]  intervalMin - minimuim adv interval
+ * @param[in]  intervalMin - minimum adv interval
  * @param[in]  intervalMin - maximum adv interval
  * @return     Status - 0x00:  success;
  * 						other: fail
@@ -226,7 +221,7 @@ ble_sts_t 	bls_ll_setAdvInterval(u16 intervalMin, u16 intervalMax);
 
 
 /**
- * @brief      This function is used to set ADV aaachannel used in slave role.
+ * @brief      This function is used to set ADV channel used in slave role.
  * @param[in]  adv_channelMap - channel map
  * @return     Status - 0x00:  success;
  * 						other: fail
@@ -235,8 +230,8 @@ ble_sts_t 	bls_ll_setAdvChannelMap(adv_chn_map_t adv_channelMap);
 
 
 /**
- * @brief      This function is used to set ADV aaachannel used in slave role.
- * @param[in]  cmdPara - command parameter
+ * @brief      This function is used to set ADV filter policy used in slave role.
+ * @param[in]  advFilterPolicy - advertising filter policy
  * @return     Status - 0x00:  success;
  * 						other: fail
  */
@@ -251,17 +246,7 @@ typedef int (*advertise_prepare_handler_t) (rf_packet_adv_t * p);
  * @param[in]  p - data pointer
  * @return     none
  */
-void bls_set_advertise_prepare (void *p);
-
-
-/**
- * @brief      This function is used to read maximum adv data length.
- * @param[in]  cmdPara - command parameter
- * @return     Status - 0x00:  success;
- * 						other: fail
- */
-u16 		blc_ll_readMaxAdvDataLength(void);
-
+void 		bls_set_advertise_prepare (void *p);
 
 
 #endif /* LL_ADV_H_ */

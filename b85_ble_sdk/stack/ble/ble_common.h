@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	ble_common.h
+ * @file    ble_common.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef BLE_COMMON_H
@@ -53,7 +31,7 @@
 typedef enum {
     BLE_SUCCESS = 0,
 
-//// HCI Status, refer to BLE SPEC: Vol 1, Part F, "1.3 LIST OF ERROR CODES" for more information.
+//// HCI Status, refer to BLE Core Specification: Vol 1, Part F, "1.3 LIST OF ERROR CODES" for more information.
     HCI_ERR_UNKNOWN_HCI_CMD                                        = 0x01,
     HCI_ERR_UNKNOWN_CONN_ID                                        = 0x02,
     HCI_ERR_HW_FAILURE                                             = 0x03,
@@ -225,13 +203,16 @@ typedef enum {
 
 
 	////////////// GATT /////////////
+    INIT_ERR_GATT_PARAM_INVALID				 = 0x2300,
+
+
 
 	////////////// SMP /////////////
-
+    INIT_ERR_SMP_PARAM_INVALID				 = 0x2400,
 	/* user set bonding maximum number exceed stack design limitation. If default maximum number can not meet user's requirement,
 	 * they should contact Telink for support */
-	INIT_ERR_SMP_BONDING_MAX_NUMBER_EXCEED						   	= 0x2400,
-	INIT_ERR_SMP_MTU_SIZE_NOT_MATCH_SC						   		= 0x2401, //MTU should equal to or greater than 65 for secure connection
+	INIT_ERR_SMP_BONDING_MAX_NUMBER_EXCEED,
+	INIT_ERR_SMP_MTU_SIZE_NOT_MATCH_SC,						 //MTU should equal to or greater than 65 for secure connection
 
 
 	////////////////// Service/Profile /////////////////////
@@ -368,8 +349,8 @@ typedef enum{
 	L2CAP_MOVE_CHANNEL_RSP           		= 0x0F,
 	L2CAP_MOVE_CHANNEL_CONFIRMATION_REQ		= 0x10,
 	L2CAP_MOVE_CHANNEL_CONFIRMATION_RSP     = 0x11,
-	L2CAP_CONNECTION_PARAMETER_UPDATE_REQ	= 0x12,		L2CAP_CMD_CONN_UPD_PARA_REQ		= 0x12,
-	L2CAP_CONNECTION_PARAMETER_UPDATE_RSP	= 0x13,		L2CAP_CMD_CONN_UPD_PARA_RESP 	= 0x13,
+	L2CAP_CONN_PARAM_UPDATE_REQ				= 0x12,		L2CAP_CMD_CONN_UPD_PARA_REQ		= 0x12,
+	L2CAP_CONN_PARAM_UPDATE_RSP				= 0x13,		L2CAP_CMD_CONN_UPD_PARA_RESP 	= 0x13,
 	L2CAP_LE_CREDIT_BASED_CONNECTION_REQ 	= 0x14,
 	L2CAP_LE_CREDIT_BASED_CONNECTION_RSP 	= 0x15,
 	L2CAP_FLOW_CONTROL_CREDIT_IND 			= 0x16,

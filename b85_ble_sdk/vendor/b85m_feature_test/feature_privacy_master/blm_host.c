@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	blm_host.c
+ * @file    blm_host.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
@@ -48,8 +26,6 @@
 #include "stack/ble/ble.h"
 
 #include "app.h"
-#include "blm_att.h"
-#include "blm_pair.h"
 #include "blm_host.h"
 
 #include "application/audio/audio_config.h"
@@ -57,18 +33,11 @@
 
 #if (FEATURE_TEST_MODE == TEST_LL_PRIVACY_MASTER)
 
-main_service_t		main_service = 0;
-
 #define SMP_PENDING					1   //security management
-#define SDP_PENDING					2   //service discovery
 
-int	app_host_smp_sdp_pending = 0; 		//security & service discovery
-
-
-extern bool		blm_push_fifo (int connHandle, u8 *dat);
+int	central_smp_pending = 0; 		//security & service discovery
 
 
-dev_char_info_t cur_conn_device;
 
 ////////////////////////////////////////////////////////////////////
 u32 host_update_conn_param_req = 0;
@@ -87,6 +56,9 @@ int master_auto_connect = 0;
 int user_manual_pairing;
 
 
+int	central_pairing_enable = 0;
+int central_unpair_enable = 0;
+
 
 const u8 	telink_adv_trigger_pairing[] = {5, 0xFF, 0x11, 0x02, 0x01, 0x00};
 const u8 	telink_adv_trigger_unpair[] = {5, 0xFF, 0x11, 0x02, 0x01, 0x01};
@@ -94,105 +66,12 @@ const u8 	telink_adv_trigger_unpair[] = {5, 0xFF, 0x11, 0x02, 0x01, 0x01};
 const u8 	telink_adv_trigger_pairing_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x00, 0x58, 0x82};
 const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0x58, 0x82};
 
+//need define att handle same with slave
+#define 		HID_HANDLE_MOUSE_REPORT
+#define			HID_HANDLE_CONSUME_REPORT			25
+#define			HID_HANDLE_KEYBOARD_REPORT			29
+#define			AUDIO_HANDLE_MIC					52
 
-#if (BLE_HOST_SIMPLE_SDP_ENABLE)
-	extern void host_att_service_disccovery_clear(void);
-	int host_att_client_handler (u16 connHandle, u8 *p);
-	ble_sts_t  host_att_discoveryService (u16 handle, att_db_uuid16_t *p16, int n16, att_db_uuid128_t *p128, int n128);
-
-
-	#define				ATT_DB_UUID16_NUM		20
-	#define				ATT_DB_UUID128_NUM		8
-
-	u8 	conn_char_handler[11] = {0};
-
-
-	u8	serviceDiscovery_adr_type;
-	u8	serviceDiscovery_address[6];
-
-
-	extern const u8 my_MicUUID[16];
-	extern const u8 my_SpeakerUUID[16];
-	extern const u8 my_OtaUUID[16];
-	extern const u8 sAudioGoogleTXUUID[16];
-	extern const u8 sAudioGoogleRXUUID[16];
-	extern const u8 sAudioGoogleCTLUUID[16];
-
-	/**
-	 * @brief      callback function of service discovery
-	 * @param[in]  none
-	 * @return     none
-	 */
-	void app_service_discovery ()
-	{
-
-		att_db_uuid16_t 	db16[ATT_DB_UUID16_NUM];
-		att_db_uuid128_t 	db128[ATT_DB_UUID128_NUM];
-		memset (db16, 0, ATT_DB_UUID16_NUM * sizeof (att_db_uuid16_t));
-		memset (db128, 0, ATT_DB_UUID128_NUM * sizeof (att_db_uuid128_t));
-
-
-		if ( IS_CONNECTION_HANDLE_VALID(cur_conn_device.conn_handle) && \
-			 host_att_discoveryService (cur_conn_device.conn_handle, db16, ATT_DB_UUID16_NUM, db128, ATT_DB_UUID128_NUM) == BLE_SUCCESS)	// service discovery OK
-		{
-			//int h = current_connHandle & 7;
-			conn_char_handler[0] = blm_att_findHandleOfUuid128 (db128, my_MicUUID);			//MIC
-			conn_char_handler[1] = blm_att_findHandleOfUuid128 (db128, my_SpeakerUUID);		//Speaker
-			conn_char_handler[2] = blm_att_findHandleOfUuid128 (db128, my_OtaUUID);			//OTA
-
-
-			conn_char_handler[3] = blm_att_findHandleOfUuid16 (db16, CHARACTERISTIC_UUID_HID_REPORT,
-						HID_REPORT_ID_CONSUME_CONTROL_INPUT | (HID_REPORT_TYPE_INPUT<<8));		//consume report
-
-			conn_char_handler[4] = blm_att_findHandleOfUuid16 (db16, CHARACTERISTIC_UUID_HID_REPORT,
-						HID_REPORT_ID_KEYBOARD_INPUT | (HID_REPORT_TYPE_INPUT<<8));				//normal key report in
-
-			conn_char_handler[5] = blm_att_findHandleOfUuid16 (db16, CHARACTERISTIC_UUID_HID_REPORT,
-						HID_REPORT_ID_MOUSE_INPUT | (HID_REPORT_TYPE_INPUT<<8));				//mouse report
-
-			conn_char_handler[6] = blm_att_findHandleOfUuid16 (db16, CHARACTERISTIC_UUID_HID_REPORT,
-						HID_REPORT_ID_KEYBOARD_INPUT | (HID_REPORT_TYPE_OUTPUT<<8));				//normal key report out
-
-			conn_char_handler[7] = blm_att_findHandleOfUuid16 (db16, CHARACTERISTIC_UUID_HID_REPORT,
-						HID_REPORT_ID_AUDIO_FIRST_INPUT | (HID_REPORT_TYPE_INPUT<<8));				//Audio first report
-
-
-			//save current service discovery conn address
-			serviceDiscovery_adr_type = cur_conn_device.mac_adrType;
-			memcpy(serviceDiscovery_address, cur_conn_device.mac_addr, 6);
-		}
-
-		app_host_smp_sdp_pending = 0;  //service discovery finish
-
-	}
-
-	void app_register_service (void *p)
-	{
-		main_service = p;
-	}
-
-
-
-
-	#define			HID_HANDLE_CONSUME_REPORT			conn_char_handler[3]
-	#define			HID_HANDLE_KEYBOARD_REPORT			conn_char_handler[4]
-	#define			HID_HANDLE_MOUSE_REPORT				conn_char_handler[5]
-	#define			AUDIO_HANDLE_MIC					conn_char_handler[0]
-	#define			HID_HANDLE_KEYBOARD_REPORT_OUT		conn_char_handler[6]
-	#define			AUDIO_FIRST_REPORT					conn_char_handler[7]
-
-
-
-#else  //no service discovery
-
-	//need define att handle same with slave
-	#define 		HID_HANDLE_MOUSE_REPORT
-	#define			HID_HANDLE_CONSUME_REPORT			25
-	#define			HID_HANDLE_KEYBOARD_REPORT			29
-	#define			AUDIO_HANDLE_MIC					52
-
-
-#endif
 
 
 
@@ -205,21 +84,9 @@ const u8 	telink_adv_trigger_unpair_8258[] = {7, 0xFF, 0x11, 0x02, 0x01, 0x01, 0
  */
 int app_host_smp_finish (void)  //smp finish callback
 {
-	if(app_host_smp_sdp_pending == SMP_PENDING)
-	{
-		//new slave device, should do service discovery again
-		if (cur_conn_device.mac_adrType != serviceDiscovery_adr_type || \
-			memcmp(cur_conn_device.mac_addr, serviceDiscovery_address, 6))
-		{
-			app_register_service(&app_service_discovery);
-			app_host_smp_sdp_pending = SDP_PENDING; //service discovery busy
-		}
-		else
-		{
-			app_host_smp_sdp_pending = 0;  //no need sdp
-
-		}
-	}
+#if (BLE_HOST_SMP_ENABLE)
+	central_smp_pending = 0;
+#endif
 
 	return 0;
 }
@@ -229,7 +96,7 @@ int app_host_smp_finish (void)  //smp finish callback
 
 /**
  * @brief      call this function when  HCI Controller Event :HCI_SUB_EVT_LE_ADVERTISING_REPORT
- *     		   after controller is set to scan state, it will report all the adv packet it received by this event
+ *     		   after controller is set to scan state, it will report all the ADV packet it received by this event
  * @param[in]  p - data pointer of event
  * @return     0
  */
@@ -238,20 +105,21 @@ int blm_le_adv_report_event_handle(u8 *p)
 	event_adv_report_t *pa = (event_adv_report_t *)p;
 	s8 rssi = pa->data[pa->len];
 
-	 //if previous connection smp&sdp not finish, can not create a new connection
-	if(app_host_smp_sdp_pending){
-		return 1;
-	}
+	#if (BLE_HOST_SMP_ENABLE)
+		if(central_smp_pending){ 	 //if previous connection SMP not finish, can not create a new connection
+			return 1;
+		}
+	#endif
 
 	/****************** key press or Adv pair packet triggers pair ***********************/
 	int master_auto_connect = 0;
 	int user_manual_pairing = 0;
 
 	//manual pairing methods 1: key press triggers
-	user_manual_pairing = pairing_enable && (rssi > -56);  //key press trigger pairing(rssi threshold, short distance)
+	user_manual_pairing = central_pairing_enable && (rssi > -56);  //key press trigger pairing(rssi threshold, short distance)
 
-	//manual pairing methods 2: special pairing adv data
-	if(!user_manual_pairing){  //special adv pair data can also trigger pairing
+	//manual pairing methods 2: special pairing ADV data
+	if(!user_manual_pairing){  //special ADV pair data can also trigger pairing
 		user_manual_pairing = (memcmp(pa->data, telink_adv_trigger_pairing_8258, sizeof(telink_adv_trigger_pairing_8258)) == 0) && (rssi > -56);
 	}
 
@@ -292,7 +160,7 @@ int blm_le_adv_report_event_handle(u8 *p)
 		int device_is_bond;
 
 		device_is_bond = tbl_bond_slave_search(pa->adr_type, pa->mac);
-		if(device_is_bond){ //this adv mac is bonded in master
+		if(device_is_bond){ //this ADV mac is bonded in master
 			tbl_bond_slave_delete_by_adr(pa->adr_type, pa->mac);  //by telink stack host smp
 		}
 	}
@@ -331,7 +199,9 @@ int blm_le_connection_establish_event_handle(u8 *p)
 		memcpy(cur_conn_device.mac_addr, pCon->peerAddr, 6);
 
 
-		app_host_smp_sdp_pending = SMP_PENDING; //pair & security first
+		#if (BLE_HOST_SMP_ENABLE)
+			central_smp_pending = 1; //pair & security first
+		#endif
 
 	}
 
@@ -350,23 +220,23 @@ int blm_le_connection_establish_event_handle(u8 *p)
  */
 int 	blm_disconnect_event_handle(u8 *p)
 {
-	hci_disconnectionCompleteEvt_t	*pd = (hci_disconnectionCompleteEvt_t *)p;
+	hci_disconnectionCompleteEvt_t	*pDisConn = (hci_disconnectionCompleteEvt_t *)p;
 
 	//terminate reason
 	//connection timeout
-	if(pd->reason == HCI_ERR_CONN_TIMEOUT){
+	if(pDisConn->reason == HCI_ERR_CONN_TIMEOUT){
 
 	}
 	//peer device(slave) send terminate cmd on link layer
-	else if(pd->reason == HCI_ERR_REMOTE_USER_TERM_CONN){
+	else if(pDisConn->reason == HCI_ERR_REMOTE_USER_TERM_CONN){
 
 	}
 	//master host disconnect( blm_ll_disconnect(BLM_CONN_HANDLE, HCI_ERR_REMOTE_USER_TERM_CONN) )
-	else if(pd->reason == HCI_ERR_CONN_TERM_BY_LOCAL_HOST){
+	else if(pDisConn->reason == HCI_ERR_CONN_TERM_BY_LOCAL_HOST){
 
 	}
 	 //master create connection, send conn_req, but did not received acked packet in 6 connection event
-	else if(pd->reason == HCI_ERR_CONN_FAILED_TO_ESTABLISH){
+	else if(pDisConn->reason == HCI_ERR_CONN_FAILED_TO_ESTABLISH){
 		//when controller is in initiating state, find the specified device, send connection request to slave,
 		//but slave lost this rf packet, there will no ack packet from slave, after 6 connection events, master
 		//controller send a disconnect event with reason HCI_ERR_CONN_FAILED_TO_ESTABLISH
@@ -392,25 +262,21 @@ int 	blm_disconnect_event_handle(u8 *p)
 	cur_conn_device.conn_handle = 0;  //when disconnect, clear conn handle
 
 
-	//if previous connection smp&sdp not finished, clear this flag
-	if(app_host_smp_sdp_pending){
-		app_host_smp_sdp_pending = 0;
-	}
+	//if previous connection SMP & SDP not finished, clear flag
+	#if (BLE_HOST_SMP_ENABLE)
+		if(central_smp_pending){
+			central_smp_pending = 0;
+		}
+	#endif
 
 	host_update_conn_param_req = 0; //when disconnect, clear update conn flag
-
-//	host_att_data_clear();
-
 
 	//MTU size reset to default 23 bytes when connection terminated
 	blc_att_resetEffectiveMtuSize(BLM_CONN_HANDLE);  //important
 
 	final_MTU_size = 23;
 
-	//should set scan mode again to scan slave adv packet
-	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS,
-							OWN_ADDRESS_PUBLIC, SCAN_FP_ALLOW_ADV_ANY);
-	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
+	app_configScanParameter();
 
 
 	return 0;
@@ -490,7 +356,7 @@ int controller_event_callback (u32 h, u8 *p, int n)
 			if (subEvt_code == HCI_SUB_EVT_LE_CONNECTION_COMPLETE)	// connection complete
 			{
 				//after controller is set to initiating state by host (blc_ll_createConnection(...) )
-				//it will scan the specified device(adr_type & mac), when find this adv packet, send a connection request packet to slave
+				//it will scan the specified device(adr_type & mac), when find this ADV packet, send a connection request packet to slave
 				//and enter to connection state, send connection complete event. but notice that connection complete not
 				//equals to connection establish. connection complete means that master controller set all the ble timing
 				//get ready, but has not received any slave packet, if slave rf lost the connection request packet, it will
@@ -508,10 +374,10 @@ int controller_event_callback (u32 h, u8 *p, int n)
 
 				blm_le_connection_establish_event_handle(p);
 			}
-			//--------hci le event: le adv report event ----------------------------------------
+			//--------hci le event: le ADV report event ----------------------------------------
 			else if (subEvt_code == HCI_SUB_EVT_LE_ADVERTISING_REPORT)	// ADV packet
 			{
-				//after controller is set to scan state, it will report all the adv packet it received by this event
+				//after controller is set to scan state, it will report all the ADV packet it received by this event
 
 				blm_le_adv_report_event_handle(p);
 			}
@@ -550,8 +416,14 @@ int controller_event_callback (u32 h, u8 *p, int n)
 _attribute_ram_code_
 void host_update_conn_proc(void)
 {
-	//at least 50ms later and make sure smp/sdp is finished
-	if( host_update_conn_param_req && clock_time_exceed(host_update_conn_param_req, 50000) && !app_host_smp_sdp_pending)
+	//at least 50ms later and make sure SMP/SDP is finished
+	#if (BLE_HOST_SMP_ENABLE)
+		if(central_smp_pending){
+			return;
+		}
+	#endif
+
+	if( host_update_conn_param_req && clock_time_exceed(host_update_conn_param_req, 50000))
 	{
 		host_update_conn_param_req = 0;
 
@@ -592,19 +464,7 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 	//l2cap data channel id, 4 for ATT, 5 for Signal, 6 for SMP
 	if(ptrL2cap->chanId == L2CAP_CID_ATTR_PROTOCOL)  //att data
 	{
-
-		#if (BLE_HOST_SIMPLE_SDP_ENABLE)
-			if(app_host_smp_sdp_pending == SDP_PENDING)  //ATT service discovery is ongoing
-			{
-				//when service discovery function is running, all the ATT data from slave
-				//will be processed by it,  user can only send your own att cmd after  service discovery is over
-				host_att_client_handler (conn_handle, (u8 *)ptrL2cap); //handle this ATT data by service discovery process
-			}
-		#endif
-
-
 		rf_packet_att_t *pAtt = (rf_packet_att_t*)ptrL2cap;
-		u16 attHandle = pAtt->handle0 | pAtt->handle1<<8;
 
 
 		if(pAtt->opcode == ATT_OP_EXCHANGE_MTU_REQ || pAtt->opcode == ATT_OP_EXCHANGE_MTU_RSP)
@@ -672,11 +532,10 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 	else if(ptrL2cap->chanId == L2CAP_CID_SMP) //smp
 	{
 		#if (BLE_HOST_SMP_ENABLE)
-			if(app_host_smp_sdp_pending == SMP_PENDING)
+			if(central_smp_pending)
 			{
 				blm_host_smp_handler(conn_handle, (u8 *)ptrL2cap);
 			}
-
 		#endif
 	}
 	else
@@ -688,4 +547,32 @@ int app_l2cap_handler (u16 conn_handle, u8 *raw_pkt)
 	return 0;
 }
 
+/**
+ * @brief      Function used to configuration scan parameter
+ * @param[in]  none
+ * @return     none
+ */
+void app_configScanParameter(void){
+	u8 local_addr_type = OWN_ADDRESS_PUBLIC;
+	u8	bond_number = blm_smp_getPairedDeviceNumber();
+	if(bond_number != 0)	//No bondind device
+	{
+		tlkapi_printf(APP_LOG_EN,"bond number addr not 0, is %x\n", bond_number);
+
+		smp_param_master_t  dev_param;
+
+		blm_smp_loadParametersByIndex(bond_number - 1, &dev_param);
+
+		//add bonding message to resolve list
+		blc_ll_addDeviceToResolvingList(dev_param.peer_id_adrType,dev_param.peer_id_addr,dev_param.peer_irk,dev_param.local_irk);
+
+		local_addr_type = OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC;
+
+		blc_ll_setAddressResolutionEnable(1);
+	}
+	//should set scan mode again to scan slave ADV packet
+	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS,
+			local_addr_type, SCAN_FP_ALLOW_ADV_ANY);
+	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
+}
 #endif

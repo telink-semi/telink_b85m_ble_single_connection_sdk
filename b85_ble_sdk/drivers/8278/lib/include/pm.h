@@ -85,11 +85,6 @@ volatile unsigned int ana_32k_tick;
 #define deepsleep_dp_dm_gpio_low_wake_enable()		        ( pm_set_suspend_power_cfg(PM_POWER_USB, 1) )
 #define deepsleep_dp_dm_gpio_low_wake_disable()		        ( pm_set_suspend_power_cfg(PM_POWER_USB, 0) )
 
-#define	ZB_POWER_DOWN						1 //weather to power down the RF before suspend
-#define	AUDIO_POWER_DOWN					1 //weather to power down the AUDIO before suspend
-#define	USB_POWER_DOWN						1 //weather to power down the USB before suspend  //PA5/PA6 pad low wakeup need USB power on
-
-/* to compatible with some old API name */
 #define cpu_long_sleep_wakeup								cpu_long_sleep_wakeup_32k_rc
 
 /**
@@ -366,10 +361,26 @@ extern unsigned int pm_get_32k_tick(void);
 /**
  * @brief   This function serves to initialize MCU
  * @param   power mode- set the power mode(LOD mode, DCDC mode, DCDC_LDO mode)
- * @param   xtal- set this parameter based on external crystal
+ * @param   xtal - set crystal for different application.
  * @return  none
+ * @note	1. For crystal oscillators with very slow start-up or poor quality, after calling this function,
+ * 				a reboot will be triggered (whether a reboot has occurred can be judged by using DEEP_ANA_REG0[bit1]).
+ * 				For the case where the crystal oscillator used is very slow to start, you can call the pm_set_wakeup_time_param()
+ * 				to adjust the waiting time for the crystal oscillator to start before calling the cpu_wakeup_init interface.
+ * 				When this time is adjusted to meet the crystal oscillator requirements, it will not reboot.
+ * 			2. When this function called after power on or deep sleep wakeup, it will cost about 6~7ms for perform 32k RC calibration. 
+ * 				If do not want this logic, you can check the usage and precautions of cpu_wakeup_init_calib_32k_rc_cfg().
  */
 void cpu_wakeup_init(POWER_MODE_TypeDef power_mode,XTAL_TypeDef xtal) ;
+
+/**
+ * @brief 	  This function performs to configure whether to calibrate the 32k rc in the cpu_wakeup_init() when power-on or wakeup from deep sleep mode.If wakeup from deep retention sleep mode will not calibrate.
+ * @param[in] calib_flag - Choose whether to calibrate the 32k rc or not.
+ * 						1 - calibrate; 0 - not calibrate
+ * @return	  none
+ * @note	  This function will not take effect until it is called before cpu_wakeup_init().
+ */
+void cpu_wakeup_init_calib_32k_rc_cfg(char calib_flag);
 
 /**
  * @brief   This function serves to recover system timer from tick of internal 32k RC.
@@ -395,7 +406,7 @@ extern  pm_tim_recover_handler_t pm_tim_recover;
  * @brief      This function serves to set the working mode of MCU based on 32k crystal,e.g. suspend mode, deepsleep mode, deepsleep with SRAM retention mode and shutdown mode.
  * @param[in]  sleep_mode - sleep mode type select.
  * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 5 minutes.
+ * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 234 seconds.
  * @return     indicate whether the cpu is wake up successful.
  */
 int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
@@ -404,7 +415,7 @@ int  cpu_sleep_wakeup_32k_rc(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeD
  * @brief      This function serves to set the working mode of MCU based on 32k crystal,e.g. suspend mode, deepsleep mode, deepsleep with SRAM retention mode and shutdown mode.
  * @param[in]  sleep_mode - sleep mode type select.
  * @param[in]  wakeup_src - wake up source select.
- * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 5 minutes.
+ * @param[in]  wakeup_tick - the time of short sleep, which means MCU can sleep for less than 234 seconds.
  * @return     indicate whether the cpu is wake up successful.
  */
 int  cpu_sleep_wakeup_32k_xtal(SleepMode_TypeDef sleep_mode,  SleepWakeupSrc_TypeDef wakeup_src, unsigned int  wakeup_tick);
@@ -504,7 +515,7 @@ void pm_set_xtal_stable_timer_param(unsigned int delay_us, unsigned int loopnum,
  * @param[in]  SleepDurationUs - the time of sleep.
  * @return     indicate whether the cpu is wake up successful.
  */
-int pm_long_sleep_wakeup_32k_rc (SleepMode_TypeDef sleep_mode, SleepWakeupSrc_TypeDef wakeup_src, unsigned int  SleepDurationUs);
+int pm_long_sleep_wakeup (SleepMode_TypeDef sleep_mode, SleepWakeupSrc_TypeDef wakeup_src, unsigned int  SleepDurationUs);
 #endif
 
 

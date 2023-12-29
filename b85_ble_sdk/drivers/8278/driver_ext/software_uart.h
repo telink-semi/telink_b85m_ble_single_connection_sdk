@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     software_uart.h
+ * @file    software_uart.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         01,2022
+ * @author  BLE GROUP
+ * @date    01,2022
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,8 +19,8 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
-
 #ifndef BLT_SOFTWARE_UART_H_
 #define BLT_SOFTWARE_UART_H_
 

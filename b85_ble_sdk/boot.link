@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	boot_normal.link
+ * @file    boot.link
  *
- * @brief	This is the link file for B85m
+ * @brief   This is the link file for B85m
  *
- * @author	Driver Group
- * @date	2022
+ * @author  BLE Group
+ * @date    2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -124,6 +124,7 @@ SECTIONS
 		PROVIDE(_ictag_end_ = 0x840000 + (_retention_data_size_div_256_ + 1) * 0x100);
 		
 		PROVIDE(_retention_use_size_div_16_ = (_retention_data_end_ - 0x840000  + 15 ) / 16);
+		PROVIDE(_retention_size_ = _retention_use_size_div_16_ * 16);
 }
-ASSERT(_retention_use_size_div_16_ * __PM_DEEPSLEEP_RETENTION_ENABLE < 0x800, "Error: Retention RAM size overflow.");
+ASSERT(_retention_size_ * __PM_DEEPSLEEP_RETENTION_ENABLE < 0x8000, "Error: Retention RAM size overflow.");
 ASSERT(_ram_use_end_<(__SRAM_SIZE - 600), "Error: RAM size maybe overflow.");/*600byte is the stack size used when secure connect is not enabled.*/

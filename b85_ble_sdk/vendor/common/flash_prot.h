@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	flash_prot.h
+ * @file    flash_prot.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef VENDOR_COMMON_FLASH_PROT_H_
@@ -49,6 +27,7 @@
 
 /**
  * @brief	Application Flash protection enable control. Default disable, use can enable it in app_conifg.h.
+ * 			User must enable Flash protection on mass production application !!!
  */
 #ifndef APP_FLASH_PROTECTION_ENABLE
 #define APP_FLASH_PROTECTION_ENABLE					0   //enable or disable
@@ -65,39 +44,78 @@
 
 /**
  * @brief    application lock block definition
- *   Each kind of IC have multiple flash supported, e.g. now (2023.05) B92 have 5 kind of flash supported.
- *   Different flash, especially form different vendor(such as PUYA and GD), do not use all same lock block size.
- *   If use want protect certain range of flash, they must consider different kind of flash supported lock block size.
- *   Here, we just put a few of block size to show how to use flash protection, for typically multiple boot device with firmware size smaller
- *   than 448K(for 1M capacity flash, leave 64K for system data or user data. if user need more data area, should change flash lock size)
- *   If you want use more specific flash protection area, please add by yourself.
+ *   Each kind of IC have multiple flash supported.
+ *   Different flash, especially form different vendor, do not use all same lock block size.
+ *   If user want protect certain range of flash, they must consider different kind of flash supported lock block size.
+ *   Here, we just put a few of block size to show how to use flash protection.
+ *   If user want use more specific flash protection area, they should add by themselves.
  */
 typedef enum{
-	FLASH_LOCK_LOW_256K			=	2,		//000000h-03FFFFh
+	/* lock low 256K for firmware, do not consider system data and user data.
+	 * Flash size is at least 512K in this SDK, system data is stored above 256K. User data must stored above 256K too.
+	 * If using Telink OTA, low 256K area is used for both raw firmware and new firmware storage.
+	 * If user data stored below 256K, please do not use reference code, but design and implement by themselves. */
+	FLASH_LOCK_FW_LOW_256K		=	1,		//000000h-03FFFFh
 
-	/* attention: for 512K capacity flash, can not lock all, should leave some upper sector for system data and user data */
-	FLASH_LOCK_LOW_512K			=	3,		//000000h-07FFFFh
+	/* lock low 512K for firmware, do not consider system data and user data.
+	 * 1. For 512K capacity flash
+	 * 		can not lock 512K all, should leave some upper 64K for system data and user data.
+	 *    	System data is stored above 448K(0x70000). User data must stored above 448K too. Then we can choose lock 448K.
+	 *    	If user data stored below 448K, please do not use reference code, but design and implement by themselves.
+	 * 2. For 1M capacity flash
+	 * 		System data is stored above 512K. User data must stored above 512K too.
+	 *      If using Telink OTA, low 512K area is used for both raw firmware and new firmware storage.
+	 *      If user data stored below 512K, please do not use reference code, but design and implement by themselves. */
 
-	/* attention: for 1M capacity flash, can not lock all, should leave some upper sector for system data and user data */
-	FLASH_LOCK_LOW_1M			=   4,
+	FLASH_LOCK_FW_LOW_512K		=	2,		//000000h-07FFFFh
+
+
+	/* lock low 1M for firmware, do not consider system data and user data.
+	 * User can not use this setting unless they can guarantee that they have no IC with 512K Flash internal but only with 1M Flash internal !!!
+	 *
+	 * can not lock 1M all, should leave some upper 64K for system data and user data.
+	 * System data is stored above 960K(0xF0000). User data must stored above 960K too. Then we can choose lock 960K.
+	 * If user data stored below 960K, please do not use reference code, but design and implement by themselves.
+	 *
+	 * */
+	FLASH_LOCK_FW_LOW_1M		=   3,
+
+	/* attention special case:
+	 * for some 1M capacity flash, do not support lock low 256/448/512K command, choose locking low 768K area.
+       System data is stored above 960K(0xF0000). User data must stored above 768K !!! */
 }flash_app_lock_e;
 
-
-
+/**
+ * @brief	The structure of some initialization error about flash protect.
+ */
 typedef struct{
 	u8	init_err;
 
 }flash_prot_t;
 extern flash_prot_t	blc_flashProt;
-
-
-
+/**
+ * @brief		this function serves to  locks a specific region or address range in the flash memory.
+ * @param[in]	none
+ * @return      none
+ */
 typedef void  (*flash_lock_t)(unsigned int);
+/**
+ * @brief		this function serves to unlocks a specific region or address range in the flash memory.
+ * @param[in]	none
+ * @return      none
+ */
 typedef void  (*flash_unlock_t)(void);
-
+/**
+ * @brief		this function that retrieves the lock status of a specific region or address range in the flash memory.
+ * @param[in]	none
+ * @return      none
+ */
 typedef unsigned short  (*flash_get_lock_status_t)(void);
-
-
+/**
+ * @brief		this function as a callback function for flash protection operations.
+ * @param[in]	none
+ * @return      none
+ */
 typedef void  (*flash_prot_op_callback_t)(u8, u32, u32);
 extern	flash_prot_op_callback_t 		flash_prot_op_cb;
 
@@ -116,21 +134,39 @@ extern	flash_prot_op_callback_t 		flash_prot_op_cb;
  */
 
 /* application layer event, initialization, lock flash */
-#define FLASH_OP_EVT_APP_INITIALIZATION					 	1
+#define FLASH_OP_EVT_APP_INITIALIZATION					 			1
 
 
+
+/*
+ * @brief OTA operate Flash
+ *
+ * If using Telink OTA, 2 type of Flash operation must be processed as below:
+ *     OTA operate Flash type 1: clear old firmware area(erase Flash), backup for storing new OTA data in future.
+ *     OTA operate Flash type 2: write new firmware data(write Flash) for OTA ongoing
+ *
+ * If user design and implement OTA with proprietary mechanism, Please refer to Telink OTA.
+ * 	   Sample code in BLE stack below, taking OTA writing new firmware for example:
+ * 	 		   	  	if(flash_prot_op_cb){
+ *						flash_prot_op_cb(FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_BEGIN, address_start, address_end);
+ *					}
+ *
+ * 	 		   	  	if(flash_prot_op_cb){
+ *						flash_prot_op_cb(FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_END, address_start, address_end);
+ *					}
+ */
 
 /* stack layer event, OTA initialization, clear old firmware begin, may need unlock flash */
-#define FLASH_OP_EVT_STACK_OTA_CLEAR_OLD_FW_BEGIN			10
+#define FLASH_OP_EVT_STACK_OTA_CLEAR_OLD_FW_BEGIN					10
 /* stack layer event, OTA initialization, clear old firmware end , may need restore locking flash */
-#define FLASH_OP_EVT_STACK_OTA_CLEAR_OLD_FW_END				11
+#define FLASH_OP_EVT_STACK_OTA_CLEAR_OLD_FW_END						11
 
 
 
 /* stack layer event, OTA initialization, write new firmware begin, may need unlock flash */
-#define FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_BEGIN			12
+#define FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_BEGIN					12
 /* stack layer event, OTA initialization, write new firmware begin, may need restore locking flash */
-#define FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_END				13
+#define FLASH_OP_EVT_STACK_OTA_WRITE_NEW_FW_END						13
 
 
 

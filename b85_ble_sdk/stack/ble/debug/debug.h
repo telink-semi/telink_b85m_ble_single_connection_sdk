@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	debug.h
+ * @file    debug.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	11,2022
+ * @author  BLE GROUP
+ * @date    11,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -21,7 +21,6 @@
  *          limitations under the License.
  *
  *******************************************************************************************************/
-
 #ifndef STACK_BLE_DEBUG_H_
 #define STACK_BLE_DEBUG_H_
 /**
@@ -42,7 +41,7 @@ typedef enum {
 	STK_LOG_ATT_TX		 		= BIT(21),
 
 	STK_LOG_OTA_FLOW			= BIT(24),
-	STK_LOG_OTA_DATA			= BIT(25),
+	STK_LOG_OTA_DATA			= BIT(25), 	//attention: print 16 byte OTA data only when using OTA long packet(32,48...240)
 
 	STK_LOG_ALL		 			= 0xFFFFFFFF,
 }stk_log_msk_t;

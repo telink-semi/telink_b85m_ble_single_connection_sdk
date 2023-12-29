@@ -84,14 +84,6 @@ typedef enum{
 }flash_status_typedef_e;
 
 /**
- * @brief     flash uid cmd definition
- */
-typedef enum{
-	FLASH_UID_CMD_GD_PUYA   = 0x4b,
-	FLASH_XTX_READ_UID_CMD	= 0x5A,
-}flash_uid_cmddef_e;
-
-/**
  * @brief     flash vendor and technology definition
  */
 typedef enum{
@@ -143,6 +135,7 @@ typedef enum {
 typedef void (*flash_handler_t)(unsigned long, unsigned long, unsigned char*);
 extern flash_handler_t flash_read_page;
 extern flash_handler_t flash_write_page;
+
 /*******************************************************************************************************************
  *												Primary interface
  ******************************************************************************************************************/
@@ -310,29 +303,29 @@ void flash_vdd_f_calib(void);
 static inline unsigned char flash_get_vdd_f_calib_value(void)
 {
 	unsigned int mid = flash_read_mid();
-	unsigned char dcdc_flash_volatage = 0;
+	unsigned char dcdc_flash_voltage = 0;
 	switch((mid & 0xff0000) >> 16)
 	{
 	case(FLASH_SIZE_64K):
-		flash_read_page(0xe1c0, 1, &dcdc_flash_volatage);
+		flash_read_page(0xe1c0, 1, &dcdc_flash_voltage);
 		break;
 	case(FLASH_SIZE_128K):
-		flash_read_page(0x1e1c0, 1, &dcdc_flash_volatage);
+		flash_read_page(0x1e1c0, 1, &dcdc_flash_voltage);
 		break;
 	case(FLASH_SIZE_512K):
-		flash_read_page(0x771c0, 1, &dcdc_flash_volatage);
+		flash_read_page(0x771c0, 1, &dcdc_flash_voltage);
 		break;
 	case(FLASH_SIZE_1M):
-		flash_read_page(0xfe1c0, 1, &dcdc_flash_volatage);
+		flash_read_page(0xfe1c0, 1, &dcdc_flash_voltage);
 		break;
 	case(FLASH_SIZE_2M):
-		flash_read_page(0x1fe1c0, 1, &dcdc_flash_volatage);
+		flash_read_page(0x1fe1c0, 1, &dcdc_flash_voltage);
 		break;
 	default:
-		dcdc_flash_volatage = 0xff;
+		dcdc_flash_voltage = 0xff;
 		break;
 	}
-	return dcdc_flash_volatage;
+	return dcdc_flash_voltage;
 }
 /**
  * @brief		This function serves to get flash vendor.

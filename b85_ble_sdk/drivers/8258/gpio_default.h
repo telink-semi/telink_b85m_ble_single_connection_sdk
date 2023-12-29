@@ -23,7 +23,7 @@
  *******************************************************************************************************/
 #pragma once
 
-#include "../../common/config/user_config.h"
+#include "../../common/config/user_config.h" //Add by BLE SDK
 
 #ifndef PA0_INPUT_ENABLE
 #define PA0_INPUT_ENABLE	0

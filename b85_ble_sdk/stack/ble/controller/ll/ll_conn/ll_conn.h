@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	ll_conn.h
+ * @file    ll_conn.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -41,12 +41,45 @@
 #define 		IS_CONNECTION_HANDLE_VALID(handle)  			( handle != BLE_INVALID_CONNECTION_HANDLE )
 
 /**
- * @brief      for user to initialize ACL connection module.
+ * @brief      this function is used to initialize ACL connection module.
  * 			   notice that: user must sue this API for both connection slave and master role.
  * @param	   none
  * @return     none
  */
 void		blc_ll_initConnection_module(void);
+
+
+
+/**
+ * @brief      this function is used to exchange data length
+ * @param[in]  opcode - LL Control PDU Opcode
+ * @param[in]  maxTxOct -  maximum Tx octets
+ * @return     status, 0x00:  succeed
+ * 					   other: failed
+ */
+ble_sts_t 	blc_ll_exchangeDataLength (u8 opcode, u16 maxTxOct);
+
+
+/**
+ * @brief	This function is used to obtain the effective maximum TX data length
+ * @param	none
+ * @return	EffectiveMaxTxOctets
+ */
+u16 blc_ll_get_connEffectiveMaxTxOctets(void);
+
+/**
+ * @brief	This function is used to obtain the effective maximum RX data length
+ * @param	none
+ * @return	EffectiveMaxRxOctets
+ */
+u16 blc_ll_get_connEffectiveMaxRxOctets(void);
+
+/**
+ * @brief      this function is used to set maximum MD(more data) number.
+ * @param[in]  num - max number
+ * @return     none
+ */
+void 		blc_ll_init_max_md_nums(u8 num);
 
 
 #endif /* LL_CONN_H_ */

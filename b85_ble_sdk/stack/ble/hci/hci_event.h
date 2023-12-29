@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	hci_event.h
+ * @file    hci_event.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -37,33 +37,41 @@ typedef struct {
 	u8         paraLen;
 	u8         parameters[1];
 } hci_event_t;
-
-
+/**
+ *  @brief  Definition for Command to complete HCI event packet
+ */
 typedef struct {
 	u8         numHciCmds;
 	u8         opCode_OCF;
 	u8		   opCode_OGF;
 	u8         returnParas[1];
 } hci_cmdCompleteEvt_t;
-
-
+/**
+ *  @brief  Definition for Command status HCI event packet
+ */
 typedef struct {
 	u8         status;
 	u8         numHciCmds;
 	u8         opCode_OCF;
 	u8		   opCode_OGF;
 } hci_cmdStatusEvt_t;
-
+/**
+ *  @brief  Definition for number of data packets successfully transmitted
+ */
 typedef struct{
 	u16 		connHandle;
 	u16 		numOfCmpPkts;
 }numCmpPktParamRet_t;
-
+/**
+ *  @brief  Definition for information of connection, including connect handle and number of data packets successfully transmitted
+ */
 typedef struct {
 	u8         numHandles;
 	numCmpPktParamRet_t retParams[1];//TODO
 } hci_numOfCmpPktEvt_t;
-
+/**
+ *  @brief   Definition for event of reading remote device version information
+ */
 typedef struct{
 	u8  status;
 	u16 connHandle;
@@ -71,6 +79,7 @@ typedef struct{
 	u16 compId;
 	u16 subVerNr;
 }hci_readRemVerInfoCmplEvt_t;
+
 
 typedef struct {
 	u8		   type;
@@ -101,7 +110,9 @@ typedef struct {
 	u16	handle;
 	u8  enc_enable;
 } event_enc_change_t;
-
+/**
+ *  @brief  Definition for general HCI event packet
+ */
 typedef struct {
 	u8         status;
 	u16        connHandle;
@@ -115,7 +126,6 @@ typedef struct {
 	u8	status;
 	u16	handle;
 } event_enc_refresh_t;
-
 /**
  *  @brief  Definition for HCI Encryption Key Refresh Complete event
  */
@@ -768,32 +778,7 @@ typedef struct{
 	u16     subrate_timeout;
 }hci_le_subrateChangeEvt_t;
 
-void hci_disconnectionComplete_evt(u8 status, u16 connHandle, u8 reason);
-int  hci_cmdComplete_evt(u8 numHciCmds, u8 opCode_ocf, u8 opCode_ogf, u8 paraLen, u8 *para, u8 *result);
-void hci_cmdStatus_evt(u8 numHciCmds, u8 opCode_ocf, u8 opCode_ogf, u8 status, u8 *result);
 
-
-int		hci_le_connectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr,
-                                      u16 connInterval, u16 periphr_Latency, u16 supervisionTimeout, u8 masterClkAccuracy);
-int		hci_le_enhancedConnectionComplete_evt(u8 status, u16 connHandle, u8 role, u8 peerAddrType, u8 *peerAddr, u8 *localRpa, u8 *peerRpa,
-                                              u16 connInterval, u16 connLatency, u16 supervisionTimeout, u8 masterClkAccuracy);
-void hci_le_connectionUpdateComplete_evt(u8 status, u16 connHandle, u16 connInterval,
-        									u16 connLatency, u16 supervisionTimeout);
-void hci_le_readRemoteFeaturesComplete_evt(u8 status, u16 connHandle, u8 * feature);
-
-void hci_le_channel_selection_algorithm_evt(u16 connhandle, u8 channel_selection_alg);
-void hci_le_phyUpdateComplete_evt(u16 connhandle,u8 status, u8 new_phy);
-void hci_le_data_len_update_evt(u16 connhandle,u16 effTxOctets, u16 effRxOctets, u16 maxtxtime, u16 maxrxtime);
-
-
-
-int hci_le_longTermKeyRequest_evt(u16 connHandle, u8* random, u16 ediv, u8* result);
-int hci_le_readLocalP256KeyComplete_evt(u8* localP256Key, u8 status);
-int hci_le_generateDHKeyComplete_evt(u8* DHkey, u8 status);
-int hci_le_encryptChange_evt(u16 connhandle,  u8 encrypt_en);
-int hci_le_encryptKeyRefresh_evt(u16 connhandle);
-
-int hci_remoteNateReqComplete_evt (u8* bd_addr);
 
 
 #endif /* HCI_EVENT_H_ */

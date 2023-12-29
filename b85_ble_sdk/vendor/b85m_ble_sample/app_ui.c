@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app_ui.c
+ * @file    app_ui.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -199,8 +199,7 @@ void key_change_proc(void)
  * @param[in]  n - data length of event
  * @return     none
  */
-_attribute_ram_code_
-void proc_keyboard (u8 e, u8 *p, int n)
+void proc_keyboard(u8 e, u8 *p, int n)
 {
 	if(clock_time_exceed(keyScanTick, 8000)){
 		keyScanTick = clock_time();
@@ -329,10 +328,10 @@ void proc_keyboard (u8 e, u8 *p, int n)
 	 * @param[in]	n - event callback data length when this function is triggered by LinkLayer event
 	 * @return      none
 	 */
-	void proc_button (u8 e, u8 *p, int n)
+	void proc_button(u8 e, u8 *p, int n)
 	{
 
-		int det_key = vc_detect_button (1);
+		int det_key = vc_detect_button(1);
 
 		if (det_key)  //key change: press or release
 		{

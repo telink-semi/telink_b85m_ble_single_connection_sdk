@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     smp.h
+ * @file    smp.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,8 +19,8 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
-
 #ifndef BLE_SMP_H_
 #define BLE_SMP_H_
 
@@ -116,20 +116,6 @@ typedef enum {
 
 
 /**
- * @brief  smp method
- */
-typedef enum {
-	UNSPECIFIED = 0,
-	LEGACY_JW = 0,		/* Legacy JustWorks */
-	LESC_JW,			/* LESC JustWorks */
-	PASSKEY_INPUT,		/* Passkey Entry input */
-	PASSKEY_DISPLAY,	/* Passkey Entry display */
-	LESC_NC,           	/* LESC Numeric Comparison */
-	LESC_OOB,			/* LESC Out of Band */
-	LEGACY_OOB,			/* Legacy Out of Band */
-}smp_method_t;
-
-/**
  * @brief  IO capability
  */
 typedef enum {
@@ -140,8 +126,6 @@ typedef enum {
 	IO_CAPABILITY_NO_INPUT_NO_OUTPUT= 3, 	IO_CAPABILITY_NO_IN_NO_OUT 	= 3,
 	IO_CAPABILITY_KEYBOARD_DISPLAY 	= 4,
 } io_capability_t;
-
-
 
 /**
  * @brief	Keypress Notification type
@@ -184,13 +168,6 @@ typedef struct  {
  * @return     none.
  */
 void		blc_smp_setLocalIrkGenerateStrategy (loc_irk_gen_str_t  str);
-
-/**
- * @brief      This function is used to set the maximum number of devices that can be bound.
- * @param[in]  device_num - Set the maximum number of devices that can be bound.
- * @return     none.
- */
-void 		blc_smp_param_setBondingDeviceMaxNumber ( int device_num);
 
 
 /**
@@ -244,7 +221,7 @@ void 		blc_smp_setEcdhDebugMode(ecdh_keys_mode_t mode);
  *                    1: bondable mode.
  * @return     none.
  */
-void 		blc_smp_setBondingMode(bonding_mode_t mode);			   //set bonding_mode
+void 		blc_smp_setBondingMode(bonding_mode_t mode);
 
 
 /**
@@ -262,7 +239,7 @@ void 		blc_smp_enableAuthMITM (int MITM_en);
  *                      1: Enable OOB authentication.
  * @return     none.
  */
-void 		blc_smp_enableOobAuthentication (int OOB_en);    		   //enable OOB authentication
+void 		blc_smp_enableOobAuthentication (int OOB_en);
 
 
 /**
@@ -293,17 +270,6 @@ void 		blc_smp_enableKeypress (int keyPress_en);
  */
 void 		blc_smp_setSecurityParameters (bonding_mode_t mode, int MITM_en, int OOB_en,
 										  int keyPress_en, io_capability_t ioCapablility);
-
-
-/**
- * @brief      This function is used to set device's security.
- * @param[in]  sec_level - The security level value can refer to the structure 'bonding_mode_t'.
- * @param[in]  bondable - 0: non-bondable;  1: bondable.
- * @param[in]  keypress - 0: if SC PK used keypress notify not used; 1: if SC PK used keypress notify used.
- * @param[in]  expSmpMethod - The expected smp method can refer to the structure 'smp_method_t'.
- * @return     none.
- */
-bool		blc_smp_setSecurity(le_security_mode_level_t secLevel, bool bondable, bool keypress, smp_method_t expSmpMethod);
 
 /**
  * @brief      This function is used to set TK by OOB method.
@@ -380,7 +346,7 @@ void 		blc_smp_manualSetPinCode_for_debug(u16 connHandle, u32 pinCodeInput);
  * @param[in]  oob_key - OOB key
  * @return     1
  */
-int blc_smp_generateScOobData(smp_sc_oob_data_t *oob_data, smp_sc_oob_key_t *oob_key);
+int         blc_smp_generateScOobData(smp_sc_oob_data_t *oob_data, smp_sc_oob_key_t *oob_key);
 
 /**
  * @brief      This function is used to set security connection OOB data.
@@ -390,27 +356,19 @@ int blc_smp_generateScOobData(smp_sc_oob_data_t *oob_data, smp_sc_oob_key_t *oob
  * @return     status - 0x00:  succeed
  * 			  		   other:  failed
  */
-int blc_smp_setScOobData(u16 connHandle, const smp_sc_oob_data_t *oobd_local, const smp_sc_oob_data_t *oobd_remote);
+int          blc_smp_setScOobData(u16 connHandle, const smp_sc_oob_data_t *oobd_local, const smp_sc_oob_data_t *oobd_remote);
 
 
 
 /**
  * @brief      This function is used to generate local IRK
  * 			   attention: 1. this API is involved only when local RPA is used.
+ * 			              2. user must use this API to generate IRK, other method is not allowed.
  * @param[in]  none
- * @param[out]  pIrk - pointer to local IRK buffer
- * @return    none
+ * @param[out] pLocalIrk - pointer to local IRK buffer
+ * @return     none
  */
-void blc_smp_generateLocalIrk(u8* pIrk);
-
-
-
-
-#define IO_CAPABILITY_DISPLAY_ONLY					0x00
-#define IO_CAPABILITY_DISPLAY_YESNO					0x01
-#define IO_CAPABILITY_KEYBOARD_ONLY					0x02
-#define IO_CAPABILITY_NO_IN_NO_OUT					0x03
-#define	IO_CAPABILITY_KEYBOARD_DISPLAY				0x04
+void         blc_smp_generateLocalIrk(u8* pLocalIrk);
 
 
 #endif /* BLE_SMP_H_ */

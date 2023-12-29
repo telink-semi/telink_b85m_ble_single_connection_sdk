@@ -309,7 +309,6 @@ unsigned char flash_read_status(unsigned char cmd)
  */
 __attribute__((weak)) void flash_write_status(flash_status_typedef_e type , unsigned short data)
 {
-
 	unsigned char buf[2];
 
 	buf[0] = data;
@@ -322,7 +321,7 @@ __attribute__((weak)) void flash_write_status(flash_status_typedef_e type , unsi
 }
 
 
-/* according to your appliaction */
+/* according to your application */
 #if 0
 /**
  * @brief 		This function serves to read data from the Security Registers of the flash.

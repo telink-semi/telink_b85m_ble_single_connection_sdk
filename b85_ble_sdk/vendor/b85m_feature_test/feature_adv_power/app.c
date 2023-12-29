@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app.c
+ * @file    app.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -105,16 +105,15 @@ void task_suspend_exit (u8 e, u8 *p, int n)
  * @param	   none
  * @return     none
  */
-_attribute_ram_code_
 void blt_pm_proc(void)
 {
-#if(FEATURE_PM_ENABLE)
+#if(BLE_APP_PM_ENABLE)
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 	#else
 		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
 	#endif
-#endif  //end of FEATURE_PM_ENABLE
+#endif  //end of BLE_APP_PM_ENABLE
 }
 
 
@@ -193,7 +192,7 @@ _attribute_no_inline_ void user_init_normal(void)
 	 *
 	 * 3. ADV power index: We use 0dBm in examples, higher power index will cause poser to increase
 	 *
-	 * 4. ADV interval: Bigger adv interval lead to smaller power, cause more timing for suspend/deepSleep retention
+	 * 4. ADV interval: Bigger ADV interval lead to smaller power, cause more timing for suspend/deepSleep retention
 	 *
 	 * 5. ADV channel: Power with 3 channel is bigger than power with 1 or 2 channel
 	 *
@@ -309,27 +308,18 @@ _attribute_no_inline_ void user_init_normal(void)
 		while(1);
 	}
 
-	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
 
 	/* set RF power index, user must set it after every suspend wake_up, because relative setting will be reset in suspend */
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 
 
-#if(FEATURE_PM_ENABLE)
+#if(BLE_APP_PM_ENABLE)
 	blc_ll_initPowerManagement_module();
 
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-		extern u32 _retention_use_size_div_16_;
-		if (((u32)&_retention_use_size_div_16_) < 0x400)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
-		else if (((u32)&_retention_use_size_div_16_) < 0x800)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
-		else
-		{
-			//retention size > 32k, overflow
-			//debug: deep retention size setting err
-		}
+    	blc_app_setDeepsleepRetentionSramSize(); //select DEEPSLEEP_MODE_RET_SRAM_LOW16K or DEEPSLEEP_MODE_RET_SRAM_LOW32K
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(50, 50);
 		blc_pm_setDeepsleepRetentionEarlyWakeupTiming(200);
@@ -342,20 +332,10 @@ _attribute_no_inline_ void user_init_normal(void)
 	bls_pm_setSuspendMask (SUSPEND_DISABLE);
 #endif
 
-	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
-	u32 error_code1 = blc_contr_checkControllerInitialization();
-	u32 error_code2 = blc_host_checkHostInitialization();
-	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
-		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-		#if (UART_PRINT_DEBUG_ENABLE)
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
-		#endif
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
 
-		#if (UI_LED_ENABLE)
-			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
-		#endif
-		while(1);
-	}
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_adv_power init \n");
 
 }
@@ -395,7 +375,7 @@ _attribute_ram_code_ void user_init_deepRetn(void)
  * @param[in]	none
  * @return      none
  */
-_attribute_no_inline_ void main_loop (void)
+_attribute_no_inline_ void main_loop(void)
 {
 	////////////////////////////////////// BLE entry /////////////////////////////////
 	blt_sdk_main_loop();

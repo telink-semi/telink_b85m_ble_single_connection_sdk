@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app.c
+ * @file    app.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -53,13 +53,13 @@ _attribute_data_retention_	own_addr_type_t 	app_own_address_type = OWN_ADDRESS_P
 /**
  * @brief      LinkLayer RX & TX FIFO configuration
  */
-/* CAL_LL_ACL_RX_FIFO_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
+/* CAL_LL_ACL_RX_BUF_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
 #define RX_FIFO_SIZE	64
 /* must be: 2^n, (power of 2);at least 4; recommended value: 4, 8, 16 */
 #define RX_FIFO_NUM		8
 
 
-/* CAL_LL_ACL_TX_FIFO_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
+/* CAL_LL_ACL_TX_BUF_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
 #define TX_FIFO_SIZE	40
 /* must be: (2^n), (power of 2); at least 8; recommended value: 8, 16, 32, other value not allowed. */
 #define TX_FIFO_NUM		16
@@ -161,7 +161,12 @@ void 	app_switch_to_undirected_adv(u8 e, u8 *p, int n)
 						MY_APP_ADV_CHANNEL,
 						ADV_FP_NONE);
 
-	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set adv enable
+	/* clear resolving list:
+	 * 1. delete all devices in resolving list.
+	 * 2. disable address resolution */
+	blc_ll_clearResolvingList();
+
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //must: set ADV enable
 }
 
 
@@ -177,7 +182,7 @@ void 	app_switch_to_undirected_adv(u8 e, u8 *p, int n)
 void	task_connect (u8 e, u8 *p, int n)
 {
 	(void)e;(void)p;(void)n;
-	rf_packet_connect_t *pConnEvt = (rf_packet_connect_t *)p;
+	tlk_contr_evt_connect_t *pConnEvt = (tlk_contr_evt_connect_t *)p;
 	tlkapi_send_string_data(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
 //	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 19, CONN_TIMEOUT_4S);  // 200mS
 	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
@@ -205,34 +210,35 @@ void	task_connect (u8 e, u8 *p, int n)
  * @param[in]  n - data length of event
  * @return     none
  */
-void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
+void 	task_terminate(u8 e, u8 *p, int n) //*p is terminate reason
 {
 	(void)e;(void)n;
-	tlkapi_printf(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", *p);
+
 
 	device_in_connection_state = 0;
 
 
-	if(*p == HCI_ERR_CONN_TIMEOUT){
+	tlk_contr_evt_terminate_t *pEvt = (tlk_contr_evt_terminate_t *)p;
+	if(pEvt->terminate_reason == HCI_ERR_CONN_TIMEOUT){
 
 	}
-	else if(*p == HCI_ERR_REMOTE_USER_TERM_CONN){  //0x13
+	else if(pEvt->terminate_reason == HCI_ERR_REMOTE_USER_TERM_CONN){
 
 	}
-	else if(*p == HCI_ERR_CONN_TERM_MIC_FAILURE){
+	else if(pEvt->terminate_reason == HCI_ERR_CONN_TERM_MIC_FAILURE){
 
 	}
 	else{
 
 	}
 
-
+	tlkapi_printf(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", pEvt->terminate_reason);
 
 #if (BLE_APP_PM_ENABLE)
-	 //user has push terminate pkt to ble TX buffer before deepsleep
+	 //user has push terminate packet to BLE TX buffer before deepsleep
 	if(sendTerminate_before_enterDeep == 1 && !TEST_CONN_CURRENT_ENABLE){
 		sendTerminate_before_enterDeep = 2;
-		bls_ll_setAdvEnable(BLC_ADV_DISABLE);   //disable adv
+		bls_ll_setAdvEnable(BLC_ADV_DISABLE);   //disable ADV
 	}
 #endif
 
@@ -254,7 +260,7 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
  * @param[in]  n - data length of event
  * @return     none
  */
-_attribute_ram_code_ void	task_suspend_exit (u8 e, u8 *p, int n)
+void task_suspend_exit (u8 e, u8 *p, int n)
 {
 	(void)e;(void)p;(void)n;
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
@@ -270,7 +276,7 @@ _attribute_ram_code_ void	task_suspend_exit (u8 e, u8 *p, int n)
  */
 void	task_dle_exchange (u8 e, u8 *p, int n)
 {
-	ll_data_extension_t* pEvt = (ll_data_extension_t*)p;
+	tlk_contr_evt_dataLenExg_t* pEvt = (tlk_contr_evt_dataLenExg_t*)p;
 	tlkapi_send_string_data(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] DLE exchange", &pEvt->connEffectiveMaxRxOctets, 4);
 }
 
@@ -377,60 +383,61 @@ int app_host_event_callback (u32 h, u8 *para, int n)
  * @param	   none
  * @return     none
  */
-_attribute_ram_code_ void blt_pm_proc(void)
+void blt_pm_proc(void)
 {
 
 #if(BLE_APP_PM_ENABLE)
-	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
-	#else
-		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
-	#endif
+	if(blc_ll_getCurrentState() == BLS_LINK_STATE_IDLE){ //PM module can not manage Idle state low power.
+		/* user manage BLE Idle state sleep with API "cpu_sleep_wakeup" */
+		#if (!TEST_CONN_CURRENT_ENABLE)   //test connection power, should disable deepSleep
+			if(sendTerminate_before_enterDeep == 2){  //Terminate OK
+				analog_write(USED_DEEP_ANA_REG, analog_read(USED_DEEP_ANA_REG) | CONN_DEEP_FLG);
+				cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepSleep
+			}
+		#endif
+	}
+	else{ //PM module manage advertising and ACL connection Slave role low power only
+
+		#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+			bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
+		#else
+			bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
+		#endif
 
 
-
-	//do not care about keyScan/button_detect power here, if you care about this, please refer to "8258_ble_remote" demo
+		//do not care about keyScan/button_detect power here, if you care about this, please refer to "B85m_ble_remote" demo
 			if(0){
 			}
-	#if (UI_KEYBOARD_ENABLE)
+		#if (UI_KEYBOARD_ENABLE)
 			else if(scan_pin_need || key_not_released){
-			bls_pm_setSuspendMask (SUSPEND_DISABLE);
-		}
-	#endif
+				bls_pm_setSuspendMask (SUSPEND_DISABLE);
+			}
+		#elif (UI_BUTTON_ENABLE)
+			else if(button_not_released){
+				bls_pm_setSuspendMask (SUSPEND_DISABLE);
+			}
+		#endif
 			else if(ota_is_working){
 				bls_pm_setManualLatency(0);
 			}
 
 
-
-
-
-	#if (!TEST_CONN_CURRENT_ENABLE)   //test connection power, should disable deepSleep
-			if(sendTerminate_before_enterDeep == 2){  //Terminate OK
-				analog_write(USED_DEEP_ANA_REG, analog_read(USED_DEEP_ANA_REG) | CONN_DEEP_FLG);
-				cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepSleep
-			}
-
-
+		#if (!TEST_CONN_CURRENT_ENABLE)   //test connection power, should disable deepSleep
 			if(!ota_is_working && !blc_ll_isControllerEventPending()){  //no controller event pending
-				//adv 60s, deepsleep
+				/* enter deepsleep mode after advertising for 60 seconds without being connected. */
 				if( blc_ll_getCurrentState() == BLS_LINK_STATE_ADV && !sendTerminate_before_enterDeep && \
-					clock_time_exceed(advertise_begin_tick , ADV_IDLE_ENTER_DEEP_TIME * 1000000))
-				{
+					clock_time_exceed(advertise_begin_tick , ADV_IDLE_ENTER_DEEP_TIME * 1000000)){
 					cpu_sleep_wakeup(DEEPSLEEP_MODE, PM_WAKEUP_PAD, 0);  //deepsleep
 				}
-				//conn 60s no event(key/voice/led), enter deepsleep
+				/* enter deepsleep mode after 60 seconds without any UI action(key/voice/led) in connection state. */
 				else if( device_in_connection_state && \
-						clock_time_exceed(latest_user_event_tick, CONN_IDLE_ENTER_DEEP_TIME * 1000000) )
-				{
-
-					bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN); //push terminate cmd into ble TX buffer
+						clock_time_exceed(latest_user_event_tick, CONN_IDLE_ENTER_DEEP_TIME * 1000000) ){
+					bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN); //push terminate command into BLE TX buffer
 					sendTerminate_before_enterDeep = 1;
 				}
 			}
-	#endif  //end of !TEST_CONN_CURRENT_ENABLE
-
-
+		#endif  //end of !TEST_CONN_CURRENT_ENABLE
+	}
 #endif  //end of BLE_APP_PM_ENABLE
 }
 
@@ -590,7 +597,7 @@ _attribute_no_inline_ void user_init_normal(void)
 	/* GAP initialization must be done before any other host feature initialization !!! */
 	blc_gap_peripheral_init();    //gap initialization
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
-	my_att_init (); //gatt initialization
+	my_att_init(); //gatt initialization
 	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //set MTU size, default MTU is 23 if not call this API
 
 	/* SMP Initialization may involve flash write/erase(when one sector stores too much information,
@@ -622,13 +629,13 @@ _attribute_no_inline_ void user_init_normal(void)
 	//////////// Service Initialization  Begin /////////////////////////
 	#if (BLE_OTA_SERVER_ENABLE)
 		////////////////// OTA relative ////////////////////////
-		#if (TLKAPI_DEBUG_ENABLE)
+		#if (UART_PRINT_DEBUG_ENABLE)
 			blc_debug_addStackLog(STK_LOG_OTA_FLOW);
 		#endif
 		blc_ota_initOtaServer_module();
 
-		blc_ota_setOtaProcessTimeout(30);   //OTA process timeout:  30 seconds
-		blc_ota_setOtaDataPacketTimeout(4);	//OTA data packet timeout:  4 seconds
+		//blc_ota_setOtaProcessTimeout(30);   //OTA process timeout:  30 seconds
+		//blc_ota_setOtaDataPacketTimeout(4);	//OTA data packet timeout:  4 seconds
 		blc_ota_registerOtaStartCmdCb(app_enter_ota_mode);
 		blc_ota_registerOtaResultIndicationCb(app_ota_end_result);
 	#endif
@@ -638,7 +645,7 @@ _attribute_no_inline_ void user_init_normal(void)
 
 
 //////////////////////////// User Configuration for BLE application ////////////////////////////
-	////////////////// config adv packet /////////////////////
+	////////////////// config ADV packet /////////////////////
 	u8 adv_param_status = BLE_SUCCESS;
 	#if (BLE_APP_SECURITY_ENABLE)
 		u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
@@ -649,16 +656,30 @@ _attribute_no_inline_ void user_init_normal(void)
 
 		}
 
-		if(bond_number)   //set direct adv
+		if(bond_number)   //set direct ADV
 		{
-			//set direct adv
+			/* set direct ADV
+			 * bondInfo.peer_addr_type & bondInfo.peer_addr is the address in the air packet of "CONNECT_IND" PDU stored in Flash.
+			 * if peer address is IDA(identity address), bondInfo.peer_addr is OK used here.
+			 * if peer address is RPA(resolved private address), bondInfo.peer_addr is one RPA peer device has used, it has a correct relation
+			 * with peer IRK, so it can match to peer device at any time even peer device changes it's RPA. */
 			adv_param_status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 											ADV_TYPE_CONNECTABLE_DIRECTED_LOW_DUTY, app_own_address_type,
 											bondInfo.peer_addr_type,  bondInfo.peer_addr,
 											MY_APP_ADV_CHANNEL,
 											ADV_FP_NONE);
 
-			//it is recommended that direct adv only last for several seconds, then switch to undirected adv
+			/* If IRK distributed by peer device is valid, peer device may use RPA(resolved private address) at any time,
+			 * even if it used IDA(identity address) in first pairing phase.
+			 * So here must add peer IRK to resolving list and enable address resolution, since local device should check if
+			 * "CONNECT_IND" PDU is sent by the device directed to.
+			 * attention: local RPA not used, so parameter "local_irk" set to NULL */
+			if(blc_app_isIrkValid(bondInfo.peer_irk)){
+				blc_ll_addDeviceToResolvingList(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, NULL);
+				blc_ll_setAddressResolutionEnable(1);
+			}
+
+			//it is recommended that direct ADV only last for several seconds, then switch to undirected adv
 			bls_ll_setAdvDuration(MY_DIRECT_ADV_TIME, 1);
 			bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_undirected_adv);
 
@@ -679,7 +700,7 @@ _attribute_no_inline_ void user_init_normal(void)
 
 	bls_ll_setAdvData( (u8 *)tbl_advData, sizeof(tbl_advData) );
 	bls_ll_setScanRspData( (u8 *)tbl_scanRsp, sizeof(tbl_scanRsp));
-	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
 
 	/* set RF power index, user must set it after every suspend wake_up, because relative setting will be reset in suspend */
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
@@ -694,34 +715,18 @@ _attribute_no_inline_ void user_init_normal(void)
 		blc_ll_initPowerManagement_module();
 
 		#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-			extern u32 _retention_use_size_div_16_;
-			if (((u32)&_retention_use_size_div_16_) < 0x400)
-				blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
-			else if (((u32)&_retention_use_size_div_16_) < 0x800)
-				blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
-			else
-			{
-				//retention size > 32k, overflow
-				//debug: deep retention size setting err
-			}
+		    blc_app_setDeepsleepRetentionSramSize(); //select DEEPSLEEP_MODE_RET_SRAM_LOW16K or DEEPSLEEP_MODE_RET_SRAM_LOW32K
 			bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 			blc_pm_setDeepsleepRetentionThreshold(95, 95);
 
-		#if(MCU_CORE_TYPE == MCU_CORE_825x)
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(TEST_CONN_CURRENT_ENABLE ? 240 : 260);
-		#elif((MCU_CORE_TYPE == MCU_CORE_827x))
-			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(TEST_CONN_CURRENT_ENABLE ? 340 : 350);
-		#endif
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(270);
+
 		#else
 			bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
 		#endif
 
 		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_sleep_enter);
 	#else
-		#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-			#error "can not use deep retention when PM disable !!!"
-		#endif
-
 		bls_pm_setSuspendMask (SUSPEND_DISABLE);
 	#endif
 
@@ -745,23 +750,10 @@ _attribute_no_inline_ void user_init_normal(void)
 	#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
 
-
-
-	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
-	u32 error_code1 = blc_contr_checkControllerInitialization();
-	u32 error_code2 = blc_host_checkHostInitialization();
-	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
-		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-		#if (UART_PRINT_DEBUG_ENABLE)
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
-		#endif
-
-		#if (UI_LED_ENABLE)
-			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
-		#endif
-		while(1);
-	}
 	advertise_begin_tick = clock_time();
 
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE sample init \n");
@@ -843,14 +835,15 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
 		#if (BLE_OTA_SERVER_ENABLE)
 			u32 multiBootAddress = blc_ota_getCurrentUsedMultipleBootAddress();
 			if(multiBootAddress == MULTI_BOOT_ADDR_0x20000){
-				app_lockBlock = FLASH_LOCK_LOW_256K;
+				app_lockBlock = FLASH_LOCK_FW_LOW_256K;
 			}
 			else if(multiBootAddress == MULTI_BOOT_ADDR_0x40000){
 				/* attention that 512K capacity flash can not lock all 512K area, should leave some upper sector
 				 * for system data(SMP storage data & calibration data & MAC address) and user data
 				 * will use a approximate value */
-				app_lockBlock = FLASH_LOCK_LOW_512K;
+				app_lockBlock = FLASH_LOCK_FW_LOW_512K;
 			}
+			#if(MCU_CORE_TYPE == MCU_CORE_827x)
 			else if(multiBootAddress == MULTI_BOOT_ADDR_0x80000){
 				if(blc_flash_capacity < FLASH_SIZE_1M){ //for flash capacity smaller than 1M, OTA can not use 512K as multiple boot address
 					blc_flashProt.init_err = 1;
@@ -859,19 +852,22 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
 					/* attention that 1M capacity flash can not lock all 1M area, should leave some upper sector for
 					 * system data(SMP storage data & calibration data & MAC address) and user data
 					 * will use a approximate value */
-					app_lockBlock = FLASH_LOCK_LOW_1M;
+					app_lockBlock = FLASH_LOCK_FW_LOW_1M;
 				}
 			}
+			#endif
 		#else
-			app_lockBlock = FLASH_LOCK_LOW_256K; //just demo value, user can change this value according to application
+			app_lockBlock = FLASH_LOCK_FW_LOW_256K; //just demo value, user can change this value according to application
 		#endif
 
 
 		flash_lockBlock_cmd = flash_change_app_lock_block_to_flash_lock_block(app_lockBlock);
-		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] initialization, lock flash\n");
+
 		if(blc_flashProt.init_err){
 			tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash protection initialization error!!!\n");
 		}
+
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] initialization, lock flash\n");
 		flash_lock(flash_lockBlock_cmd);
 	}
 #if (BLE_OTA_SERVER_ENABLE)
@@ -932,7 +928,7 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
  * @param[in]	none
  * @return      none
  */
-_attribute_no_inline_ void main_loop (void)
+_attribute_no_inline_ void main_loop(void)
 {
 	////////////////////////////////////// BLE entry /////////////////////////////////
 	blt_sdk_main_loop();
@@ -951,7 +947,7 @@ _attribute_no_inline_ void main_loop (void)
 
 
 	#if (UI_KEYBOARD_ENABLE)
-		proc_keyboard (0, 0, 0);
+		proc_keyboard(0, 0, 0);
 	#elif (UI_BUTTON_ENABLE)
 		/* process button 1 second later after power on, to avoid power unstable */
 		if(!button_detect_en && clock_time_exceed(0, 1000000)){
@@ -965,17 +961,7 @@ _attribute_no_inline_ void main_loop (void)
 	#endif
 
 	////////////////////////////////////// PM Process /////////////////////////////////
-
 	blt_pm_proc();
-	#if (UI_BUTTON_ENABLE)
-		if(button_not_released){
-			bls_pm_setSuspendMask (SUSPEND_DISABLE);
-		}
-		else{
-			bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
-		}
-	#endif
-
 }
 
 

@@ -86,7 +86,7 @@ static inline void systimer_set_capture_tick(unsigned long tick)
 {
 	//0x744 bit[2:0] is always 0, to ensure system timer can be trigger correctly, bit[2:0] of the setting tick should 
 	//set to 0 to match the value of 0x744
-	reg_system_tick_irq = (tick & (~((unsigned long)0x07)));
+	reg_system_tick_irq_level = (tick & (~((unsigned long)0x07)));
 }
 
 

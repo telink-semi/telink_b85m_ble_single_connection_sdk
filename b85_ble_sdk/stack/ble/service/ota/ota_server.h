@@ -1,49 +1,26 @@
 /********************************************************************************************************
- * @file	ota_server.h
+ * @file    ota_server.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
-
 #ifndef STACK_BLE_SERVICE_OTA_OTA_SERVER_H_
 #define STACK_BLE_SERVICE_OTA_OTA_SERVER_H_
 
@@ -80,11 +57,17 @@ void		blc_ota_initOtaServer_module(void);
 
 
 /**
- * @brief      This function is used to set OTA new firmware storage address on Flash.
- * 			   attention: If this API is used, must be called before "sys_init" or "cpu_wakeup_init" when initialization !!!
+ * @brief      This function is used to set maximum firmware size and OTA new firmware boot address in Flash.
+ * 			   attention: 1. If this API is used, must be called before "sys_init" or "cpu_wakeup_init" when initialization !!!
+ *			   			  2. If this API never used, default maximum firmware size is 124K byte(last 4K can not used for special reason)
+ *			   			                             default OTA new firmware boot address is 0x20000(128K).
  * @param[in]  firmware_size_k - firmware maximum size unit: K Byte; must be 4K aligned
+ * 			   attention: should consider not only current firmware size, but future new firmware upgraded by OTA.
+ * 			   			  For example, if current firmware size is 120K, but future firmware size maybe 130K due to some new function,
+ * 			   			  boot address 0x40000(256K) should be used instead of 0x20000(128K).
  * @param[in]  boot_addr - new firmware storage address, can only choose from multiple boot address supported by MCU
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * @return     Status - 0x00: command succeeded;
+ *             			Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t	blc_ota_setFirmwareSizeAndBootAddress(int firmware_size_k, multi_boot_addr_e boot_addr);
 
@@ -143,9 +126,10 @@ void		blc_ota_registerOtaResultIndicationCb(ota_resIndicateCb_t cb);
 
 /**
  * @brief      This function is used to set OTA whole process timeout value
- * 			   if not set, default value is 30 S
- * @param[in]  timeout_second - timeout value, unit: S, should in range of 5 ~ 1000
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * 			   if not set, default value is 30 seconds
+ * @param[in]  timeout_second - timeout value, unit: second, should in range of 5 ~ 1000 seconds
+ * @return     Status - 0x00: command succeeded;
+ * 						Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t	blc_ota_setOtaProcessTimeout(int timeout_second);
 
@@ -154,8 +138,9 @@ ble_sts_t	blc_ota_setOtaProcessTimeout(int timeout_second);
 /**
  * @brief      This function is used to set OTA packet interval timeout value
  * 			   if not set, default value is 5 S
- * @param[in]  timeout_ms - timeout value, unit: mS, should in range of 1 ~ 20
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * @param[in]  timeout_second - timeout value, unit: mS, should in range of 1 ~ 20
+ * @return     Status - 0x00: command succeeded;
+ *             			Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t	blc_ota_setOtaDataPacketTimeout(int timeout_second);
 
@@ -171,7 +156,8 @@ ble_sts_t	blc_ota_setOtaDataPacketTimeout(int timeout_second);
  *					...
  * 			   attention: If this API is used, must be called after "blc ota_initOtaServer_module" when initialization !!!
  * @param[in]  pdu_num - number of OTA PDU
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
+ * @return     Status - 0x00: command succeeded;
+ *             			Others: command failed, refer to definition of "ble_sts_t" to know the reason
  */
 ble_sts_t	blc_ota_setOtaScheduleIndication_by_pduNum(int pdu_num);
 
@@ -191,14 +177,6 @@ void		blc_ota_setAttHandleOffset(s8 attHandle_offset);
  * @return     0
  */
 int			otaWrite(void * p);
-
-
-/**
- * @brief      This function is used to erase flash area which will store new firmware.
- * @param      none
- * @return     none
- */
-void 		bls_ota_clearNewFwDataArea(void);
 
 
 

@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	phy_test.h
+ * @file    phy_test.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -104,8 +104,9 @@ int 	 phy_test_2_wire_rx_from_uart (void);
 int 	 phy_test_2_wire_tx_to_uart (void);
 
 /**
- * @brief      This function is used to start a test where the DUT receives test reference
- *				packets at a fixed interval. The tester generates the test reference packets.
+ * @brief      This function is used to start a test where the DUT receives test reference packets at a fixed interval. The tester generates the test reference packets.
+ * 			   Please refer to BLE Core Specification: Vol 4, Part E, 7.8.28 for more information to understand the meaning of each parameters and
+ * 			   the return values.
  * @param[in]  rx_chn -	specify the RF channel to be used by the receiver
  * @param[in]  phy_mode - specify the RF PHT to be used by the receiver
  * @param[in]  modulation_index - specifies whether or not the Controller should assume the receiver has a stable modulation index
@@ -115,6 +116,8 @@ ble_sts_t blc_phy_setEnhancedReceiverTest (u8 rx_chn,u8 phy_mode,u8 modulation_i
 
 /**
  * @brief       This function is used to start a test where the DUT generates test reference packets at a fixed interval
+ * 			    Please refer to BLE Core Specification: Vol 4, Part E, 7.8.29 for more information to understand the meaning of each parameters and
+ * 			    the return values.
  * @param[in]   tx_chn - specify the RF channel to be used by the transmitter
  * @param[in]	length - Length in bytes of payload data in each packet
  * @param[in]	pkt_type - specify contents of the payload of the test reference packets

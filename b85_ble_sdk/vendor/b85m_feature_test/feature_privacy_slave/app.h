@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file	app.h
+ * @file    app.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2022
+ * @author  BLE GROUP
+ * @date    06,2022
  *
  * @par     Copyright (c) 2022, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -50,9 +50,15 @@ void user_init_deepRetn(void);
  * @param[in]  none.
  * @return     none.
  */
-void main_loop (void);
+void main_loop(void);
 
 
+/**
+ * @brief     Configuration of the advertising parameter
+ * @param[in]  none.
+ * @return     none.
+ */
+void app_configAdvParam(void);
 
 #endif  //end of (FEATURE_TEST_MODE == ...)
 #endif /* APP_H_ */

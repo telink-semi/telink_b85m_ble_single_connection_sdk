@@ -33,6 +33,8 @@
 #include "lib/include/swire.h"
 
 #include "lib/include/pke/pke.h"
+#include "lib/include/pke/pke_algorithm.h"
+
 #include "bsp.h"
 #include "aes.h"
 #include "analog.h"
@@ -60,8 +62,7 @@
 #include "qdec.h"
 #include "lpc.h"
 
-#include "drivers/8278/lib/include/pke/pke.h"
-
+#include "usbhw.h"
 #include "drivers/8278/driver_ext/rf_pa.h"
 
 #include "flash/flash_type.h"

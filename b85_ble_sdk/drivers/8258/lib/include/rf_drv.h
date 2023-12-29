@@ -480,8 +480,6 @@ extern void rf_drv_init (RF_ModeTypeDef rf_mode);
 *	@return	   none.
 */
 extern void rf_multi_mode_drv_init(RF_ModeTypeDef rf_mode);
-
-
 /**
  * @brief   	This function serves to set RF power level index.
  * @param[in]   RF_PowerTypeDef - the RF power types.

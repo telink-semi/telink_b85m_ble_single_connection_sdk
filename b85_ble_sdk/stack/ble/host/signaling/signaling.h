@@ -73,7 +73,7 @@ typedef struct{
 	u16 dstCID[5];
 }l2cap_coc_acl_t;
 
-#if L2CAP_SERVER_FEATURE_SUPPORTED_EATT
+
 /**
  * @brief 	tx or rx packet, for MTU size
  */
@@ -83,17 +83,6 @@ typedef struct{
 			+(cocCidCnt+eattCidCnt)*sizeof(l2cap_coc_cid_t) \
 			+(mtu)*(cocCidCnt+2*eattCidCnt)  \
 		)
-#else
-/**
- * @brief 	tx or rx packet, for MTU size
- */
-#define COC_MODULE_BUFFER_SIZE(createConnCnt, cocCidCnt, mtu)			\
-		(\
-			(createConnCnt)*sizeof(l2cap_coc_acl_t)  \
-			+(cocCidCnt)*sizeof(l2cap_coc_cid_t) \
-			+(mtu)*(cocCidCnt)  \
-		)
-#endif
 
 /**
  * @brief 	data structure of CoC initial parameter
@@ -103,9 +92,7 @@ typedef struct{
 	u16 MTU;	//CID receive MTU.
 	u16 createConnCnt;	//supported maximum ACL connect, create COC connect.
 	u16 cocCidCnt;	//supported maximum COC CID count.
-#if L2CAP_SERVER_FEATURE_SUPPORTED_EATT
-	u16 eattCidCnt;	//supported maximum EATT CID count.
-#endif
+	u16 eattCidCnt;	//supported maximum EATT CID count, BLE single connection do not support.
 }blc_coc_initParam_t;
 
 /**
@@ -154,34 +141,3 @@ ble_sts_t blc_l2cap_createCreditBasedConnect(u16 connHandle, u8 srcCnt);
  */
 
 ble_sts_t blc_l2cap_sendCocData(u16 connHandle, u16 srcCID, u8* data, u16 dataLen);
-
-/**
- * @brief	CoC main loop
- * @param	none
- * @return	none
- */
-
-void blc_l2cap_cocMainLoop(void);
-
-
-/**
- * @brief	This function is used to send connection parameter update request
- * @param	connHandle - connection handle
- * @param	min_interval - minimum connection interval
- * @param	max_interval - maximum connection interval
- * @param	latency - connection latency
- * @param	timeout - connection timeout
- * @return	BLE_SUCCESS
- */
-
-ble_sts_t blc_signal_sendConnectParameterUpdateReq(u16 connHandle, u16 min_interval, u16 max_interval, u16 latency, u16 timeout);
-
-/**
- * @brief	This function is used to send connection parameter update response
- * @param	connHandle - connection handle
- * @param	identifier - request packet identifier
- * @param	result - connection parameter update result
- * @return	BLE_SUCCESS
- */
-
-ble_sts_t blc_signal_sendConnectParameterUpdateRsp(u16 connHandle, u8 identifier, conn_para_up_rsp result);

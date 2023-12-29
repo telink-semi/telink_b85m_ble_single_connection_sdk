@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	app.c
+ * @file    app.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
@@ -79,13 +57,13 @@ _attribute_data_retention_	my_fifo_t	spp_tx_fifo = {
 //MYFIFO_INIT(blt_txfifo, 40, 16);
 
 
-/* CAL_LL_ACL_RX_FIFO_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
+/* CAL_LL_ACL_RX_BUF_SIZE(maxRxOct): maxRxOct + 22, then 16 byte align */
 #define RX_FIFO_SIZE	64
 /* must be: 2^n, (power of 2);at least 4; recommended value: 4, 8, 16 */
 #define RX_FIFO_NUM		8
 
 
-/* CAL_LL_ACL_TX_FIFO_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
+/* CAL_LL_ACL_TX_BUF_SIZE(maxTxOct):  maxTxOct + 10, then 4 byte align */
 #define TX_FIFO_SIZE	40
 /* must be: (2^n), (power of 2); at least 8; recommended value: 8, 16, 32, other value not allowed. */
 #define TX_FIFO_NUM		16
@@ -350,21 +328,12 @@ void app_power_management ()
 	// pullup GPIO_WAKEUP_MODULE: exit from suspend
 	// pulldown GPIO_WAKEUP_MODULE: enter suspend
 
-#if (BLE_MODULE_PM_ENABLE)
+#if (BLE_APP_PM_ENABLE)
 
 	if (!app_module_busy() && !tick_wakeup)
 	{
 		#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-			extern u32 _retention_use_size_div_16_;
-			if (((u32)&_retention_use_size_div_16_) < 0x400)
-				blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
-			else if (((u32)&_retention_use_size_div_16_) < 0x800)
-				blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
-			else
-			{
-				//retention size > 32k, overflow
-				//debug: deep retention size setting err
-			}
+	    	blc_app_setDeepsleepRetentionSramSize(); //select DEEPSLEEP_MODE_RET_SRAM_LOW16K or DEEPSLEEP_MODE_RET_SRAM_LOW32K
 			bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		#else
 			bls_pm_setSuspendMask(SUSPEND_ADV | SUSPEND_CONN);
@@ -531,7 +500,7 @@ void user_init_normal(void)
 	////// Controller Initialization  //////////
 	blc_ll_initBasicMCU();                      //mandatory
 	blc_ll_initStandby_module(mac_public);				//mandatory
-	blc_ll_initAdvertising_module(mac_public); 	//adv module: 		 mandatory for BLE slave,
+	blc_ll_initAdvertising_module(mac_public); 	//ADV module: 		 mandatory for BLE slave,
 	blc_ll_initConnection_module();				//connection module  mandatory for BLE slave/master
 	blc_ll_initSlaveRole_module();				//slave module: 	 mandatory for BLE slave,
 
@@ -542,7 +511,7 @@ void user_init_normal(void)
 	blc_gap_peripheral_init();    //gap initialization
 	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
 	blc_l2cap_registerConnUpdateRspCb(app_conn_param_update_response);         //register sig process handler
-	my_att_init (); //gatt initialization
+	my_att_init(); //gatt initialization
 	blc_att_setRxMtuSize(MTU_SIZE_SETTING); //set MTU size, default MTU is 23 if not call this API
 
 	//Smp Initialization may involve flash write/erase(when one sector stores too much information,
@@ -575,7 +544,7 @@ void user_init_normal(void)
 
 
 
-	////////////////// config adv packet /////////////////////
+	////////////////// config ADV packet /////////////////////
 	u8 adv_param_status = BLE_SUCCESS;
 	adv_param_status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 								 ADV_TYPE_CONNECTABLE_UNDIRECTED, app_own_address_type,
@@ -583,13 +552,13 @@ void user_init_normal(void)
 								 MY_APP_ADV_CHANNEL,
 								 ADV_FP_NONE);
 
-	if(adv_param_status != BLE_SUCCESS) {  //debug: adv setting err
+	if(adv_param_status != BLE_SUCCESS) {  //debug: ADV setting err
 		tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
 		while(1);
 	}
 
 
-	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //adv enable
+	bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
 	rf_set_power_level_index (MY_RF_POWER_INDEX);
 
 
@@ -637,20 +606,11 @@ void user_init_normal(void)
 
 
 
-#if (BLE_MODULE_PM_ENABLE)
+#if (BLE_APP_PM_ENABLE)
 	blc_ll_initPowerManagement_module();        //pm module:      	 optional
 
 	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
-		extern u32 _retention_use_size_div_16_;
-		if (((u32)&_retention_use_size_div_16_) < 0x400)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW16K); //retention size < 16k, use 16k deep retention
-		else if (((u32)&_retention_use_size_div_16_) < 0x800)
-			blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K); ////retention size < 32k and >16k, use 32k deep retention
-		else
-		{
-			//retention size > 32k, overflow
-			//debug: deep retention size setting err
-		}
+    	blc_app_setDeepsleepRetentionSramSize(); //select DEEPSLEEP_MODE_RET_SRAM_LOW16K or DEEPSLEEP_MODE_RET_SRAM_LOW32K
 		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
 		blc_pm_setDeepsleepRetentionThreshold(95, 95);
 		blc_pm_setDeepsleepRetentionEarlyWakeupTiming(250);
@@ -678,20 +638,9 @@ void user_init_normal(void)
 	bls_ota_registerResultIndicateCb(show_ota_result);
 #endif
 
-	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
-	u32 error_code1 = blc_contr_checkControllerInitialization();
-	u32 error_code2 = blc_host_checkHostInitialization();
-	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
-		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-		#if (UART_PRINT_DEBUG_ENABLE)
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
-		#endif
-
-		#if (UI_LED_ENABLE)
-			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
-		#endif
-		while(1);
-	}
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
 
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE module init done! \n");
 
@@ -796,14 +745,15 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
 		#if (BLE_OTA_ENABLE)
 			u32 multiBootAddress = blc_ota_getCurrentUsedMultipleBootAddress();
 			if(multiBootAddress == MULTI_BOOT_ADDR_0x20000){
-				app_lockBlock = FLASH_LOCK_LOW_256K;
+				app_lockBlock = FLASH_LOCK_FW_LOW_256K;
 			}
 			else if(multiBootAddress == MULTI_BOOT_ADDR_0x40000){
 				/* attention that 512K capacity flash can not lock all 512K area, should leave some upper sector
 				 * for system data(SMP storage data & calibration data & MAC address) and user data
 				 * will use a approximate value */
-				app_lockBlock = FLASH_LOCK_LOW_512K;
+				app_lockBlock = FLASH_LOCK_FW_LOW_512K;
 			}
+			#if(MCU_CORE_TYPE == MCU_CORE_827x)
 			else if(multiBootAddress == MULTI_BOOT_ADDR_0x80000){
 				if(blc_flash_capacity < FLASH_SIZE_1M){ //for flash capacity smaller than 1M, OTA can not use 512K as multiple boot address
 					blc_flashProt.init_err = 1;
@@ -812,11 +762,12 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
 					/* attention that 1M capacity flash can not lock all 1M area, should leave some upper sector for
 					 * system data(SMP storage data & calibration data & MAC address) and user data
 					 * will use a approximate value */
-					app_lockBlock = FLASH_LOCK_LOW_1M;
+					app_lockBlock = FLASH_LOCK_FW_LOW_1M;
 				}
 			}
+			#endif
 		#else
-			app_lockBlock = FLASH_LOCK_LOW_256K; //just demo value, user can change this value according to application
+			app_lockBlock = FLASH_LOCK_FW_LOW_256K; //just demo value, user can change this value according to application
 		#endif
 
 
@@ -826,6 +777,7 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
 			tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash protection initialization error!!!\n"); //print log here, tell user initialization error
 		}
 
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] initialization, lock flash\n");
 		flash_lock(flash_lockBlock_cmd);
 	}
 #if (BLE_OTA_ENABLE)
@@ -876,7 +828,7 @@ void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_a
  * @param[in]  none.
  * @return     none.
  */
-void main_loop (void)
+void main_loop(void)
 {
 	////////////////////////////////////// BLE entry /////////////////////////////////
 	blt_sdk_main_loop();

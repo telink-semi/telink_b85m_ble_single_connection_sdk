@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	ll_ext_adv.h
+ * @file    ll_ext_adv.h
  *
- * @brief	This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #ifndef LL_ADV_EXT_H_
@@ -53,97 +31,19 @@
 /**
  * @brief	Primary channel advertising packet data buffer size
  */
-#define 		MAX_LENGTH_PRIMARY_ADV_PKT						44   //sizeof(rf_pkt_pri_adv_t) = 43
+#define 		MAX_LENGTH_PRIMARY_ADV_PKT						44   //user can't modify this value !!!
 
 
 /**
  * @brief	Secondary channel advertising packet data buffer size
  */
-#define 		MAX_LENGTH_SECOND_ADV_PKT						264   //sizeof(rf_pkt_ext_adv_t) = 261
+#define 		MAX_LENGTH_SECOND_ADV_PKT						264   //user can't modify this value !!!
 
 
 /**
- * @brief	Primary advertising packet format
+ * @brief	Extended ADV control parameters buffer size
  */
-typedef struct{
-	u32 dma_len;
-
-	u8 type   :4;
-	u8 rfu1   :1;
-	u8 chan_sel:1;
-	u8 txAddr :1;
-	u8 rxAddr :1;
-
-	u8  rf_len;
-	u8	advA[6];			//address
-	u8	data[31];			//0-31 byte
-}rf_pkt_pri_adv_t;
-
-
-//NOTE: this data structure must 4 bytes aligned
-typedef struct
-{
-    u8		adv_handle;
-    u8 		extAdv_en;
-    u8 		adv_chn_mask;
-    u8		adv_chn_num;
-
-	u8 		own_addr_type;
-	u8 		peer_addr_type;
-    u8 		pri_phy;
-    u8 		sec_phy;
-
-
-    u8 		max_ext_adv_evt;
-    u8 		run_ext_adv_evt;
-    u8		unfinish_advData;
-    u8		unfinish_scanRsp;
-
-
-	u8		adv_filterPolicy;
-    u8 		scan_req_noti_en;
-    u8 		coding_ind;					//s2 or s8
-    u8		param_update_flag;
-
-
-	u8		with_aux_adv_ind;   //ADV_EXT_IND  with AUX_ADV_IND
-	u8		with_aux_chain_ind;
-	u8 		rand_adr_flg;
-    u8 		adv_sid;
-
-
-	u16     adv_did; 	// BIT<11:0>
-	u16 	evt_props;
-	u16		advInt_use;
-	u16		send_dataLen;
-    u16 	maxLen_advData;			//for each ADV sets, this value can be different to save SRAM
-    u16 	curLen_advData;
-    u16 	maxLen_scanRsp;			//for each ADV sets, this value can be different to save SRAM
-    u16 	curLen_scanRsp;
-
-    u16		send_dataLenBackup;
-    u16		rsvd_16_1;
-
-
-	u32 	adv_duration_tick;
-	u32 	adv_begin_tick;				//24
-    u32		adv_event_tick;
-
-	u8*		dat_extAdv;
-	u8*		dat_scanRsp;                //Scan response data.
-	rf_pkt_pri_adv_t*		primary_adv;
-	rf_pkt_ext_adv_t*		secondary_adv;
-
-	u8 		rand_adr[6];
-	u8 		peer_addr[6];
-}ll_ext_adv_t;
-
-
-#define ADV_SET_PARAM_LENGTH				(sizeof(ll_ext_adv_t))   //sizeof(ll_ext_adv_t) =  ,  must 4 byte aligned
-
-
-
-
+#define 		ADV_SET_PARAM_LENGTH							112    //user can't modify this value !!!
 
 
 
@@ -178,7 +78,7 @@ void 		blc_ll_initExtAdvDataBuffer(u8 *pExtAdvData, int max_len_advData);
 
 
 /**
- * @brief      This function is used toinitialize Scan Response Data Buffer for all adv_set
+ * @brief      This function is used to initialize Scan Response Data Buffer for all adv_set
  * @param[in]  pScanRspData - extended scan response data buffer address
  * @param[in]  max_len_scanRspData - extended scan response data buffer maximum length
  * @return     none
@@ -243,7 +143,7 @@ ble_sts_t 	blc_ll_setExtScanRspData(u8 advHandle, data_oper_t operation, data_fr
 /**
  * @brief      This function is used to request the Controller to enable or disable one or more advertising sets using the
 			   advertising sets identified by the adv_handle
- * @param[in]  extAdv_en -
+ * @param[in]  extAdv_en - extended advertising enable
  * @param[in]  advHandle - advertising handle
  * @param[in]  duration -	the duration for which that advertising set is enabled
  * 							Range: 0x0001 to 0xFFFF, Time = N * 10 ms, Time Range: 10 ms to 655,350 ms
@@ -251,14 +151,14 @@ ble_sts_t 	blc_ll_setExtScanRspData(u8 advHandle, data_oper_t operation, data_fr
  *                             attempt to send prior to terminating the extended advertising
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
  */
-ble_sts_t 	blc_ll_setExtAdvEnable_1(u32 extAdv_en, u8 sets_num, u8 advHandle, 	 u16 duration, 	  u8 max_extAdvEvt);
+ble_sts_t 	blc_ll_setExtAdvEnable(u32 extAdv_en, u8 sets_num, u8 advHandle, 	 u16 duration, 	  u8 max_extAdvEvt);
 
 
 
 
 
 /**
- * @brief      This function is used to set default S2/S8 mode for Extended advertising if Coded PHY is used, this
+ * @brief      This function is used to set default S2/S8 mode for Extended advertising if Coded PHY is used
  * @param[in]  advHandle - advertising handle
  * @param[in]  prefer_CI - LE coding indication prefer
  * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
@@ -268,7 +168,7 @@ ble_sts_t	blc_ll_setDefaultExtAdvCodingIndication(u8 advHandle, le_ci_prefer_t p
 
 
 /**
- * @brief      This function is used to debug, setting one auxiliary data channel
+ * @brief      This function is used to debug, set one auxiliary data channel
  * @param[in]  aux_chn - auxiliary data channel, must be range of 0~36
  * @return     none
  */
@@ -277,7 +177,7 @@ void        blc_ll_setAuxAdvChnIdxByCustomers(u8 aux_chn);
 
 
 /**
- * @brief      This function is used to debug, setting maximum advertising random delay
+ * @brief      This function is used to debug, set maximum advertising random delay
  * @param[in]  max_delay_ms - maximum advertising random delay, unit :mS, only  8/4/2/1/0  available
  * @return     none
  */

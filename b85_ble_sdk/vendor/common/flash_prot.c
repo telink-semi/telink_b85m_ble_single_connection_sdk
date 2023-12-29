@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	flash_prot.c
+ * @file    flash_prot.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
@@ -136,6 +114,15 @@ void flash_protection_init(void)
 				break;
 		#endif
 
+		#if(FLASH_P25Q80U_SUPPORT_EN)
+			case MID146085:
+				flash_lock_mid = (flash_lock_t)flash_lock_mid146085;
+				flash_unlock_mid = flash_unlock_mid146085;
+				flash_get_lock_status_mid = (flash_get_lock_status_t)flash_get_lock_block_mid146085;
+				flash_unlock_status = FLASH_LOCK_NONE_MID146085;
+				break;
+		#endif
+
 		#if (FLASH_GD25LD80C_SUPPORT_EN || FLASH_GD25LD80E_SUPPORT_EN)
 			case MID1460C8:
 				flash_lock_mid = (flash_lock_t)flash_lock_mid1460c8;
@@ -165,11 +152,11 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 	{
 		#if (FLASH_ZB25WD40B_SUPPORT_EN) //512K capacity
 			case MID13325E:
-				if(app_lock_block == FLASH_LOCK_LOW_256K){
+				if(app_lock_block == FLASH_LOCK_FW_LOW_256K){
 					flash_lock_block_size = FLASH_LOCK_LOW_256K_MID13325E;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 256K block!\n");
 				}
-				else if(app_lock_block == FLASH_LOCK_LOW_512K){
+				else if(app_lock_block == FLASH_LOCK_FW_LOW_512K){
 					/* attention 1: use can change this value according to application
 					 * attention 2: can not lock stack SMP data storage area
 					 * attention 3: firmware size under protection is not 512K, user should calculate
@@ -187,7 +174,7 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 
 		#if (FLASH_ZB25WD80B_SUPPORT_EN) //1M capacity
 			case MID14325E:
-				if(app_lock_block == FLASH_LOCK_LOW_256K || app_lock_block == FLASH_LOCK_LOW_512K){
+				if(app_lock_block == FLASH_LOCK_FW_LOW_256K || app_lock_block == FLASH_LOCK_FW_LOW_512K){
 					/* attention that :This flash type, minimum lock size is 768K, do not support 256K or other value
 					 * demo code will lock 768K when user set OTA 128K or 256K as multiple boot address,
 					 * system data(SMP storage data & calibration data & MAC address) is OK;
@@ -196,7 +183,7 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 					flash_lock_block_size = FLASH_LOCK_LOW_768K_MID14325E;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 768K block!\n");
 				}
-				else if(app_lock_block == FLASH_LOCK_LOW_1M){
+				else if(app_lock_block == FLASH_LOCK_FW_LOW_1M){
 					/* attention 1: use can change this value according to application
 					 * attention 2: can not lock stack SMP data storage area
 					 * attention 3: firmware size under protection is not 1M, user should calculate
@@ -212,11 +199,11 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 
 		#if (FLASH_GD25LD40C_SUPPORT_EN || FLASH_GD25LD40E_SUPPORT_EN) //512K capacity
 			case MID1360C8:
-				if(app_lock_block == FLASH_LOCK_LOW_256K){
+				if(app_lock_block == FLASH_LOCK_FW_LOW_256K){
 					flash_lock_block_size = FLASH_LOCK_LOW_256K_MID1360C8;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 256K block!\n");
 				}
-				else if(app_lock_block == FLASH_LOCK_LOW_512K){
+				else if(app_lock_block == FLASH_LOCK_FW_LOW_512K){
 					/* attention 1: use can change this value according to application
 					 * attention 2: can not lock stack SMP data storage area
 					 * attention 3: firmware size under protection is not 512K, user should calculate
@@ -232,9 +219,32 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 				break;
 		#endif
 
+		#if(FLASH_P25Q80U_SUPPORT_EN)
+			case MID146085:
+				if(app_lock_block == FLASH_LOCK_FW_LOW_256K){
+					flash_lock_block_size = FLASH_LOCK_LOW_256K_MID146085;
+					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 256K block!\n");
+				}
+				else if(app_lock_block == FLASH_LOCK_FW_LOW_512K){
+					flash_lock_block_size = FLASH_LOCK_LOW_512K_MID146085;
+					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 512K block!\n");
+				}
+				else if(app_lock_block == FLASH_LOCK_FW_LOW_1M){
+					/* attention 1: use can change this value according to application
+					 * attention 2: can not lock stack SMP data storage area
+					 * attention 3: firmware size under protection is not 1M, user should calculate
+					 * demo code: choose 960K, leave 64K for system data(SMP storage data & calibration data & MAC address) and user data,
+					 * 			  now firmware size under protection is 960K - 512K = 448K
+					 * if this demo can not meet your requirement, you should change !!! */
+					flash_lock_block_size = FLASH_LOCK_LOW_960K_MID146085;
+					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 960K block!\n");
+				}
+				break;
+		#endif
+
 		#if (FLASH_GD25LD80C_SUPPORT_EN || FLASH_GD25LD80E_SUPPORT_EN) //1M capacity
 			case MID1460C8:
-				if(app_lock_block == FLASH_LOCK_LOW_256K || app_lock_block == FLASH_LOCK_LOW_512K){
+				if(app_lock_block == FLASH_LOCK_FW_LOW_256K || app_lock_block == FLASH_LOCK_FW_LOW_512K){
 					/* attention that :This flash type, minimum lock size is 768K, do not support 256K or other value
 					 * demo code will lock 768K when user set OTA 128K or 256K as multiple boot address,
 					 * system data(SMP storage data & calibration data & MAC address) is OK;
@@ -243,7 +253,7 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 					flash_lock_block_size = FLASH_LOCK_LOW_768K_MID1460C8;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 768K block!\n");
 				}
-				else if(app_lock_block == FLASH_LOCK_LOW_1M){
+				else if(app_lock_block == FLASH_LOCK_FW_LOW_1M){
 					/* attention 1: use can change this value according to application
 					 * attention 2: can not lock stack SMP data storage area
 					 * attention 3: firmware size under protection is not 1M, user should calculate

@@ -1,46 +1,24 @@
 /********************************************************************************************************
- * @file	app.c
+ * @file    app.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
@@ -49,7 +27,6 @@
 
 #include "app.h"
 #include "blm_att.h"
-#include "blm_pair.h"
 #include "blm_host.h"
 #include "blm_ota.h"
 #include "application/audio/tl_audio.h"
@@ -64,6 +41,60 @@ MYFIFO_INIT(blt_rxfifo, 256, 8);
 MYFIFO_INIT(blt_rxfifo, 64, 16);
 #endif
 MYFIFO_INIT(blt_txfifo, 40, 8);
+
+
+
+
+
+
+
+#if (APP_FLASH_PROTECTION_ENABLE)
+
+/**
+ * @brief      flash protection operation, including all locking & unlocking for application
+ * 			   handle all flash write & erase action for this demo code. use should add more more if they have more flash operation.
+ * @param[in]  flash_op_evt - flash operation event, including application layer action and stack layer action event(OTA write & erase)
+ * 			   attention 1: if you have more flash write or erase action, you should should add more type and process them
+ * 			   attention 2: for "end" event, no need to pay attention on op_addr_begin & op_addr_end, we set them to 0 for
+ * 			   			    stack event, such as stack OTA write new firmware end event
+ * @param[in]  op_addr_begin - operating flash address range begin value
+ * @param[in]  op_addr_end - operating flash address range end value
+ * 			   attention that, we use: [op_addr_begin, op_addr_end)
+ * 			   e.g. if we write flash sector from 0x10000 to 0x20000, actual operating flash address is 0x10000 ~ 0x1FFFF
+ * 			   		but we use [0x10000, 0x20000):  op_addr_begin = 0x10000, op_addr_end = 0x20000
+ * @return     none
+ */
+_attribute_data_retention_ u16  flash_lockBlock_cmd = 0;
+void app_flash_protection_operation(u8 flash_op_evt, u32 op_addr_begin, u32 op_addr_end)
+{
+	if(flash_op_evt == FLASH_OP_EVT_APP_INITIALIZATION)
+	{
+		/* ignore "op addr_begin" and "op addr_end" for initialization event
+		 * must call "flash protection_init" first, will choose correct flash protection relative API according to current internal flash type in MCU */
+		flash_protection_init();
+
+		/* just sample code here, protect all flash area for firmware, do not protect system data area.
+		 * user can change this design if have other consideration */
+		u32  app_lockBlock = app_lockBlock = FLASH_LOCK_FW_LOW_256K; //just demo value, user can change this value according to application
+
+		flash_lockBlock_cmd = flash_change_app_lock_block_to_flash_lock_block(app_lockBlock);
+
+		if(blc_flashProt.init_err){
+			tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash protection initialization error!!!\n");
+		}
+
+		tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] initialization, lock flash\n");
+		flash_lock(flash_lockBlock_cmd);
+	}
+	/* add more flash protection operation for your application if needed */
+}
+
+
+#endif
+
+
+
+
 
 /**
  * @brief		user initialization
@@ -87,6 +118,14 @@ void user_init(void)
 	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
 	blc_app_loadCustomizedParameters_normal();
 
+
+	#if (APP_FLASH_PROTECTION_ENABLE)
+		app_flash_protection_operation(FLASH_OP_EVT_APP_INITIALIZATION, 0, 0);
+		blc_appRegisterStackFlashOperationCallback(app_flash_protection_operation); //register flash operation callback for stack
+	#endif
+
+
+
 	//set USB ID
 	REG_ADDR8(0x74) = 0x62;
 	REG_ADDR16(0x7e) = 0x08d0;
@@ -101,11 +140,9 @@ void user_init(void)
 
 	usb_dp_pullup_en (1);  //open USB enum
 
-	usb_set_pin_en();
-
 
 	///////////////// SDM /////////////////////////////////
-#if (AUDIO_SDM_ENBALE)
+#if (AUDIO_SDM_ENABLE)
 	u16 sdm_step = config_sdm  (buffer_sdm, TL_SDM_BUFFER_SIZE, 16000, 4);
 #endif
 
@@ -161,46 +198,75 @@ void user_init(void)
 
 		//SMP trigger by master
 		blm_host_smp_setSecurityTrigger(MASTER_TRIGGER_SMP_FIRST_PAIRING | MASTER_TRIGGER_SMP_AUTO_CONNECT);
-	#else  //TeLink referenced pairing&bonding without standard pairing in BLE spec
+	#else
 		blc_smp_setSecurityLevel(No_Security);
 
-		user_master_host_pairing_management_init();
+		#if (ACL_CENTRAL_CUSTOM_PAIR_ENABLE)
+			user_master_host_pairing_management_init();
+		#endif
+	#endif
+
+	#if (ACL_CENTRAL_SIMPLE_SDP_ENABLE)
+		host_att_register_idle_func (main_idle_loop);
+
+		#if(TL_AUDIO_MODE == TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE)
+			app_sdp_register_get_att_handle_callback(&app_google_voice_service_discovery);
+		#endif
 	#endif
 
 
-
-	extern int host_att_register_idle_func (void *p);
-	host_att_register_idle_func (main_idle_loop);
-
-	//set scan parameter and scan enable
-
+	/* set scan parameter and scan enable */
 	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS,	\
 							OWN_ADDRESS_PUBLIC, SCAN_FP_ALLOW_ADV_ANY);
 	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
 
-	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
-	u32 error_code1 = blc_contr_checkControllerInitialization();
-	u32 error_code2 = blc_host_checkHostInitialization();
-	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
-		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-		#if (UART_PRINT_DEBUG_ENABLE || USB_PRINT_DEBUG_ENABLE)
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
-		#endif
-
-		#if (UI_LED_ENABLE)
-			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
-		#endif
-		while(1);
-	}
-
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
 
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] BLE kma dongle init \n");
 }
 
 
 
+/**
+ * @brief		host pair or upair proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
+_attribute_ram_code_
+void host_pair_unpair_proc(void)
+{
 
-extern void usb_handle_irq(void);
+	#if (ACL_CENTRAL_CUSTOM_PAIR_ENABLE)
+		if(blm_manPair.manual_pair && clock_time_exceed(blm_manPair.pair_tick, 2000000)){  //@@
+			blm_manPair.manual_pair = 0;
+		}
+	#endif
+
+
+	//terminate and unpair proc
+	static int master_disconnect_flag;
+	if(central_unpair_enable){
+		if(!master_disconnect_flag && blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){
+			if( blm_ll_disconnect(cur_conn_device.conn_handle, HCI_ERR_REMOTE_USER_TERM_CONN) == BLE_SUCCESS){
+				master_disconnect_flag = 1;
+				central_unpair_enable = 0;
+
+				#if (BLE_HOST_SMP_ENABLE)
+					tbl_bond_slave_unpair_proc(cur_conn_device.mac_adrType, cur_conn_device.mac_addr); //by telink stack host smp
+				#elif (ACL_CENTRAL_CUSTOM_PAIR_ENABLE)
+					user_tbl_slave_mac_delete_by_adr(cur_conn_device.mac_adrType, cur_conn_device.mac_addr);
+				#endif
+			}
+		}
+	}
+	if(master_disconnect_flag && blc_ll_getCurrentState() != BLS_LINK_STATE_CONN){
+		master_disconnect_flag = 0;
+	}
+}
+
+
 
 /**
  * @brief     BLE main idle loop
@@ -217,12 +283,6 @@ int main_idle_loop (void)
 
 	///////////////////////////////////// proc usb cmd from host /////////////////////
 	usb_handle_irq();
-
-
-
-	/////////////////////////////////////// HCI ///////////////////////////////////////
-	blc_hci_proc ();
-
 
 
 	////////////////////////////////////// UI entry /////////////////////////////////
@@ -283,15 +343,13 @@ int main_idle_loop (void)
  * @param[in]  none.
  * @return     none.
  */
-void main_loop (void)
+void main_loop(void)
 {
 	main_idle_loop ();
 
-	if (main_service)
-	{
-		main_service ();
-		main_service = 0;
-	}
+	#if (ACL_CENTRAL_SIMPLE_SDP_ENABLE)
+		simple_sdp_loop();
+	#endif
 }
 
 

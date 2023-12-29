@@ -1,55 +1,30 @@
 /********************************************************************************************************
- * @file	app.c
+ * @file    app.c
  *
- * @brief	This is the source file for BLE SDK
+ * @brief   This is the source file for BLE SDK
  *
- * @author	BLE GROUP
- * @date	06,2020
+ * @author  BLE GROUP
+ * @date    06,2020
  *
  * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *          All rights reserved.
  *
- *          Redistribution and use in source and binary forms, with or without
- *          modification, are permitted provided that the following conditions are met:
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *              1. Redistributions of source code must retain the above copyright
- *              notice, this list of conditions and the following disclaimer.
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- *              2. Unless for usage inside a TELINK integrated circuit, redistributions
- *              in binary form must reproduce the above copyright notice, this list of
- *              conditions and the following disclaimer in the documentation and/or other
- *              materials provided with the distribution.
- *
- *              3. Neither the name of TELINK, nor the names of its contributors may be
- *              used to endorse or promote products derived from this software without
- *              specific prior written permission.
- *
- *              4. This software, with or without modification, must only be used with a
- *              TELINK integrated circuit. All other usages are subject to written permission
- *              from TELINK and different commercial license may apply.
- *
- *              5. Licensee shall be solely responsible for any claim to the extent arising out of or
- *              relating to such deletion(s), modification(s) or alteration(s).
- *
- *          THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *          ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY
- *          DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *          (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *          LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *          ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *          (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
  *******************************************************************************************************/
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
-
 #include "app.h"
-#include "blm_att.h"
-#include "blm_pair.h"
 #include "blm_host.h"
 #include "application/audio/tl_audio.h"
 #include "application/audio/audio_config.h"
@@ -93,12 +68,12 @@ MYFIFO_INIT(blt_txfifo, 40, 8);
 		{
 			if(key0 == KEY_PAIR)
 			{
-				pairing_enable = 1;
+				central_pairing_enable = 1;
 
 			}
 			else if(key0 == KEY_UNPAIR)
 			{
-				unpair_enable = 1;
+				central_unpair_enable = 1;
 
 			}
 
@@ -106,14 +81,14 @@ MYFIFO_INIT(blt_txfifo, 40, 8);
 		else   //kb_event.cnt == 0,  key release
 		{
 			key_not_released = 0;
-			if(pairing_enable)
+			if(central_pairing_enable)
 			{
-				pairing_enable = 0;
+				central_pairing_enable = 0;
 			}
 
-			if(unpair_enable)
+			if(central_unpair_enable)
 			{
-				unpair_enable = 0;
+				central_unpair_enable = 0;
 			}
 		}
 
@@ -131,7 +106,7 @@ MYFIFO_INIT(blt_txfifo, 40, 8);
 	 * @param[in]  n    - the length of event parameter.
 	 * @return     none.
 	 */
-	void proc_keyboard (u8 e, u8 *p, int n)
+	void proc_keyboard(u8 e, u8 *p, int n)
 	{
 	    (void)e;(void)p;(void)n;
 		if(clock_time_exceed(keyScanTick, 8000)){
@@ -157,47 +132,36 @@ MYFIFO_INIT(blt_txfifo, 40, 8);
 
 
 
+/**
+ * @brief      callback function of Host Event
+ * @param[in]  h - Host Event type
+ * @param[in]  para - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     0
+ */
+int app_host_event_callback (u32 h, u8 *para, int n)
+{
+	(void)h;(void)para;(void)n;
+	u8 event = h & 0xFF;
 
-
-
-
-
-u8	local_addr_type = OWN_ADDRESS_PUBLIC;
-
-#if	LL_FEATURE_ENABLE_PRIVACY
-
-	smp_param_master_t  dev_msg;
-	/**
-	 * @brief      callback function of Host Event
-	 * @param[in]  h - Host Event type
-	 * @param[in]  para - data pointer of event
-	 * @param[in]  n - data length of event
-	 * @return     0
-	 */
-	int app_host_event_callback (u32 h, u8 *para, int n)
+	switch(event)
 	{
-	    (void)h;(void)para;(void)n;
-		u8 event = h & 0xFF;
-
-		switch(event)
+		case GAP_EVT_SMP_PAIRING_SUCCESS:
 		{
-			case GAP_EVT_SMP_PAIRING_SUCCESS:
-			{
-				gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
+			gap_smp_pairingSuccessEvt_t* p = (gap_smp_pairingSuccessEvt_t*)para;
 
-				if(p->bonding_result){
+			if(p->bonding_result){
 
-				}
-				else{
-					printf("save smp key failed %x,handle %x\n",p->bonding_result,p->connHandle);
-				}
 			}
-			break;
+			else{
+				tlkapi_printf(APP_LOG_EN,"save smp key failed %x,handle %x\n",p->bonding_result,p->connHandle);
+			}
 		}
-		return 0;
+		break;
 	}
+	return 0;
+}
 
-#endif
 
 /**
  * @brief		user initialization
@@ -268,57 +232,47 @@ void user_init(void)
 	//SMP trigger by master
 	blm_host_smp_setSecurityTrigger(MASTER_TRIGGER_SMP_FIRST_PAIRING | MASTER_TRIGGER_SMP_AUTO_CONNECT);
 
-
-	extern int host_att_register_idle_func (void *p);
-	host_att_register_idle_func (main_idle_loop);
-
 	blc_gap_setEventMask( GAP_EVT_MASK_SMP_PAIRING_SUCCESS );
 	blc_gap_registerHostEventHandler( app_host_event_callback );
 
-	extern u8 tbl_get_bond_slave_num(void);
-	u8	bond_number = tbl_get_bond_slave_num();
-	if(bond_number != 0)	//No bondind device
-	{
-		u32 device_add = tbl_get_bond_msg_by_index(bond_number-1);
 
-		tlkapi_printf(APP_LOG_EN,"bond number addr not 0 , is %x\n",device_add);
+	blc_ll_initPrivacyLocalRpa(); //must call this API if user need local RPA for privacy
 
-		//read bonding device
-		flash_read_page(device_add,sizeof(smp_param_master_t),(unsigned char *)(&dev_msg) );
+	app_configScanParameter();
 
-		//add bonding message to resolve list
-		blc_ll_addDeviceToResolvingList(dev_msg.peer_id_adrType,dev_msg.peer_id_addr,dev_msg.peer_irk,dev_msg.local_irk);
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
 
-		local_addr_type = OWN_ADDRESS_RESOLVE_PRIVATE_PUBLIC;
-
-		blc_ll_setAddressResolutionEnable(1);
-	}
-
-	//set scan parameter and scan enable
-
-	blc_ll_setScanParameter(SCAN_TYPE_PASSIVE, SCAN_INTERVAL_100MS, SCAN_INTERVAL_100MS,	\
-											local_addr_type, SCAN_FP_ALLOW_ADV_ANY);
-	blc_ll_setScanEnable (BLC_SCAN_ENABLE, DUP_FILTER_DISABLE);
-
-	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done!!! */
-	u32 error_code1 = blc_contr_checkControllerInitialization();
-	u32 error_code2 = blc_host_checkHostInitialization();
-	if(error_code1 != INIT_SUCCESS || error_code2 != INIT_SUCCESS){
-		/* It's recommended that user set some UI alarm to know the exact error, e.g. LED shine, print log */
-		#if (UART_PRINT_DEBUG_ENABLE)
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] Stack INIT ERROR 0x%04x, 0x%04x", error_code1, error_code2);
-		#endif
-
-		#if (UI_LED_ENABLE)
-			gpio_write(GPIO_LED_RED, LED_ON_LEVEL);
-		#endif
-		while(1);
-	}
 	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_privacy_master init \n");
 }
 
 
+/**
+ * @brief		host pair or upair proc in main loop
+ * @param[in]	none
+ * @return      none
+ */
+void host_pair_unpair_proc(void)
+{
 
+	//terminate and unpair proc
+	static int master_disconnect_flag;
+	if(central_unpair_enable){
+		if(!master_disconnect_flag && blc_ll_getCurrentState() == BLS_LINK_STATE_CONN){
+			if( blm_ll_disconnect(cur_conn_device.conn_handle, HCI_ERR_REMOTE_USER_TERM_CONN) == BLE_SUCCESS){
+				master_disconnect_flag = 1;
+				central_unpair_enable = 0;
+
+				tbl_bond_slave_unpair_proc(cur_conn_device.mac_adrType, cur_conn_device.mac_addr); //by telink stack host smp
+
+			}
+		}
+	}
+	if(master_disconnect_flag && blc_ll_getCurrentState() != BLS_LINK_STATE_CONN){
+		master_disconnect_flag = 0;
+	}
+}
 
 int main_idle_loop (void)
 {
@@ -327,11 +281,8 @@ int main_idle_loop (void)
 	blt_sdk_main_loop();
 
 
-	/////////////////////////////////////// HCI ///////////////////////////////////////
-	blc_hci_proc ();
-
 #if (UI_KEYBOARD_ENABLE)
-	proc_keyboard (0,0, 0);
+	proc_keyboard(0, 0, 0);
 #endif
 	host_pair_unpair_proc();
 
@@ -351,14 +302,9 @@ int main_idle_loop (void)
  * @param[in]  none.
  * @return     none.
  */
-void main_loop (void)
+void main_loop(void)
 {
 	main_idle_loop();
-	if (main_service)
-	{
-		main_service ();
-		main_service = 0;
-	}
 }
 
 

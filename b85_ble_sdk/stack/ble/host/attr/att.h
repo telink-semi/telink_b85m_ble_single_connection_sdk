@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     att.h
+ * @file    att.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,8 +19,8 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
-
 #pragma once
 
 #include "tl_common.h"
@@ -28,7 +28,7 @@
 
 /**
  * @brief		ATT_PERMISSIONS_BITMAPS GAP ATT Attribute Access Permissions Bit Fields
- * See the Core_v5.0(Vol 3/Part C/10.3.1/Table 10.2) for more information
+ * refer to BLE SPEC: Vol 3,Part C,"10.3.1 Responding to a service request" for more information
  */
 #define ATT_PERMISSIONS_AUTHOR				 0x10 //Attribute access(Read & Write) requires Authorization
 #define ATT_PERMISSIONS_ENCRYPT				 0x20 //Attribute access(Read & Write) requires Encryption
@@ -124,7 +124,7 @@ typedef int (*att_handleValueConfirm_callback_t)(void);
 /**
  * @brief		application custom ATT handle table element structure
  * @attention	All att handles, including attHl_sdk and attHl_cus must be sorted in ascending order.
- * @attention	The min attHl_cus must larger than att table size.
+ * @attention	The minimum attHl_cus must larger than att table size.
  */
 typedef struct att_convert_t{
   u16  attHl_sdk; //attribute handle value in attribute table
@@ -137,7 +137,7 @@ typedef struct att_convert_t{
  * @param	p - the pointer of attribute table
  * @return	none.
  */
-void		bls_att_setAttributeTable (u8 *p);
+void		bls_att_setAttributeTable(u8 *p);
 
 
 
@@ -145,7 +145,7 @@ void		bls_att_setAttributeTable (u8 *p);
 
 /**
  * @brief	This function is used to set RX MTU size
- * 			if not call this API, default MTU size is 23; if user want use greater MTU, this API must be called.
+ * 			if not call this API, default MTU size is 23; if user want to use greater MTU, this API must be called.
  * @param	mtu_size - ATT MTU size, in range of 23 ~ 512
  * @return	0: success
  * 			other: fail
@@ -168,7 +168,7 @@ ble_sts_t	 blc_att_requestMtuSizeExchange (u16 connHandle, u16 mtu_size);
 /**
  * @brief	This function is used to set effective ATT MTU size
  * 			attention: only ACL Master use this API !!!
- * 					   ACL Slave no need use this API(SDK already do it in stack inside)
+ * 					   ACL Slave no need to use this API(SDK already do it in stack inside)
  * @param	connHandle - connect handle
  * @param	effective_mtu - bltAtt.effective_MTU
  * @return	none.
@@ -178,7 +178,7 @@ void  		blc_att_setEffectiveMtuSize(u16 connHandle, u8 effective_mtu);
 /**
  * @brief	   This function is used to reset effective ATT MTU size
  * 			   attention: only ACL Master use this API !!!
- * 					   ACL Slave no need use this API(SDK already do it in stack inside)
+ * 					   ACL Slave no need to use this API(SDK already do it in stack inside)
  * @param[in]  connHandle - connect handle
  * @return	   none.
  */
@@ -195,14 +195,40 @@ u16  		blc_att_getEffectiveMtuSize(u16 connHandle);
 /**
  * @brief      This function is used to response to MTU size exchange.
  * 			   attention: only ACL Master use this API !!!
- * 					   ACL Slave no need use this API(SDK already do it in stack inside)
+ * 					   ACL Slave no need to use this API(SDK already do it in stack inside)
  * @param[in]  connHandle - connect handle
  * @param[in]  mtu_size - MTU size
  * @return     success or fail
  */
 ble_sts_t	blc_att_responseMtuSizeExchange (u16 connHandle, u16 mtu_size);
 
-
+/**
+ * @brief   This function is used to set the server data pending time when some client command triggered.
+ *          "ServerDataPendingTime" default value is 300mS, use can change this value with this API.
+ *
+ *          In big amount of Central device test, we find that a handle value notify or handle value indication command during
+ *          Central device service discovery process sometimes make the service discovery fail.
+ *          To solve this issue, we design a mechanism to optimize: to block these server command for a while when detected that
+ *          there maybe a service discovery is ongoing.
+ *          When server receives any of the 4 client command below:
+ *          (1) ATT_OP_READ_BY_GROUP_TYPE_REQ
+ *          (2) ATT_OP_FIND_BY_TYPE_VALUE_REQ
+ *          (3) ATT_OP_READ_BY_TYPE_REQ
+ *          (4) ATT_OP_FIND_INFO_REQ
+ *			stack internal will start a timer, the timeout value of this timer is "ServerDataPendingTime".
+ *			If this timer did not reach the timeout value, error "GATT_ERR_DATA_PENDING_DUE_TO_SERVICE_DISCOVERY_BUSY" will return
+ *			for these 3 GATT API below, server data not allowed to send.
+ *          (1) blc gatt_pushHandleValueNotify
+ *          (2) blc gatt_pushMultiHandleValueNotify
+ *          (3) blc gatt_pushHandleValueIndicate
+ *
+ *         Note that this design may bring some unexpected effect. For example, blc gatt_pushHandleValueNotify sometimes may fail due to
+ *         a ATT_OP_READ_BY_TYPE_REQ command received, but not in SDP process. User can set "ServerDataPendingTime" to 0 by this API to
+ *         avoid this kind of situation.
+ * @param	num_10ms - the pending time, step is 10ms.
+ * @return	none.
+ */
+void  blc_att_setServerDataPendingTime_upon_ClientCmd(u8 num_10ms);
 
 /**
  * @brief	This function is used to set prepare write buffer
@@ -232,34 +258,16 @@ void 		blc_att_enableReadReqReject (u8 ReadReqReject_en);
 
 /**
  * @brief      This function is used to set device name
- * @param[in]  p - the point of name
+ * @param[in]  pName - the point of name
  * @param[in]  len - the length of name
  * @return     BLE_SUCCESS
  */
 ble_sts_t 	bls_att_setDeviceName(u8* pName,u8 len);  //only module/mesh/hci use
 
 
-
-
-/**
- * @brief      This function is used to set HID Report Map
- * @param[in]  p - the point of report map
- * @param[in]  len - the length of report map
- * @return     BLE_SUCCESS
- */
-ble_sts_t bls_att_setHIDReportMap(u8* p,u32 len);
-
-/**
- * @brief      This function is used to reset HID Report Map
- * @param[in]  none
- * @return     Status - 0x00: command succeeded; 0x01-0xFF: command failed
- */
-ble_sts_t bls_att_resetHIDReportMap();
-
-
 /**
  * @brief      This function is used to set whether to hold the ATT Response PDU during the pairing phase 3.
- * @param[in]  enable - 1: enable, holding ATT Response PDU during in pairing phase
+ * @param[in]  hold_enable - 1: enable, holding ATT Response PDU during in pairing phase
  *                      0: disable, allowing ATT Response PDU during in pairing phase
  * @return     none.
  */

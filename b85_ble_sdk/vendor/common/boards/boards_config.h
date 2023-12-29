@@ -25,7 +25,7 @@
 
 ///////////////////////Board Select Configuration ///////////////////////////////
 #ifndef BOARD_825X_EVK_C1T139A30
-#define BOARD_825X_EVK_C1T139A30						0x9A30     //TLSR8258DK48
+#define BOARD_825X_EVK_C1T139A30						0x9A30     //
 #endif
 #ifndef BOARD_825X_DONGLE_C1T139A3
 #define BOARD_825X_DONGLE_C1T139A3						0x39A3     //
@@ -34,7 +34,7 @@
 #define BOARD_825X_RCU_C1T139A5							0x39A5     //
 #endif
 #ifndef BOARD_827X_EVK_C1T197A30
-#define BOARD_827X_EVK_C1T197A30						0x7A30	  //TLSR8278DK48
+#define BOARD_827X_EVK_C1T197A30						0x7A30	  //
 #endif
 #ifndef BOARD_827X_DONGLE_C1T201A3
 #define BOARD_827X_DONGLE_C1T201A3						0x01A3	  //

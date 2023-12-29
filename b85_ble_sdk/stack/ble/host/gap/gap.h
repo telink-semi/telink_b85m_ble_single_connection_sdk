@@ -1,10 +1,10 @@
 /********************************************************************************************************
- * @file     gap.h
+ * @file    gap.h
  *
- * @brief    This is the header file for BLE SDK
+ * @brief   This is the header file for BLE SDK
  *
- * @author	 BLE GROUP
- * @date         12,2021
+ * @author  BLE GROUP
+ * @date    12,2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
@@ -19,8 +19,8 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
-
 #pragma once
 
 
@@ -40,7 +40,7 @@
 #define GAP_ADTYPE_OOB_SIMPLE_PAIRING_RANDR     0x0F //!< Simple Pairing OOB Tag: Simple Pairing Randomizer R (16 octets)
 #define GAP_ADTYPE_DEVICE_ID                    0x10 //!< Device ID Profile v1.3 or later
 #define GAP_ADTYPE_SM_TK                        0x10 //!< Security Manager TK Value
-#define GAP_ADTYPE_SM_OOB_FLAG                  0x11 //!< Secutiry Manager OOB Flags
+#define GAP_ADTYPE_SM_OOB_FLAG                  0x11 //!< Security Manager OOB Flags
 #define GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE    0x12 //!< Min and Max values of the connection interval (2 octets Min, 2 octets Max) (0xFFFF indicates no conn interval min or max)
 #define GAP_ADTYPE_SERVICES_LIST_16BIT          0x14 //!< Service Solicitation: list of 16-bit Service UUIDs
 #define GAP_ADTYPE_SERVICES_LIST_32BIT          0x1F //!< Service Solicitation: list of 32-bit Service UUIDs
@@ -53,7 +53,7 @@
 #define GAP_ADTYPE_TARGET_ADDR_RANDOM           0x18 //!< Random Target Address
 #define GAP_ADTYPE_APPEARANCE                   0x19 //!< Appearance
 #define GAP_ADTYPE_ADVERTISING_INTERVAL         0x1A //!< Advertising Interval
-#define GAP_ADTYPE_LE_BLUETOOTH_DEVICE_ADDR     0x1B //!< ​LE Bluetooth Device Address
+#define GAP_ADTYPE_LE_BLUETOOTH_DEVICE_ADDR     0x1B //!< LE Bluetooth Device Address
 #define GAP_ADTYPE_LE_ROLE                      0x1C //!< LE Role
 #define GAP_ADTYPE_SIMPLE_PAIRING_HASHC_256     0x1D //!< Simple Pairing Hash C-256
 #define GAP_ADTYPE_SIMPLE_PAIRING_RAND_R256     0x1E //!< Simple Pairing Randomizer R-256
@@ -105,7 +105,7 @@ void 		blc_gap_peripheral_init(void);
 
 
 /**
-* @brief      this function is used check if any host initialization incorrect.
+* @brief      this function is used to check if any host initialization incorrect.
 * 			  attention: this function must be called after all host Initialization finished.
 * @param	  none
 * @return     status - 0x00:  succeed, no error
