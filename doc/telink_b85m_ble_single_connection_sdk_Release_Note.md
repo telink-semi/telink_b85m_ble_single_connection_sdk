@@ -455,7 +455,7 @@
 
 
 ### BREAKING CHANGES 
-* **Boot & Link **	
+* **Boot & Link**	
 	- 优化cstartup. S和boot.link的实现。
 	- 添加cstartup_825x.S，这个文件适用于所有B85工程，SRAM大小通过判断MCU_STARTUP自动设置。以下旧版cstartup文件移除：
 		- cstartup_8251_RET_16K.S/cstartup_8251_RET_32K.S/cstartup_8253_RET_16K.S/cstartup_8253_RET_32K.S/cstartup_8258_RET_16K.S/cstartup_8258_RET_32K.S
