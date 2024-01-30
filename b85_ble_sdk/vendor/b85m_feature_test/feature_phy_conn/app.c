@@ -285,7 +285,6 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 
 	device_connection_tick = 0;
 
-	tlk_contr_evt_terminate_t *pEvt = (tlk_contr_evt_terminate_t *)p;
 	if(pEvt->terminate_reason == HCI_ERR_CONN_TIMEOUT){
 
 	}
