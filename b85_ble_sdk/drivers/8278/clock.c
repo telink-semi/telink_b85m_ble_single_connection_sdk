@@ -27,7 +27,7 @@
 #include "analog.h"
 #include "timer.h"
 #include "lib/include/pm.h"
-#include "vendor/common/user_config.h"
+#include "tl_common.h"
 
 extern _attribute_data_retention_ unsigned char tl_24mrc_cal;
 
