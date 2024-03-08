@@ -1,8 +1,8 @@
-## V3.4.2.3
+## V3.4.2.4
 
 ### Version
-* SDK version:telink_b85m_ble_single_connection_sdk_V3.4.2.3
-* Driver Version: telink_b85m_driver_sdk V1.6.0
+* SDK version:telink_b85m_ble_single_connection_sdk_V3.4.2.4
+* Driver Version: telink_b85m_driver_sdk V1.7.0
 
 ### Hardware
 * N/A
@@ -414,7 +414,7 @@
 		- SRAM size: 20.1 kBytes
 
 ### Version
-* SDK版本:telink_b85m_ble_single_connection_sdk_V3.4.2.3
+* SDK版本:telink_b85m_ble_single_connection_sdk_V3.4.2.4
 * Driver版本: telink_b85m_driver_sdk V1.6.0
 
 ### Hardware

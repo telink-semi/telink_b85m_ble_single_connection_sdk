@@ -30,7 +30,6 @@
 #include "lib/include/pm.h"
 #include "lib/include/random.h"
 #include "lib/include/rf_drv.h"
-#include "lib/include/swire.h"
 
 #include "bsp.h"
 #include "aes.h"

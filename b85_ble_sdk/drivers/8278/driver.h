@@ -30,7 +30,6 @@
 #include "lib/include/pm.h"
 #include "lib/include/random.h"
 #include "lib/include/rf_drv.h"
-#include "lib/include/swire.h"
 
 #include "lib/include/pke/pke.h"
 #include "lib/include/pke/pke_algorithm.h"
