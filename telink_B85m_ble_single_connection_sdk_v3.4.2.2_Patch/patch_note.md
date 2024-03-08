@@ -1,3 +1,26 @@
+## V3.4.2.2_Patch_0002
+
+### Features
+* SDK version：telink_B85m_ble_single_connection_sdk_v3.4.2.2_patch_0002.
+
+### Bug Fixes
+* Fix an issue: Solve the problem of crystal oscillator stability flag failure.
+
+### BREAKING CHANGES
+* N/A.
+
+
+### Features
+* SDK 版本：telink_B85m_ble_single_connection_sdk_v3.4.2.2_patch_0002.
+
+### Bug Fixes
+* 修复: 解决晶振起振失败的问题。
+
+### BREAKING CHANGES
+* N/A.
+
+
+
 ## V3.4.2.2_Patch_0001
 
 ### Features
