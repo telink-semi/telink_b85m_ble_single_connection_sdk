@@ -198,7 +198,7 @@ __reset:
 #if GPIO_DEBUG_EN
 	@ add debug, PB4 output 1
 	tloadr     	r1, DEBUG_GPIO    @0x80058a  PB oen
-	tmov		r0, #139      @0b 11101111
+	tmov		r0, #239      @0b 11101111
 	tstorerb	r0, [r1, #0]
 
 	tmov		r0, #16			@0b 00010000
