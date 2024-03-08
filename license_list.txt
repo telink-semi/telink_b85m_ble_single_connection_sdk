@@ -124,7 +124,6 @@
 ./b85_ble_sdk/drivers/8258/lib/include/pm.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8258/lib/include/random.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8258/lib/include/rf_drv.h			TELINK_APACHE 
-./b85_ble_sdk/drivers/8258/lib/include/swire.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8258/lpc.c			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8258/lpc.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8258/pga.h			TELINK_APACHE 
@@ -209,7 +208,6 @@
 ./b85_ble_sdk/drivers/8278/lib/include/pm.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8278/lib/include/random.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8278/lib/include/rf_drv.h			TELINK_APACHE 
-./b85_ble_sdk/drivers/8278/lib/include/swire.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8278/lpc.c			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8278/lpc.h			TELINK_APACHE 
 ./b85_ble_sdk/drivers/8278/mdec.c			TELINK_APACHE 
