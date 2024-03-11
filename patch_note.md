@@ -4,7 +4,7 @@
 * SDK version：telink_B85m_ble_single_connection_sdk_v3.4.2.2_patch_0002.
 
 ### Bug Fixes
-* Fix an issue: Solve the problem of crystal oscillator stability flag failure.
+* Fix an issue: Solve the problem that the crystal oscillator stability flag fails to cause the crash. If the start-up is abnormal, it will restart. Use DEEP_ANA_REG0[bit1] to check whether the restart caused by the abnormal start-up has occurred. (It has been implemented in the driver layer, and does not require special calls from the application layer.)
 
 ### BREAKING CHANGES
 * N/A.
@@ -14,7 +14,7 @@
 * SDK 版本：telink_B85m_ble_single_connection_sdk_v3.4.2.2_patch_0002.
 
 ### Bug Fixes
-* 修复: 解决晶振起振失败的问题。
+* 修复: 解决晶振稳定标志位失灵导致死机的问题。 起振异常则重启，通过DEEP_ANA_REG0[bit1]查询是否发生过起振异常导致的重启。（已在驱动层实现，不需要应用层特殊调用。）
 
 ### BREAKING CHANGES
 * N/A.
