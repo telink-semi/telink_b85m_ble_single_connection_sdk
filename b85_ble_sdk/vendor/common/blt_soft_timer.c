@@ -146,15 +146,15 @@ int 	blt_soft_timer_delete(blt_timer_callback_t func)
 			if(blt_timer.currentNum){ //at least one timer exist
 				if(i == 0){  //The most recent timer is deleted, and the time needs to be updated
 					if( (u32)(blt_timer.timer[0].t - clock_time()) < 5000 *  SYSTEM_TIMER_TICK_1MS){
-						blc_pm_setAppWakeupLowPower(blt_timer.timer[0].t,  1);
+						bls_pm_setAppWakeupLowPower(blt_timer.timer[0].t,  1);
 					}
 					else{
-						blc_pm_setAppWakeupLowPower(0, 0);  //disable
+						bls_pm_setAppWakeupLowPower(0, 0);  //disable
 					}
 				}
 			}
 			else{
-				blc_pm_setAppWakeupLowPower(0, 0);  //disable
+				bls_pm_setAppWakeupLowPower(0, 0);  //disable
 			}
 
 			return 1;
