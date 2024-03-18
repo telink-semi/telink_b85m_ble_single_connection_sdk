@@ -42,7 +42,7 @@
 #define 	ADV_IDLE_ENTER_DEEP_TIME			60  //60 s
 #define 	CONN_IDLE_ENTER_DEEP_TIME			60  //60 s
 
-#define 	MY_DIRECT_ADV_TMIE					2000000
+#define 	MY_DIRECT_ADV_TIME					2000000
 
 
 #define     MY_APP_ADV_CHANNEL					BLT_ENABLE_ADV_ALL
@@ -141,7 +141,7 @@ _attribute_data_retention_	u32	lowBattDet_tick   = 0;
  * @param[in]  n - data length of event
  * @return     none
  */
-void 	app_switch_to_indirect_adv(u8 e, u8 *p, int n)
+void 	app_switch_to_undirected_adv(u8 e, u8 *p, int n)
 {
     (void)e;(void)p;(void)n;
 	bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
@@ -639,22 +639,32 @@ void user_init_normal(void)
 
 	}
 
-	if(bond_number)   //set direct adv
+	if(bond_number)   //set direct ADV
 	{
-		//set direct adv
+		/* set direct ADV
+		 * bondInfo.peer_addr_type & bondInfo.peer_addr is the address in the air packet of "CONNECT_IND" PDU stored in Flash.
+		 * if peer address is IDA(identity address), bondInfo.peer_addr is OK used here.
+		 * if peer address is RPA(resolved private address), bondInfo.peer_addr is one RPA peer device has used, it has a correct relation
+		 * with peer IRK, so it can match to peer device at any time even peer device changes it's RPA. */
 		adv_param_status = bls_ll_setAdvParam( MY_ADV_INTERVAL_MIN, MY_ADV_INTERVAL_MAX,
 										ADV_TYPE_CONNECTABLE_DIRECTED_LOW_DUTY, app_own_address_type,
 										bondInfo.peer_addr_type,  bondInfo.peer_addr,
 										MY_APP_ADV_CHANNEL,
 										ADV_FP_NONE);
-		if(adv_param_status != BLE_SUCCESS) { //debug: ADV setting err
-			tlkapi_printf(APP_LOG_EN, "[APP][INI] ADV parameters error 0x%x!!!\n", adv_param_status);
-			while(1);
+
+		/* If IRK distributed by peer device is valid, peer device may use RPA(resolved private address) at any time,
+		 * even if it used IDA(identity address) in first pairing phase.
+		 * So here must add peer IRK to resolving list and enable address resolution, since local device should check if
+		 * "CONNECT_IND" PDU is sent by the device directed to.
+		 * attention: local RPA not used, so parameter "local_irk" set to NULL */
+		if(blc_app_isIrkValid(bondInfo.peer_irk)){
+			blc_ll_addDeviceToResolvingList(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, NULL);
+			blc_ll_setAddressResolutionEnable(1);
 		}
 
-		//it is recommended that direct ADV only last for several seconds, then switch to indirect adv
-		bls_ll_setAdvDuration(MY_DIRECT_ADV_TMIE, 1);
-		bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_indirect_adv);
+		//it is recommended that direct ADV only last for several seconds, then switch to undirected adv
+		bls_ll_setAdvDuration(MY_DIRECT_ADV_TIME, 1);
+		bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &app_switch_to_undirected_adv);
 
 	}
 	else   //set indirect adv
