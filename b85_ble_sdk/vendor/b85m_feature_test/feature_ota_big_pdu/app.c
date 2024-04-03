@@ -248,9 +248,6 @@ void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
 	//so when connection terminate, relative flags must be cleared
 	dle_started_flg = 0;
 
-
-	tlkapi_printf(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", pEvt->terminate_reason);
-
 #if (UI_LED_ENABLE)
 	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  // light off
 #endif
