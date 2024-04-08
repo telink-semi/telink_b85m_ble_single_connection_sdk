@@ -3,8 +3,8 @@ stages:
   - checkLicense
   - oss
   - build_all_base
-  - build_825x_feature
-  - build_827x_feature
+  - build_B85_feature
+  - build_B87_feature
   - plainPW_check
   - misspellChecking
   - scc
@@ -87,8 +87,8 @@ build_all_base:
     - date
   when: always    # Just check, ignore fail
   
-build_825x_feature:
-  stage: build_all_feature
+build_B85_feature:
+  stage: build_B85_feature
   variables:
     ECLIPSE_PROJECT_PATH: './b85_ble_sdk/'
     ECLIPSE_PROJECT_NAME: 'b85m_ble_single_connection_sdk'
@@ -244,8 +244,8 @@ build_825x_feature:
    
   when: manual
 
-build_827x_feature:
-  stage: build_all_feature
+build_B87_feature:
+  stage: build_B87_feature
   variables:
     ECLIPSE_PROJECT_PATH: './b85_ble_sdk/'
     ECLIPSE_PROJECT_NAME: 'b85m_ble_single_connection_sdk'
