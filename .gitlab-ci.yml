@@ -3,7 +3,8 @@ stages:
   - checkLicense
   - oss
   - build_all_base
-  - build_all_feature
+  - build_825x_feature
+  - build_827x_feature
   - plainPW_check
   - misspellChecking
   - scc
@@ -86,7 +87,7 @@ build_all_base:
     - date
   when: always    # Just check, ignore fail
   
-build_all_feature:
+build_825x_feature:
   stage: build_all_feature
   variables:
     ECLIPSE_PROJECT_PATH: './b85_ble_sdk/'
@@ -104,168 +105,297 @@ build_all_feature:
     - MACRO_VAL='TEST_ADVERTISING_ONLY'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-    
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_SCANNING_ONLY'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-    
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_ADVERTISING_IN_CONN_SLAVE_ROLE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-    
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_SCANNING_IN_ADV_AND_CONN_SLAVE_ROLE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
 
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_ADVERTISING_SCANNING_IN_CONN_SLAVE_ROLE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-        
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_POWER_ADV'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-        
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_SMP_SECURITY'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-    
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_GATT_SECURITY'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-    
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_LL_DATA_LENGTH_EXTENSION_SLAVE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-        
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_LL_DATA_LENGTH_EXTENSION_MASTER'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-        
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_BLE_PHY'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
-        
+
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_MD_MASTER'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
     
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_MD_SLAVE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
     
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_EXTENDED_ADVERTISING'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_2M_CODED_PHY_CONNECTION'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_OTA_BIG_PDU'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_LL_PRIVACY_SLAVE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_LL_PRIVACY_MASTER'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_OTA_HID'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_USER_BLT_SOFT_TIMER'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_WHITELIST'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_CSA2'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
     
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_MULTIPLE_LOCAL_DEVICE'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
     
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_USER_BLT_SOFT_UART'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
     
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_L2CAP_COC'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_USB_CDC'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_EMI'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
         
     - MACRO='FEATURE_TEST_MODE'
     - MACRO_VAL='TEST_FEATURE_BACKUP'
     - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/825x_feature_test
+    - date
+   
+  when: manual
+
+build_827x_feature:
+  stage: build_all_feature
+  variables:
+    ECLIPSE_PROJECT_PATH: './b85_ble_sdk/'
+    ECLIPSE_PROJECT_NAME: 'b85m_ble_single_connection_sdk'
+
+  tags:
+    - LINUX
+    - TC32
+  before_script:
+  script:
+    - which tc32-elf-gcc
+    - chmod +x b85_ble_sdk/*.sh
+    - date
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_ADVERTISING_ONLY'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_SCANNING_ONLY'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_ADVERTISING_IN_CONN_SLAVE_ROLE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_SCANNING_IN_ADV_AND_CONN_SLAVE_ROLE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_ADVERTISING_SCANNING_IN_CONN_SLAVE_ROLE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_POWER_ADV'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_SMP_SECURITY'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_GATT_SECURITY'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_LL_DATA_LENGTH_EXTENSION_SLAVE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_LL_DATA_LENGTH_EXTENSION_MASTER'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_BLE_PHY'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_MD_MASTER'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_MD_SLAVE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_EXTENDED_ADVERTISING'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_2M_CODED_PHY_CONNECTION'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_OTA_BIG_PDU'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_LL_PRIVACY_SLAVE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_LL_PRIVACY_MASTER'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_OTA_HID'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_USER_BLT_SOFT_TIMER'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_WHITELIST'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_CSA2'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_MULTIPLE_LOCAL_DEVICE'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_USER_BLT_SOFT_UART'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+    
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_L2CAP_COC'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_USB_CDC'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_EMI'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
+    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
+        
+    - MACRO='FEATURE_TEST_MODE'
+    - MACRO_VAL='TEST_FEATURE_BACKUP'
+    - MACRO_PATH='./b85m_ble_single_connection_sdk/vendor/b85m_feature_test/feature_config.h'
     - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS  -import $ECLIPSE_PROJECT_PATH -cleanBuild $ECLIPSE_PROJECT_NAME/827x_feature_test
     - date
    
