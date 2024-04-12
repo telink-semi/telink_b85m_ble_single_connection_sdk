@@ -1,0 +1,89 @@
+name: Linux_tc32_Build
+
+# on: [push, pull_request]
+on: 
+  workflow_dispatch:
+    inputs:
+      cproject:
+        description: |
+          'Select the compiled project, cproject path'
+          './b85_ble_sdk/.cproject'
+        required: true
+        default: './b85_ble_sdk/.cproject'
+      target:
+        description: |
+          'Select the compiled configuration'
+          '825x_ble_remote 825x_ble_sample'
+        required: true
+        default: '825x_ble_sample'
+jobs:
+  Linux_CMake_Build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: check parameters
+      run: |
+        echo "cproject ${{ github.event.inputs.cproject }}"
+        echo "target ${{ github.event.inputs.target }}"
+
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Restore Cached Toolchain
+      id: Restore_Cached_Toolchain
+      uses: actions/cache@v3
+      with:
+        path: |
+          cdt2cmake_Linux_X64
+          tc32_toolchains
+        key: ${{ runner.os }}-toolchain-tc32
+        restore-keys: |
+          ${{ runner.os }}-toolchain-tc32
+     
+    - if: ${{ steps.Restore_Cached_Toolchain.outputs.cache-hit != 'true' }}
+      name: download and decompression toolchain
+      run: |
+        wget -O tc32_toolchains.tar https://wiki.telink-semi.cn/tools_and_sdk/others/tc32_toolchains.tar
+        tar xf tc32_toolchains.tar
+        ls
+        if [ $? != 0 ]; then
+          echo "download toolchain fail"
+          exit 1
+        fi
+        
+        wget -O cdt2cmake_Linux_X64.tar.xz http://wiki.telink-semi.cn/tools_and_sdk/others/cdt2cmake_Linux_X64.tar.xz    
+        tar xf cdt2cmake_Linux_X64.tar.xz
+        ls
+        if [ $? != 0 ]; then
+          echo "download cdt2cmake fail"
+          exit 1
+        fi
+        
+    - if: ${{ steps.Restore_Cached_Toolchain.outputs.cache-hit != 'true' }}
+      name: Cache Toolchain
+      uses: actions/cache@v3
+      with:
+        path: |
+          cdt2cmake_Linux_X64
+          tc32_toolchains
+        key: ${{ runner.os }}-toolchain-tc32
+
+    - name: convert cdt2cmake
+      run: |
+        echo "convert cdt2cmake"
+        ./cdt2cmake_Linux_X64/cdt2cmake/cdt2cmake ${{ github.event.inputs.cproject }}
+
+    - name: cmake build
+      run: |
+        echo "cmake building..."
+        cmake . -Bcmake_build -DTOOLCHAIN_PATH="`pwd`/tc32_toolchains/tc32"
+        echo "parameter_name ${{ github.event.inputs.target }}"
+        cmake --build cmake_build --target "${{ github.event.inputs.target }}" -j16
+
+    - name: upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build_artifact
+        path: |
+          cmake_build/${{ github.event.inputs.target }}*
+        retention-days: 3
