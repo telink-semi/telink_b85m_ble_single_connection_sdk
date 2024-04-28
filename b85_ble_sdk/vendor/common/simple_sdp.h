@@ -33,7 +33,6 @@
 #endif
 
 
-#if (ACL_CENTRAL_SIMPLE_SDP_ENABLE)
 
 /**
  * @brief	2 bytes UUID get ATT handle structure
@@ -56,6 +55,7 @@ typedef struct {
 	u8	uuid[16];
 } att_db_uuid128_t;			//20-byte
 
+#if (ACL_CENTRAL_SIMPLE_SDP_ENABLE)
 
 /**
  * @brief	Simple SDP service discovery callback declaration
