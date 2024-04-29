@@ -5,7 +5,7 @@
 
 
 ### Bug Fixes
-* Fix an issue: If the attribute value cannot be read or written due to permissions then the client could not send any response packet, causing the exception to the SDP.
+* Fix an issue: When the read or write permission for attribute values is insufficient, the ATT Server does not send the ATT_ERROR_RSP PDU, causing the failure of the Service Discovery.
 
 ### BREAKING CHANGES
 * N/A.
@@ -16,7 +16,7 @@
 * N/A.
 
 ### Bug Fixes
-* 修复：如果由于权限原因，属性值不能被读写，则客户端可能不会发送任何响应报文，导致SDP异常。
+* 修复：修复属性值读写权限不足时，ATT Server不发送ATT_ERROR_RSP PDU，导致服务发现失败。
 
 
 ### BREAKING CHANGES
