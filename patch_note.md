@@ -1,3 +1,25 @@
+## V3.4.2.2_Patch_0003
+
+### Features
+* SDK version：telink_B85m_ble_single_connection_sdk_v3.4.2.2_patch_0003.
+
+### Bug Fixes
+* Fix an issue: When the local device uses directed advertising and the peer device uses RPA to connect, the connection may fail to be created.
+
+### BREAKING CHANGES
+* N/A.
+
+
+### Features
+* SDK 版本：telink_B85m_ble_single_connection_sdk_v3.4.2.2_patch_0003.
+
+### Bug Fixes
+* 修复: 当本地设备使用直连广播，且对端使用RPA进行连接时，会出现连接创建失败。
+
+### BREAKING CHANGES
+* N/A.
+
+
 ## V3.4.2.2_Patch_0002
 
 ### Features

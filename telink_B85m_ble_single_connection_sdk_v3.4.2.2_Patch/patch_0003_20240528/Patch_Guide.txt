@@ -4,6 +4,19 @@
                                                                             
                                                                         
 **************************************************************************
+3. 0003_20240528
+	This patch is forward compatible.
+	replace file "B85_ble_sdk/sdk_version.txt" with "patch_0003_20240528/sdk_version.txt",
+	replace file "B85_ble_sdk/proj_lib/liblt_825x.a" with "patch_0003_20240528/proj_lib/liblt_825x.a",
+	replace file "B85_ble_sdk/proj_lib/liblt_827x.a" with "patch_0003_20240528/proj_lib/liblt_827x.a",
+	replace file "B85_ble_sdk/stack/ble/controller/ll/ll.h" with "patch_0003_20240528/stack/ble/controller/ll/ll.h",
+	replace file "B85_ble_sdk/stack/ble/hci/hci_cmd.h" with "patch_0003_20240528/stack/ble/hci/hci_cmd.h",
+	replace file "B85_ble_sdk/stack/ble/host/gap/gap_event.h" with "patch_0003_20240528/stack/ble/host/gap/gap_event.h",
+	replace file "B85_ble_sdk/stack/ble/host/smp/smp.h" with "patch_0003_20240528/stack/ble/host/smp/smp.h",
+	replace file "B85_ble_sdk/stack/ble/host/ble_host.h" with "patch_0003_20240528/stack/ble/host/ble_host.h",
+	replace file "B85_ble_sdk/stack/ble/ble_common.h" with "patch_0003_20240528/stack/ble/ble_common.h",
+	create a new folder "B85_ble_sdk/stack/ble/host/signaling/", add file "patch_0003_20240528/stack/ble/host/signaling/signaling.h" into this folder
+
 2. 0002_20240308
 	This patch is forward compatible.
 	replace file "B85_ble_sdk/sdk_version.txt" with "patch_0002_20240308/sdk_version.txt",
