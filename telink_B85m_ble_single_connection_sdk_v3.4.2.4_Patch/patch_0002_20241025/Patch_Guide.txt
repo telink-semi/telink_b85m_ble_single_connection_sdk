@@ -1,0 +1,23 @@
+**************************************************************************
+                                                                        
+                       Telink SDK Patch Guide                              
+                                                                            
+                                                                        
+**************************************************************************
+1. 0002_20241025
+	replace file "b85_ble_sdk/common/sdk_version.h" with "patch_0002_20241025/common/sdk_version.h",
+	replace file "b85_ble_sdk/drivers/8258/driver_ext/software_uart.c" with "patch_0002_20241025/drivers/8258/driver_ext/software_uart.c",
+	replace file "b85_ble_sdk/drivers/8278/driver_ext/software_uart.c" with "patch_0002_20241025/drivers/8278/driver_ext/software_uart.c",
+	replace file "b85_ble_sdk/proj_lib/liblt_825x.a" with "patch_0002_20241025/proj_lib/liblt_825x.a",
+	replace file "b85_ble_sdk/proj_lib/liblt_827x.a" with "patch_0002_20241025/proj_lib/liblt_827x.a",
+	replace file "b85_ble_sdk/vendor/b85m_feature_test/feature_ota_hid/app.c" with "patch_0002_20241025/vendor/b85m_feature_test/feature_ota_hid/app.c",
+	replace file "b85_ble_sdk/vendor/b85m_feature_test/feature_privacy_slave/app.c" with "patch_0002_20241025/vendor/b85m_feature_test/feature_privacy_slave/app.c",
+	replace file "b85_ble_sdk/vendor/b85m_feature_test/app_config.h" with "patch_0002_20241025/vendor/b85m_feature_test/app_config.h",
+	replace file "b85_ble_sdk/boot.link" with "patch_0002_20241025/boot.link",
+	replace file "b85_ble_sdk/sdk_version.txt" with "patch_0002_20241025/sdk_version.txt"
+
+
+1. 0001_20240425
+	replace file "B85_ble_sdk/sdk_version.txt" with "patch_0001_20231103/sdk_version.txt",
+	replace file "B85_ble_sdk/proj_lib/liblt_825x.a" with "patch_0001_20231103/proj_lib/liblt_825x.a",
+	replace file "B85_ble_sdk/proj_lib/liblt_827x.a" with "patch_0001_20231103/proj_lib/liblt_827x.a"
