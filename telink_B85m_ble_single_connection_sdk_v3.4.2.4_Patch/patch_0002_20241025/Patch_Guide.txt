@@ -10,6 +10,8 @@
 	replace file "b85_ble_sdk/drivers/8278/driver_ext/software_uart.c" with "patch_0002_20241025/drivers/8278/driver_ext/software_uart.c",
 	replace file "b85_ble_sdk/proj_lib/liblt_825x.a" with "patch_0002_20241025/proj_lib/liblt_825x.a",
 	replace file "b85_ble_sdk/proj_lib/liblt_827x.a" with "patch_0002_20241025/proj_lib/liblt_827x.a",
+	replace file "b85_ble_sdk/vendor/b85m_ble_remote/app_config.h" with "patch_0002_20241025/vendor/b85m_ble_remote/app_config.h",
+	replace file "b85_ble_sdk/vendor/b85m_ble_sample/app_config.h" with "patch_0002_20241025/vendor/b85m_ble_sample/app_config.h",
 	replace file "b85_ble_sdk/vendor/b85m_feature_test/feature_ota_hid/app.c" with "patch_0002_20241025/vendor/b85m_feature_test/feature_ota_hid/app.c",
 	replace file "b85_ble_sdk/vendor/b85m_feature_test/feature_privacy_slave/app.c" with "patch_0002_20241025/vendor/b85m_feature_test/feature_privacy_slave/app.c",
 	replace file "b85_ble_sdk/vendor/b85m_feature_test/app_config.h" with "patch_0002_20241025/vendor/b85m_feature_test/app_config.h",
