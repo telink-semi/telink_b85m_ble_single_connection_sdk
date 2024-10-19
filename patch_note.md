@@ -2,20 +2,20 @@
 
 ### Features
 * **ATT**
-    - Add a new API "blc_att_modifyReadRspData" to set the respond data and its length when getting the ATT table information.
+    - Add a new API "blc_att_modifyReadRspData" to set the response data and its length when getting the ATT table information.
 
 ### Bug Fixes
 * **OTA**
-    - Fixed: When enabling the macro "APP_FLASH_PROTECTION_ENABLE", and an error firmware is used for OTA process, the MCU may crash with a very low probability.
-    - Fixed: The local device acting as the Peripheral role OTA with the peer device acting as the Central role. The local device delays sending connection terminate after OTA success to avoid some peer device incorrectly identifying OTA failure.
+    - Fixed: When the macro "APP_FLASH_PROTECTION_ENABLE" is enabled and an error firmware is used for the OTA process, the MCU may crash with a very low probability.
+    - Fixed: In the OTA process, the local device acting as the peripheral role needs to delay sending connection terminate after OTA success to avoid some peer devices incorrectly identifying OTA failure.
 
 * **Application**
-    - Fixed: The local device acting as the Peripheral role connects with the peer device acting as the Central role. When the local device terminate the connection, the terminate reason is "HCI_ERR_CONN_TERM_BY_LOCAL_HOST" rather than "HCI_ERR_REMOTE_USER_TERM_CONN".
-    - Fixed: Fix "feature_phy_test", "feature_privacy_slave", "feature_ota_hid" and "feature_soft_uart" compile error.
-    - Fixed: Modify the bit[1] of the analog register "DEEP_ANA_REG0" in "b85m_ble_sample" and "b85m_ble_remote" to avoid conflicting with driver.
+    - Fixed: The local device acting as the Peripheral role connects with the peer device acting as the Central role. When the local device terminates the connection, the terminate reason is "HCI_ERR_CONN_TERM_BY_LOCAL_HOST" instead of "HCI_ERR_REMOTE_USER_TERM_CONN".
+    - Fixed: Fix the "feature_phy_test", "feature_privacy_slave", "feature_ota_hid" and "feature_soft_uart" compile errors.
+    - Fixed: Modify the bit[1] of the analog register "DEEP_ANA_REG0" in "b85m_ble_sample" and "b85m_ble_remote" to avoid conflicts with the driver code.
 
 * **Others**
-    - Fixed: (B85) Restore system clock source back to 24M RC when entering "cpu_wakeup_init" to prevent abnormal reboots which may occur due to multiple calls the "cpu_wakeup_init".
+    - Fixed: (B85) Restore the system clock source to 24M RC when entering "cpu_wakeup_init" to prevent abnormal reboots that may occur due to multiple calls the "cpu_wakeup_init".
     - Fixed: When both the local device and the peer device use the resolvable private address(RPA), the identity address(IDA) type and the identity address in the interaction packets should be the same as their initial setting(public/random).
 
 ### Refactoring
@@ -23,8 +23,8 @@
     - Clean the link warning "warning: dot moved backwards before '.text'".
 
 * **Others**
-    - Update the early wakeup time of SUSPEND sleep mode.
-    - Optimize the RX flow control.
+    - Optimize the early wake-up time for the SUSPEND sleep mode.
+    - Optimize the RX flow control to improve the program's robustness.
 
 ### BREAKING CHANGES
 * N/A.
@@ -38,7 +38,7 @@
 ### Bug Fixes
 * **OTA**
     - 修复：当使能宏“APP_FLASH_PROTECTION_ENABLE”，并且在OTA时使用了一个错误的firmware，极低概率下MCU可能卡死。
-    - 修复：作为Peripheral角色的本地设备与Central角色的对端设备进行OTA，在OTA成功后本地设备延迟发送断连请求，以避免部分对端设备错误识别为OTA失败。
+    - 修复：在OTA过程中，作为Peripheral角色的本地设备需要在OTA成功后延迟发送断连请求，以避免部分对端设备错误识别为OTA失败。
 
 * **Application**
     - 修复：作为Peripheral角色的本地设备与Central角色的对端设备连接，如果本地设备主动断连，断连原因应为“HCI_ERR_CONN_TERM_BY_LOCAL_HOST”而不是“HCI_ERR_REMOTE_USER_TERM_CONN”。
@@ -54,8 +54,8 @@
     - 清理link警告“warning: dot moved backwards before '.text'”。
 
 * **Others**
-    - 更新SUSPEND模式下提前唤醒的时间。
-    - 优化RX流控。
+    - 优化SUSPEND模式下提前唤醒的时间。
+    - 优化RX流控以提高程序的鲁棒性。
 
 ### BREAKING CHANGES
 * N/A.
