@@ -1,8 +1,7 @@
 ## V3.4.2.4_Patch_0002
 
 ### Features
-* **ATT**
-    - Add a new API "blc_att_modifyReadRspData" to set the response data and its length when getting the ATT table information.
+* N/A.
 
 ### Bug Fixes
 * **OTA**
@@ -16,7 +15,7 @@
 
 * **Others**
     - Fixed: (B85) Restore the system clock source to 24M RC when entering "cpu_wakeup_init" to prevent abnormal reboots that may occur due to multiple calls the "cpu_wakeup_init".
-    - Fixed: When both the local device and the peer device use the resolvable private address(RPA), the identity address(IDA) type and the identity address in the interaction packets should be the same as their initial setting(public/random).
+    - Fixed: When the local device uses the resolvable Private Address(RPA), the identity Address(IDA) in the Identity Address Information packet is incorrectly distributed as the RPA. IDA can only be a public device address or a static random address.
 
 ### Refactoring
 * **Link**
@@ -25,6 +24,7 @@
 * **Others**
     - Optimize the early wake-up time for the SUSPEND sleep mode.
     - Optimize the RX flow control to improve the program's robustness.
+    - Add the "FLASH_P25Q80U_SUPPORT_EN" macro control in ble_flash.c and custom_pair.c.
 
 ### BREAKING CHANGES
 * N/A.
@@ -32,8 +32,7 @@
 
 
 ### Features
-* **ATT**
-    - 新增API“blc_att_modifyReadRspData”来设置获取ATT表信息时的响应数据及其长度。
+* N/A.
 
 ### Bug Fixes
 * **OTA**
@@ -47,7 +46,7 @@
 
 * **Others**
     - 修复：(B85)在进入“cpu_wakeup_init”时先将系统时钟源切换为24M RC，以防多次调用“cpu_wakeup_init”可能导致的异常reboot。
-    - 修复：当本地设备和对端设备都使用可解析私有地址（RPA）时，交互包中的身份地址（IDA）类型和身份地址应该与其初始设置（public/random）保持一致。
+    - 修复：当本地设备使用可解析地址 （RPA）时，Identity Address Information报文中的身份地址（IDA）会被错误地分发为RPA。IDA只能是公共设备地址或静态随机地址。
 
 ### Refactoring
 * **Link**
@@ -56,6 +55,7 @@
 * **Others**
     - 优化SUSPEND模式下提前唤醒的时间。
     - 优化RX流控以提高程序的鲁棒性。
+    - 在ble_flash.c和custom_pair.c中添加“FLASH_P25Q80U_SUPPORT_EN”宏控制。
 
 ### BREAKING CHANGES
 * N/A.
