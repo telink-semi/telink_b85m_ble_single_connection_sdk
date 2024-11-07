@@ -11,7 +11,7 @@
 * **Application**
     - Fixed: The local device acting as the Peripheral role connects with the peer device acting as the Central role. When the local device terminates the connection, the terminate reason is "HCI_ERR_CONN_TERM_BY_LOCAL_HOST" instead of "HCI_ERR_REMOTE_USER_TERM_CONN".
     - Fixed: Fix the "feature_phy_test", "feature_privacy_slave", "feature_ota_hid" and "feature_soft_uart" compile errors.
-    - Fixed: Modify the bit[1] of the analog register "DEEP_ANA_REG0" in "b85m_ble_sample" and "b85m_ble_remote" to avoid conflicts with the driver code.
+    - Fixed: The bit[1] of the analog register "DEEP_ANA_REG0" has been used in driver code, so modify the bit[1] to bit[4] in "b85m_ble_sample" and "b85m_ble_remote" to avoid conflicts.
 
 * **Others**
     - Fixed: (B85) Restore the system clock source to 24M RC when entering "cpu_wakeup_init" to prevent abnormal reboots that may occur due to multiple calls the "cpu_wakeup_init".
@@ -42,11 +42,11 @@
 * **Application**
     - 修复：作为Peripheral角色的本地设备与Central角色的对端设备连接，如果本地设备主动断连，断连原因应为“HCI_ERR_CONN_TERM_BY_LOCAL_HOST”而不是“HCI_ERR_REMOTE_USER_TERM_CONN”。
     - 修复：修复“feature_phy_test”，“feature_privacy_slave”，“feature_ota_hid”和“feature_soft_uart”的编译错误。
-    - 修复：修改“b85m_ble_sample”和“b85m_ble_remote”中的模拟寄存器“DEEP_ANA_REG0”的bit[1]，以避免与driver程序冲突。
+    - 修复：模拟寄存器“DEEP_ANA_REG0”的bit[1]已在driver程序中被使用，所以将“b85m_ble_sample”和“b85m_ble_remote”中的bit[1]修改为bit[4]，以避免和driver程序冲突。
 
 * **Others**
     - 修复：(B85)在进入“cpu_wakeup_init”时先将系统时钟源切换为24M RC，以防多次调用“cpu_wakeup_init”可能导致的异常reboot。
-    - 修复：当本地设备使用可解析地址 （RPA）时，Identity Address Information报文中的身份地址（IDA）会被错误地分发为RPA。IDA只能是公共设备地址或静态随机地址。
+    - 修复：当本地设备使用可解析地址（RPA）时，Identity Address Information报文中的身份地址（IDA）会被错误地分发为RPA。IDA只能是公共设备地址或静态随机地址。
 
 ### Refactoring
 * **Link**
