@@ -4,7 +4,7 @@
 * N/A.
 
 ### Bug Fixes
-* **STACK**
+* **Stack**
     - Fixed: The local device acting as the Peripheral role connects with the peer device acting as the Central role. When the local device terminates the connection, the terminate reason is "HCI_ERR_CONN_TERM_BY_LOCAL_HOST" instead of "HCI_ERR_REMOTE_USER_TERM_CONN".
     - Fixed: When the local device uses the resolvable Private Address(RPA), the identity Address(IDA) in the Identity Address Information packet is incorrectly distributed as the RPA. IDA can only be a public device address or a static random address.
 
@@ -16,9 +16,7 @@
 * **Link**
     - Clean the link warning "warning: dot moved backwards before '.text'".
 
-* **Others**
-    - Optimize the early wake-up time for the SUSPEND sleep mode.
-    - Optimize the RX flow control to improve the program's robustness.
+* **Application**
     - Add the "FLASH_P25Q80U_SUPPORT_EN" macro control in ble_flash.c and custom_pair.c.
 
 ### BREAKING CHANGES
@@ -30,7 +28,7 @@
 * N/A.
 
 ### Bug Fixes
-* **STACK**
+* **Stack**
     - 修复：作为Peripheral角色的本地设备与Central角色的对端设备连接，如果本地设备主动断连，断连原因应为“HCI_ERR_CONN_TERM_BY_LOCAL_HOST”而不是“HCI_ERR_REMOTE_USER_TERM_CONN”。
     - 修复：当本地设备使用可解析地址（RPA）时，Identity Address Information报文中的身份地址（IDA）会被错误地分发为RPA。IDA只能是公共设备地址或静态随机地址。
 
@@ -42,9 +40,7 @@
 * **Link**
     - 清理link警告“warning: dot moved backwards before '.text'”。
 
-* **Others**
-    - 优化SUSPEND模式下提前唤醒的时间。
-    - 优化RX流控以提高程序的鲁棒性。
+* **Application**
     - 在ble_flash.c和custom_pair.c中添加“FLASH_P25Q80U_SUPPORT_EN”宏控制。
 
 ### BREAKING CHANGES
