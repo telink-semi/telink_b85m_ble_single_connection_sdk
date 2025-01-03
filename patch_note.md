@@ -1,3 +1,45 @@
+## V3.4.2.4_Patch_0003
+
+### Features
+* N/A.
+
+### Bug Fixes
+* **Driver**
+    - Fixed: Fix the issue where BIT(7) of the analog register 0x44 is mistakenly set to 1 in abnormal conditions when the wake-up source is zero, causing the cpu_sleep_wakeup() function to return an abnormal value.
+
+* **Stack**
+    - Fixed: When the peripheral device receives "ATT_OP_FIND_INFO_REQ" that the start handle is zero or the start handle exceeds the end handle, the ATT server will send an invaluable packet whose opcode is wrong.
+    - Fixed: If the peripheral device doesn't receive the first packet after the connection establishing, the peripheral will not response with a very low possibility, leading to the connection terminate.
+    - Fixed: The the input parameter's format of the API blc_att_setEffectiveMtuSize() error.
+
+### Refactoring
+* N/A.
+
+### BREAKING CHANGES
+* N/A.
+
+
+### Features
+* N/A.
+
+### Bug Fixes
+* **Driver**
+    - 修复：模拟寄存器0x44在唤醒源为零的异常情况下，bit7会被误置为1，导致cpu_sleep_wakeup()函数返回值异常。
+
+* **Stack**
+    - 修复：当peripheral设备接收到的“ATT_OP_FIND_INFO_REQ”的开始句柄为零或开始句柄超过结束句柄时，ATT将发送一个操作码错误的无意义报文。
+    - 修复：如果peripheral设备在建立连接后没有收到第一个包，那么在极低概率下peripheral设备也不会回复其他的包，从而导致断连。
+    - 修复：API blc_att_setEffectiveMtuSize()的输入参数格式错误。
+
+### Refactoring
+* N/A.
+
+### BREAKING CHANGES
+* N/A.
+
+
+
+
 ## V3.4.2.4_Patch_0002
 
 ### Features
