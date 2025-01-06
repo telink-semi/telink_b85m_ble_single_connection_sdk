@@ -9,8 +9,8 @@
 
 * **Stack**
     - Fixed: When the peripheral device receives "ATT_OP_FIND_INFO_REQ" that the start handle is zero or the start handle exceeds the end handle, the ATT server will send an invaluable packet whose opcode is wrong.
-    - Fixed: If the peripheral device doesn't receive the first packet after the connection establishing, the peripheral will not response with a very low possibility, leading to the connection terminate.
-    - Fixed: The the input parameter's format of the API blc_att_setEffectiveMtuSize() error.
+    - Fixed: When the central devices use some special parameters of the connection request, the local device will connect unsuccessfully.
+    - Fixed: The input parameter's format of the API blc_att_setEffectiveMtuSize() error, leading to the central role can not use an effective MTU size larger than 255.
 
 ### Refactoring
 * N/A.
@@ -28,8 +28,8 @@
 
 * **Stack**
     - 修复：当peripheral设备接收到的“ATT_OP_FIND_INFO_REQ”的开始句柄为零或开始句柄超过结束句柄时，ATT将发送一个操作码错误的无意义报文。
-    - 修复：如果peripheral设备在建立连接后没有收到第一个包，那么在极低概率下peripheral设备也不会回复其他的包，从而导致断连。
-    - 修复：API blc_att_setEffectiveMtuSize()的输入参数格式错误。
+    - 修复：在central device使用某些特定参数的连接请求，local device会连接失败。
+    - 修复：API blc_att_setEffectiveMtuSize()的输入参数格式错误，导致central role无法使用超过255的effective MTU size。
 
 ### Refactoring
 * N/A.
