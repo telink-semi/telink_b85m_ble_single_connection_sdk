@@ -8,7 +8,7 @@
     - Fixed: Fix the issue where BIT(7) of the analog register 0x44 is mistakenly set to 1 in abnormal conditions when the wake-up source is zero, causing the cpu_sleep_wakeup() function to return an abnormal value.
 
 * **Stack**
-    - Fixed: When the peripheral device receives "ATT_OP_FIND_INFO_REQ" that the start handle is zero or the start handle exceeds the end handle, the ATT server will send an invaluable packet whose opcode is wrong.
+    - Fixed: Fix handling of invalid "ATT_OP_FIND_INFO_REQ" parameter. When the peripheral device receives "ATT_OP_FIND_INFO_REQ" that the start handle is zero or the start handle exceeds the end handle, the ATT server needs to send "ATT_ERROR_RSP", rather than sending an invalid "ATT_OP_FIND_INFO_RSP" packet.
     - Fixed: When the central devices use some special parameters of the connection request, the local device will connect unsuccessfully.
     - Fixed: The input parameter's format of the API blc_att_setEffectiveMtuSize() error, leading to the central role can not use an effective MTU size larger than 255.
 
@@ -27,7 +27,7 @@
     - 修复：模拟寄存器0x44在唤醒源为零的异常情况下，bit7会被误置为1，导致cpu_sleep_wakeup()函数返回值异常。
 
 * **Stack**
-    - 修复：当peripheral设备接收到的“ATT_OP_FIND_INFO_REQ”的开始句柄为零或开始句柄超过结束句柄时，ATT将发送一个操作码错误的无意义报文。
+    - 修复：修复对无效“ATT_OP_FIND_INFO_REQ”请求参数的处理，当peripheral设备接收到的“ATT_OP_FIND_INFO_REQ”的开始句柄为零或开始句柄超过结束句柄时，应当回复“ATT_ERROR_RSP”，而不是发送一个无效的“ATT_OP_FIND_INFO_RSP”报文。
     - 修复：在central device使用某些特定参数的连接请求，local device会连接失败。
     - 修复：API blc_att_setEffectiveMtuSize()的输入参数格式错误，导致central role无法使用超过255的effective MTU size。
 
