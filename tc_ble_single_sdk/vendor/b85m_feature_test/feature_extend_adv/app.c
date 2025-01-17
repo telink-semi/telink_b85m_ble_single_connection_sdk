@@ -1,0 +1,768 @@
+/********************************************************************************************************
+ * @file    app.c
+ *
+ * @brief   This is the source file for BLE SDK
+ *
+ * @author  BLE GROUP
+ * @date    06,2020
+ *
+ * @par     Copyright (c) 2020, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
+#include "tl_common.h"
+#include "drivers.h"
+#include "stack/ble/ble.h"
+
+#include "app.h"
+#include "../default_att.h"
+
+#include "application/keyboard/keyboard.h"
+#include "application/usbstd/usbkeycode.h"
+
+
+#if (FEATURE_TEST_MODE == TEST_EXTENDED_ADVERTISING)
+
+#define		MY_RF_POWER_INDEX					RF_POWER_P3dBm
+
+
+#define RX_FIFO_SIZE	64
+#define RX_FIFO_NUM		8
+
+#define TX_FIFO_SIZE	40
+#define TX_FIFO_NUM		8
+
+
+
+_attribute_data_retention_  u8 		 	blt_rxfifo_b[RX_FIFO_SIZE * RX_FIFO_NUM] = {0};
+_attribute_data_retention_	my_fifo_t	blt_rxfifo = {
+												RX_FIFO_SIZE,
+												RX_FIFO_NUM,
+												0,
+												0,
+												blt_rxfifo_b,};
+
+
+_attribute_data_retention_  u8 		 	blt_txfifo_b[TX_FIFO_SIZE * TX_FIFO_NUM] = {0};
+_attribute_data_retention_	my_fifo_t	blt_txfifo = {
+												TX_FIFO_SIZE,
+												TX_FIFO_NUM,
+												0,
+												0,
+												blt_txfifo_b,};
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//	 Adv Packet, Response Packet
+//////////////////////////////////////////////////////////////////////////////
+const u8	tbl_advData[] = {
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+	 0x02, DT_FLAGS, 0x05, 							// BLE limited discoverable mode and BR/EDR not supported
+	 0x03, DT_APPEARANCE, 0x80, 0x01, 					// 384, Generic Remote Control, Generic category
+	 0x05, DT_INCOMPLETE_LIST_16BIT_SERVICE_UUID, 0x12, 0x18, 0x0F, 0x18,		// incomplete list of service class UUIDs (0x1812, 0x180F)
+};
+
+const u8	tbl_scanRsp [] = {
+	 0x08, DT_COMPLETE_LOCAL_NAME, 'f', 'e', 'a', 't', 'u', 'r', 'e',
+};
+
+
+_attribute_data_retention_	int device_in_connection_state;
+
+#define	APP_ADV_SETS_NUMBER							1			// Number of Supported Advertising Sets
+#define APP_MAX_LENGTH_ADV_DATA                     1024		// Maximum Advertising Data Length,   (if legacy ADV, max length 31 bytes is enough)
+#define APP_MAX_LENGTH_SCAN_RESPONSE_DATA           1024		// Maximum Scan Response Data Length, (if legacy ADV, max length 31 bytes is enough, if extended scan response,please set it according to real situation)
+
+_attribute_data_retention_	u8  app_adv_set_param[ADV_SET_PARAM_LENGTH * APP_ADV_SETS_NUMBER];
+
+_attribute_data_retention_	u8	app_primary_adv_pkt[MAX_LENGTH_PRIMARY_ADV_PKT * APP_ADV_SETS_NUMBER];
+
+_attribute_data_retention_	u8	app_secondary_adv_pkt[MAX_LENGTH_SECOND_ADV_PKT * APP_ADV_SETS_NUMBER];
+
+_attribute_data_retention_	u8 	app_advData[APP_MAX_LENGTH_ADV_DATA	* APP_ADV_SETS_NUMBER];
+
+_attribute_data_retention_	u8 	app_scanRspData[APP_MAX_LENGTH_SCAN_RESPONSE_DATA * APP_ADV_SETS_NUMBER];
+
+
+#if (UI_KEYBOARD_ENABLE)
+	#define CONSUMER_KEY   	   		1
+	#define KEYBOARD_KEY   	   		2
+	_attribute_data_retention_	int 	key_not_released;
+	_attribute_data_retention_	u8 		key_type;
+	_attribute_data_retention_		static u32 keyScanTick = 0;
+	extern u32	scan_pin_need;
+
+	/**
+	 * @brief   Check changed key value.
+	 * @param   none.
+	 * @return  none.
+	 */
+	void key_change_proc(void)
+	{
+		u8 key0 = kb_event.keycode[0];
+		u8 key_buf[8] = {0,0,0,0,0,0,0,0};
+
+		key_not_released = 1;
+		if (kb_event.cnt == 2)   //two key press, do  not process
+		{
+
+		}
+		else if(kb_event.cnt == 1)
+		{
+			if(key0 >= CR_VOL_UP )  //volume up/down
+			{
+				key_type = CONSUMER_KEY;
+				u16 consumer_key;
+				if(key0 == CR_VOL_UP){  	//volume up
+					consumer_key = MKEY_VOL_UP;
+				}
+				else if(key0 == CR_VOL_DN){ //volume down
+					consumer_key = MKEY_VOL_DN;
+				}
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
+			}
+			else
+			{
+				key_type = KEYBOARD_KEY;
+				key_buf[2] = key0;
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8);
+			}
+
+		}
+		else   //kb_event.cnt == 0,  key release
+		{
+			key_not_released = 0;
+			if(key_type == CONSUMER_KEY)
+			{
+				u16 consumer_key = 0;
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_CONSUME_REPORT_INPUT_DP_H, (u8 *)&consumer_key, 2);
+			}
+			else if(key_type == KEYBOARD_KEY)
+			{
+				key_buf[2] = 0;
+				blc_gatt_pushHandleValueNotify (BLS_CONN_HANDLE, HID_NORMAL_KB_REPORT_INPUT_DP_H, key_buf, 8); //release
+			}
+		}
+
+
+	}
+
+
+
+
+
+	/**
+	 * @brief      keyboard task handler
+	 * @param[in]  e    - event type
+	 * @param[in]  p    - Pointer point to event parameter.
+	 * @param[in]  n    - the length of event parameter.
+	 * @return     none.
+	 */
+	void proc_keyboard(u8 e, u8 *p, int n)
+	{
+	    (void)e;(void)p;(void)n;
+		if(clock_time_exceed(keyScanTick, 8000)){
+			keyScanTick = clock_time();
+		}
+		else{
+			return;
+		}
+
+		kb_event.keycode[0] = 0;
+		int det_key = kb_scan_key (0, 1);
+
+
+
+		if (det_key){
+			key_change_proc();
+		}
+
+	}
+
+	/**
+	 * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_SUSPEND_ENTER"
+	 * @param[in]  e - LinkLayer Event type
+	 * @param[in]  p - data pointer of event
+	 * @param[in]  n - data length of event
+	 * @return     none
+	 */
+	void  task_suspend_enter (u8 e, u8 *p, int n)
+	{
+	    (void)e;(void)p;(void)n;
+		if( blc_ll_getCurrentState() == BLS_LINK_STATE_CONN && ((u32)(bls_pm_getSystemWakeupTick() - clock_time())) > 80 * SYSTEM_TIMER_TICK_1MS){  //suspend time > 30ms.add gpio wakeup
+			bls_pm_setWakeupSource(PM_WAKEUP_PAD);  //gpio pad wakeup suspend/deepsleep
+		}
+	}
+
+#endif
+
+
+
+
+
+
+
+
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_CONNECT"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
+void	task_connect (u8 e, u8 *p, int n)
+{
+    (void)e;(void)p;(void)n;
+    tlk_contr_evt_connect_t *pConnEvt = (tlk_contr_evt_connect_t *)p;
+	tlkapi_send_string_data(APP_CONTR_EVENT_LOG_EN, "[APP][EVT] connect, intA & advA:", pConnEvt->initA, 12);
+
+	bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
+
+	device_in_connection_state = 1;//
+
+	#if (UI_LED_ENABLE)
+		gpio_write(GPIO_LED_RED, LED_ON_LEVEL);  //RED light on
+	#endif
+}
+
+
+
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_TERMINATE"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
+void 	task_terminate(u8 e,u8 *p, int n) //*p is terminate reason
+{
+    (void)e;(void)p;(void)n;
+	device_in_connection_state = 0;
+
+	tlk_contr_evt_terminate_t *pEvt = (tlk_contr_evt_terminate_t *)p;
+	if(pEvt->terminate_reason == HCI_ERR_CONN_TIMEOUT){
+
+	}
+	else if(pEvt->terminate_reason == HCI_ERR_REMOTE_USER_TERM_CONN){
+
+	}
+	else if(pEvt->terminate_reason == HCI_ERR_CONN_TERM_MIC_FAILURE){
+
+	}
+	else{
+
+	}
+
+	tlkapi_printf(APP_LOG_EN, "[APP][EVT] disconnect, reason 0x%x\n", pEvt->terminate_reason);
+
+#if (UI_LED_ENABLE)
+	gpio_write(GPIO_LED_RED, !LED_ON_LEVEL);  //RED light off
+#endif
+
+
+}
+
+
+
+/**
+ * @brief      callback function of LinkLayer Event "BLT_EV_FLAG_SUSPEND_EXIT"
+ * @param[in]  e - LinkLayer Event type
+ * @param[in]  p - data pointer of event
+ * @param[in]  n - data length of event
+ * @return     none
+ */
+void	task_suspend_exit (u8 e, u8 *p, int n)
+{
+    (void)e;(void)p;(void)n;
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
+}
+
+
+/**
+ * @brief      power management code for application
+ * @param	   none
+ * @return     none
+ */
+void blt_pm_proc(void)
+{
+#if(BLE_APP_PM_ENABLE)
+	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
+	#else
+		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
+	#endif
+
+	#if (UI_KEYBOARD_ENABLE)
+		if(scan_pin_need || key_not_released){
+			bls_pm_setSuspendMask (SUSPEND_DISABLE);
+		}
+	#endif
+#endif  //end of BLE_APP_PM_ENABLE
+}
+
+
+
+
+
+
+/**
+ * @brief		user initialization when MCU power on or wake_up from deepSleep mode
+ * @param[in]	none
+ * @return      none
+ */
+void user_init_normal(void)
+{
+	//random number generator must be initiated here( in the beginning of user_init_nromal)
+	//when deepSleep retention wakeUp, no need initialize again
+#if(MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
+	random_generator_init();  //this is must
+#endif
+
+	//	debug init
+	#if(UART_PRINT_DEBUG_ENABLE)
+		tlkapi_debug_init();
+		blc_debug_enableStackLog(STK_LOG_DISABLE);
+	#endif
+
+	blc_readFlashSize_autoConfigCustomFlashSector();
+
+	/* attention that this function must be called after "blc_readFlashSize_autoConfigCustomFlashSector" !!!*/
+	blc_app_loadCustomizedParameters_normal();
+
+////////////////// BLE stack initialization ////////////////////////////////////
+	u8  mac_public[6];
+	u8  mac_random_static[6];
+	//for 512K Flash, flash_sector_mac_address equals to 0x76000
+	//for 1M  Flash, flash_sector_mac_address equals to 0xFF000
+	blc_initMacAddress(flash_sector_mac_address, mac_public, mac_random_static);
+	tlkapi_send_string_data(APP_LOG_EN,"[APP][INI]Public Address", mac_public, 6);
+
+
+	////// Controller Initialization  //////////
+	blc_ll_initBasicMCU();                      //mandatory
+	blc_ll_initStandby_module(mac_public);		//mandatory
+
+	//set rf power index, user must set it after every suspend wakeup, cause relative setting will be reset in suspend
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
+
+	//Extended ADV module:
+	blc_ll_initExtendedAdvertising_module(app_adv_set_param, app_primary_adv_pkt, APP_ADV_SETS_NUMBER);
+	blc_ll_initExtSecondaryAdvPacketBuffer(app_secondary_adv_pkt, MAX_LENGTH_SECOND_ADV_PKT);
+	blc_ll_initExtAdvDataBuffer(app_advData, APP_MAX_LENGTH_ADV_DATA);
+	blc_ll_initExtScanRspDataBuffer(app_scanRspData, APP_MAX_LENGTH_SCAN_RESPONSE_DATA);
+
+	//
+	blc_ll_initChannelSelectionAlgorithm_2_feature();
+	blc_ll_init2MPhyCodedPhy_feature();
+
+	//blc_ll_setMaxAdvDelay_for_AdvEvent(0);  //no ADV random delay, for debug
+
+	u32 my_adv_interval_min = ADV_INTERVAL_50MS;
+	u32 my_adv_interval_max = ADV_INTERVAL_50MS;
+
+	le_phy_type_t  user_primary_adv_phy;
+	le_phy_type_t  user_secondary_adv_phy;
+
+#if 0 //Legacy, non_connectable_non_scannable
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_LEGACY_NON_CONNECTABLE_NON_SCANNABLE_UNDIRECTED,  my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										   BLE_ADDR_PUBLIC, 				NULL,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   BLE_PHY_1M, 						0,
+						   BLE_PHY_1M, 	 		ADV_SID_0, 													   0);
+
+	blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, sizeof(tbl_advData) , (u8 *)tbl_advData);
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+#elif 0  //Legacy, connectable_scannable
+
+	blc_ll_initConnection_module();				//connection module  mandatory for BLE slave/master
+	blc_ll_initSlaveRole_module();				//slave module: 	 mandatory for BLE slave,
+
+	////// Host Initialization  //////////
+	blc_gap_peripheral_init();    //gap initialization
+	extern void my_att_init();
+	my_att_init(); //gatt initialization
+	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
+	blc_smp_peripheral_init(); 									//SMP initialization
+
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_LEGACY_CONNECTABLE_SCANNABLE_UNDIRECTED,  		   my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										   BLE_ADDR_PUBLIC, 				NULL,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   BLE_PHY_1M, 						0,
+						   BLE_PHY_1M, 	 		ADV_SID_0, 													   0);
+
+	blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, sizeof(tbl_advData) , (u8 *)tbl_advData);
+
+	blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, sizeof(tbl_scanRsp), (u8 *)tbl_scanRsp);
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+#elif 0 // Extended, None_Connectable_None_Scannable undirected, without auxiliary packet
+
+	#if 1      // ADV_EXT_IND: 1M PHY
+		user_primary_adv_phy = BLE_PHY_1M;
+		#if(MCU_CORE_TYPE != MCU_CORE_TC321X)
+			#elif 0    // ADV_EXT_IND: Coded PHY(S2)
+				user_primary_adv_phy = BLE_PHY_CODED;
+				blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S2);
+			#elif 0	   // ADV_EXT_IND: Coded PHY(S8)
+				user_primary_adv_phy = BLE_PHY_CODED;
+				blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+		#endif
+	#endif
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_EXTENDED_NON_CONNECTABLE_NON_SCANNABLE_UNDIRECTED, my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										    BLE_ADDR_PUBLIC, 				NULL,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   	user_primary_adv_phy, 					0,
+						   BLE_PHY_1M, 	 		ADV_SID_0, 													   	0);
+
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+#elif 0 // Extended, None_Connectable_None_Scannable undirected, with auxiliary packet
+
+	#if 1      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: 1M PHY
+		user_primary_adv_phy  = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_1M;
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: 2M PHY
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_2M;
+#if(MCU_CORE_TYPE != MCU_CORE_TC321X)
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S2)
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S2);
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S8)
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S2) 		AUX_ADV_IND/AUX_CHAIN_IND: 1M PHY
+		user_primary_adv_phy  = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_1M;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S2);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S8) 		AUX_ADV_IND/AUX_CHAIN_IND: 1M PHY
+		user_primary_adv_phy  = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_1M;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S2)  	AUX_ADV_IND/AUX_CHAIN_IND: 2M PHY
+		user_primary_adv_phy   = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_2M;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S2);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S8)  	AUX_ADV_IND/AUX_CHAIN_IND: 2M PHY
+		user_primary_adv_phy   = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_2M;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S2);  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S2)
+		user_primary_adv_phy   = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S2);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S8);  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S8)
+		user_primary_adv_phy   = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+#endif
+	#endif
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_EXTENDED_NON_CONNECTABLE_NON_SCANNABLE_UNDIRECTED, my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										    BLE_ADDR_PUBLIC, 				NULL,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   	user_primary_adv_phy, 					0,
+						   user_secondary_adv_phy, 	 		ADV_SID_0, 											0);
+
+
+	u8	testAdvData[1024];
+	for(int i=0;i<1024;i++){
+		testAdvData[i]=i;
+	}
+
+	#if 1   //AdvData: 100 bytes, check that APP_MAX_LENGTH_ADV_DATA must bigger than 100
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, 100, testAdvData);
+	#elif 0 //AdvData: 251 bytes, check that APP_MAX_LENGTH_ADV_DATA must bigger than 300
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, 251, testAdvData);
+	#elif 0 //AdvData: 300 bytes, check that APP_MAX_LENGTH_ADV_DATA must bigger than 300
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_FIRST,    DATA_FRAGM_ALLOWED, 251, testAdvData);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_LAST,     DATA_FRAGM_ALLOWED, 49,  testAdvData + 251);
+	#elif 0 //AdvData: 600 bytes, check that APP_MAX_LENGTH_ADV_DATA must bigger than 600
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_FIRST,    DATA_FRAGM_ALLOWED, 251, testAdvData);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 251);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_LAST,     DATA_FRAGM_ALLOWED, 98,  testAdvData + 502);
+	#elif 1 //AdvData: 1010 bytes,  check that APP_MAX_LENGTH_ADV_DATA must bigger than 1010
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_FIRST,    DATA_FRAGM_ALLOWED, 251, testAdvData);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 251);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 502);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 753);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_LAST,     DATA_FRAGM_ALLOWED, 6,   testAdvData + 1004);
+	#endif
+
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+#elif 0 // Extended, None_Connectable_None_Scannable directed, without auxiliary packet
+
+	u8 test_peer_type = BLE_ADDR_PUBLIC;  // BLE_ADDR_RANDOM
+	u8 test_peer_mac[6] = {0x11,0x11,0x11,0x11,0x11,0x11};
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_EXTENDED_NON_CONNECTABLE_NON_SCANNABLE_DIRECTED, 	my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										    test_peer_type, 				test_peer_mac,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   	BLE_PHY_1M, 					0,
+						   BLE_PHY_1M, 	 		ADV_SID_0, 													   	0);
+
+
+	blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, 0 , NULL);   //do not set ADV data, or set it with adv_dataLen "0"
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+
+
+#elif 0 // Extended, None_Connectable_None_Scannable Directed, with auxiliary packet
+
+
+	u8 test_peer_type = BLE_ADDR_RANDOM;  // BLE_ADDR_RANDOM
+	u8 test_peer_mac[6] = {0x11,0x11,0x11,0x11,0x11,0x11};
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_EXTENDED_NON_CONNECTABLE_NON_SCANNABLE_DIRECTED, 	my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										    test_peer_type, 				test_peer_mac,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   	BLE_PHY_1M, 					0,
+						   BLE_PHY_1M, 	 		ADV_SID_0, 													   	0);
+
+
+
+	u8	testAdvData[1024];
+	for(int i=0;i<1024;i++){
+		testAdvData[i]=i;
+	}
+
+	#if 1 //AdvData: 600 bytes, check that APP_MAX_LENGTH_ADV_DATA must bigger than 600
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_FIRST,    DATA_FRAGM_ALLOWED, 251, testAdvData);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 251);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_LAST,     DATA_FRAGM_ALLOWED, 98,  testAdvData + 502);
+	#elif 1 //AdvData: 1010 bytes, check that APP_MAX_LENGTH_ADV_DATA must bigger than 1010
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_FIRST,    DATA_FRAGM_ALLOWED, 251, testAdvData);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 251);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 502);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testAdvData + 753);
+		blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_LAST,     DATA_FRAGM_ALLOWED, 6,   testAdvData + 1004);
+	#endif
+
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+
+#elif 0 // Extended, Scannable, Undirected
+
+	#if 1      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: 1M PHY
+		user_primary_adv_phy  = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_1M;
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: 2M PHY
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_2M;
+#if(MCU_CORE_TYPE != MCU_CORE_TC321X)
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S8)
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S8) 		AUX_ADV_IND/AUX_CHAIN_IND: 1M PHY
+		user_primary_adv_phy  = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_1M;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+	#elif 0      // ADV_EXT_IND: Coded PHY(S8)  	AUX_ADV_IND/AUX_CHAIN_IND: 2M PHY
+		user_primary_adv_phy   = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_2M;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+	#elif 1      // ADV_EXT_IND: Coded PHY(S8);  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S8)
+		user_primary_adv_phy   = BLE_PHY_CODED;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+#endif
+	#endif
+
+	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_EXTENDED_SCANNABLE_UNDIRECTED, 					my_adv_interval_min, 			my_adv_interval_max,
+						   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 										    BLE_ADDR_PUBLIC, 				NULL,
+						   ADV_FP_NONE,  		TX_POWER_8dBm,												   	user_primary_adv_phy, 					0,
+						   user_secondary_adv_phy,  ADV_SID_0, 													0);
+
+	//Extended Scannable Event do not have ADV data
+
+	u8	testScanRspData[1024];
+	for(int i=0;i<1024;i++){
+		testScanRspData[i]=i;
+	}
+
+	#if 1
+		blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, sizeof(tbl_scanRsp) , (u8 *)tbl_scanRsp);
+	#else  //ExtScanRspData: 1010 bytes,   check that APP_MAX_LENGTH_SCAN_RESPONSE_DATA must bigger than 1010
+		blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_FIRST,    DATA_FRAGM_ALLOWED, 251, testScanRspData);
+		blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testScanRspData + 251);
+		blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testScanRspData + 502);
+		blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_INTER,    DATA_FRAGM_ALLOWED, 251, testScanRspData + 753);
+		blc_ll_setExtScanRspData( ADV_HANDLE0, DATA_OPER_LAST,     DATA_FRAGM_ALLOWED, 6,   testScanRspData + 1004);
+	#endif
+
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+
+#elif 1 // Extended, Connectable, Undirected
+
+	#if 1      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: 1M PHY
+		user_primary_adv_phy  = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_1M;
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: 2M PHY
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_2M;
+#if(MCU_CORE_TYPE != MCU_CORE_TC321X)
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S8)
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S2);
+	#elif 0      // ADV_EXT_IND: 1M PHY;  		AUX_ADV_IND/AUX_CHAIN_IND: Coded PHY(S8)
+		user_primary_adv_phy   = BLE_PHY_1M;
+		user_secondary_adv_phy = BLE_PHY_CODED;
+		blc_ll_setDefaultExtAdvCodingIndication(ADV_HANDLE0, CODED_PHY_PREFER_S8);
+#endif
+	#endif
+
+	blc_ll_initConnection_module();				//connection module  mandatory for BLE slave/master
+	blc_ll_initSlaveRole_module();				//slave module: 	 mandatory for BLE slave,
+
+	////// Host Initialization  //////////
+	blc_gap_peripheral_init();    //gap initialization
+	extern void my_att_init();
+	my_att_init(); //gatt initialization
+	blc_l2cap_register_handler (blc_l2cap_packet_receive);  	//l2cap initialization
+	blc_smp_peripheral_init(); 									//SMP initialization
+
+	u8 adv_param_status = BLE_SUCCESS;
+	adv_param_status	=	blc_ll_setExtAdvParam( ADV_HANDLE0, 		ADV_EVT_PROP_EXTENDED_CONNECTABLE_UNDIRECTED, 	my_adv_interval_min, 			my_adv_interval_max,
+												   BLT_ENABLE_ADV_ALL,	OWN_ADDRESS_PUBLIC, 							BLE_ADDR_PUBLIC, 				NULL,
+												   ADV_FP_NONE,  		TX_POWER_8dBm,									user_primary_adv_phy, 			0,
+												   user_secondary_adv_phy, 	 		ADV_SID_0, 							0);
+	if(adv_param_status != BLE_SUCCESS){
+		tlkapi_printf(APP_LOG_EN, "[APP][INI] Extend ADV parameters error 0x%x!!!\n", adv_param_status);
+		while(1);
+	}
+
+	blc_ll_setExtAdvData( ADV_HANDLE0, DATA_OPER_COMPLETE, DATA_FRAGM_ALLOWED, sizeof(tbl_advData) , (u8 *)tbl_advData);
+
+
+	//Extended Connectable Event do not have scan_rsp data
+
+	blc_ll_setExtAdvEnable( BLC_ADV_ENABLE, 1, ADV_HANDLE0, 0 , 0);
+
+#else
+
+#endif
+
+	///////////////////// Power Management initialization///////////////////
+#if(BLE_APP_PM_ENABLE)
+	blc_ll_initPowerManagement_module();        //pm module:      	 optional
+	bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_EXIT, &task_suspend_exit);
+
+	#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+    	blc_app_setDeepsleepRetentionSramSize(); //select DEEPSLEEP_MODE_RET_SRAM_LOW16K or DEEPSLEEP_MODE_RET_SRAM_LOW32K
+		bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
+		blc_pm_setDeepsleepRetentionThreshold(95, 95);
+
+		#if(MCU_CORE_TYPE == MCU_CORE_825x)
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(260);
+		#elif((MCU_CORE_TYPE == MCU_CORE_827x))
+			blc_pm_setDeepsleepRetentionEarlyWakeupTiming(270);
+		#endif
+	#else
+		bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN);
+	#endif
+
+
+	#if (UI_KEYBOARD_ENABLE)
+		/////////// keyboard gpio wakeup init ////////
+		u32 pin[] = KB_DRIVE_PINS;
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		{
+			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
+		}
+
+		bls_app_registerEventCallback (BLT_EV_FLAG_GPIO_EARLY_WAKEUP, &proc_keyboard);
+		bls_app_registerEventCallback (BLT_EV_FLAG_SUSPEND_ENTER, &task_suspend_enter);
+	#endif
+
+#else
+	bls_pm_setSuspendMask (SUSPEND_DISABLE);
+#endif
+
+	/* Check if any Stack(Controller & Host) Initialization error after all BLE initialization done.
+	 * attention that code will stuck in "while(1)" if any error detected in initialization, user need find what error happens and then fix it */
+	blc_app_checkControllerHostInitialization();
+
+	tlkapi_printf(APP_LOG_EN, "[APP][INI] feature_extend_adv init \n");
+
+
+}
+
+
+
+/**
+ * @brief		user initialization when MCU wake_up from deepSleep_retention mode
+ * @param[in]	none
+ * @return      none
+ */
+_attribute_ram_code_ void user_init_deepRetn(void)
+{
+#if (PM_DEEPSLEEP_RETENTION_ENABLE)
+	blc_app_loadCustomizedParameters_deepRetn();
+	blc_ll_initBasicMCU();   //mandatory
+	rf_set_power_level_index (MY_RF_POWER_INDEX);
+
+	blc_ll_recoverDeepRetention();
+
+	irq_enable();
+
+	#if (UI_KEYBOARD_ENABLE)
+		/////////// keyboard gpio wakeup init ////////
+		u32 pin[] = KB_DRIVE_PINS;
+		for (unsigned int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
+		{
+			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
+		}
+	#endif
+
+#endif
+}
+
+
+
+
+/**
+ * @brief     BLE main loop
+ * @param[in]  none.
+ * @return     none.
+ */
+void main_loop(void)
+{
+
+	////////////////////////////////////// BLE entry /////////////////////////////////
+	blt_sdk_main_loop();
+
+
+	////////////////////////////////////// UI entry /////////////////////////////////
+	#if (UI_KEYBOARD_ENABLE)
+		proc_keyboard(0, 0, 0);
+	#endif
+
+	////////////////////////////////////// PM Process /////////////////////////////////
+	blt_pm_proc();
+}
+
+
+#endif  //end of (FEATURE_TEST_MODE == ...)
