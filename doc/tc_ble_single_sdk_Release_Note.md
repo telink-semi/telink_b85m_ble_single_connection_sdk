@@ -1,7 +1,7 @@
 # V3.4.2.5 (ER)
 
 ### Version
-* SDK version: tc_ble_simple_sdk V3.4.2.5
+* SDK version: tc_ble_single_sdk V3.4.2.5
 * Chip Version
   - TLSR825X (B85)
   - TLSR827X (B87)
@@ -115,7 +115,7 @@
 
 
 ### Version
-* SDK 版本: tc_ble_simple_sdk V3.4.2.5
+* SDK 版本: tc_ble_single_sdk V3.4.2.5
 * Chip 版本
   - TLSR825X (B85)
   - TLSR827X (B87)
