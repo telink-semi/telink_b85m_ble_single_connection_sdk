@@ -63,6 +63,8 @@ typedef enum{
 	SYS_CLK_48M_Crystal = 0x20,
 
 	SYS_CLK_RC_THRES = 0x10,
+
+	SYS_CLK_24M_RC 	 = 0x00,
 }SYS_CLK_TypeDef;
 
 

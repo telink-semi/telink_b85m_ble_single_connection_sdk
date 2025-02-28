@@ -35,8 +35,8 @@ SECTIONS
     
     .cstartup_ram_funcs :
     {
-    KEEP(*(.cstartup_ram_funcs))
-    KEEP(*(.cstartup_ram_funcs.*))
+      *(.cstartup_ram_funcs)
+      *(.cstartup_ram_funcs.*)
     }
     
     PROVIDE(_cstartup_ram_funcs_size_div_16_ = (. + 15 ) / 16);

@@ -190,7 +190,11 @@ void ir_send_release(void)
 
 #if(!ADD_REPEAT_ONE_BY_ONE)
 	if(ir_send_ctrl.is_sending != IR_SENDING_NONE){
+	#if(MCU_CORE_TYPE!=MCU_CORE_TC321X)
 		pwm_stop_dma_ir_sending();
+	#else
+		ir_learn_ana_tx_dis();
+	#endif
 	}
 #endif
 
@@ -343,8 +347,10 @@ void rc_ir_init(void)
 {
 
 //only pwm0 support fifo mode
+#if(MCU_CORE_TYPE!=MCU_CORE_TC321X)
 	pwm_n_revert(PWM0_ID);	//if use PWMx_N, user must set "pwm_n_revert" before gpio_set_func(pwmx_N).
 	gpio_set_func(GPIO_PB3, AS_PWM0_N);
+#endif
 	pwm_set_mode(PWM0_ID, PWM_IR_DMA_FIFO_MODE);
 	pwm_set_phase(PWM0_ID, 0);   //no phase at pwm beginning
 	pwm_set_cycle_and_duty(PWM0_ID, PWM_CARRIER_CYCLE_TICK,  PWM_CARRIER_HIGH_TICK ); 	//config carrier: 38k, 1/3 duty
@@ -393,6 +399,13 @@ void rc_ir_init(void)
 //	reg_pwm_irq_mask |= FLD_IRQ_PWM0_IR_DMA_FIFO_DONE;
 
 	ir_send_ctrl.last_cmd = 0xff; //must
+#if(MCU_CORE_TYPE==MCU_CORE_TC321X)
+    /* irlearn config. */
+    ir_learn_tx_t ir_learn_tx = {
+        .tx_mode = ANALOG_TX_MODE,
+    };
+	ir_learn_tx_init(&ir_learn_tx);
+#endif
 }
 
 

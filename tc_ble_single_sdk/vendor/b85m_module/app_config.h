@@ -28,23 +28,14 @@
 /////////////////// MODULE Configuration/////////////////////////////////
 #define BLE_APP_PM_ENABLE				1
 #define PM_DEEPSLEEP_RETENTION_ENABLE		1
-
-#if(__PROJECT_TC321X_MODULE__)
-#define BLE_OTA_ENABLE						0
-#else
 #define BLE_OTA_ENABLE						1
-#endif
-
 #define TELIK_SPP_SERVICE_ENABLE			1
 #define BLE_MODULE_INDICATE_DATA_TO_MCU		1
 
 
 /* User must check battery voltage on mass production application to prevent abnormal writing or erasing Flash at a low voltage !!! */
-#if(__PROJECT_TC321X_MODULE__)
-#define APP_BATT_CHECK_ENABLE		       	0
-#else
 #define APP_BATT_CHECK_ENABLE		       	1
-#endif
+
 /* Flash Protection:
  * 1. Flash protection is enabled by default in SDK. User must enable this function on their final mass production application.
  * 2. User should use "Unlock" command in Telink BDT tool for Flash access during development and debugging phase.
@@ -54,11 +45,7 @@
  *    be directly used on user's mass production application without any change. User should refer to sample code, understand the
  *    principles and methods, then change and implement a more appropriate mechanism according to their application if needed.
  */
-#if(__PROJECT_TC321X_MODULE__)
-#define APP_FLASH_PROTECTION_ENABLE			0
-#else
 #define APP_FLASH_PROTECTION_ENABLE			1
-#endif
 
 //firmware check
 #define FIRMWARES_SIGNATURE_ENABLE          0

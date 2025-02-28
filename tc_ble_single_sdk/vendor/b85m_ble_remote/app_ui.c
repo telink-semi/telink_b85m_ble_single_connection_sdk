@@ -140,7 +140,9 @@ static const u16 vk_consumer_map[16] = {
 			ir_hw_initialed = 1;
 			rc_ir_init();
 		}
-
+		#if(MCU_CORE_TYPE==MCU_CORE_TC321X)
+			ir_learn_ana_tx_en();
+		#endif
 		if(type == TYPE_IR_SEND){
 			ir_nec_send(syscode,~(syscode),ircode);
 
@@ -602,11 +604,7 @@ void app_ui_init_normal(void)
 	#endif
 
 	#if (BLE_AUDIO_ENABLE)
-		#if (BLE_DMIC_ENABLE)
-			dmic_gpio_reset();
-		#else
-			amic_gpio_reset();
-		#endif
+		amic_gpio_reset();
 	#endif
 
 
@@ -646,11 +644,7 @@ void app_ui_init_deepRetn(void)
 	#endif
 
 	#if (BLE_AUDIO_ENABLE)
-		#if (BLE_DMIC_ENABLE)
-			dmic_gpio_reset();
-		#else
-			amic_gpio_reset();
-		#endif
+		amic_gpio_reset();
 	#endif
 
 #if (UI_LED_ENABLE)

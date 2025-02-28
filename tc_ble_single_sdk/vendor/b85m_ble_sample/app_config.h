@@ -73,7 +73,7 @@
 
 
 ///////////////////////// UI Configuration ////////////////////////////////////////////////////
-#define	UI_KEYBOARD_ENABLE								0
+#define	UI_KEYBOARD_ENABLE								1
 #define	UI_LED_ENABLE									0
 #define	UI_BUTTON_ENABLE								0
 

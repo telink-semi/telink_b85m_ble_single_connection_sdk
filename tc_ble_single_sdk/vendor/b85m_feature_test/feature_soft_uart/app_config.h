@@ -88,6 +88,10 @@
 	#define PB1_DATA_OUT                    1
 #endif
 
+#if (__PROJECT_TC321X_FEATURE_TEST__)
+	#error "TC321X don't support soft UART!"
+#endif
+
 #include "vendor/common/default_config.h"
 
 

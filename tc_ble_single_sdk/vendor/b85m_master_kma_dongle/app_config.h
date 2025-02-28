@@ -86,9 +86,6 @@
 #define	MIC_ENCODER_ENABLE		0
 
 #if (UI_AUDIO_ENABLE)//Audio enable
-
-	#define BLE_DMIC_ENABLE					0  //0: Amic   1: Dmic
-
 	/* Dongle Audio MODE:
 	 * TL_AUDIO_DONGLE_ADPCM_GATT_TELINK
 	 * TL_AUDIO_DONGLE_ADPCM_GATT_GOOGLE

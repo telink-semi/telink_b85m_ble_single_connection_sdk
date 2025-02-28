@@ -28,6 +28,7 @@
 #define NULL  0
 #endif
 
+unsigned int strlen(const char *_s);
 void *  memset(void * d, int c, unsigned int  n);
 void *  memcpy(void * des_ptr, const void * src_ptr, unsigned int);
 

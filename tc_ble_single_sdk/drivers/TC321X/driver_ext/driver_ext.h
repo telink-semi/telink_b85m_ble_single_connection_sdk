@@ -28,9 +28,9 @@
 
 #include "ext_misc.h"
 #include "mcu_boot.h"
-#include "software_uart.h"
 #include "mcu_config.h"
 #include "rf_pa.h"
+#include "rf_private_pa.h"
 #include "ext_calibration.h"
 
 

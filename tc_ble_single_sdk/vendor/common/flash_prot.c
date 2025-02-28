@@ -231,6 +231,9 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 					flash_lock_block_size = FLASH_LOCK_LOW_960K_MID14325E;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 960K block!\n");
 				}
+				else{
+					blc_flashProt.init_err = 1;
+				}
 				break;
 		#endif
 
@@ -277,6 +280,9 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 					flash_lock_block_size = FLASH_LOCK_LOW_960K_MID146085;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 960K block!\n");
 				}
+				else{
+					blc_flashProt.init_err = 1;
+				}
 				break;
 		#endif
 
@@ -300,6 +306,9 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 					 * if this demo can not meet your requirement, you should change !!! */
 					flash_lock_block_size = FLASH_LOCK_LOW_960K_MID1460C8;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 960K block!\n");
+				}
+				else{
+					blc_flashProt.init_err = 1;
 				}
 				break;
 		#endif
@@ -327,6 +336,9 @@ u16 flash_change_app_lock_block_to_flash_lock_block(flash_app_lock_e app_lock_bl
 					 * if this demo can not meet your requirement, you should change !!! */
 					flash_lock_block_size = FLASH_LOCK_LOW_1984K_MID156085;
 					tlkapi_printf(APP_FLASH_PROT_LOG_EN, "[FLASH][PROT] flash lock low 1984K block!\n");
+				}
+				else{
+					blc_flashProt.init_err = 1;
 				}
 				break;
 		#endif

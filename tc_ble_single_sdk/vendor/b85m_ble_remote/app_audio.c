@@ -363,17 +363,15 @@ void blc_checkConnParamUpdate(void)
 void proc_audio(void){
 	//blc_checkConnParamUpdate();
 	if(ui_mic_enable){
-		#if (MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_TC321X)
+		#if (MCU_CORE_TYPE == MCU_CORE_827x)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 17*1000))){// for 8278
 			if(!audio_start)
 			{
 				audio_set_mute_pga(1);
 			}
-		}
-		#elif (MCU_CORE_TYPE == MCU_CORE_825x)
-		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 1*1000)))// for 8258
+		#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_TC321X)
+		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 1*1000))){// for 8258
 		#endif
-		{
 			audio_start = 1;
 			task_audio();
 		}
@@ -692,13 +690,13 @@ _attribute_ram_code_ void task_audio (void)
 void proc_audio(void){
 
 	if(ui_mic_enable){
-		#if (MCU_CORE_TYPE == MCU_CORE_827x  || MCU_CORE_TYPE == MCU_CORE_TC321X)
+		#if (MCU_CORE_TYPE == MCU_CORE_827x)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 17*1000))){// for 8278
 			if(!audio_start)
 			{
 				audio_set_mute_pga(1);
 			}
-		#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+		#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_TC321X)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 1*1000))){// for 8258
 		#endif
 			audio_start = 1;
@@ -1028,13 +1026,13 @@ void proc_audio(void){
 		}
 	}
 	if(ui_mic_enable){
-		#if (MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_TC321X)
+		#if (MCU_CORE_TYPE == MCU_CORE_827x)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 17*1000))){// for 8278
 			if(!audio_start)
 			{
 				audio_set_mute_pga(1);
 			}
-		#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+		#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_TC321X)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 1*1000))){// for 8258
 		#endif
 			audio_start = 1;
@@ -1144,8 +1142,6 @@ void ui_enable_mic (int en)
 						.data_buf_size = TL_MIC_BUFFER_SIZE,
 					};
 					audio_codec_stream0_input_init(&audio_codec_stream0_input);
-					audio_dfifo_config(FIFO0,(u16*)buffer_mic,TL_MIC_BUFFER_SIZE);
-					audio_txfifo_en(FIFO0);
 				#endif
 			#elif (MCU_CORE_TYPE == MCU_CORE_825x)
 				gpio_set_output_en(GPIO_AMIC_SP, 0);
@@ -1359,13 +1355,13 @@ void proc_audio(void){
 		}
 	}
 	if(ui_mic_enable){
-		#if (MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_TC321X)
+		#if (MCU_CORE_TYPE == MCU_CORE_827x)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 17*1000))){// for 8278
 			if(!audio_start)
 			{
 				audio_set_mute_pga(1);
 			}
-		#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+		#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_TC321X)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 1*1000))){// for 8258
 		#endif
 			audio_start = 1;
@@ -1449,6 +1445,7 @@ void ui_enable_mic (int en)
 					.data_buf_size = TL_MIC_BUFFER_SIZE,
 				};
 				audio_codec_stream0_input_init(&audio_codec_stream0_input);
+				audio_dfifo_config(FIFO0,(u16*)buffer_mic,TL_MIC_BUFFER_SIZE);
 			#else
 				gpio_set_func(GPIO_DMIC_DI, AS_DMIC);
 				gpio_set_func(GPIO_DMIC_CK, AS_DMIC);
@@ -1474,8 +1471,6 @@ void ui_enable_mic (int en)
 						.data_buf_size = TL_MIC_BUFFER_SIZE,
 					};
 					audio_codec_stream0_input_init(&audio_codec_stream0_input);
-					audio_dfifo_config(FIFO0,(u16*)buffer_mic,TL_MIC_BUFFER_SIZE);
-					audio_txfifo_en(FIFO0);
 				#endif
 			#elif (MCU_CORE_TYPE == MCU_CORE_825x)
 				gpio_set_output_en(GPIO_AMIC_SP, 0);
@@ -1685,13 +1680,13 @@ void proc_audio(void){
 		}
 	}
 	if(ui_mic_enable){
-		#if (MCU_CORE_TYPE == MCU_CORE_827x || MCU_CORE_TYPE == MCU_CORE_TC321X)
+		#if (MCU_CORE_TYPE == MCU_CORE_827x)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 17*1000))){// for 8278
 			if(!audio_start)
 			{
 				audio_set_mute_pga(1);
 			}
-		#elif (MCU_CORE_TYPE == MCU_CORE_825x)
+		#elif (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_TC321X)
 		if(audio_start || (audio_stick && clock_time_exceed(audio_stick, 1*1000))){// for 8258
 		#endif
 			audio_start = 1;
@@ -1707,4 +1702,3 @@ void proc_audio(void){
 
 #endif
 #endif
-

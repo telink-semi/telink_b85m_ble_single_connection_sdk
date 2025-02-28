@@ -38,6 +38,16 @@
 	#include "vendor/b85m_master_kma_dongle/app_config.h"
 #elif(__PROJECT_8258_INTERNAL_TEST__ ||  __PROJECT_8278_INTERNAL_TEST__)
 	#include "vendor/b85m_internal_test/app_config.h"
+#elif (__PROJECT_TC321X_2P4G_GENFSK_LL__)
+    #include "vendor/b85m_2p4g_genfsk_ll/app_config.h"
+#elif (__PROJECT_TC321X_2P4G_TPLL__)
+    #include "vendor/b85m_2p4g_tpll/app_config.h"
+#elif (__PROJECT_TC321X_2P4G_TPSLL__)
+    #include "vendor/b85m_2p4g_tpsll/app_config.h"
+#elif (__PROJECT_TC321X_2P4G_FEATURE__)
+    #include "vendor/b85m_2p4g_feature/app_config.h"
+#elif (__PROJECT_TC321X_2P4G_FEATURE_TEST__)
+	#include "vendor/b85m_2p4g_feature_test/app_config.h"
 #else
 	#include "vendor/common/default_config.h"
 #endif

@@ -1,14 +1,247 @@
+# V3.4.2.6 (PR)
+
+### Version
+* SDK version: tc_ble_single_sdk V3.4.2.6
+* Chip Version
+  - B85: TLSR825X
+  - B87: TLSR827X
+  - TC321X (A0)
+* Hardware Version
+  - B85: C1T139A30_V1_2, C1T139A5_V1_4, C1T139A3_V2_0
+  - B87: C1T197A30_V1_1, C1T197A5_V1_1, C1T201A3_V1_0
+  - TC321X: C1T357A20_V1_1, C1T362A5_V1_0
+* Platform Version
+  - tc_platform_sdk V3.1.0
+* Toolchain Version
+  - TC32 ELF GCC4.3 ( IDE: [Telink IDE](https://wiki.telink-semi.cn/wiki/IDE-and-Tools/IDE-for-TLSR8-Chips/)/ [TelinkIoTStudio_V2024.8](https://wiki.telink-semi.cn/tools_and_sdk/Tools/IoTStudio/TelinkIoTStudio_V2024.8.zip) )
+
+### Features
+* TC321X remote demo support IR.
+* TC321X support 2.4G demo（genfsk_ll/tpll/tpsll/ota/uart_fw_update/epd/2.4G test demo）.
+
+
+### Bug Fixes
+* **Application**
+    - Fixed: The bit[2] of the analog register "DEEP_ANA_REG0" has been used in driver code, so modify the bit[2] to bit[5] in "b85m_ble_remote".
+
+### Refactoring
+* **Application**
+    - Clean the "b85m_ble_sample" compile error when enabling the macro "BLE_OTA_SERVER_ENABLE".
+	- Clean the "b85m_master_kma_dongle" compile error when disabling the macro "BLE_HOST_SMP_ENABLE".
+	- Add the flash protection initialization error flag.
+
+### BREAKING CHANGES
+* N/A.
+
+### Flash
+* **B85**
+  - ZB25WD40B
+  - ZB25WD80B
+  - GD25LD40C/GD25LD40E
+  - P25Q40SU
+  - GD25LD80C/GD25LD80E
+
+* **B87**
+  - GD25LD40C/GD25LD40E
+  - GD25LD80C/GD25LD80E
+  - ZB25WD40B
+  - ZB25WD80B
+  - P25Q80U
+
+* **TC321X**
+  - P25D40SU
+  - P25Q80U
+  - GD25LD40EGEG
+  - P25Q16SU (Not Test)
+
+### CodeSize
+* **B85**
+	* ble_sample
+		- Firmware size: 51.3 kBytes
+		- SRAM size: 18.0 kBytes
+		- deepsleep retention SRAM size: 14.4 kBytes
+	* ble_remote
+		- Firmware size: 65.0 kBytes
+		- SRAM size: 21.1 kBytes
+		- deepsleep retention SRAM size: 15.7 kBytes
+	* ble_module
+		- Firmware size: 61.9 kBytes
+		- SRAM size: 20.4 kBytes
+		- deepsleep retention SRAM size: 16.6 kBytes
+	* master_kma_dongle
+		- Firmware size: 42.9 kBytes
+		- SRAM size: 19.9 kBytes
+  
+* **B87**
+	* ble_sample
+		- Firmware size: 51.6 kBytes
+		- SRAM size: 18.3 kBytes
+		- deepsleep retention SRAM size: 14.6 kBytes
+	* ble_remote
+		- Firmware size: 64.5 kBytes
+		- SRAM size: 21.4 kBytes
+		- deepsleep retention SRAM size: 15.9 kBytes
+	* ble_module
+		- Firmware size: 62.3 kBytes
+		- SRAM size: 20.7 kBytes
+		- deepsleep retention SRAM size: 16.8 kBytes
+	* master_kma_dongle
+		- Firmware size: 43.1 kBytes
+		- SRAM size: 20.4 kBytes
+
+* **TC321X**
+	* ble_sample
+		- Firmware size: 50.0 kBytes
+		- SRAM size: 17.8 kBytes
+		- deepsleep retention SRAM size: 14.1 kBytes
+	* ble_remote
+		- Firmware size: 64.8 kBytes
+		- SRAM size: 20.5 kBytes
+		- deepsleep retention SRAM size: 15.0 kBytes
+	* ble_module
+		- Firmware size: 63.4 kBytes
+		- SRAM size: 20.0 kBytes
+		- deepsleep retention SRAM size: 16.1 kBytes
+	* genfsk_ll(stx2rx)
+		- Firmware size: 15.2 kBytes
+		- SRAM size: 9.9 kBytes
+		- deepsleep retention SRAM size: 6.7 kBytes
+	* tpll(ptx)
+		- Firmware size: 20.3 kBytes
+		- SRAM size: 11.8 kBytes
+		- deepsleep retention SRAM size: 6.5 kBytes
+    * tpsll(stx2rx)
+		- Firmware size: 12.6 kBytes
+		- SRAM size: 9.7 kBytes
+		- deepsleep retention SRAM size: 6.1 kBytes
+
+### Version
+* SDK 版本: tc_ble_single_sdk V3.4.2.6
+* Chip 版本
+  - B85: TLSR825X
+  - B87: TLSR827X
+  - TC321X (A0)
+* Hardware 版本
+  - B85: C1T139A30_V1_2, C1T139A5_V1_4, C1T139A3_V2_0
+  - B87: C1T197A30_V1_1, C1T197A5_V1_1, C1T201A3_V1_0
+  - TC321X: C1T357A20_V1_1, C1T362A5_V1_0
+* Platform 版本
+  - tc_platform_sdk V3.1.0
+* Toolchain 版本
+  - TC32 ELF GCC4.3 ( IDE: [Telink IDE](https://wiki.telink-semi.cn/wiki/IDE-and-Tools/IDE-for-TLSR8-Chips/)/ [TelinkIoTStudio_V2024.8](https://wiki.telink-semi.cn/tools_and_sdk/Tools/IoTStudio/TelinkIoTStudio_V2024.8.zip) )
+
+### Features
+* TC321X的remote demo支持IR功能。
+* TC321X支持2.4G demo（genfsk_ll/tpll/tpsll/ota/uart_fw_update/epd/2.4G test demo）。
+
+### Bug Fixes
+* **Application**
+  - 修复：模拟寄存器“DEEP_ANA_REG0”的bit[2]已在driver程序中被使用，所以将“b85m_ble_remote”中的bit[2]修改为bit[5]。 
+
+### Refactoring
+* **Application**
+  - 清理“b85m_ble_sample”中，在使能宏“BLE_OTA_SERVER_ENABLE”时的编译错误。
+  - 清理“b85m_master_kma_dongle”中，在使能宏“BLE_HOST_SMP_ENABLE”时的编译错误。
+  - 添加flash保护的错误flag。
+
+### BREAKING CHANGES
+* N/A.
+
+### Flash
+* **B85**
+  - ZB25WD40B
+  - ZB25WD80B
+  - GD25LD40C/GD25LD40E
+  - P25Q40SU
+  - GD25LD80C/GD25LD80E
+
+* **B87**
+  - GD25LD40C/GD25LD40E
+  - GD25LD80C/GD25LD80E
+  - ZB25WD40B
+  - ZB25WD80B
+  - P25Q80U
+
+* **TC321X**
+  - P25D40SU
+  - P25Q80U
+  - GD25LD40EGEG
+  - P25Q16SU (未测试)
+
+### CodeSize
+* **B85**
+	* ble_sample
+		- Firmware size: 51.3 kBytes
+		- SRAM size: 18.0 kBytes
+		- deepsleep retention SRAM size: 14.4 kBytes
+	* ble_remote
+		- Firmware size: 65.0 kBytes
+		- SRAM size: 21.1 kBytes
+		- deepsleep retention SRAM size: 15.7 kBytes
+	* ble_module
+		- Firmware size: 61.9 kBytes
+		- SRAM size: 20.4 kBytes
+		- deepsleep retention SRAM size: 16.6 kBytes
+	* master_kma_dongle
+		- Firmware size: 42.9 kBytes
+		- SRAM size: 19.9 kBytes
+  
+* **B87**
+	* ble_sample
+		- Firmware size: 51.6 kBytes
+		- SRAM size: 18.3 kBytes
+		- deepsleep retention SRAM size: 14.6 kBytes
+	* ble_remote
+		- Firmware size: 64.5 kBytes
+		- SRAM size: 21.4 kBytes
+		- deepsleep retention SRAM size: 15.9 kBytes
+	* ble_module
+		- Firmware size: 62.3 kBytes
+		- SRAM size: 20.7 kBytes
+		- deepsleep retention SRAM size: 16.8 kBytes
+	* master_kma_dongle
+		- Firmware size: 43.1 kBytes
+		- SRAM size: 20.4 kBytes
+
+* **TC321X**
+	* ble_sample
+		- Firmware size: 50.0 kBytes
+		- SRAM size: 17.8 kBytes
+		- deepsleep retention SRAM size: 14.1 kBytes
+	* ble_remote
+		- Firmware size: 64.8 kBytes
+		- SRAM size: 20.5 kBytes
+		- deepsleep retention SRAM size: 15.0 kBytes
+	* ble_module
+		- Firmware size: 63.4 kBytes
+		- SRAM size: 20.0 kBytes
+		- deepsleep retention SRAM size: 16.1 kBytes
+	* genfsk_ll(stx2rx)
+		- Firmware size: 15.2 kBytes
+		- SRAM size: 9.9 kBytes
+		- deepsleep retention SRAM size: 6.7 kBytes
+	* tpll(ptx)
+		- Firmware size: 20.3 kBytes
+		- SRAM size: 11.8 kBytes
+		- deepsleep retention SRAM size: 6.5 kBytes
+    * tpsll(stx2rx)
+		- Firmware size: 12.6 kBytes
+		- SRAM size: 9.7 kBytes
+		- deepsleep retention SRAM size: 6.1 kBytes
+
+
+
 # V3.4.2.5 (ER)
 
 ### Version
 * SDK version: tc_ble_single_sdk V3.4.2.5
 * Chip Version
-  - TLSR825X (B85)
-  - TLSR827X (B87)
-  - TC321X   (A0)
+  - B85: TLSR825X
+  - B87: TLSR827X
+  - TC321X (A0)
 * Hardware Version
   - B85: C1T139A30_V1_2, C1T139A5_V1_4, C1T139A3_V2_0
-  - B87: C1T197A30_V1_2, C1T197A5_V1_1, C1T201A3_V1_0
+  - B87: C1T197A30_V1_1, C1T197A5_V1_1, C1T201A3_V1_0
   - TC321X: C1T357A20_V1_1, C1T362A5_V1_0
 * Platform Version
   - tc_platform_sdk V3.0.0
@@ -122,7 +355,7 @@
   - TC321X   (A0)
 * Hardware 版本
   - B85: C1T139A30_V1_2, C1T139A5_V1_4, C1T139A3_V2_0
-  - B87: C1T197A30_V1_2, C1T197A5_V1_1, C1T201A3_V1_0
+  - B87: C1T197A30_V1_1, C1T197A5_V1_1, C1T201A3_V1_0
   - TC321X: C1T357A20_V1_1, C1T362A5_V1_0
 * Platform 版本
   - tc_platform_sdk V3.0.0

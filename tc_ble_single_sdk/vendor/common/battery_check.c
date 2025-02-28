@@ -170,6 +170,9 @@ _attribute_ram_code_ void adc_vbat_detect_init(void)
 	//set "set state" length for misc channel: 10
 	//adc state machine  period  = 24M/250 = 96K, T = 10.4 uS
 	adc_set_state_length(240, 10);  	//set R_max_mc,R_max_c,R_max_s
+#ifndef	GPIO_VBAT_DETECT
+	adc_set_vref_vbat_divider(ADC_VBAT_DIVIDER_1F3);
+#endif
 
 
 #if 1  //optimize, for saving time
@@ -187,7 +190,9 @@ _attribute_ram_code_ void adc_vbat_detect_init(void)
 	adc_set_resolution(RES14);
 #endif
 
-
+#ifndef	GPIO_VBAT_DETECT
+	adc_set_ain_channel_differential_mode(VBAT, GND);
+#endif
 	//set misc channel vref 1.2V
 	adc_set_ref_voltage(ADC_VREF_1P2V);
 
@@ -199,9 +204,13 @@ _attribute_ram_code_ void adc_vbat_detect_init(void)
 	adc_set_tsample_cycle(SAMPLING_CYCLES_6);   	//Number of ADC clock cycles in sampling phase
 #endif
 
-	//set Analog input pre-scal.ing 1/8
-	adc_set_ain_pre_scaler(ADC_PRESCALER_1F8);
-
+#ifndef	GPIO_VBAT_DETECT
+		//set Analog input pre-scal.ing 1
+		adc_set_ain_pre_scaler(ADC_PRESCALER_1);
+#else
+		//set Analog input pre-scal.ing 1/8
+		adc_set_ain_pre_scaler(ADC_PRESCALER_1F8);
+#endif
 
 	/******power on sar adc********/
 	//note: this setting must be set after all other settings
@@ -393,7 +402,7 @@ _attribute_ram_code_ int app_battery_power_check(u16 alram_vol_mv)
 		//           =  adc_result * Vref*adc_pre_scale >>13 + offset
 		if (ADC_INPUT_PCHN == VBAT){
 			extern unsigned short adc_vbat_calib_vref;
-			batt_vol_mv  = ((adc_result*adc_pre_scale*adc_vbat_calib_vref)>>13);
+			batt_vol_mv  = ((adc_result*adc_pre_scale*adc_vbat_calib_vref)>>13)*3;
 		}
 		else
 			batt_vol_mv  = ((adc_result*adc_pre_scale*adc_gpio_calib_vref)>>13) + adc_gpio_calib_vref_offset;

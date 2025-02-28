@@ -26,6 +26,16 @@
 #include "common/assert.h"
 #include "tl_common.h"
 
+unsigned int strlen(const char *str) {
+	unsigned int len = 0;
+	if (str != NULL) {
+		while (*str++) {
+			len++;
+		}
+	}
+	return len;
+}
+
 int memcmp(const void * m1, const void *m2, u32 len) {
 	u8 *st1 = (u8 *) m1;
 	u8 *st2 = (u8 *) m2;

@@ -245,7 +245,7 @@ int blm_le_adv_report_event_handle(u8 *p)
 			if(device_is_bond){ //this ADV mac is bonded in master
 				tbl_bond_slave_delete_by_adr(pa->adr_type, pa->mac);  //by telink stack host smp
 			}
-		#else
+		#elif (ACL_CENTRAL_CUSTOM_PAIR_ENABLE)
 			device_is_bond = user_tbl_slave_mac_search(pa->adr_type, pa->mac);
 			if(device_is_bond){ //this ADV mac is bonded in master
 				user_tbl_slave_mac_delete_by_adr(pa->adr_type, pa->mac);  //by user application code

@@ -76,9 +76,9 @@
 
 #define	TEST_MULTIPLE_LOCAL_DEVICE						125 //multiple local device
 
-#define TEST_USER_BLT_SOFT_UART							130 //software UART
+#define TEST_USER_BLT_SOFT_UART							130 //software UART, TC321X don't support
 #define TEST_L2CAP_COC								    140 //L2CAP COC
-#define TEST_USB_CDC									150 //USB CDC
+#define TEST_USB_CDC									150 //USB CDC, TC321X don't support
 
 #define TEST_FEATURE_BACKUP								200
 

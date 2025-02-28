@@ -95,7 +95,7 @@
 #endif
 #define	LOW_BATT_FLG					    BIT(0) //if 1: low battery
 #define CONN_DEEP_FLG	                    BIT(4) //if 1: conn deep, 0: ADV deep
-#define IR_MODE_DEEP_FLG	 				BIT(2) //if 1: IR mode, 0: BLE mode
+#define IR_MODE_DEEP_FLG	 				BIT(5) //if 1: IR mode, 0: BLE mode
 #define LOW_BATT_SUSPEND_FLG				BIT(3) //if 1 : low battery, < 1.8v
 
 /**
@@ -285,12 +285,6 @@
 	#define PULL_WAKEUP_SRC_PB1         					PM_PIN_PULLUP_10K
 	#define PB1_OUTPUT_ENABLE         						1
 	#define PB1_DATA_OUT                                    1 //must
-#endif
-
-#if (BLE_DMIC_ENABLE)
-	#if (BOARD_SELECT == BOARD_825X_RCU_C1T139A5 || BOARD_SELECT == BOARD_827X_RCU_C1T197A5 || BOARD_TC321X_RCU_C1T362A5)
-		#error "this board can not support DMIC!"
-	#endif
 #endif
 
 #include "vendor/common/default_config.h"

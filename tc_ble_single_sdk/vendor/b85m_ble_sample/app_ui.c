@@ -32,7 +32,7 @@
 #include "app_att.h"
 #include "app_ui.h"
 
-extern u32	latest_user_event_tick;
+extern u32  latest_user_event_tick;
 
 #if (BLE_OTA_SERVER_ENABLE)
 /**
@@ -91,7 +91,6 @@ _attribute_data_retention_	static u32 keyScanTick = 0;
 
 #define CONSUMER_KEY   	   		1
 #define KEYBOARD_KEY   	   		2
-
 
 
 

@@ -85,6 +85,10 @@
 	#define PB1_DATA_OUT                    1
 #endif
 
+#if (__PROJECT_TC321X_FEATURE_TEST__)
+	#error "TC321X don't support USB CDC!"
+#endif
+
 #include "../common/default_config.h"
 
 

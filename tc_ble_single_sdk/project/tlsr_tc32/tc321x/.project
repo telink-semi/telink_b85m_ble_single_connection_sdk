@@ -137,9 +137,39 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>stack/2p4g</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/stack/2p4g</locationURI>
+		</link>
+		<link>
 			<name>stack/ble</name>
 			<type>2</type>
 			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/stack/ble</locationURI>
+		</link>
+		<link>
+			<name>vendor/b85m_2p4g_feature</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_2p4g_feature</locationURI>
+		</link>
+		<link>
+			<name>vendor/b85m_2p4g_feature_test</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_2p4g_feature_test</locationURI>
+		</link>
+		<link>
+			<name>vendor/b85m_2p4g_genfsk_ll</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_2p4g_genfsk_ll</locationURI>
+		</link>
+		<link>
+			<name>vendor/b85m_2p4g_tpll</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_2p4g_tpll</locationURI>
+		</link>
+		<link>
+			<name>vendor/b85m_2p4g_tpsll</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_2p4g_tpsll</locationURI>
 		</link>
 		<link>
 			<name>vendor/b85m_ble_remote</name>
@@ -160,11 +190,6 @@
 			<name>vendor/b85m_hci</name>
 			<type>2</type>
 			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_hci</locationURI>
-		</link>
-		<link>
-			<name>vendor/b85m_internal_test</name>
-			<type>2</type>
-			<locationURI>PARENT-4-PROJECT_LOC/tc_ble_single_sdk/vendor/b85m_internal_test</locationURI>
 		</link>
 		<link>
 			<name>vendor/b85m_module</name>

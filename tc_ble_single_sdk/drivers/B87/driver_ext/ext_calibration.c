@@ -45,7 +45,7 @@ int user_calib_adc_vref(unsigned char * adc_vref_calib_value_rd) {
 	unsigned short vbat_calib_vref = 0;
 
 	/****** Check the two-point gpio calibration value whether is exist ********/
-	if((adc_vref_calib_value_rd[4] != 0xff) && (adc_vref_calib_value_rd[4] <= 0x7f) && (((adc_vref_calib_value_rd[6] << 8) + adc_vref_calib_value_rd[5]) != 0xffff)){
+	if((adc_vref_calib_value_rd[4]  >= 0) && (adc_vref_calib_value_rd[4] <= 0x7f) && (((adc_vref_calib_value_rd[6] << 8) + adc_vref_calib_value_rd[5]) >= 47) && (((adc_vref_calib_value_rd[6] << 8) + adc_vref_calib_value_rd[5]) <= 300)){
 		/****** Method of calculating two-point gpio calibration Flash_gain and Flash_offset value: ********/
 		/****** Vref = [(Seven_Byte << 8) + Six_Byte + 1000]mv ********/
 		/****** offset = [Five_Byte - 20] mv. ********/
